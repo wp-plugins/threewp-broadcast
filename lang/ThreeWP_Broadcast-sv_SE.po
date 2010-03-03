@@ -1,0 +1,224 @@
+# Translation of the WordPress plugin ThreeWP Broadcast 0.0.1 by Edward Hevlund.
+# Copyright (C) 2010 Edward Hevlund
+# This file is distributed under the same license as the ThreeWP Broadcast package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ThreeWP Broadcast 0.0.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/ThreeWP_Broadcast\n"
+"POT-Creation-Date: 2010-03-01 22:59+0100\n"
+"PO-Revision-Date: 2010-03-01 22:59+0100\n"
+"Last-Translator: Name <Email>\n"
+"Language-Team: Edward <edward@mindreantre.se>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ThreeWP_Broadcast.php:48
+#: ThreeWP_Broadcast.php:59
+msgid "Broadcast"
+msgstr "Multiposta"
+
+#: ThreeWP_Broadcast.php:121
+msgid "ThreeWP Broadcast groups"
+msgstr "Grupper för multipostning"
+
+#: ThreeWP_Broadcast.php:121
+msgid "Help"
+msgstr "Hjälp"
+
+#: ThreeWP_Broadcast.php:397
+msgid "Group blogs have been saved."
+msgstr "Bloggarna har sparats."
+
+#: ThreeWP_Broadcast.php:404
+msgid "The group name may not be empty!"
+msgstr "Gruppens namn får ej vara tomt!"
+
+#: ThreeWP_Broadcast.php:409
+msgid "The group has been created!"
+msgstr "Gruppen har skapats!"
+
+#: ThreeWP_Broadcast.php:418
+msgid "You have not created any groups yet."
+msgstr "Du har inte skapat någon grupp än."
+
+#: ThreeWP_Broadcast.php:424
+msgid "Group"
+msgstr "Grupp"
+
+#: ThreeWP_Broadcast.php:429
+msgid "Select/deselect all the blogs in the above group."
+msgstr "Markera alla/inga bloggar i gruppen ovanför."
+
+#: ThreeWP_Broadcast.php:438
+msgid "Save groups"
+msgstr "Spara grupperna"
+
+#: ThreeWP_Broadcast.php:444
+msgid "New group name"
+msgstr "Nya gruppnamnet"
+
+#: ThreeWP_Broadcast.php:451
+msgid "Create the new group"
+msgstr "Skapa en ny grupp"
+
+#: ThreeWP_Broadcast.php:457
+msgid "Your groups"
+msgstr "Dina grupper"
+
+#: ThreeWP_Broadcast.php:469
+msgid "Create a new group"
+msgstr "Skapa en ny grupp"
+
+#: ThreeWP_Broadcast.php:483
+msgid "Delete"
+msgstr "Borttagning"
+
+#: ThreeWP_Broadcast.php:486
+msgid "To <strong>delete</strong> a group, leave all blogs in that group unmarked and then save."
+msgstr "För att <strong>ta bort</strong> gruppen, avmarkera alla bloggar i gruppen och klicka på spara."
+
+#: ThreeWP_Broadcast.php:495
+msgid "What is Broadcast?"
+msgstr "Vad är Multipostning (Broadcast)?"
+
+#: ThreeWP_Broadcast.php:498
+msgid "What the Broadcast window looks like"
+msgstr "Hur Multipostningsfönstret ser ut"
+
+#: ThreeWP_Broadcast.php:502
+msgid "With Broadcast you can post to several blogs at once. The broadcast window is first shown at the bottom right on the Add New Post screen."
+msgstr "Med Multipostning kan du posta till flera bloggar samtidigt. Multipostningsfönstret visas första gången längst ner till höger när du skriver ett nytt inlägg."
+
+#: ThreeWP_Broadcast.php:503
+msgid "The window contains several options and a list of blogs you have access to."
+msgstr "Fönstret innehåller olika alternativ och en lista över alla bloggar du har tillgång till."
+
+#: ThreeWP_Broadcast.php:507
+msgid "Some settings might be disabled by the site administrator and if you do not have write access to any blogs other than this one the Broadcast window might not appear."
+msgstr "Det är möjligt att vissa inställningar har avaktiverats av administratören. Har du inte skrivtillgång till fler än en blogg kommer Multipostningsfönstret inte visas."
+
+#: ThreeWP_Broadcast.php:511
+msgid "To use the Broadcast plugin, simply select which blogs you want to broadcast the post to and then publish the post normally."
+msgstr "För att använda tillägget, makera vilka bloggar du vill posta till samtidigt och sedan fortsätt redigera inlägget som vanligt."
+
+#: ThreeWP_Broadcast.php:514
+msgid "Options"
+msgstr "Inställningar"
+
+#: ThreeWP_Broadcast.php:517
+#: ThreeWP_Broadcast.php:566
+msgid "Broadcast this post as a draft"
+msgstr "Multiposta det här inlägget som utkast"
+
+#: ThreeWP_Broadcast.php:517
+msgid "will send this post to the selected blogs and mark it as a draft."
+msgstr "skickar inlägget till de markerade bloggarna som utkast."
+
+#: ThreeWP_Broadcast.php:521
+#: ThreeWP_Broadcast.php:578
+msgid "Broadcast categories also"
+msgstr "Multiposta kategorierna också"
+
+#: ThreeWP_Broadcast.php:521
+msgid "will also try to send the categories together with the post."
+msgstr "försöker att multiposta kategorierna tillsammans med själva inläggt."
+
+#: ThreeWP_Broadcast.php:522
+msgid "In order to be able to broadcast the categories, the selected blogs must have the same category names (slugs) as this blog, else the posts will be posted as uncategorized."
+msgstr "För att kunna Multiposta kategorier måste alla valda bloggar ha exakt samma kategorinamn som denna, annars postas inlägget som okategoriserad."
+
+#: ThreeWP_Broadcast.php:525
+msgid "Groups"
+msgstr "Grupper"
+
+#: ThreeWP_Broadcast.php:528
+msgid "If the site administrator allows it you may create groups to quickly select several blogs at once. To create a group, start by typing a group name in the text box and pressing the create button."
+msgstr "Om administratören tillåter kan du skapa grupper för att snabbt och lätt kunna välja flera bloggar samtidigt. För att skapa en grupp börja med att skriv in ett beskrivande gruppnamn i textrutan och tryck sedan på skapa-knappen."
+
+#: ThreeWP_Broadcast.php:532
+msgid "Group setup"
+msgstr "Gruppinställningar"
+
+#: ThreeWP_Broadcast.php:536
+msgid "Then select which blogs you want to be automatically selected when you choose this group when editing a new post. Press the save button when you are done. Your new group is ready to be used!"
+msgstr "Välj sedan vilka bloggar du vill ska väljas automatiskt när du väljer den här gruppen under inläggredigeringsprocessen. Tryck på spara-knappen när du är klar. Den nya gruppen är färdig att användas!"
+
+#: ThreeWP_Broadcast.php:537
+msgid "Simply choose it in the dropdown box and the blogs you specified will be automatically chosen."
+msgstr "Välj den i rullistan och bloggarna du ställt in kommer att väljas automatiskt."
+
+#: ThreeWP_Broadcast.php:541
+msgid "Groups have been selected and saved"
+msgstr "Grupperna har sparats"
+
+#: ThreeWP_Broadcast.php:579
+msgid "The categories must have the same name (slug) on the selected blogs."
+msgstr "Kategorierna måste ha samma namn (\"slug\") på de valda bloggarna."
+
+#: ThreeWP_Broadcast.php:592
+msgid "Create categories automatically"
+msgstr "Skapa kategorier automatiskt"
+
+#: ThreeWP_Broadcast.php:593
+msgid "The categories will be created if they don't exist on the selected blogs."
+msgstr "Kategorierna kommer att skapas ifall de inte finns på de valda bloggarna."
+
+#: ThreeWP_Broadcast.php:605
+msgid "Broadcast tags also"
+msgstr "Multiposta etiketterna också"
+
+#: ThreeWP_Broadcast.php:606
+msgid "The tags must have the same name (slug) on the selected blogs."
+msgstr "Etiketterna måste ha samma namn (\"slug\") på de valda bloggarna."
+
+#: ThreeWP_Broadcast.php:619
+msgid "Create tags automatically"
+msgstr "Skapa etiketter automatiskt"
+
+#: ThreeWP_Broadcast.php:620
+msgid "The tags will be created if they don't exist on the selected blogs."
+msgstr "Etiketterna kommer att skapas om de inte finns på de valda bloggarna."
+
+#: ThreeWP_Broadcast.php:635
+msgid "Select blogs in group"
+msgstr "Välj bloggarna i gruppen"
+
+#: ThreeWP_Broadcast.php:636
+msgid "No group selected"
+msgstr "Ingen grupp vald"
+
+#: ThreeWP_Broadcast.php:663
+msgid "Broadcast to:"
+msgstr "Multiposta till:"
+
+#: ThreeWP_Broadcast.php:669
+#: ThreeWP_Broadcast.php:888
+msgid "Select/deselect all"
+msgstr "Markera/avmarkera alla"
+
+#. Plugin Name of an extension
+msgid "ThreeWP Broadcast"
+msgstr "ThreeWP Broadcast"
+
+#. Plugin URI of an extension
+msgid "http://mindreantre.se/threewp-activity-monitor/"
+msgstr ""
+
+#. Description of an extension
+msgid "WPMU plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category posting available."
+msgstr "WPMU tillägg för att kunna multiposta ett inlägg till andra bloggar."
+
+#. Author of an extension
+msgid "Edward Hevlund"
+msgstr ""
+
+#. Author URI of an extension
+msgid "http://www.mindreantre.se"
+msgstr ""
+
+#~ msgid "To broadcast this post to other blogs, select the blogs below"
+#~ msgstr "För att multiposta till andra bloggar, välj dem här undertill."
+

@@ -1,0 +1,46 @@
+.aural-info
+{
+	display: none;
+}
+
+.bigp
+{
+	margin-bottom: 4em;
+}
+
+div.threewp_broadcast_group
+{
+	margin-bottom: 5em;
+}
+
+ul.broadcast_blogs
+{
+	list-style-type: none;
+}
+ul.broadcast_blogs li
+{
+	padding: 0 6px;
+}
+
+.float-right
+{
+	float: right;
+	margin: 0 0 10px 10px;
+}
+
+#broadcast_help
+{
+	max-width: 60em;
+}
+
+.border-single
+{
+	border-style: solid;
+	border-width: 1px;
+	
+}
+
+.textcenter
+{
+	text-align: center;
+}

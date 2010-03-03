@@ -1,0 +1,241 @@
+# Translation of the WordPress plugin ThreeWP Broadcast 0.0.1 by Edward Hevlund.
+# Copyright (C) 2010 Edward Hevlund
+# This file is distributed under the same license as the ThreeWP Broadcast package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ThreeWP Broadcast 0.0.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/ThreeWP_Broadcast\n"
+"POT-Creation-Date: 2010-03-01 22:59+0100\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ThreeWP_Broadcast.php:48 ThreeWP_Broadcast.php:59
+msgid "Broadcast"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:121
+msgid "ThreeWP Broadcast groups"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:121
+msgid "Help"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:397
+msgid "Group blogs have been saved."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:404
+msgid "The group name may not be empty!"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:409
+msgid "The group has been created!"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:418
+msgid "You have not created any groups yet."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:424
+msgid "Group"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:429
+msgid "Select/deselect all the blogs in the above group."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:438
+msgid "Save groups"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:444
+msgid "New group name"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:451
+msgid "Create the new group"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:457
+msgid "Your groups"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:469
+msgid "Create a new group"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:483
+msgid "Delete"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:486
+msgid ""
+"To <strong>delete</strong> a group, leave all blogs in that group unmarked "
+"and then save."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:495
+msgid "What is Broadcast?"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:498
+msgid "What the Broadcast window looks like"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:502
+msgid ""
+"With Broadcast you can post to several blogs at once. The broadcast window "
+"is first shown at the bottom right on the Add New Post screen."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:503
+msgid ""
+"The window contains several options and a list of blogs you have access to."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:507
+msgid ""
+"Some settings might be disabled by the site administrator and if you do not "
+"have write access to any blogs other than this one the Broadcast window "
+"might not appear."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:511
+msgid ""
+"To use the Broadcast plugin, simply select which blogs you want to broadcast "
+"the post to and then publish the post normally."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:514
+msgid "Options"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:517 ThreeWP_Broadcast.php:566
+msgid "Broadcast this post as a draft"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:517
+msgid "will send this post to the selected blogs and mark it as a draft."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:521 ThreeWP_Broadcast.php:578
+msgid "Broadcast categories also"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:521
+msgid "will also try to send the categories together with the post."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:522
+msgid ""
+"In order to be able to broadcast the categories, the selected blogs must "
+"have the same category names (slugs) as this blog, else the posts will be "
+"posted as uncategorized."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:525
+msgid "Groups"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:528
+msgid ""
+"If the site administrator allows it you may create groups to quickly select "
+"several blogs at once. To create a group, start by typing a group name in "
+"the text box and pressing the create button."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:532
+msgid "Group setup"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:536
+msgid ""
+"Then select which blogs you want to be automatically selected when you "
+"choose this group when editing a new post. Press the save button when you "
+"are done. Your new group is ready to be used!"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:537
+msgid ""
+"Simply choose it in the dropdown box and the blogs you specified will be "
+"automatically chosen."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:541
+msgid "Groups have been selected and saved"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:579
+msgid "The categories must have the same name (slug) on the selected blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:592
+msgid "Create categories automatically"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:593
+msgid ""
+"The categories will be created if they don't exist on the selected blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:605
+msgid "Broadcast tags also"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:606
+msgid "The tags must have the same name (slug) on the selected blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:619
+msgid "Create tags automatically"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:620
+msgid "The tags will be created if they don't exist on the selected blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:635
+msgid "Select blogs in group"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:636
+msgid "No group selected"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:663
+msgid "Broadcast to:"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:669 ThreeWP_Broadcast.php:888
+msgid "Select/deselect all"
+msgstr ""
+
+#. Plugin Name of an extension
+msgid "ThreeWP Broadcast"
+msgstr ""
+
+#. Plugin URI of an extension
+msgid "http://mindreantre.se/threewp-activity-monitor/"
+msgstr ""
+
+#. Description of an extension
+msgid ""
+"WPMU plugin to broadcast a post to other blogs. Whitelist, blacklist, groups "
+"and automatic category posting available."
+msgstr ""
+
+#. Author of an extension
+msgid "Edward Hevlund"
+msgstr ""
+
+#. Author URI of an extension
+msgid "http://www.mindreantre.se"
+msgstr ""
