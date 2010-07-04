@@ -1,14 +1,14 @@
 === ThreeWP Broadcast ===
-Tags: wpmu, broadcast, multipost, blogs, posting, simultaneously
-Requires at least: 2.9.1.1
-Tested up to: 2.9.1.1
+Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously
+Requires at least: 3.0
+Tested up to: 3.0
 Stable tag: trunk
 
-WPMU plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
+Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
 
 == Description ==
 
-WPMU plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
+Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
 
 Inspired by <a href="http://wordpress.org/extend/plugins/broadcast-mu/">Tom Lynch's Broadcast MU plugin</a> that doesn't work nowadays due to autosaving and such.
 
@@ -38,5 +38,7 @@ Did I miss anything?
 
 == Changelog ==
 
+= 0.2 =
+* WP3 compatability
 = 0.0.1 =
 * Initial public release

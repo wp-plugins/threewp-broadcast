@@ -2,8 +2,8 @@
 /*                                                                                                                                                                                                                                                             
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/threewp-activity-monitor/
-Description: WPMU plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available. 
-Version: 0.0.1
+Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available. 
+Version: 0.2
 Author: Edward Hevlund
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -30,7 +30,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	public function __construct()
 	{
 		parent::__construct(__FILE__);
-		if ($this->isWPMU)
+		if ($this->isNetwork)
 		{
 			define("_3BC", 'ThreeWP_Broadcast');
 			register_activation_hook(__FILE__, array(&$this, 'activate') );
@@ -43,7 +43,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	public function add_menu()
 	{
 		if (is_site_admin())
-			add_submenu_page('wpmu-admin.php', 'ThreeWP Broadcast', 'Broadcast', 'administrator', 'ThreeWP_Broadcast', array (&$this, 'admin'));
+			add_submenu_page('ms-admin.php', 'ThreeWP Broadcast', 'Broadcast', 'administrator', 'ThreeWP_Broadcast', array (&$this, 'admin'));
 		if ($this->role_at_least( $this->get_option('role_groups') ))
 			add_options_page('ThreeWP Broadcast', __('Broadcast', _3BC), $this->get_user_role(), 'ThreeWP_Broadcast_Groups', array (&$this, 'user'));
 	}
@@ -82,8 +82,8 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	{
 		parent::activate();
 		
-		if (!$this->isWPMU)
-			wp_die("This plugin requires WPMU.");
+		if (!$this->isNetwork)
+			wp_die("This plugin requires Network.");
 			
 		$this->register_options();
 			
