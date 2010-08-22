@@ -18,6 +18,7 @@ Available in the following languages:
 
 * English
 * Swedish
+* Dutch
 
 Did I miss anything?
 
@@ -38,6 +39,9 @@ Did I miss anything?
 
 == Changelog ==
 
+= 0.3 =
+* Dutch translation added, courtesy of Johan Daems.
+* Superadmins have access to all blogs, even though they don't.
 = 0.2 =
 * WP3 compatability
 = 0.0.1 =

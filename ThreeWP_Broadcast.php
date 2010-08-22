@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/threewp-activity-monitor/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available. 
-Version: 0.2
+Version: 0.3
 Author: Edward Hevlund
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -919,6 +919,14 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	
 	protected function getUserWritableBlogs($user_id)
 	{
+		// Super admins can write anywhere they feel like.
+		if (is_site_admin())
+		{
+			$blogs = $this->get_blog_list();
+			$blogs = $this->sortBlogs($blogs);
+			return $blogs;
+		}
+		
 		$blogs = get_blogs_of_user($user_id);
 		foreach($blogs as $index=>$blog)
 		{
@@ -936,11 +944,11 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		// If this blog is in the blacklist, reply no.
 		if ($this->isBlacklisted($blog_id))
 			return false;
-		
+			
 		// Else, check that the user has write access.
 		switch_to_blog($blog_id);
 		$returnValue = current_user_can('publish_posts');                                                                                                                                                                                                        
-		restore_current_blog();               		
+		restore_current_blog();
 		return $returnValue;
 	}
 	
