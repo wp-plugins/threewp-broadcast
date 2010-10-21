@@ -1,0 +1,299 @@
+# Translation of the WordPress plugin   by .
+# Copyright (C) 2010 
+# This file is distributed under the same license as the  package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/threewp-broadcast\n"
+"POT-Creation-Date: 2010-10-17 13:40+0200\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ThreeWP_Broadcast.php:50 ThreeWP_Broadcast.php:1298
+#: ThreeWP_Broadcast.php:1299
+msgid "Broadcast"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:142
+msgid "Help"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:147 ThreeWP_Broadcast.php:1273
+#: ThreeWP_Broadcast.php:1285
+msgid "Unlink"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:153
+msgid "ThreeWP Broadcast groups"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:477
+msgid "Group blogs have been saved."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:484
+msgid "The group name may not be empty!"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:489
+msgid "The group has been created!"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:498
+msgid "You have not created any groups yet."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:504
+msgid "Group"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:509
+msgid "Select/deselect all the blogs in the above group."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:518
+msgid "Save groups"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:524
+msgid "New group name"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:531
+msgid "Create the new group"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:537
+msgid "Your groups"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:549
+msgid "Create a new group"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:563
+msgid "Delete"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:566
+msgid ""
+"To <strong>delete</strong> a group, leave all blogs in that group unmarked "
+"and then save."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:594
+msgid "Linked post has been removed!"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:601
+msgid "All linked posts has been removed!"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:616
+msgid "What is Broadcast?"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:619
+msgid "What the Broadcast window looks like"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:623
+msgid ""
+"With Broadcast you can post to several blogs at once. The broadcast window "
+"is first shown at the bottom right on the Add New post/page screen."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:624
+msgid ""
+"The window contains several options and a list of blogs you have access to."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:628
+msgid ""
+"Some settings might be disabled by the site administrator and if you do not "
+"have write access to any blogs, other than this one, the Broadcast window "
+"might not appear."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:632
+msgid ""
+"To use the Broadcast plugin, simply select which blogs you want to broadcast "
+"the post to and then publish the post normally."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:635
+msgid "Options"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:638 ThreeWP_Broadcast.php:739
+msgid "Link this post to its children"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:638
+msgid ""
+"will create a link from this post (the parent) to all the broadcasted posts "
+"(children). Updating the parent will result in all the children being "
+"updated. Links to the children can be removed in the page / post overview."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:642
+msgid "Post overview with unlink options"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:646
+msgid ""
+"When a post is linked to children, the children are overwritten when post is "
+"updated - all the categories, tags and fields (including featured image) are "
+"also overwritten -  and when the parent is trashed or deleted the children "
+"get the same treatment. If you want to keep any children and delete only the "
+"parent, use the unlink links in the post overview. The unlink link below the "
+"post name removes all links and the unlinks to the right remove singular "
+"links."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:650 ThreeWP_Broadcast.php:752
+msgid "Broadcast this post as a draft"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:650
+msgid "will send this post to the selected blogs and mark it as a draft."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:654 ThreeWP_Broadcast.php:765
+msgid "Broadcast categories also"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:654
+msgid "will also try to send the categories together with the post."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:655
+msgid ""
+"In order to be able to broadcast the categories, the selected blogs must "
+"have the same category names (slugs) as this blog, else the posts will be "
+"posted as uncategorized."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:659 ThreeWP_Broadcast.php:794
+msgid "Broadcast tags also"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:659
+msgid "will also mark the broadcasted posts with the same tags."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:663 ThreeWP_Broadcast.php:824
+msgid "Broadcast custom fields"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:663
+msgid ""
+"will give the broadcasted posts the same custom fields as the original. Use "
+"this setting to broadcast the featured image."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:666
+msgid "Groups"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:669
+msgid ""
+"If the site administrator allows it you may create groups to quickly select "
+"several blogs at once. To create a group, start by typing a group name in "
+"the text box and pressing the create button."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:673
+msgid "Group setup"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:677
+msgid ""
+"Then select which blogs you want to be automatically selected when you "
+"choose this group when editing a new post. Press the save button when you "
+"are done. Your new group is ready to be used!"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:678
+msgid ""
+"Simply choose it in the dropdown box and the blogs you specified will be "
+"automatically chosen."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:682
+msgid "Groups have been selected and saved"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:738
+msgid ""
+"Create a link to the children, which will be updated when this post is "
+"updated, trashed when this post is trashed, etc."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:766
+msgid "The categories must have the same name (slug) on the selected blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:780
+msgid "Create categories automatically"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:781
+msgid ""
+"The categories will be created if they don't exist on the selected blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:795
+msgid "The tags must have the same name (slug) on the selected blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:809
+msgid "Create tags automatically"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:810
+msgid "The tags will be created if they don't exist on the selected blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:823
+msgid "Broadcast all the custom fields and the featured image?"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:840
+msgid "Select blogs in group"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:841
+msgid "No group selected"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:878
+msgid "Broadcast to:"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:884 ThreeWP_Broadcast.php:1338
+msgid "Select/deselect all"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1247
+msgid "Shows which blogs have posts linked to this one"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1247
+msgid "Broadcasted"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1273
+msgid "Remove links to this broadcasted child"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1285
+msgid "Remove links to all the broadcasted children"
+msgstr ""
