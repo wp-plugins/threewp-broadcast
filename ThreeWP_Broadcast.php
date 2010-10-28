@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/threewp-activity-monitor/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.0
+Version: 1.1
 Author: Edward Hevlund
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -1046,6 +1046,17 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			$postTags = $this->array_moveKey($postTags, 'term_id');
 		}
 		
+		require_once('AttachmentData.php');
+		$upload_dir = wp_upload_dir();	// We need to find out where the files are on disk for this blog.
+		$attachment_data = array();
+		$attached_files =& get_children( 'post_parent='.$post_id.'&post_type=attachment' );
+		$has_attached_files = count($attached_files) > 0;
+		if ($has_attached_files)
+		{
+			foreach($attached_files as $attached_file)
+				$attachment_data[$attached_file->ID] = AttachmentData::from_attachment_id($attached_file->ID, $upload_dir);
+		}
+		
 		$custom_fields = (
 			$this->role_at_least( $this->get_option('role_custom_fields') )
 			&&
@@ -1060,23 +1071,14 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			foreach($postCustomFieldsTemp as $key => $array)
 				$postCustomFields[$key] = $array[0];
 			
-			$is_file_attached = isset($postCustomFields['_thumbnail_id']);
-			if ($is_file_attached)
+			$has_thumbnail = isset($postCustomFields['_thumbnail_id']);
+			if ($has_thumbnail)
 			{
-				$attachment_id = $postCustomFields['_thumbnail_id'];
+				$thumbnail_id = $postCustomFields['_thumbnail_id'];
 				unset( $postCustomFields['_thumbnail_id'] ); // There is a new thumbnail id for each blog.
-				
-				// Save the attached file (+ thumbs) and its metadata
-				$attachment_data = array(
-					'files' => array(),
-					'metadata' => wp_get_attachment_metadata($attachment_id),
-				);
-				
-				// We need to find out where the files are on disk.
-				$upload_dir = wp_upload_dir();
-				
-				$attachment_data['filename'] = basename($attachment_data['metadata']['file']);
-				$attachment_data['filename_path'] = $upload_dir['basedir'] . '/' . $attachment_data['metadata']['file'];
+				$attachment_data['thumbnail'] = AttachmentData::from_attachment_id($thumbnail_id, $upload_dir);
+				// Now that we know what the attachment id the thumbnail has, we must remove it from the attached files to avoid duplicates.
+				unset($attachment_data[$thumbnail_id]);
 			}
 			
 			// Remove all the _internal custom fields.
@@ -1190,6 +1192,19 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 					wp_set_post_tags( $newpostID, array_keys($tagsToAddTo) );
 			}
 			
+			/**
+				Remove the current attachments.
+			*/
+			$attachments_to_remove =& get_children( 'post_parent='.$newpostID.'&post_type=attachment' );
+			foreach ($attachments_to_remove as $attachment_to_remove)
+				wp_delete_attachment($attachment_to_remove->ID);
+			
+			foreach($attachment_data as $key=>$attached_file)
+			{
+				if ($key != 'thumbnail')
+					$this->copy_attachment($attached_file, $newpostID);
+			}
+			
 			if ($custom_fields)
 			{
 				// If we're updating a linked post, remove all the tags and start from the top.
@@ -1218,29 +1233,10 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 					add_post_meta($newpostID, $meta_key, $meta_value);
 				
 				// Attached files are custom fields... but special custom fields. Therefore they need special treatment. Like retards. Retarded files.
-				if ($is_file_attached)
+				if ($has_thumbnail)
 				{
-					// Copy the file to the blog's upload directory
-					$upload_dir = wp_upload_dir();
-					copy($attachment_data['filename_path'], $upload_dir['path'] . '/' . $attachment_data['filename']);
-					
-					// And now create the attachment stuff.
-					// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
-					$wp_filetype = wp_check_filetype( $attachment_data['filename'], null );
-					$attachment = array(
-						'post_mime_type' => $wp_filetype['type'],
-						'post_title' => preg_replace('/\.[^.]+$/', '', $attachment_data['filename']),
-						'post_content' => '',
-						'post_status' => 'inherit'
-					);
-					$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data['filename'], $newpostID );
-					
-					require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-					$attach_data = wp_generate_attachment_metadata( $attach_id, $upload_dir['path'] . '/' . $attachment_data['filename'] );
-					wp_update_attachment_metadata( $attach_id,  $attach_data );
-					
-					// Actually tell Wordpress that this new post has an attachment!
-					add_post_meta($newpostID, '_thumbnail_id', $attach_id);
+					$new_attachment_id = $this->copy_attachment($attachment_data['thumbnail'], $newpostID);
+					add_post_meta($newpostID, '_thumbnail_id', $new_attachment_id);
 				}
 			}
 			restore_current_blog();
@@ -1575,6 +1571,34 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 				$this->sqlbroadcastDataDelete($blog_id, $post_id);
 			else
 				$this->sqlbroadcastDataUpdate($blog_id, $post_id, $broadcastData->getData());
+	}
+	
+	/**
+		Creates a new attachment, from the $attachment_data, to a post.
+		
+		Returns the attachment's post_id.
+	*/
+	private function copy_attachment($attachment_data, $post_id)
+	{
+		// Copy the file to the blog's upload directory
+		$upload_dir = wp_upload_dir();
+		copy($attachment_data->filename_path(), $upload_dir['path'] . '/' . $attachment_data->filename_base());
+		
+		// And now create the attachment stuff.
+		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
+		$wp_filetype = wp_check_filetype( $attachment_data->filename_base(), null );
+		$attachment = array(
+			'post_mime_type' => $wp_filetype['type'],
+			'post_title' => preg_replace('/\.[^.]+$/', '', $attachment_data->filename_base()),
+			'post_content' => '',
+			'post_status' => 'inherit'
+		);
+		$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data->filename_base(), $post_id );
+		
+		require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+		$attach_data = wp_generate_attachment_metadata( $attach_id, $upload_dir['path'] . '/' . $attachment_data->filename_base() );
+		wp_update_attachment_metadata( $attach_id,  $attach_data );
+		return $attach_id;
 	}
 	
 	// --------------------------------------------------------------------------------------------

@@ -4,11 +4,11 @@ Requires at least: 3.0
 Tested up to: 3.0
 Stable tag: trunk
 
-Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
+Network plugin to broadcast a post/page to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
 
 == Description ==
 
-Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
+Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available. All attached images are reposted to the selected blogs.
 
 Broadcasted posts can be linked to their parents: updated parent posts also update the child posts.
 
@@ -41,6 +41,8 @@ Did I miss anything?
 1. Uninstall
 
 == Changelog ==
+= 1.1 =
+* Galleries are now broadcastable.
 = 1.0 =
 * Custom fields can be broadcast.
 * Attached images can be broadcast.
