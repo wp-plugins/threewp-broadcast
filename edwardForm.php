@@ -343,12 +343,12 @@ class edwardForm
 			if ( isset($validationArray['datetime']) )
 			{
 				$formatString = $validationArray['datetime'];
-				$formatString = str_replace('Y', $this->l('YYYY'), $formatString);
 				$formatString = str_replace('m', $this->l('MM'), $formatString);
 				$formatString = str_replace('d', $this->l('DD'), $formatString);
 				$formatString = str_replace('H', $this->l('HH'), $formatString);
 				$formatString = str_replace('i', $this->l('MM'), $formatString);
 				$formatString = str_replace('s', $this->l('SS'), $formatString);
+				$formatString = str_replace('Y', $this->l('YYYY'), $formatString);
 				$validation[] = $this->l('Date format') . ': ' . $formatString;
 			} 
 			if ( isset($validationArray['datemaximum']) )
@@ -443,8 +443,12 @@ class edwardForm
 			break;
 			case 'checkbox':
 				if (!isset($options['checked']))
+				{
 					$options['checked'] = (intval($options['value']) == 1);
-				$checked = ($options['checked'] ? ' checked="checked" ' : '');
+					if ($options['value'] == '' || $options['value'] == '0')
+						$options['value'] = 1;
+				}
+				$checked = ($options['checked'] == true ? ' checked="checked" ' : '');
 				$returnValue = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::makeName($options).'" id="'.$this->makeID($options).'" value="'.$options['value'].'" '.$checked.' '.$extraOptions.' />';
 			break;
 			case 'submit':
@@ -494,7 +498,7 @@ class edwardForm
 		$this->sections[ $section['name'] ] = $section;
 	}
 	
-	private function implodeArray($data, $strings, $glueBefore, $glueAfter, $stringPrefix = null, $currentString = null)
+	private function implodeArray($data, &$strings, $glueBefore, $glueAfter, $stringPrefix = null, $currentString = null)
 	{
 		foreach($data as $key=>$value)
 		{
@@ -504,11 +508,11 @@ class edwardForm
 				$strings[$stringToAdd] = $value;
 			}
 			else
-				$this->implodeArray($value, &$strings, $glueBefore, $glueAfter,  $stringPrefix, $currentString . $glueBefore.$key.$glueAfter);
+				$this->implodeArray($value, $strings, $glueBefore, $glueAfter,  $stringPrefix, $currentString . $glueBefore.$key.$glueAfter);
 		}
 	}
 	
-	private function usePostValue($input, $settings, $postData, $key)
+	private function usePostValue(&$input, $settings, $postData, $key)
 	{
 		if ($input['type']=='submit')		// Submits don't get their values posted, so return the value.
 			return $input['value'];
@@ -532,7 +536,7 @@ class edwardForm
 		if ($input['nameprefix'] != '')
 		{
 			$strings = '';
-			$this->implodeArray($postData, &$strings, '__', '', $this->options['class'] . '');
+			$this->implodeArray($postData, $strings, '__', '', $this->options['class'] . '');
 		}
 		else
 		{
@@ -569,7 +573,7 @@ class edwardForm
 			$input = array_merge($this->options, $input);
 			if ($input['type'] == 'rawtext')
 				$input['name'] = rand(0, time());
-			$this->usePostValue(&$input, $settings, $postData, $input['name']);
+			$this->usePostValue($input, $settings, $postData, $input['name']);
 		}
 		else
 			$input = array(
@@ -856,7 +860,7 @@ class edwardForm
 						if ($oldValues[$key] == '1' && !isset($newValues[$key]))
 							$sets .= "$key = '0', ";
 						if ($oldValues[$key] == '0' && isset($newValues[$key]))
-							if ($newValues[$key] == '1')
+							if ($newValues[$key] !== null)
 								$sets .= "$key = '1', ";
 					}
 					break;
@@ -1117,7 +1121,7 @@ class edwardFormLanguage
 			'sv' => 'Giltiga v&auml;rden',
 		),
 		'YYYY' => array(
-			'sv' => '&aring;&aring;&aring;&aring;',
+			'sv' => '&Aring;&Aring;&Aring;&Aring;',
 		),
 		'characters' => array(
 			'sv' => 'tecken',

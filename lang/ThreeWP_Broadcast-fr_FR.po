@@ -1,0 +1,285 @@
+# Translation of the WordPress plugin ThreeWP Broadcast 0.0.1 by Edward Hevlund.
+# Copyright (C) 2010 Edward Hevlund
+# This file is distributed under the same license as the ThreeWP Broadcast package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ThreeWP Broadcast 0.0.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/threewp-broadcast\n"
+"POT-Creation-Date: 2010-10-17 13:37+0200\n"
+"PO-Revision-Date: 2010-11-08 18:38+0100\n"
+"Last-Translator: Florian <daryan.strombi@voila.fr>\n"
+"Language-Team: Edward <edward@mindreantre.se>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ThreeWP_Broadcast.php:50
+#: ThreeWP_Broadcast.php:1298
+#: ThreeWP_Broadcast.php:1299
+msgid "Broadcast"
+msgstr "Diffusion"
+
+#: ThreeWP_Broadcast.php:142
+msgid "Help"
+msgstr "Aide"
+
+#: ThreeWP_Broadcast.php:147
+#: ThreeWP_Broadcast.php:1273
+#: ThreeWP_Broadcast.php:1285
+msgid "Unlink"
+msgstr "Rendre autonome"
+
+#: ThreeWP_Broadcast.php:153
+msgid "ThreeWP Broadcast groups"
+msgstr "Groupes de diffusion"
+
+#: ThreeWP_Broadcast.php:477
+msgid "Group blogs have been saved."
+msgstr "Le groupe de diffusion a été sauvegardé."
+
+#: ThreeWP_Broadcast.php:484
+msgid "The group name may not be empty!"
+msgstr "Le nom du groupe ne peut pas être vide !"
+
+#: ThreeWP_Broadcast.php:489
+msgid "The group has been created!"
+msgstr "Le groupe a été créé !"
+
+#: ThreeWP_Broadcast.php:498
+msgid "You have not created any groups yet."
+msgstr "Vous n'avez pas encore créé de groupe."
+
+#: ThreeWP_Broadcast.php:504
+msgid "Group"
+msgstr "Groupe"
+
+#: ThreeWP_Broadcast.php:509
+msgid "Select/deselect all the blogs in the above group."
+msgstr "Sélectionner/déselectionner tous les blogs de ce groupe."
+
+#: ThreeWP_Broadcast.php:518
+msgid "Save groups"
+msgstr "Sauvegarder les groupes"
+
+#: ThreeWP_Broadcast.php:524
+msgid "New group name"
+msgstr "Nouveau nom de groupe"
+
+#: ThreeWP_Broadcast.php:531
+msgid "Create the new group"
+msgstr "Créer le nouveau groupe"
+
+#: ThreeWP_Broadcast.php:537
+msgid "Your groups"
+msgstr "Votre groupe"
+
+#: ThreeWP_Broadcast.php:549
+msgid "Create a new group"
+msgstr "Créer un nouveau groupe"
+
+#: ThreeWP_Broadcast.php:563
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ThreeWP_Broadcast.php:566
+msgid "To <strong>delete</strong> a group, leave all blogs in that group unmarked and then save."
+msgstr "Pour <strong>supprimer</strong> un groupe, déselectionnez tous les blogs du groupe et sauvergardez."
+
+#: ThreeWP_Broadcast.php:594
+msgid "Linked post has been removed!"
+msgstr "Les articles liés ont été supprimés!"
+
+#: ThreeWP_Broadcast.php:601
+msgid "All linked posts has been removed!"
+msgstr "Tous les articles liés ont été supprimés!"
+
+#: ThreeWP_Broadcast.php:616
+msgid "What is Broadcast?"
+msgstr "Qu'est-ce que la diffusion (Broadcast/Multiposting)?"
+
+#: ThreeWP_Broadcast.php:619
+msgid "What the Broadcast window looks like"
+msgstr "A quoi ressemble la fenêtre de diffusion"
+
+#: ThreeWP_Broadcast.php:623
+msgid "With Broadcast you can post to several blogs at once. The broadcast window is first shown at the bottom right on the Add New post/page screen."
+msgstr "Avec la diffusion, vous pouvez publier un article sur plusieurs sites en même temps. Vous trouverez la fenêtre de diffusion en bas à droite de la page Ecrire un nouvel article."
+
+#: ThreeWP_Broadcast.php:624
+msgid "The window contains several options and a list of blogs you have access to."
+msgstr "La fenêtre contient plusieurs options et une liste de sites auxquels vous avez accès (droit en écriture)."
+
+#: ThreeWP_Broadcast.php:628
+msgid "Some settings might be disabled by the site administrator and if you do not have write access to any blogs, other than this one, the Broadcast window might not appear."
+msgstr "Certaines options peuvent désactivées par l'administrateur du site, et si vous n'avez pas les droits d'écriture sur les autres sites, la fenêtre de diffusion peut ne pas apparaître."
+
+#: ThreeWP_Broadcast.php:632
+msgid "To use the Broadcast plugin, simply select which blogs you want to broadcast the post to and then publish the post normally."
+msgstr "Pour utiliser le plugin de diffusion, il suffit simplement de sélectionner les sites surlesquels vous souhaitez publier votre article."
+
+#: ThreeWP_Broadcast.php:635
+msgid "Options"
+msgstr "Options"
+
+#: ThreeWP_Broadcast.php:638
+#: ThreeWP_Broadcast.php:739
+msgid "Link this post to its children"
+msgstr "Lier cet article à ses enfants"
+
+#: ThreeWP_Broadcast.php:638
+msgid "will create a link from this post (the parent) to all the broadcasted posts (children). Updating the parent will result in all the children being updated. Links to the children can be removed in the page / post overview."
+msgstr "va créer un lien entre cet article (le parent) et tous les articles diffusés (les enfants). Mettre à jour l'article parent va mettre à jour tous les articles enfants. Il est possible de rendre autonome un article enfant à partir de la page qui liste les articles du site."
+
+#: ThreeWP_Broadcast.php:642
+msgid "Post overview with unlink options"
+msgstr "Liste des articles avec l'option 'rendre autonome'"
+
+#: ThreeWP_Broadcast.php:646
+msgid "When a post is linked to children, the children are overwritten when post is updated - all the categories, tags and fields (including featured image) are also overwritten -  and when the parent is trashed or deleted the children get the same treatment. If you want to keep any children and delete only the parent, use the unlink links in the post overview. The unlink link below the post name removes all links and the unlinks to the right remove singular links."
+msgstr "Quand un article est lié à ses enfants, les enfants sont automatiquement mis à jour en suivant l'article parent. Tous les tags, catégories et champs (incluant les images en Une) sont ainsi remis à jour. Le lien 'rendre autonome' en dessous du nom de l'article va détruire tous les liens de parenté, alors que le lien à droite ne supprimera qu'un seul lien de parenté."
+
+#: ThreeWP_Broadcast.php:650
+#: ThreeWP_Broadcast.php:752
+msgid "Broadcast this post as a draft"
+msgstr "Diffuser cet article en tant que brouillon"
+
+#: ThreeWP_Broadcast.php:650
+msgid "will send this post to the selected blogs and mark it as a draft."
+msgstr "va publier cet article sur les sites sélectionnés en tant que brouillon."
+
+#: ThreeWP_Broadcast.php:654
+#: ThreeWP_Broadcast.php:765
+msgid "Broadcast categories also"
+msgstr "Diffuser également les catégories"
+
+#: ThreeWP_Broadcast.php:654
+msgid "will also try to send the categories together with the post."
+msgstr "va essayer de diffuser les catégories avec l'article."
+
+#: ThreeWP_Broadcast.php:655
+msgid "In order to be able to broadcast the categories, the selected blogs must have the same category names (slugs) as this blog, else the posts will be posted as uncategorized."
+msgstr "Pour permettre la diffusion de catégories, il faut que les sites sélectionnés aient les mêmes noms de catégorie (slugs), sinon l'article sera publier en 'non classé'."
+
+#: ThreeWP_Broadcast.php:659
+#: ThreeWP_Broadcast.php:794
+msgid "Broadcast tags also"
+msgstr "Diffuser les tags"
+
+#: ThreeWP_Broadcast.php:659
+msgid "will also mark the broadcasted posts with the same tags."
+msgstr "va marquer les articles diffusés avec les mêmes tags."
+
+#: ThreeWP_Broadcast.php:663
+#: ThreeWP_Broadcast.php:824
+msgid "Broadcast custom fields"
+msgstr "Diffuser les champs personnalisés"
+
+#: ThreeWP_Broadcast.php:663
+msgid "will give the broadcasted posts the same custom fields as the original. Use this setting to broadcast the featured image."
+msgstr "va diffuser les champs personnalisés. Cela permet de diffuser les images à la Une."
+
+#: ThreeWP_Broadcast.php:666
+msgid "Groups"
+msgstr "Groupes"
+
+#: ThreeWP_Broadcast.php:669
+msgid "If the site administrator allows it you may create groups to quickly select several blogs at once. To create a group, start by typing a group name in the text box and pressing the create button."
+msgstr "Si l'administrateur le permet, vous pouvez créer des groupes de diffusion pour publier votre article sur plusieurs sites en une seule fois. Pour créer un groupe, tapez un nom de groupe dans le formulaire et cliquez sur le bouton 'créer'"
+
+#: ThreeWP_Broadcast.php:673
+msgid "Group setup"
+msgstr "Options de groupe"
+
+#: ThreeWP_Broadcast.php:677
+msgid "Then select which blogs you want to be automatically selected when you choose this group when editing a new post. Press the save button when you are done. Your new group is ready to be used!"
+msgstr "Sélectionnez ensuite les sites qui font parti du groupe. Pressez le bouton 'sauvegarder' quand vous aurez finit. Votre nouveau groupe est prêt à l'emploi !"
+
+#: ThreeWP_Broadcast.php:678
+msgid "Simply choose it in the dropdown box and the blogs you specified will be automatically chosen."
+msgstr "Sélectionnez le groupe et automatiquement les sites en faisant parti seront sélectionnés."
+
+#: ThreeWP_Broadcast.php:682
+msgid "Groups have been selected and saved"
+msgstr "Les groupes ont été sélectionnés et sauvegardés"
+
+#: ThreeWP_Broadcast.php:738
+msgid "Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc."
+msgstr "Créer un lien vers les articles enfants, ainsi ils resteront synchrones lors d'une mise à jour ou d'une suppression."
+
+#: ThreeWP_Broadcast.php:766
+msgid "The categories must have the same name (slug) on the selected blogs."
+msgstr "Les catégories doivent partager le même nom (\"slug\") sur les sites sélectionnés."
+
+#: ThreeWP_Broadcast.php:780
+msgid "Create categories automatically"
+msgstr "Créer les catégories automatiquement"
+
+#: ThreeWP_Broadcast.php:781
+msgid "The categories will be created if they don't exist on the selected blogs."
+msgstr "Les catégories seront créées si elles n'existent pas sur les sites sélectionnés."
+
+#: ThreeWP_Broadcast.php:795
+msgid "The tags must have the same name (slug) on the selected blogs."
+msgstr "Les tags doivent avoir le même nom (\"slug\") sur les sites sélectionnés."
+
+#: ThreeWP_Broadcast.php:809
+msgid "Create tags automatically"
+msgstr "Créer les tags automatiquement"
+
+#: ThreeWP_Broadcast.php:810
+msgid "The tags will be created if they don't exist on the selected blogs."
+msgstr "Les tags seront créés si ils n'existent pas sur les sites sélectionnés."
+
+#: ThreeWP_Broadcast.php:823
+msgid "Broadcast all the custom fields and the featured image?"
+msgstr "Diffuser tous les champs personnalisés et les images à la Une ?"
+
+#: ThreeWP_Broadcast.php:840
+msgid "Select blogs in group"
+msgstr "Sélectionner les sites dans le groupe"
+
+#: ThreeWP_Broadcast.php:841
+msgid "No group selected"
+msgstr "Pas de groupe sélectionné"
+
+#: ThreeWP_Broadcast.php:878
+msgid "Broadcast to:"
+msgstr "Publier sur les sites:"
+
+#: ThreeWP_Broadcast.php:884
+#: ThreeWP_Broadcast.php:1338
+msgid "Select/deselect all"
+msgstr "Tout sélectionner/déselectionner"
+
+#: ThreeWP_Broadcast.php:1247
+msgid "Shows which blogs have posts linked to this one"
+msgstr "Montrer quels sites ont un article lié à celui-ci"
+
+#: ThreeWP_Broadcast.php:1247
+msgid "Broadcasted"
+msgstr "Diffusé"
+
+#: ThreeWP_Broadcast.php:1273
+msgid "Remove links to this broadcasted child"
+msgstr "Rendre cet article autonome (unlink)"
+
+#: ThreeWP_Broadcast.php:1285
+msgid "Remove links to all the broadcasted children"
+msgstr "Supprimer tous les liens de parenté de cet article"
+
+#~ msgid "Linked"
+#~ msgstr "Lié (Linked)"
+#~ msgid "ThreeWP Broadcast"
+#~ msgstr "ThreeWP Broadcast"
+#~ msgid ""
+#~ "Network plugin to broadcast a post to other blogs. Whitelist, blacklist, "
+#~ "groups and automatic category+tag+custom field posting/creation available."
+#~ msgstr ""
+#~ "Plugin de réseau permettant la diffusion d'article sur d'autres sites. "
+#~ "Liste blanche, liste noire, groupes, copie de catégories+tag+champs "
+#~ "personnalisés sont disponibles."
+#~ msgid "To broadcast this post to other blogs, select the blogs below"
+#~ msgstr "Pour diffuser cet article sur d'autres sites, sélectionnez les sites ci-dessous"
+
