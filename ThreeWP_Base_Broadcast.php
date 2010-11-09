@@ -176,10 +176,14 @@ class ThreeWP_Base_Broadcast
 	 */
 	protected function role_at_least($role)
 	{
-		if (is_site_admin())
-			return true;
 		if ($role == 'site_admin')
-			return false;
+			if (function_exists('is_site_admin'))
+			{
+				if (is_site_admin())
+					return true;
+			}
+			else
+				return false;
 		return current_user_can($this->roles[$role]['current_user_can']);
 	}
 	
@@ -259,7 +263,8 @@ class ThreeWP_Base_Broadcast
 	protected function register_options()
 	{
 		foreach($this->options as $option=>$value)
-			$this->update_option($option, $value);
+			if ($this->get_option($option) === false)
+				$this->update_option($option, $value);
 	}
 	
 	/**
