@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/threewp-activity-monitor/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.1
+Version: 1.2
 Author: Edward Hevlund
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -11,24 +11,35 @@ Author Email: edward@mindreantre.se
 
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
-require_once('ThreeWP_Base_Broadcast.php');
-class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
+require_once('ThreeWP_Broadcast_3Base.php');
+class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 {
-	protected $options = array(
-		'role_broadcast' => 'site_admin',					// Role required to use broadcast function
-		'role_link' => 'site_admin',						// Role required to use the link function
-		'role_broadcast_as_draft' => 'site_admin',			// Role required to broadcast posts as templates
-		'role_groups' => 'site_admin',						// Role required to use groups
-		'role_categories' => 'site_admin',					// Role required to broadcast the categories
-		'role_categories_create' => 'site_admin',			// Role required to create categories automatically
-		'role_tags' => 'site_admin',						// Role required to broadcast the categories
-		'role_tags_create' => 'site_admin',					// Role required to create categories automatically
-		'role_custom_fields' => 'site_admin',				// Role required to broadcast the categories
+	protected $site_options = array(
+		'role_broadcast' => 'super_admin',					// Role required to use broadcast function
+		'role_link' => 'super_admin',						// Role required to use the link function
+		'role_broadcast_as_draft' => 'super_admin',			// Role required to broadcast posts as templates
+		'role_broadcast_scheduled_posts' => 'super_admin',	// Role required to broadcast scheduled, future posts
+		'role_groups' => 'super_admin',						// Role required to use groups
+		'role_categories' => 'super_admin',					// Role required to broadcast the categories
+		'role_categories_create' => 'super_admin',			// Role required to create categories automatically
+		'role_tags' => 'super_admin',						// Role required to broadcast the categories
+		'role_tags_create' => 'super_admin',					// Role required to create categories automatically
+		'role_custom_fields' => 'super_admin',				// Role required to broadcast the categories
 		'requiredlist' => '',								// Comma-separated string of blogs to require
-		'requirewhenbroadcasting' => true,					// Require blogs only when broadcasting?
+		'always_use_required_list' => false,				// Require blogs only when broadcasting?
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 		'blacklist' => '',									// Comma-separated string of blogs to automatically exclude
+		'post_types' => array('post' => array(), 'page' => array()),			// Custom post types which use broadcasting
+		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
+		'activity_monitor_group_changes' => false,			// Reports when a user has created, changed or deleted a group (of blogs)
+		'activity_monitor_unlinks' => false,				// Reports when someone unlinks a child from the parent.
 	);
+	
+	private $custom_field_exceptions = array(
+		'_wp_page_template',								// Page template.
+	);
+	
+	private $blogs_cache = null;
 	
 	public function __construct()
 	{
@@ -38,17 +49,21 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			define("_3BC", get_class($this));
 			register_activation_hook(__FILE__, array(&$this, 'activate') );
 			add_action('admin_menu', array(&$this, 'add_menu') );
-			add_action('admin_print_styles', array(&$this, 'load_styles') );
 			add_action('admin_menu', array(&$this, 'create_meta_box'));
+			add_action('admin_print_styles', array(&$this, 'load_styles') );
+			if ( $this->get_site_option('override_child_permalinks') )
+			{
+				add_action( 'the_permalink', array(&$this, 'the_permalink') );
+			}
 		}
 	}
 	
 	public function add_menu()
-	{
-		if (is_site_admin())
-			add_submenu_page('ms-admin.php', 'ThreeWP Broadcast', 'Broadcast', 'administrator', 'ThreeWP_Broadcast', array (&$this, 'admin'));
-		add_options_page('ThreeWP Broadcast', __('Broadcast', _3BC), $this->get_user_role(), 'ThreeWP_Broadcast', array (&$this, 'user'));
-		if ($this->role_at_least( $this->get_option('role_link') ))
+	{		
+		if (is_super_admin())
+			add_submenu_page('ms-admin.php', 'ThreeWP Broadcast', 'Broadcast', 'activate_plugins', 'ThreeWP_Broadcast', array (&$this, 'admin'));
+		add_options_page('ThreeWP Broadcast', __('Broadcast', _3BC), 'publish_posts', 'ThreeWP_Broadcast', array (&$this, 'user'));
+		if ($this->role_at_least( $this->get_site_option('role_link') ))
 		{
 			add_action('post_row_actions', array(&$this, 'post_row_actions'));
 			add_action('page_row_actions', array(&$this, 'post_row_actions'));
@@ -73,8 +88,13 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	public function load_styles()
 	{
 		$load = false;
-		$load |= strpos($_GET['page'],get_class()) !== false;
-		foreach(array('post-new.php') as $string)
+		
+		$pages = array(get_class(), 'ThreeWP_Activity_Monitor');
+		
+		if ( isset($_GET['page']) )
+			$load |= in_array($_GET['page'], $pages);
+			
+		foreach(array('post-new.php', 'post.php') as $string)
 			$load |= strpos($_SERVER['SCRIPT_FILENAME'], $string) !== false;
 		
 		if (!$load)
@@ -95,6 +115,9 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			wp_die("This plugin requires Network.");
 			
 		$this->register_options();
+		
+		// Remove old options
+		$this->delete_site_option('requirewhenbroadcasting');
 			
 		$this->query("CREATE TABLE IF NOT EXISTS `".$this->wpdb->base_prefix."_3wp_broadcast` (
 		  `user_id` int(11) NOT NULL COMMENT 'User ID',
@@ -114,7 +137,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	
 	protected function uninstall()
 	{
-		$this->deregister_options();
+		parent::uninstall();
 		$this->query("DROP TABLE `".$this->wpdb->base_prefix."_3wp_broadcast`");
 		$this->query("DROP TABLE `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata`");
 	}
@@ -126,8 +149,8 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	public function admin()
 	{
 		$this->tabs(array(
-			'tabs' =>		array('Settings',			'Required list',			'Blacklist',			'Uninstall'),
-			'functions' =>	array('adminSettings',		'adminRequiredList',		'adminBlacklist',		'adminUninstall'),
+			'tabs' =>		array('Settings',			'Post Types',					'Required list',			'Blacklist',			'Activity Monitor',			'Uninstall'),
+			'functions' =>	array('admin_settings',		'admin_post_types',				'admin_required_list',		'admin_blacklist',		'admin_activity_monitor',	'admin_uninstall'),
 		));
 	}
 	
@@ -135,49 +158,50 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	{
 		$this->loadLanguages(_3BC);
 		
-		$tabData = array(
+		$tab_data = array(
 			'tabs'		=>	array(),
 			'functions' =>	array(),
 		);
 		
 		if (isset($_GET['action']) && $_GET['action'] == 'unlink')
 		{
-			$tabData['tabs'][] = __('Unlink', _3BC);
-			$tabData['functions'][] = 'userUnlink';
+			$tab_data['tabs'][] = __('Unlink', _3BC);
+			$tab_data['functions'][] = 'user_unlink';
 		}
 		
 		if (isset($_GET['action']) && $_GET['action'] == 'trash')
 		{
-			$tabData['tabs'][] = __('Trash', _3BC);
-			$tabData['functions'][] = 'userTrash';
+			$tab_data['tabs'][] = __('Trash', _3BC);
+			$tab_data['functions'][] = 'user_trash';
 		}
 		
-		$tabData['tabs'][] = __('Help', _3BC);
-		$tabData['functions'][] = 'userHelp';
+		$tab_data['tabs'][] = __('Help', _3BC);
+		$tab_data['functions'][] = 'user_help';
 		
-		if ($this->role_at_least( $this->get_option('role_groups') ))
+		if ($this->role_at_least( $this->get_site_option('role_groups') ))
 		{
-			$tabData['tabs'][] = __('ThreeWP Broadcast groups', _3BC);
-			$tabData['functions'][] = 'userEditGroups';
+			$tab_data['tabs'][] = __('ThreeWP Broadcast groups', _3BC);
+			$tab_data['functions'][] = 'user_edit_groups';
 		}
 
-		$this->tabs($tabData);
+		$this->tabs($tab_data);
 	}
 	
-	protected function adminSettings()
+	protected function admin_settings()
 	{
 		$form = $this->form();
 		
 		// Collect all the roles.
-		$roles = array('site_admin' => array('text' => 'Site admin', 'value' => 'site_admin'));
+		$roles = array('super_admin' => array('text' => 'Site admin', 'value' => 'super_admin'));
 		foreach($this->roles as $role)
 			$roles[$role['name']] = array('value' => $role['name'], 'text' => ucfirst($role['name']));
 			
 		if (isset($_POST['save']))
 		{
-			$this->update_option('save_post_priority', intval($_POST['save_post_priority']));
-			foreach(array('role_broadcast', 'role_link', 'role_broadcast_as_draft', 'role_groups', 'role_categories', 'role_categories_create', 'role_tags', 'role_tags_create', 'role_custom_fields') as $key)
-				$this->update_option($key, (isset($roles[$_POST[$key]]) ? $_POST[$key] : 'site_admin'));
+			$this->update_site_option('save_post_priority', intval($_POST['save_post_priority']));
+			$this->update_site_option('override_child_permalinks', isset($_POST['override_child_permalinks']) );
+			foreach(array('role_broadcast', 'role_link', 'role_broadcast_as_draft', 'role_broadcast_scheduled_posts', 'role_groups', 'role_categories', 'role_categories_create', 'role_tags', 'role_tags_create', 'role_custom_fields') as $key)
+				$this->update_site_option($key, (isset($roles[$_POST[$key]]) ? $_POST[$key] : 'super_admin'));
 			$this->message('Options saved!');
 		}
 			
@@ -186,72 +210,108 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 				'name' => 'role_broadcast',
 				'type' => 'select',
 				'label' => 'Broadcast access role',
-				'value' => $this->get_option('role_broadcast'),
+				'value' => $this->get_site_option('role_broadcast'),
+				'description' => 'The broadcast access role is the user role required to use the broadcast function at all.',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_link' => array(
 				'name' => 'role_link',
 				'type' => 'select',
 				'label' => 'Link access role',
-				'value' => $this->get_option('role_link'),
+				'value' => $this->get_site_option('role_link'),
+				'description' => 'When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated.',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_broadcast_as_draft' => array(
 				'name' => 'role_broadcast_as_draft',
 				'type' => 'select',
 				'label' => 'Draft broadcast access role',
-				'value' => $this->get_option('role_broadcast_as_draft'),
+				'value' => $this->get_site_option('role_broadcast_as_draft'),
+				'description' => 'Which role is needed to broadcast drafts?',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
+			),
+			'role_broadcast_scheduled_posts' => array(
+				'name' => 'role_broadcast_scheduled_posts',
+				'type' => 'select',
+				'label' => 'Scheduled posts access role',
+				'value' => $this->get_site_option('role_broadcast_scheduled_posts'),
+				'description' => 'Which role is needed to broadcast scheduled (future) posts?',
+				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_groups' => array(
 				'name' => 'role_groups',
 				'type' => 'select',
 				'label' => 'Group access role',
-				'value' => $this->get_option('role_groups'),
+				'value' => $this->get_site_option('role_groups'),
+				'description' => 'Role needed to administer their own groups?',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_categories' => array(
 				'name' => 'role_categories',
 				'type' => 'select',
 				'label' => 'Categories broadcast role',
-				'value' => $this->get_option('role_categories'),
+				'value' => $this->get_site_option('role_categories'),
+				'description' => 'Which role is needed to allow category broadcasting? The categories must have the same slug.',
 				'options' => $roles,
 			),
 			'role_categories_create' => array(
 				'name' => 'role_categories_create',
 				'type' => 'select',
 				'label' => 'Category creation role',
-				'value' => $this->get_option('role_categories_create'),
+				'value' => $this->get_site_option('role_categories_create'),
+				'description' => 'Which role is needed to allow category creation? Categories are created if they don\'t exist.',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_tags' => array(
 				'name' => 'role_tags',
 				'type' => 'select',
 				'label' => 'Tags broadcast role',
-				'value' => $this->get_option('role_tags'),
+				'value' => $this->get_site_option('role_tags'),
+				'description' => 'Which role is needed to allow tag broadcasting? The tags must have the same slug.',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_tags_create' => array(
 				'name' => 'role_tags_create',
 				'type' => 'select',
 				'label' => 'Tag creation role',
-				'value' => $this->get_option('role_tags_create'),
+				'value' => $this->get_site_option('role_tags_create'),
+				'description' => 'Which role is needed to allow tag creation? Tags are created if they don\'t exist.',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_custom_fields' => array(
 				'name' => 'role_custom_fields',
 				'type' => 'select',
 				'label' => 'Custom field broadcast role',
-				'value' => $this->get_option('role_custom_fields'),
+				'value' => $this->get_site_option('role_custom_fields'),
+				'description' => 'Which role is needed to allow custom field broadcasting?',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'save_post_priority' => array(
 				'name' => 'save_post_priority',
 				'type' => 'text',
 				'label' => 'Action priority',
-				'value' => $this->get_option('save_post_priority'),
+				'value' => $this->get_site_option('save_post_priority'),
 				'size' => 3,
 				'maxlength' => 3,
+				'description' => 'A higher save-post-action priority gives other plugins more time to add their own custom fields before the post is broadcasted. <em>Raise</em> this value if you notice that plugins that use custom fields aren\'t getting their data broadcasted, but 640 should be enough for everybody.',
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
+			),
+			'override_child_permalinks' => array(
+				'name' => 'override_child_permalinks',
+				'type' => 'checkbox',
+				'label' => 'Override child post permalinks',
+				'checked' => $this->get_site_option('override_child_permalinks'),
+				'description' => 'This will force child posts (those broadcasted to other sites) to keep the original post\'s permalink. If checked, child posts will link back to the original post on the original site.',
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'save' => array(
 				'name' => 'save',
@@ -261,94 +321,19 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			),
 		);
 		
+		$tBody = '';
+		foreach( $inputs as $input )
+			if ( isset($input['make_table_row']) )
+				$tBody .= $this->make_table_row( $input );
+			
 		echo '
 			'.$form->start().'
 
-			<p>
-				The broadcast access role is the user role required to use the broadcast function at all. 
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_broadcast']).' '.$form->makeInput($inputs['role_broadcast']).'
-			</p>
-
-
-			<p>
-				When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated. 
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_link']).' '.$form->makeInput($inputs['role_link']).'
-			</p>
-
-
-			<p>
-				Which role is needed to post drafts? 
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_broadcast_as_draft']).' '.$form->makeInput($inputs['role_broadcast_as_draft']).'
-			</p>
-
-
-			<p>
-				Role needed to administer their own groups? 
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_groups']).' '.$form->makeInput($inputs['role_groups']).'
-			</p>
-
-
-			<p>
-				Which role is needed to allow category broadcasting? The categories must have the same slug. 
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_categories']).' '.$form->makeInput($inputs['role_categories']).'
-			</p>
-
-
-			<p>
-				Which role is needed to allow category creation? Categories are created if they don\'t exist.
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_categories_create']).' '.$form->makeInput($inputs['role_categories_create']).'
-			</p>
-
-
-			<p>
-				Which role is needed to allow tag broadcasting? The tags must have the same slug. 
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_tags']).' '.$form->makeInput($inputs['role_tags']).'
-			</p>
-
-			<p>
-				Which role is needed to allow tag creation? Tags are created if they don\'t exist.
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_tags_create']).' '.$form->makeInput($inputs['role_tags_create']).'
-			</p>
-
-			<p>
-				Which role is needed to allow custom field broadcasting? 
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['role_custom_fields']).' '.$form->makeInput($inputs['role_custom_fields']).'
-			</p>
-
-			<p>
-				 A higher save-post-action priority gives other plugins more time to add their own custom fields before the post is broadcasted. <em>Raise</em> this value if you notice that plugins that use custom fields aren\'t getting their data broadcasted, but 640 should be enough for everybody.
-			</p>
-
-			<p class="bigp">
-				'.$form->makeLabel($inputs['save_post_priority']).' '.$form->makeInput($inputs['save_post_priority']).'
-			</p>
+			<table class="form-table">
+				<tbody>
+					'.$tBody.'
+				</tbody>
+			</table>
 
 			<p>
 				'.$form->makeInput($inputs['save']).'
@@ -358,27 +343,76 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		';		
 	}
 	
-	protected function adminRequiredList()
+	protected function admin_post_types()
+	{
+		if (isset($_POST['save_post_types']))
+		{
+			$post_types = array_keys( $_POST['post_types'] );
+			$post_types = array_flip($post_types);
+			$this->update_site_option('post_types', $post_types);
+			$this->message('Custom post types saved!');
+		}
+		
+		$post_types = $this->get_site_option('post_types');
+		$all_post_types = get_post_types();
+		$form = $this->form();
+		
+		$lis = array();
+		foreach($all_post_types as $post_type)
+		{
+			$post_type_object = get_post_type_object($post_type);
+			$input = array(
+				'name' => $post_type,
+				'nameprefix' => '[post_types]',
+				'label' => $post_type_object->labels->name,
+				'type' => 'checkbox',
+				'checked' => isset($post_types[ $post_type ]),
+			);
+			$lis[] = $form->makeInput($input) . ' ' . $form->makeLabel($input);
+		}
+		
+		$input_submit = array(
+			'name' => 'save_post_types',
+			'type' => 'submit',
+			'value' => 'Save the allowed post types',
+			'cssClass' => 'button-primary',
+		);
+		
+		echo '<p>Choose which post types should be allowed to use Broadcast.</p>
+		
+		'.$form->start().'
+		
+		<ul>
+			<li>'.implode('</li><li>', $lis).'</li>
+		</ul>
+		
+		'.$form->makeInput($input_submit).'
+		
+		'.$form->stop().'
+		';
+	}
+	
+	protected function admin_required_list()
 	{
 		$blogs = $this->get_blog_list();
 		$form = $this->form();
 		
 		if (isset($_POST['save']))
 		{
-			$this->update_option( 'requirewhenbroadcasting', isset($_POST['requirewhenbroadcasting']) );
+			$this->update_site_option( 'always_use_required_list', isset($_POST['always_use_required_list']) );
 			$required = '';
 			if (isset($_POST['broadcast']['groups']['required']))
 				$required = implode(',', array_keys($_POST['broadcast']['groups']['required']));
-			$this->update_option( 'requiredlist', $required );
+			$this->update_site_option( 'requiredlist', $required );
 			$this->message('Options saved!');
 		}
 		
 		$inputs = array(
-			'requirewhenbroadcasting' => array(
-				'name' => 'requirewhenbroadcasting',
+			'always_use_required_list' => array(
+				'name' => 'always_use_required_list',
 				'type' => 'checkbox',
-				'label' => 'Apply required list only when having selected other blogs to broadcast to. Leave unchecked to always use the required list.',
-				'value' => $this->get_option('requirewhenbroadcasting'),
+				'label' => 'Always use the required list',
+				'value' => $this->get_site_option('always_use_required_list'),
 			),
 			'save' => array(
 				'name' => 'save',
@@ -388,9 +422,8 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			),
 		);
 		
-		$requiredBlogs = explode(',', $this->get_option('requiredlist'));
-		$requiredBlogs = array_flip($requiredBlogs);
-
+		$requiredBlogs = $this->get_required_blogs();
+		
 		echo '
 			'.$form->start().'
 
@@ -402,12 +435,16 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			<p>The required list takes preference over the blacklist: if blogs are in both, they will be required.</p>
 
 			<p>
-				'.$form->makeInput($inputs['requirewhenbroadcasting']).' '.$form->makeLabel($inputs['requirewhenbroadcasting']).'
+				'.$form->makeInput($inputs['always_use_required_list']).' '.$form->makeLabel($inputs['always_use_required_list']).'
 			</p>
 
 			<p>Select which blogs the user will be required to broadcast to.</p>
 
-			'.$this->showGroupBlogs($blogs, 'required', $requiredBlogs ).'
+			'.$this->show_group_blogs(array(
+				'blogs' => $blogs,
+				'nameprefix' => 'required',
+				'selected' => $requiredBlogs,
+			)).'
 
 			<p>
 				'.$form->makeInput($inputs['save']).'
@@ -417,7 +454,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		';	
 	}
 	
-	protected function adminBlacklist()
+	protected function admin_blacklist()
 	{
 		$blogs = $this->get_blog_list();
 		$form = $this->form();
@@ -427,7 +464,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			$blacklist = '';
 			if (isset($_POST['broadcast']['groups']['blacklist']))
 				$blacklist = implode(',', array_keys($_POST['broadcast']['groups']['blacklist']));
-			$this->update_option( 'blacklist', $blacklist );
+			$this->update_site_option( 'blacklist', $blacklist );
 			$this->message('Options saved!');
 		}
 		
@@ -440,7 +477,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			),
 		);
 		
-		$blacklistedBlogs = explode(',', $this->get_option('blacklist'));
+		$blacklistedBlogs = explode(',', $this->get_site_option('blacklist'));
 		$blacklistedBlogs = array_flip($blacklistedBlogs);
 
 		echo '
@@ -448,7 +485,11 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 
 			<p>The blacklist specifies which blogs the users may never broadcast to, even if they\'ve got write access.</p>
 
-			'.$this->showGroupBlogs($blogs, 'blacklist', $blacklistedBlogs ).'
+			'.$this->show_group_blogs(array(
+				'blogs' => $blogs,
+				'nameprefix' => 'blacklist',
+				'selected' => $blacklistedBlogs,
+			)).'
 
 			<p>
 				'.$form->makeInput($inputs['save']).'
@@ -458,10 +499,74 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		';	
 	}
 	
-	protected function userEditGroups()
+	protected function admin_activity_monitor()
+	{
+		$form = $this->form();
+
+		if (isset($_POST['submit']))
+		{
+			foreach( array('activity_monitor_group_changes', 'activity_monitor_unlinks') as $key )
+				$this->update_site_option( $key, isset($_POST[ $key ]) );
+			$this->message('Options saved!');
+		}
+			
+		$inputs = array(
+			'activity_monitor_unlinks' => array(
+				'name' => 'activity_monitor_unlinks',
+				'type' => 'checkbox',
+				'label' => 'Unlinks',
+				'checked' => $this->get_site_option('activity_monitor_unlinks'),
+				'description' => 'Reports when a user unlinks posts (either from the parent or to the children).',
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
+			),
+			'activity_monitor_group_changes' => array(
+				'name' => 'activity_monitor_group_changes',
+				'type' => 'checkbox',
+				'label' => 'Group changes',
+				'checked' => $this->get_site_option('activity_monitor_group_changes'),
+				'description' => 'Reports when a user has created, changed or deleted a group.',
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
+			),
+			'submit' => array(
+				'type' => 'submit',
+				'name' => 'submit',
+				'value' => 'Save changes',
+				'cssClass' => 'button-primary',
+			),
+		);
+
+		$tBody = '';
+		foreach( $inputs as $input )
+			if ( isset($input['make_table_row']) )
+				$tBody .= $this->make_table_row( $input );
+			
+		echo '
+			'.$form->start().'
+			
+			<p>
+				If you want Broadcast to send notifications of user activity to <a href="http://wordpress.org/extend/plugins/threewp-activity-monitor/">ThreeWP Activity Monitor</a>,
+				select which user activities you want monitored. 
+			</p>
+			
+			<table class="form-table">
+				<tbody>
+					'.$tBody.'
+				</tbody>
+			</table>
+			
+			'.$form->makeInput($inputs['submit']).'
+
+			'.$form->stop().'
+		';
+	}
+	
+	protected function user_edit_groups()
 	{
 		$user_id = $this->user_id();		// Convenience.
 		$form = $this->form();
+		
+		// Get a list of blogs that this user can write to.		
+		$blogs = $this->list_user_writable_blog($user_id);
 		
 		$data = $this->sqlUserGet($user_id);
 		
@@ -475,9 +580,40 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 					$newGroups[$groupID]['name'] = $data['groups'][$groupID]['name'];
 					$selectedBlogs =  $_POST['broadcast']['groups'][$groupID];
 					$newGroups[$groupID]['blogs'] = array_flip(array_keys($selectedBlogs));
+					if ( $this->get_option('activity_monitor_group_changes') )
+					{
+						$blog_text = count($newGroups[$groupID]['blogs']) . ' ';
+						if ( count($newGroups[$groupID]['blogs']) < 2 )
+							$blog_text .= 'blog: ';
+						else
+							$blog_text .= 'blogs: ';
+
+						$blogs_array = array();
+						foreach( $newGroups[$groupID]['blogs'] as $blogid => $ignore )
+							$blogs_array[] = $blogs[$blogid]['blogname'];
+						
+						$blog_text .= '<em>' . implode('</em>, <em>', $blogs_array) . '</em>';
+						
+						$blog_text .= '.';
+						do_action('threewp_activity_monitor_new_activity', array(
+							'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_groups activity_monitor_broadcast_group_created',
+							'activity' => array(
+								'' => '%user_display_name_with_link% updated the blog group <em>' . $newGroups[$groupID]['name'] . '</em> with ' . $blog_text,
+							),
+						));
+					}
 				}
 				else
+				{
+					if ( $this->get_option('activity_monitor_group_changes') )
+						do_action('threewp_activity_monitor_new_activity', array(
+							'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_groups activity_monitor_broadcast_group_created',
+							'activity' => array(
+								'' => '%user_display_name_with_link% deleted the blog group <em>' . $data['groups'][$groupID]['name'] . '</em>',
+							),
+						));
 					unset($data['groups'][$groupID]);
+				}
 			}
 			$data['groups'] = $newGroups;
 			$this->sqlUserSet($user_id, $data);
@@ -486,19 +622,23 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		
 		if (isset($_POST['groupCreate']))
 		{
-			$groupName = trim($_POST['groupName']);
+			$groupName = stripslashes( trim($_POST['groupName']) );
 			if ($groupName == '')
 				$this->error(__('The group name may not be empty!', _3BC));
 			else
 			{
+				if ( $this->get_option('activity_monitor_group_changes') )
+					do_action('threewp_activity_monitor_new_activity', array(
+						'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_groups activity_monitor_broadcast_group_created',
+						'activity' => array(
+							'' => '%user_display_name_with_link% created the blog group <em>' . $groupName . '</em>',
+						),
+					));
 				$data['groups'][] = array('name' => $groupName, 'blogs' => array());
 				$this->sqlUserSet($user_id, $data);
 				$this->message(__('The group has been created!', _3BC));
 			}
 		}
-		
-		// Get a list of blogs that this user can write to.		
-		$blogs = $this->getUserWritableBlogs($user_id);
 		
 		$groupsText = '';
 		if (count($data['groups']) == 0)
@@ -511,7 +651,11 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 					<h4>'.__('Group', _3BC).': '.$groupData['name'].'</h4>
 
 					<div id="'.$id.'">
-						'.$this->showGroupBlogs($blogs, $groupID, $groupData['blogs']).'
+						'.$this->show_group_blogs(array(
+							'blogs' => $blogs,
+							'nameprefix' => $groupID,
+							'selected' => $groupData['blogs'],
+						)).'
 					</div>
 					<p>'.(count($blogs) > 2 ? $this->showGroupBlogsSelectUnselect(array('selector' => '#' . $id, 'input_label' => __('Select/deselect all the blogs in the above group.', _3BC))): '').'</p>
 				</div>
@@ -575,38 +719,92 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		';
 	}
 	
-	protected function userUnlink()
+	protected function user_unlink()
 	{
 		// Check that we're actually supposed to be removing the link for real.
 		$nonce = $_GET['_wpnonce'];
 		$post_id = $_GET['post'];
 		if (isset($_GET['child']))
-			$blog_id = $_GET['child'];
+			$child_blog_id = $_GET['child'];
 			
 		// Generate the nonce key to check against.			
 		$nonce_key = 'broadcast_unlink';
-		if (isset($blog_id))
-			$nonce_key .= '_' . $blog_id;
+		if (isset($child_blog_id))
+			$nonce_key .= '_' . $child_blog_id;
 		$nonce_key .= '_' . $post_id;
 			
 		if (!wp_verify_nonce($nonce, $nonce_key))
 			die("Security check: not supposed to be unlinking broadcasted post!");
 			
+		global $blog_id;
+
+		$broadcast_data = $this->get_post_broadcast_data($blog_id, $post_id);
+		$linked_children = $broadcast_data->get_linked_children();
+		
 		// Remove just one child?
-		if (isset($blog_id))
+		if (isset($child_blog_id))
 		{
-			$broadcastData = $this->getPostBroadcastData($post_id);
-			$broadcastData->remove_linked_child($blog_id);
-			$this->setPostBroadcastData($post_id, $broadcastData);
-			$message = __('Linked post has been removed!', _3BC);
+			// If we're supposed to report unlinks, then do so. Assumes that Activity Monitor is installed.
+			if ( $this->get_option('activity_monitor_unlinks') )
+			{
+				// Get the info about this post.
+				$post_data = get_post( $post_id );
+				$post_url = get_permalink( $post_id );
+				$post_url = '<a href="'.$post_url.'">'.$post_data->post_title.'</a>';
+				
+				// And about the child blog
+				switch_to_blog( $child_blog_id );
+				$blog_url = '<a href="'.get_bloginfo('url').'">'.get_bloginfo('name').'</a>';
+				restore_current_blog();				
+				
+				do_action('threewp_activity_monitor_new_activity', array(
+					'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_unlinks activity_monitor_broadcast_unlinked_child',
+					'activity' => array(
+						'' => '%user_display_name_with_link% unlinked ' . $post_url . ' with the child post on ' . $blog_url,
+					),
+				));
+			}
+
+			$this->delete_post_broadcast_data($child_blog_id, $linked_children[$child_blog_id]);
+			$broadcast_data->remove_linked_child($child_blog_id);
+			$this->set_post_broadcast_data($blog_id, $post_id, $broadcast_data);
+			$message = __('Link to child post has been removed.', _3BC);
 		}
 		else
 		{
-			$broadcastData = $this->getPostBroadcastData($post_id);
-			$broadcastData->remove_linked_children($blog_id);
-			$this->setPostBroadcastData($post_id, $broadcastData);
-			$message = __('All linked posts has been removed!', _3BC);
+			$blogs_url = array();
+			foreach($linked_children as $linked_child_blog_id => $linked_child_post_id)
+			{
+				// And about the child blog
+				switch_to_blog( $linked_child_blog_id );
+				$blogs_url[] = '<a href="'.get_bloginfo('url').'">'.get_bloginfo('name').'</a>';
+				restore_current_blog();				
+				$this->delete_post_broadcast_data($linked_child_blog_id, $linked_child_post_id);
+			}
+			
+			// If we're supposed to report unlinks, then do so. Assumes that Activity Monitor is installed.
+			if ( $this->get_option('activity_monitor_unlinks') )
+			{
+				// Get the info about this post.
+				$post_data = get_post( $post_id );
+				$post_url = get_permalink( $post_id );
+				$post_url = '<a href="'.$post_url.'">'.$post_data->post_title.'</a>';
+				
+				$blogs_url = implode(', ', $blogs_url);
+				
+				do_action('threewp_activity_monitor_new_activity', array(
+					'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_unlinks activity_monitor_broadcast_unlinked_parent',
+					'activity' => array(
+						'' => '%user_display_name_with_link% unlinked ' . $post_url . ' with the child posts on ' . $blogs_url,
+					),
+				));
+			}
+			$broadcast_data = $this->get_post_broadcast_data($blog_id, $post_id);
+			$broadcast_data->remove_linked_children();
+			$message = __('All links to child posts have been removed!', _3BC);
 		}
+		
+		$this->set_post_broadcast_data($blog_id, $post_id, $broadcast_data);
 		
 		echo '
 			'.$this->message($message).'
@@ -619,28 +817,29 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	/**
 		Trashes a broadcasted post.
 	*/
-	protected function userTrash()
+	protected function user_trash()
 	{
 		// Check that we're actually supposed to be removing the link for real.
+		global $blog_id;
 		$nonce = $_GET['_wpnonce'];
 		$post_id = $_GET['post'];
-		$blog_id = $_GET['child'];
+		$child_blog_id = $_GET['child'];
 			
 		// Generate the nonce key to check against.			
 		$nonce_key = 'broadcast_trash';
-		$nonce_key .= '_' . $blog_id;
+		$nonce_key .= '_' . $child_blog_id;
 		$nonce_key .= '_' . $post_id;
 			
 		if (!wp_verify_nonce($nonce, $nonce_key))
 			die("Security check: not supposed to be unlinking broadcasted post!");
 			
-		$broadcastData = $this->getPostBroadcastData($post_id);
-		switch_to_blog($blog_id);
-		$broadcasted_post_id = $broadcastData->get_linked_child_on_this_blog();
+		$broadcast_data = $this->get_post_broadcast_data($blog_id, $post_id);
+		switch_to_blog($child_blog_id);
+		$broadcasted_post_id = $broadcast_data->get_linked_child_on_this_blog();
 		wp_trash_post($broadcasted_post_id);
 		restore_current_blog();
-		$broadcastData->remove_linked_child($blog_id);
-		$this->setPostBroadcastData($post_id, $broadcastData);
+		$broadcast_data->remove_linked_child($blog_id);
+		$this->set_post_broadcast_data($blog_id, $post_id, $broadcast_data);
 		
 		$message = __('The broadcasted child post has been put in the trash.', _3BC);
 
@@ -652,7 +851,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		';
 	}
 	
-	protected function userHelp()
+	protected function user_help()
 	{
 		echo '
 			<div id="broadcast_help">
@@ -690,10 +889,6 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 				</p>
 
 				<p>
-					<em>'.__('Broadcast this post as a draft', _3BC).'</em> '.__('will send this post to the selected blogs and mark it as a draft.', _3BC).'
-				</p>
-
-				<p>
 					<em>'.__('Broadcast categories also', _3BC).'</em> '.__('will also try to send the categories together with the post.', _3BC).'
 					'.__('In order to be able to broadcast the categories, the selected blogs must have the same category names (slugs) as this blog, else the posts will be posted as uncategorized.', _3BC).'
 				</p>
@@ -713,18 +908,13 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 				</p>
 
 				<p class="textcenter">
-					<img class="border-single" src="'.$this->paths['url'].'/screenshot-3.png" alt="" title="'.__('Group setup', _3BC).'" />
+					<img class="border-single" src="'.$this->paths['url'].'/screenshot-5.png" alt="" title="'.__('Group setup', _3BC).'" />
 				</p>
 
 				<p>
 					'.__('Then select which blogs you want to be automatically selected when you choose this group when editing a new post. Press the save button when you are done. Your new group is ready to be used!', _3BC).'
 					'.__('Simply choose it in the dropdown box and the blogs you specified will be automatically chosen.', _3BC).'
 				</p>
-
-				<p class="textcenter">
-					<img class="border-single" src="'.$this->paths['url'].'/screenshot-4.png" alt="" title="'.__('Groups have been selected and saved', _3BC).'" />
-				</p>
-
 
 			</div>
 		';
@@ -734,41 +924,54 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	// ----------------------------------------- Callbacks
 	// --------------------------------------------------------------------------------------------
 
-	public function add_meta_box_post()
+	public function add_meta_box_type($post)
 	{
-		return $this->add_meta_box('post');
-	}
-	
-	public function add_meta_box_page()
-	{
-		return $this->add_meta_box('page');
+		return $this->add_meta_box( $post->post_type );
 	}
 	
 	private function add_meta_box($type)
 	{
+		global $blog_id;
 		global $post;
 		$form = $this->form();
 		
-		$is_post = $type == 'post';
-		$is_page = $type == 'page';
 		$published = $post->post_status == 'publish';
 		
 		// Find out if this post is already linked
-		global $post;
-		$broadcastData = $this->getPostBroadcastData($post->ID);
-		$has_linked_children = $broadcastData->has_linked_children();
+		$broadcast_data = $this->get_post_broadcast_data($blog_id, $post->ID);
 		
-		$blogs = $this->getUserWritableBlogs($this->user_id());
+		if ( $broadcast_data->get_linked_parent() !== false)
+		{
+			echo '<p>';
+			echo __('This post is broadcasted child post. It cannot be broadcasted further.', _3BC);
+			echo '</p>';
+			return;
+		}
+		
+		$has_linked_children = $broadcast_data->has_linked_children();
+		
+		$blogs = $this->list_user_writable_blog($this->user_id());
 		// Remove the blog we're currently working on from the list of writable blogs.
-		global $blog_id;
 		unset($blogs[$blog_id]);
+		
+		global $current_user;
+		get_current_user();
+		$user_id = $current_user->ID;
+		$last_used_settings = $this->load_last_used_settings($user_id);
 
-		// Broadcast as draft checkbox is shown only to those who are allowed to use it.
-		if ($this->role_at_least( $this->get_option('role_link') ))
+		$post_type = $post->post_type;
+		$post_type_object = get_post_type_object($post_type);
+		$post_type_supports_categories = $post_type_object->capability_type == 'post';
+		$post_type_supports_tags  = $post_type_object->capability_type == 'post';
+		$post_type_supports_thumbnails = post_type_supports( $post_type, 'thumbnail' );
+		$post_type_supports_custom_fields = post_type_supports( $post_type, 'custom-fields' );
+		$post_type_is_hierarchical = $post_type_object->hierarchical;
+
+		if ($this->role_at_least( $this->get_site_option('role_link') ))
 		{
 			// Check the link box is the post has been published and has children OR it isn't published yet.
 			$linked = (
-				($published && $broadcastData->has_linked_children())
+				($published && $broadcast_data->has_linked_children())
 				||
 				!$published
 			); 
@@ -784,89 +987,75 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			echo '<p>'.$form->makeInput($inputBroadcastLink).' '.$form->makeLabel($inputBroadcastLink).'</p>';
 		}
 
-		// Broadcast as draft checkbox is shown only to those who are allowed to use it.
-		if ($this->role_at_least( $this->get_option('role_broadcast_as_draft') ))
-		{
-			$inputBroadcastAsDraft = array(
-				'name' => 'broadcast_as_draft',
-				'type' => 'checkbox',
-				'nameprefix' => '[broadcast]',
-				'value' => 'broadcast_as_draft',
-				'label' => __('Broadcast this post as a draft', _3BC),
-			);
-			echo '<p>'.$form->makeInput($inputBroadcastAsDraft).' '.$form->makeLabel($inputBroadcastAsDraft).'</p>';
-		}
-
-		if ($this->role_at_least( $this->get_option('role_categories') ) && $is_post)
+		echo '<div style="height: 1px; background-color: #ddd;"></div>';
+		
+		if ($this->role_at_least( $this->get_site_option('role_categories') ) && $post_type_supports_categories)
 		{
 			$inputCategories = array(
 				'name' => 'categories',
 				'type' => 'checkbox',
 				'nameprefix' => '[broadcast]',
 				'value' => 'categories',
-				'checked' => 'true',
+				'checked' => isset($last_used_settings['categories']),
 				'label' => __('Broadcast categories also', _3BC),
 				'title' => __('The categories must have the same name (slug) on the selected blogs.', _3BC),
 			);
-			echo '<div style="height: 1px; background-color: #ddd;"></div>';
-			echo '<p>'.$form->makeInput($inputCategories).' '.$form->makeLabel($inputCategories).'</p>';
+			echo '<p class="broadcast_input_categories">'.$form->makeInput($inputCategories).' '.$form->makeLabel($inputCategories).'</p>';
 		}
 		
-		if ($this->role_at_least( $this->get_option('role_categories_create') ) && $is_post)
+		if ($this->role_at_least( $this->get_site_option('role_categories_create') ) && $post_type_supports_categories)
 		{
 			$inputCategoriesCreate = array(
 				'name' => 'categories_create',
 				'type' => 'checkbox',
 				'nameprefix' => '[broadcast]',
 				'value' => 'categories_create',
-				'checked' => 'true',
+				'checked' => isset($last_used_settings['categories_create']),
 				'label' => __('Create categories automatically', _3BC),
 				'title' => __('The categories will be created if they don\'t exist on the selected blogs.', _3BC),
 			);
-			echo '<p>'.$form->makeInput($inputCategoriesCreate).' '.$form->makeLabel($inputCategoriesCreate).'</p>';
+			echo '<p class="broadcast_input_categories_create">&emsp;'.$form->makeInput($inputCategoriesCreate).' '.$form->makeLabel($inputCategoriesCreate).'</p>';
 		}
 		
-		if ($this->role_at_least( $this->get_option('role_tags') ) && $is_post)
+		if ($this->role_at_least( $this->get_site_option('role_tags') ) && $post_type_supports_tags)
 		{
 			$inputTags = array(
 				'name' => 'tags',
 				'type' => 'checkbox',
 				'nameprefix' => '[broadcast]',
 				'value' => 'tags',
-				'checked' => 'true',
+				'checked' => isset($last_used_settings['tags']),
 				'label' => __('Broadcast tags also', _3BC),
 				'title' => __('The tags must have the same name (slug) on the selected blogs.', _3BC),
 			);
-			echo '<div style="height: 1px; background-color: #ddd;"></div>';
-			echo '<p>'.$form->makeInput($inputTags).' '.$form->makeLabel($inputTags).'</p>';
+			echo '<p class="broadcast_input_tags">'.$form->makeInput($inputTags).' '.$form->makeLabel($inputTags).'</p>';
 		}
 		
-		if ($this->role_at_least( $this->get_option('role_tags_create') ) && $is_post)
+		if ($this->role_at_least( $this->get_site_option('role_tags_create') ) && $post_type_supports_tags)
 		{
 			$inputTagsCreate = array(
 				'name' => 'tags_create',
 				'type' => 'checkbox',
 				'nameprefix' => '[broadcast]',
 				'value' => 'tags_create',
-				'checked' => 'true',
+				'checked' => isset($last_used_settings['tags_create']),
 				'label' => __('Create tags automatically', _3BC),
 				'title' => __('The tags will be created if they don\'t exist on the selected blogs.', _3BC),
 			);
-			echo '<p>'.$form->makeInput($inputTagsCreate).' '.$form->makeLabel($inputTagsCreate).'</p>';
+			echo '<p class="broadcast_input_tags_create">&emsp;'.$form->makeInput($inputTagsCreate).' '.$form->makeLabel($inputTagsCreate).'</p>';
 		}
 		
-		if ($this->role_at_least( $this->get_option('role_custom_fields') ) && $is_post)
+		if ($this->role_at_least( $this->get_site_option('role_custom_fields') ) && $post_type_supports_custom_fields)
 		{
 			$inputCustomFields = array(
 				'name' => 'custom_fields',
 				'type' => 'checkbox',
 				'nameprefix' => '[broadcast]',
 				'value' => 'custom_fields',
-				'checked' => 'true',
+				'checked' => isset($last_used_settings['custom_fields']),
 				'title' => __('Broadcast all the custom fields and the featured image?', _3BC),
 				'label' => __('Broadcast custom fields', _3BC),
 			);
-			echo '<div style="height: 1px; background-color: #ddd;"></div>';
 			echo '<p>'.$form->makeInput($inputCustomFields).' '.$form->makeLabel($inputCustomFields).'</p>';
 		}
 		
@@ -874,7 +1063,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		
 		// Similarly, groups are only available to those who are allowed to use them.
 		$data = $this->sqlUserGet($this->user_id());
-		if ($this->role_at_least( $this->get_option('role_groups') ) && (count($data['groups'])>0))
+		if ($this->role_at_least( $this->get_site_option('role_groups') ) && (count($data['groups'])>0))
 		{
 			$inputGroups = array(
 				'name' => 'broadcast_group',
@@ -893,35 +1082,106 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 				'.$form->makeLabel($inputGroups).' '.$form->makeInput($inputGroups).'
 				</p>
 
-				<script type="text/javascript">
+				<script type="text/javascript">					
 					jQuery(document).ready( function($) {
-						$("#__broadcast__broadcast_group").change(function(){
-							var blogs = $(this).val().split(" ");
-							for (var counter=0; counter < blogs.length; counter++)
-							{
-								$("#__broadcast__groups__666__" + blogs[counter]).attr("checked", true);
+						window.broadcast = {
+							init: function(){
+								
+								// Allow blogs to be mass selected, unselected.							
+								$("#__broadcast__broadcast_group").change(function(){
+									var blogs = $(this).val().split(" ");
+									for (var counter=0; counter < blogs.length; counter++)
+									{
+										$("#__broadcast__groups__666__" + blogs[counter]).attr("checked", true);
+									}
+									$("#__broadcast_group").val("");
+								});
+								
+								// React to changes to the tags click.
+								if ( !$("#__broadcast__tags").attr("checked") )
+									$("p.broadcast_input_tags_create").hide();
+									
+								$("#__broadcast__tags").change(function(){
+									$("p.broadcast_input_tags_create").animate({
+										height: "toggle"
+									});
+								});
+								
+								// React to changes to the categories click.
+								if ( !$("#__broadcast__categories").attr("checked") )
+									$("p.broadcast_input_categories_create").hide();
+									
+								$("#__broadcast__categories").change(function(){
+									$("p.broadcast_input_categories_create").animate({
+										height: "toggle"
+									});
+								});
+								
 							}
-							$("#__broadcast_group").val("");
-						})
+						};
+						
+						broadcast.init();
 					});
 				</script>
 			';
 		}
 		
+		$blog_class = array();
+		$blog_title = array();
 		$selectedBlogs = array();
 		
 		// Preselect those children that this post has.
-		$linked_children = $broadcastData->get_linked_children();
-		if (count($linked_children) > 0)
+		$linked_children = $broadcast_data->get_linked_children();
+		if ( count($linked_children) > 0 )
 		{
-			foreach($linked_children as $blogID => $postID)
-				$selectedBlogs[$blogID] = true;
+			foreach($linked_children as $temp_blog_id => $postID)
+			{
+				$selectedBlogs[ $temp_blog_id ] = true;
+				@$blog_class[ $temp_blog_id ] .= ' blog_is_already_linked';
+				@$blog_title[ $temp_blog_id ] .= __('This blog has already been linked.');
+			}
 		}
-
+		
+		if ($this->get_site_option('always_use_required_list'))		
+			$required_blogs = $this->get_required_blogs();
+		else
+			$required_blogs = array();
+		
+		foreach ($required_blogs as $temp_blog_id => $ignore)
+		{
+			@$blog_class[ $temp_blog_id ] .= ' blog_is_required';
+			@$blog_title[ $temp_blog_id ] .= __('This blog is required and cannot be unselected.');
+		}
+			
+		$selectedBlogs = array_flip( array_merge(
+			array_keys($selectedBlogs),
+			array_keys($required_blogs)
+		) );
+		
+		// Remove all blacklisted blogs.
+		foreach($blogs as $temp_blog_id=>$ignore)	
+			if ($this->is_blog_blacklisted($temp_blog_id))
+				unset($blogs[ $temp_blog_id ]);
+		
+		// Disable all blogs that do not have this post type.
+		// I think there's a bug in WP since it reports the same post types no matter which blog we've switch_to_blogged.
+		// Therefore, no further action.
+		
 		echo '<p class="howto">'. __('Broadcast to:', _3BC) .'</p>
 
+			<p style="text-align: center;">'.(count($blogs) > 20 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all', _3BC))): '').'</p>
+
 			<div class="blogs">
-				<p>' . $this->showGroupBlogs($blogs, 666, $selectedBlogs) . '</p>
+				<p>' . $this->show_group_blogs(array(
+								'blogs' => $blogs,
+								'blog_class' => $blog_class,
+								'blog_title' => $blog_title,
+								'nameprefix' => 666,
+								'selected' => $selectedBlogs,
+								'readonly' => $required_blogs,
+								'disabled' => $required_blogs,
+							)) . '
+				</p>
 			</div>
 	
 			<p style="text-align: center;">'.(count($blogs) > 2 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all', _3BC))): '').'</p>
@@ -930,31 +1190,44 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	
 	public function save_post($post_id)
 	{
-		if (!$this->role_at_least( $this->get_option('role_broadcast') ))
+		if (!$this->role_at_least( $this->get_site_option('role_broadcast') ))
 			return;
 			
+		$allowed_post_status = array('publish');
+		
+		if ( $this->role_at_least( $this->get_site_option('role_broadcast_as_draft') ) )
+			$allowed_post_status[] = 'draft';
+			
+		if ( $this->role_at_least( $this->get_site_option('role_broadcast_scheduled_posts') ) )
+			$allowed_post_status[] = 'future';
+			
 		$post = get_post($post_id, 'ARRAY_A');
-		if ($post['post_status'] != 'publish')		// Ignore revisions.
+		if ( !in_array($post['post_status'], $allowed_post_status) )
 			return;
 			
 		if (!isset($_POST['broadcast']))
 		{
 			// Site admin is never forced to do anything.
-			if (is_site_admin())
+			if (is_super_admin())
 				return;
 				
 			// Ignore this post. It's being force broadcast.
 			if (isset($_POST['broadcast_force']))
 				return;
 				
-			if ($this->get_option('requirewhenbroadcasting') == false)
+			if ($this->get_site_option('always_use_required_list') == true)
 				$_POST['broadcast_force'] = true;
 			else
 				return;
 		}
 		
-		$is_post = $_POST['post_type'] == 'post';
-		$is_page = $_POST['post_type'] == 'page';
+		$post_type = $_POST['post_type'];
+		$post_type_object = get_post_type_object($post_type);
+		$post_type_supports_categories = $post_type_object->capability_type == 'post';
+		$post_type_supports_tags  = $post_type_object->capability_type == 'post';
+		$post_type_supports_thumbnails = post_type_supports( $post_type, 'thumbnail' );
+		$post_type_supports_custom_fields = post_type_supports( $post_type, 'custom-fields' );
+		$post_type_is_hierarchical = $post_type_object->hierarchical;
 
 		// Create new post data from the original stuff.
 		$newPost = $post;
@@ -975,73 +1248,67 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		
 		$user_id = $this->user_id();		// Convenience.
 
-		if (!is_site_admin())
+		// Remove blacklisted
+		foreach($blogs as $blogID=>$ignore)	
+			if (!$this->is_blog_user_writable($user_id, $blogID))
+				unset($blogs[$blogID]);
+
+		// Add required blogs.
+		if ($this->get_site_option('always_use_required_list'))
 		{
-			// Remove blacklisted
-			foreach($blogs as $blogID=>$ignore)		// Don't user blog_id anymore.'
-				if (!$this->canUserWriteToBlog($user_id, $blogID))
-					unset($blogs[$blogID]);
-					
-			// Add required blogs.
-			$requiredBlogs = $this->get_option('requiredlist');
-			$requiredBlogs = explode(',', $requiredBlogs);
-			foreach($requiredBlogs as $requiredBlog)
-				if ($requiredBlog != '')
-					$blogs[$requiredBlog] = $requiredBlog;
+			$requiredBlogs = $this->get_required_blogs();
+			foreach($requiredBlogs as $requiredBlog=>$ignore)
+				$blogs[$requiredBlog] = $requiredBlog;
 		}
-		
-		$blogs = array_flip($blogs);
+
+		$blogs = array_keys($blogs);
 		// Now to add and remove blogs: done
 		
 		// Do we actually need to to anything?
 		if (count($blogs) < 1)
 			return;
 
-		$link = ($this->role_at_least( $this->get_option('role_link') ) && isset($_POST['broadcast']['link']));
+		$link = ($this->role_at_least( $this->get_site_option('role_link') ) && isset($_POST['broadcast']['link']));
 		if ($link)
 		{
 			// Prepare the broadcast data for linked children.
-			$broadcastData = $this->getPostBroadcastData($post_id);
+			$broadcast_data = $this->get_post_broadcast_data($blog_id, $post_id);
+			
+			// Does this post type have parent support, so that we can link to a parent?
+			if ($post_type_is_hierarchical && $_POST['post_parent'] > 0)
+			{
+				$post_id_parent = $_POST['post_parent'];
+				$parent_broadcast_data = $this->get_post_broadcast_data($blog_id, $post_id_parent);
+			}
 		}
-		
-		// Only allow draft if (1) user may use drafts and (2) draft is actually in POST.
-		$broadcast_as_draft = ($this->role_at_least( $this->get_option('role_broadcast_as_draft') ) && isset($_POST['broadcast']['broadcast_as_draft']));
-		if ($broadcast_as_draft)
-			$newPost['post_status'] = 'draft';
 			
 		$categories = (
-			$this->role_at_least( $this->get_option('role_categories') )
+			$this->role_at_least( $this->get_site_option('role_categories') )
 			&&
 			isset($_POST['broadcast']['categories'])
 			&&
-			$is_post
+			$post_type_supports_categories
 		);
-		$categories_create = ($this->role_at_least( $this->get_option('role_categories_create') ) && isset($_POST['broadcast']['categories_create']));
+		$categories_create = ($this->role_at_least( $this->get_site_option('role_categories_create') ) && isset($_POST['broadcast']['categories_create']));
 		if ($categories)
 		{
-			$postCats = wp_get_post_categories($post_id);
-			$sourceCategories = get_categories(array(
-				'hide_empty' => false,
-			));
-			// Convert the category list to an array (why do they keep using stdclasses??)
-			$sourceCategories = $this->objectToArray($sourceCategories);
-			// And then make the cat ID the key.
-			$sourceCategories = $this->array_moveKey($sourceCategories, 'term_id');
+			$post_categories = wp_get_post_categories($post_id);
+			$source_blog_categories = $this->get_current_blog_categories();
 		}
 		
 		$tags = (
-			$this->role_at_least( $this->get_option('role_tags') )
+			$this->role_at_least( $this->get_site_option('role_tags') )
 			&&
 			isset($_POST['broadcast']['tags'])
 			&&
-			$is_post
+			$post_type_supports_tags
 		);
-		$tags_create = ($this->role_at_least( $this->get_option('role_tags_create') ) && isset($_POST['broadcast']['tags_create']));
+		$tags_create = ($this->role_at_least( $this->get_site_option('role_tags_create') ) && isset($_POST['broadcast']['tags_create']));
 		if ($tags)
 		{
 			$postTags = wp_get_post_tags($post_id);
 			// Convert the tag list to an array (why do they keep using stdclasses??)
-			$postTags = $this->objectToArray($postTags);
+			$postTags = $this->object_to_array($postTags);
 			// And then make the tag ID the key.
 			$postTags = $this->array_moveKey($postTags, 'term_id');
 		}
@@ -1058,11 +1325,11 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		}
 		
 		$custom_fields = (
-			$this->role_at_least( $this->get_option('role_custom_fields') )
+			$this->role_at_least( $this->get_site_option('role_custom_fields') )
 			&&
 			isset($_POST['broadcast']['custom_fields'])
 			&&
-			$is_post
+			$post_type_supports_custom_fields
 		);
 		if ($custom_fields)
 		{
@@ -1082,85 +1349,109 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 			}
 			
 			// Remove all the _internal custom fields.
-			foreach($postCustomFieldsTemp as $key => $array)
-				if (strpos($key, '_') === 0)
-					unset( $postCustomFieldsTemp[$key] );
+			foreach($postCustomFields as $key => $array)
+				if ( strpos($key, '_') === 0 && !in_array($key, $this->custom_field_exceptions) )
+					unset( $postCustomFields[$key] );
 		}
+		
+		// Sticky isn't a tag, cat or custom_field.
+		$post_is_sticky = @($_POST['sticky'] == 'sticky');
+		
+		// And now save the user's last settings.
+		$this->save_last_used_settings($user_id, $_POST['broadcast']);		
 		
 		// To prevent recursion
 		unset($_POST['broadcast']);
+		
+		$original_blog = $blog_id;
 				
 		foreach($blogs as $blogID)
 		{
-			if (!$this->canUserWriteToBlog($user_id, $blogID))
+			if (!$this->is_blog_user_writable($user_id, $blogID))
 				continue;
 			switch_to_blog($blogID);
 			
+			// Post parent
+			if ($link && isset($parent_broadcast_data))
+				if ($parent_broadcast_data->has_linked_child_on_this_blog())
+				{
+					$linked_parent = $parent_broadcast_data->get_linked_child_on_this_blog();
+					$newPost['post_parent'] = $linked_parent;
+				}
+			
 			// Insert new? Or update? Depends on whether the parent post was linked before or is newly linked?
-			if ($broadcastData->has_linked_child_on_this_blog())
+			$need_to_insert_post = true;
+			if ($link)
+				if ($broadcast_data->has_linked_child_on_this_blog())
+				{
+					$tempPostData = $newPost;
+					$tempPostData['ID'] = $broadcast_data->get_linked_child_on_this_blog();
+					$new_post_id = wp_update_post($tempPostData);
+					$need_to_insert_post = false;
+				}
+
+			if ($need_to_insert_post)
 			{
-				$tempPostData = $newPost;
-				$tempPostData['ID'] = $broadcastData->get_linked_child_on_this_blog();
-				$newpostID = wp_update_post($tempPostData);
-			}
-			else
-			{
-				$newpostID = wp_insert_post($newPost);
+				$new_post_id = wp_insert_post($newPost);
 				
 				if ($link)
-					$broadcastData->add_linked_child($blogID, $newpostID);
+					$broadcast_data->add_linked_child($blogID, $new_post_id);
 			}
 			
 			if ($categories)
 			{
 				// If we're updating a linked post, remove all the categories and start from the top.
-				if ($broadcastData->has_linked_child_on_this_blog())
-					wp_set_post_categories( $newpostID, array() );
+				if ($link)
+					if ($broadcast_data->has_linked_child_on_this_blog())
+						wp_set_post_categories( $new_post_id, array() );
 				
 				// Get a list of cats that the target blog has.
-				$targetCategories = get_categories(array(
-					'hide_empty' => false,
-				));
-				$targetCategories = $this->objectToArray($targetCategories);
-				$targetCategories = $this->array_moveKey($targetCategories, 'term_id');
+				$target_blog_categories = $this->get_current_blog_categories();
 				
 				// Go through the original post's cats and compare each slug with the slug of the target cats.
-				$categoriesToAddTo = array();
-				foreach($postCats as $cat_id)
+				$categories_to_add_to = array();
+				$have_created_categories = false;
+				foreach($post_categories as $post_category)
 				{
 					$found = false;
-					$sourceSlug = $sourceCategories[$cat_id]['slug'];
-					foreach($targetCategories as $targetCategory_id => $targetCategory)
-						if ($targetCategory['slug'] == $sourceSlug)
+					$sourceSlug = $source_blog_categories[$post_category]['slug'];
+					foreach($target_blog_categories as $target_blog_category_id => $target_blog_category)
+						if ($target_blog_category['slug'] == $sourceSlug)
 						{
 							$found = true;
-							$categoriesToAddTo[$targetCategory_id] = $targetCategory_id;
+							$categories_to_add_to[$target_blog_category_id] = $target_blog_category_id;
 							break;
 						}
 						
 					// Should we create the category if it doesn't exist?
-					if (!$found && $categories_create)
+					if ( !$found && $categories_create )
 					{
-						$newCatID = wp_create_category($sourceCategories[$cat_id]['name']);
-						$categoriesToAddTo[$newCatID] = $newCatID;
+						$new_target_category = wp_create_category($source_blog_categories[$post_category]['name']);
+						$categories_to_add_to[ $post_category ] = $new_target_category;
+						$have_created_categories = true;
 					}
 				}
-				if (count($categoriesToAddTo) > 0)
-					wp_set_post_categories( $newpostID, array_keys($categoriesToAddTo) );
+				
+				if ($categories_create)
+					$this->sync_categories($original_blog, $blogID);
+
+				if ( count($categories_to_add_to) > 0 )
+					wp_set_post_categories( $new_post_id, $categories_to_add_to );
 			}
 			
 			if ($tags)
 			{
 				// If we're updating a linked post, remove all the tags and start from the top.
-				if ($broadcastData->has_linked_child_on_this_blog())
-					wp_set_post_tags( $newpostID, array() );
+				if ($link)
+					if ($broadcast_data->has_linked_child_on_this_blog())
+						wp_set_post_tags( $new_post_id, array() );
 				
 				// Get a list of tags that the target blog has.
 				$targetTags = get_tags(array(
 					'hide_empty' => false,
 				));
 				
-				$targetTags = $this->objectToArray($targetTags);
+				$targetTags = $this->object_to_array($targetTags);
 				$targetTags = $this->array_moveKey($targetTags, 'term_id');
 				
 				// Go through the original post's tags and compare each slug with the slug of the target tags.
@@ -1189,62 +1480,79 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 					}
 				}
 				if (count($tagsToAddTo) > 0)
-					wp_set_post_tags( $newpostID, array_keys($tagsToAddTo) );
+					wp_set_post_tags( $new_post_id, array_keys($tagsToAddTo) );
 			}
 			
 			/**
 				Remove the current attachments.
 			*/
-			$attachments_to_remove =& get_children( 'post_parent='.$newpostID.'&post_type=attachment' );
+			$attachments_to_remove =& get_children( 'post_parent='.$new_post_id.'&post_type=attachment' );
 			foreach ($attachments_to_remove as $attachment_to_remove)
 				wp_delete_attachment($attachment_to_remove->ID);
 			
 			foreach($attachment_data as $key=>$attached_file)
 			{
 				if ($key != 'thumbnail')
-					$this->copy_attachment($attached_file, $newpostID);
+					$this->copy_attachment($attached_file, $new_post_id);
 			}
 			
 			if ($custom_fields)
 			{
 				// If we're updating a linked post, remove all the tags and start from the top.
-				if ($broadcastData->has_linked_child_on_this_blog())
-				{
-					// Remove all old custom fields.
-					$old_custom_fields = get_post_custom($newpostID);
-					foreach($old_custom_fields as $key => $value)
-						if (strpos($key, '_') !== 0) // But only the normal custom fields, not the _internal ones that Wordpress creates.
-						{
-							// Remove the key
-							delete_post_meta($newpostID, $key);
-						}
-						else
-						{
-							// This post has a featured image! Remove it from disk!
-							if ($key == '_thumbnail_id')
+				if ($link)
+					if ($broadcast_data->has_linked_child_on_this_blog())
+					{
+						// Remove all old custom fields.
+						$old_custom_fields = get_post_custom($new_post_id);
+						foreach($old_custom_fields as $key => $value)
+							if (strpos($key, '_') !== 0) // But only the normal custom fields, not the _internal ones that Wordpress creates.
 							{
-								$thumbnail_post = $value[0];
-								wp_delete_post($thumbnail_post);
+								// Remove the key
+								delete_post_meta($new_post_id, $key);
 							}
-						}
-				}
+							else
+							{
+								// This post has a featured image! Remove it from disk!
+								if ($key == '_thumbnail_id')
+								{
+									$thumbnail_post = $value[0];
+									wp_delete_post($thumbnail_post);
+								}
+							}
+					}
 				
 				foreach($postCustomFields as $meta_key => $meta_value)
-					add_post_meta($newpostID, $meta_key, $meta_value);
+					update_post_meta($new_post_id, $meta_key, $meta_value);
 				
 				// Attached files are custom fields... but special custom fields. Therefore they need special treatment. Like retards. Retarded files.
 				if ($has_thumbnail)
 				{
-					$new_attachment_id = $this->copy_attachment($attachment_data['thumbnail'], $newpostID);
-					add_post_meta($newpostID, '_thumbnail_id', $new_attachment_id);
+					$new_attachment_id = $this->copy_attachment($attachment_data['thumbnail'], $new_post_id);
+					update_post_meta($new_post_id, '_thumbnail_id', $new_attachment_id);
 				}
 			}
+			
+			// Sticky behaviour
+			$child_post_is_sticky = is_sticky($new_post_id);
+			if ($post_is_sticky && !$child_post_is_sticky)
+				stick_post($new_post_id);
+			if (!$post_is_sticky && $child_post_is_sticky)
+				unstick_post($new_post_id);
+			
+			if ($link)
+			{			
+				$new_post_broadcast_data = $this->get_post_broadcast_data($blog_id, $new_post_id);
+				$new_post_broadcast_data->set_linked_parent( $original_blog, $post_id );
+				$this->set_post_broadcast_data($blogID, $new_post_id, $new_post_broadcast_data);
+			}
+
 			restore_current_blog();
 		}
 		
 		// Finished broadcasting.
 		// Save the post broadcast data.
-		$this->setPostBroadcastData($post_id, $broadcastData);
+		if ($link)
+			$this->set_post_broadcast_data($blog_id, $post_id, $broadcast_data);		
 	}
 	
 	public function trash_post($post_id)
@@ -1269,16 +1577,40 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	 */
 	private function trash_untrash_delete_post($command, $post_id)
 	{
-		$broadcastData = $this->getPostBroadcastData($post_id);
-		if ($broadcastData->has_linked_children())
+		global $blog_id;
+		$broadcast_data = $this->get_post_broadcast_data($blog_id, $post_id);
+		if ($broadcast_data->has_linked_children())
 		{
-			foreach($broadcastData->get_linked_children() as $childBlog=>$childPost)
+			foreach($broadcast_data->get_linked_children() as $childBlog=>$childPost)
 			{
+				if ($command == 'wp_delete_post')
+				{
+					// Delete the broadcast data of this child
+					$this->delete_post_broadcast_data($childBlog, $childPost);
+				}
 				switch_to_blog($childBlog);
 				$command($childPost);
 				restore_current_blog();
 			}
 		}
+		
+		if ($command == 'wp_delete_post')
+		{
+			global $blog_id;
+			// Find out if this post has a parent.
+			$linked_parent_broadcast_data = $this->get_post_broadcast_data($blog_id, $post_id);
+			$linked_parent_broadcast_data = $linked_parent_broadcast_data->get_linked_parent();
+			if ($linked_parent_broadcast_data !== false)
+			{
+				// Remove ourselves as a child.
+				$parent_broadcast_data = $this->get_post_broadcast_data( $linked_parent_broadcast_data['blog_id'], $linked_parent_broadcast_data['post_id'] );
+				$parent_broadcast_data->remove_linked_child($blog_id);
+				$this->set_post_broadcast_data( $linked_parent_broadcast_data['blog_id'], $linked_parent_broadcast_data['post_id'], $parent_broadcast_data );
+			}
+			
+			$this->delete_post_broadcast_data($blog_id, $post_id);
+		}
+
 	}
 	
 	public function manage_posts_columns($defaults)
@@ -1292,11 +1624,20 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		if ($column_name != '3wp_broadcast')
 			return;
 			
+		global $blog_id;		
 		global $post;
-		$broadcastData = $this->getPostBroadcastData($post->ID);
-		if ( $broadcastData->has_linked_children() )
+		$broadcast_data = $this->get_post_broadcast_data($blog_id, $post->ID);
+		if ( $broadcast_data->get_linked_parent() !== false)
 		{
-			$children = $broadcastData->get_linked_children();
+			$parent = $broadcast_data->get_linked_parent();
+			$parent_blog_id = $parent['blog_id'];
+			switch_to_blog( $parent_blog_id );
+			echo __(sprintf('Linked from %s', '<a href="' . get_bloginfo('url') . '/wp-admin/post.php?post=' .$parent['post_id'] . '&action=edit">' . get_bloginfo('name') . '</a>' ), _3BC);
+			restore_current_blog();
+		}
+		if ( $broadcast_data->has_linked_children() )
+		{
+			$children = $broadcast_data->get_linked_children();
 			
 			if (count($children) < 0)
 				return;
@@ -1325,9 +1666,10 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	
 	public function post_row_actions($actions)
 	{
+		global $blog_id;
 		global $post;
-		$broadcastData = $this->getPostBroadcastData($post->ID);
-		if ($broadcastData->has_linked_children())
+		$broadcast_data = $this->get_post_broadcast_data($blog_id, $post->ID);
+		if ($broadcast_data->has_linked_children())
 			$actions = array_merge($actions, array(
 				'broadcast_unlink' => '<a href="'.wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=$post->ID", 'broadcast_unlink_' . $post->ID).'" title="'.__('Remove links to all the broadcasted children', _3BC).'">'.__('Unlink', _3BC).'</a>',
 			));
@@ -1336,43 +1678,69 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	
 	public function create_meta_box()
 	{
-		if ($this->role_at_least( $this->get_option('role_broadcast') ))
+		if ($this->role_at_least( $this->get_site_option('role_broadcast') ))
 		{
 			// If the user isn't a site admin, or if the user doesn't have any other blogs to write to...
-			if ( $this->role_at_least('site_admin') || count($this->getUserWritableBlogs($this->user_id()))> 1 )	// User always has at least one to write to, if he's gotten THIS far.
+			if ( $this->role_at_least('super_admin') || count($this->list_user_writable_blog($this->user_id()))> 1 )	// User always has at least one to write to, if he's gotten THIS far.
 			{
 				$this->loadLanguages(_3BC);
-				add_meta_box('threewp_broadcast', __('Broadcast', _3BC), array(&$this, 'add_meta_box_post'), 'post', 'side', 'low' );
-				add_meta_box('threewp_broadcast', __('Broadcast', _3BC), array(&$this, 'add_meta_box_page'), 'page', 'side', 'low' );
-				add_action('save_post', array(&$this, 'save_post'), $this->get_option('save_post_priority'));
+				$post_types = $this->get_site_option('post_types');
+				foreach($post_types as $post_type => $ignore)
+					add_meta_box('threewp_broadcast', __('Broadcast', _3BC), array(&$this, 'add_meta_box_type'), $post_type, 'side', 'low' );
+				add_action('save_post', array(&$this, 'save_post'), $this->get_site_option('save_post_priority'));
 			}
 		}
+	}
+	
+	public function the_permalink($link)
+	{
+		global $id;
+		global $blog_id;
+		
+		$broadcast_data = $this->get_post_broadcast_data($blog_id, $id);
+		
+		$linked_parent = $broadcast_data->get_linked_parent();
+		
+		if ($linked_parent === false)
+			return $link;
+
+		switch_to_blog( $linked_parent['blog_id'] );
+		$returnValue = get_permalink( $linked_parent['post_id'] );
+		restore_current_blog();
+		return $returnValue;
 	}
 	
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Misc functions
 	// --------------------------------------------------------------------------------------------
 
-	private function showGroupBlogs($blogs, $groupID, $selected)
+	private function show_group_blogs($options)
 	{
 		$form = $this->form();
 		$returnValue = '<ul class="broadcast_blogs">';
-		$nameprefix = "[broadcast][groups][$groupID]";
-		foreach($blogs as $blog)
+		$nameprefix = "[broadcast][groups][" . $options['nameprefix'] . "]";
+		foreach($options['blogs'] as $blog)
 		{
-			$required = $this->isRequired($blog['blog_id']);
-			$checked = isset( $selected[$blog['blog_id']] ) || $required;
+			$blog_id = $blog['blog_id'];	// Convience
+			$required = $this->isRequired( $blog_id );
+			$checked = isset( $options['selected'][ $blog_id ] ) || $required;
 			$input = array(
-				'name' => $blog['blog_id'],
+				'name' => $blog_id,
 				'type' => 'checkbox',
 				'nameprefix' => $nameprefix,
 				'label' => $blog['blogname'],
-				'disabled' => $required,
+				'disabled' => isset($options['disabled'][ $blog_id ]),
+				'readonly' => isset($options['readonly'][ $blog_id ]),
 				'value' => 'blog_' .$checked,
 				'checked' => $checked,
 				'title' => $blog['siteurl'],
 			);
-			$returnValue .= '<li>'.$form->makeInput($input).' '.$form->makeLabel($input).'</li>';
+			
+			$blog_class = isset($options['blog_class'][$blog_id]) ? $options['blog_class'][$blog_id] : '';
+			$blog_title = isset($options['blog_title'][$blog_id]) ? $options['blog_title'][$blog_id] : '';
+			
+			$returnValue .= '<li class="'.$blog_class.'"
+				 title="'.$blog_title.'">'.$form->makeInput($input).' '.$form->makeLabel($input).'</li>';
 		}
 		$returnValue .= '</ul>';
 		return $returnValue;
@@ -1414,32 +1782,32 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		';
 	}
 	
-	protected function getUserWritableBlogs($user_id)
+	protected function list_user_writable_blog($user_id)
 	{
 		// Super admins can write anywhere they feel like.
-		if (is_site_admin())
+		if (is_super_admin())
 		{
 			$blogs = $this->get_blog_list();
-			$blogs = $this->sortBlogs($blogs);
+			$blogs = $this->sort_blogs($blogs);
 			return $blogs;
 		}
 		
 		$blogs = get_blogs_of_user($user_id);
 		foreach($blogs as $index=>$blog)
 		{
-			$blog = $this->objectToArray($blog);
+			$blog = $this->object_to_array($blog);
 			$blog['blog_id'] = $blog['userblog_id'];
 			$blogs[$index] = $blog;
-			if (!$this->canUserWriteToBlog($user_id, $blog['blog_id']))
+			if (!$this->is_blog_user_writable($user_id, $blog['blog_id']))
 				unset($blogs[$index]);
 		}
-		return $this->sortBlogs($blogs);
+		return $this->sort_blogs($blogs);
 	}
 	
-	protected function canUserWriteToBlog($user_id, $blog_id)
+	protected function is_blog_user_writable($user_id, $blog_id)
 	{
 		// If this blog is in the blacklist, reply no.
-		if ($this->isBlacklisted($blog_id))
+		if ($this->is_blog_blacklisted($blog_id))
 			return false;
 			
 		// Else, check that the user has write access.
@@ -1454,9 +1822,9 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	 */
 	protected function isRequired($blog_id)
 	{
-		if (is_site_admin())
+		if (is_super_admin())
 			return false;
-		$requiredlist = $this->get_option('requiredlist');
+		$requiredlist = $this->get_site_option('requiredlist');
 		$requiredlist = explode(',', $requiredlist);
 		$requiredlist = array_flip($requiredlist);
 		return isset($requiredlist[$blog_id]);
@@ -1465,11 +1833,9 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	/**
 	 * Returns whether the site admin has blacklisted the blog.
 	 */
-	protected function isBlacklisted($blog_id)
+	protected function is_blog_blacklisted($blog_id)
 	{
-		if (is_site_admin())
-			return false;
-		$blacklist = $this->get_option('blacklist');
+		$blacklist = $this->get_site_option('blacklist');
 		if ($blacklist == '')
 			return false;
 		$blacklist = explode(',', $blacklist);
@@ -1491,15 +1857,25 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		
 		foreach($blogs as $blog_id=>$blog)
 		{
-			$tempBlog = $this->objectToArray(get_blog_details($blog_id, true));
+			$tempBlog = $this->object_to_array(get_blog_details($blog_id, true));
 			$blogs[$blog_id]['blogname'] = $tempBlog['blogname'];
 			$blogs[$blog_id]['siteurl'] = $tempBlog['siteurl'];
 			$blogs[$blog_id]['domain'] = $tempBlog['domain'];
 		}
 
-		return $this->sortBlogs($blogs);
+		return $this->sort_blogs($blogs);
 	}
 	
+	/**
+		Returns a list of all the, as per admin, required blogs to broadcast to.
+	**/
+	private function get_required_blogs()
+	{
+		$requiredBlogs = explode(',', $this->get_site_option('requiredlist'));
+		$requiredBlogs = array_flip($requiredBlogs);
+		return $requiredBlogs;
+	}
+
 	/**
 	 * Provides a cached list of blogs.
 	 * 
@@ -1509,11 +1885,11 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	 */
 	private function cached_blog_list()
 	{
-		$blogs = $_SESSION['threewp_broadcast_blogs'];
+		$blogs = $this->blogs_cache;
 		if ($blogs === null)
 		{
 			$blogs = $this->get_blog_list();
-			$_SESSION['threewp_broadcast_blogs'] = $blogs;
+			$this->blogs_cache = $blogs;
 		}
 		return $blogs;		
 	}
@@ -1521,7 +1897,7 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	/**
 	 * Sorts the blogs by name. The Site Blog is first, no matter the name.
 	 */
-	protected function sortBlogs($blogs)
+	protected function sort_blogs($blogs)
 	{
 		// Make sure the main blog is saved.
 		$firstBlog = array_shift($blogs);
@@ -1543,9 +1919,8 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	 * Use BroadcastData->is_empty() to check for that.
 	 * @param int $post_id Post ID to retrieve data for.
 	 */
-	private function getPostBroadcastData($post_id)
+	private function get_post_broadcast_data($blog_id, $post_id)
 	{
-		global $blog_id;
 		require_once('BroadcastData.php');
 		$returnValue = $this->sqlBroadcastDataGet($blog_id, $post_id);
 		
@@ -1559,18 +1934,26 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 	 * 
 	 * If the BroadcastData->is_empty() then the BroadcastData is removed completely.
 	 * 
+	 * @param int $blog_id Blog ID to update
 	 * @param int $post_id Post ID to update
-	 * @param BroadcastData $broadcastData BroadcastData file.
+	 * @param BroadcastData $broadcast_data BroadcastData file.
 	 */
-	private function setPostBroadcastData($post_id, $broadcastData)
+	private function set_post_broadcast_data($blog_id, $post_id, $broadcast_data)
 	{
-		global $blog_id;
 		require_once('BroadcastData.php');
-		if ($broadcastData->is_modified())
-			if ($broadcastData->is_empty())
+		if ($broadcast_data->is_modified())
+			if ($broadcast_data->is_empty())
 				$this->sqlbroadcastDataDelete($blog_id, $post_id);
 			else
-				$this->sqlbroadcastDataUpdate($blog_id, $post_id, $broadcastData->getData());
+				$this->sqlbroadcastDataUpdate($blog_id, $post_id, $broadcast_data->getData());
+	}
+	
+	/**
+		Deletes the broadcast data completely of a post in a blog.
+	*/
+	private function delete_post_broadcast_data($blog_id, $post_id)
+	{
+		$this->sqlbroadcastDataDelete($blog_id, $post_id);
 	}
 	
 	/**
@@ -1599,6 +1982,106 @@ class ThreeWP_Broadcast extends ThreeWP_Base_Broadcast
 		$attach_data = wp_generate_attachment_metadata( $attach_id, $upload_dir['path'] . '/' . $attachment_data->filename_base() );
 		wp_update_attachment_metadata( $attach_id,  $attach_data );
 		return $attach_id;
+	}
+	
+	private function load_last_used_settings($user_id)
+	{
+		$data = $this->sqlUserGet($user_id);
+		if (!isset($data['last_used_settings']))
+			$data['last_used_settings'] = array();
+		return $data['last_used_settings'];
+	}
+	
+	private function save_last_used_settings($user_id, $settings)
+	{
+		$data = $this->sqlUserGet($user_id);
+		$data['last_used_settings'] = $settings;
+		$this->sqlUserSet($user_id, $data);
+	}
+	
+	private function get_current_blog_categories()
+	{
+		$categories = get_categories(array(
+			'hide_empty' => false,
+		));
+		$categories = $this->object_to_array($categories);
+		$categories = $this->array_moveKey($categories, 'term_id');
+		return $categories;
+	}
+	
+	private function sync_categories($source_blog_id, $target_blog_id)
+	{
+		global $wpdb;
+		switch_to_blog( $source_blog_id );
+		$source_categories = $this->get_current_blog_categories();
+		restore_current_blog();
+		
+		switch_to_blog( $target_blog_id );
+
+		$target_categories = $this->get_current_blog_categories();
+		
+		// Keep track of which cats we've found.
+		$found_targets = array();
+		$found_sources = array();
+		
+		// First step: find out which of the target cats exist on the source blog
+		foreach($target_categories as $target_category_id => $target_category)
+			foreach($source_categories as $source_category_id => $source_category)
+			{
+				if ( isset($found_sources[$source_category_id]) )
+					continue;
+				if ($source_category['slug'] == $target_category['slug'])
+				{
+					$found_targets[ $target_category_id ] = $source_category_id;
+					$found_sources[ $source_category_id ] = $target_category_id;
+				}
+			}
+			
+		// Now we know which of the cats on our target blog exist on the source blog.
+		// Next step: see if the parents are the same on the target as they are on the source.
+		// "Same" meaning pointing to the same slug.
+		foreach($found_targets as $target_category_id => $source_category_id)
+		{
+			$parent_of_target_category = $target_categories[ $target_category_id ][ 'parent' ];
+			$parent_of_equivalent_source_category = $source_categories[ $source_category_id ]['parent'];
+			
+			if ( $parent_of_target_category != $parent_of_equivalent_source_category && isset( $found_sources[ $parent_of_equivalent_source_category ] ) )
+			{
+				$new_category_parent = $found_sources[ $parent_of_equivalent_source_category ];
+				$this->set_category_parent($target_category_id, $new_category_parent);
+			}
+		}
+			
+		restore_current_blog();
+	}
+	
+	private function set_category_parent($cat_id, $parent_id)
+	{
+		wp_update_category(array(
+			'cat_ID' => $cat_id,
+			'category_parent' => $parent_id,
+		));
+		// wp_update_category alone won't work. The "cache" needs to be cleared.
+		// see: http://wordpress.org/support/topic/category_children-how-to-recalculate?replies=4
+		delete_option('category_children');
+	}
+	
+	protected function make_table_row($input, $form = null)
+	{
+		if ($form === null)
+			$form = $this->form();
+		return '
+			<tr>
+				<th>'.$form->makeLabel($input).'</th>
+				<td>
+					<div class="input_itself">
+						'.$form->makeInput($input).'
+					</div>
+					<div class="input_description">
+						'.$form->makeDescription($input).'
+					</div>
+				</td>
+			</tr>';
 	}
 	
 	// --------------------------------------------------------------------------------------------

@@ -1,8 +1,10 @@
 === ThreeWP Broadcast ===
-Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously
+Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously, child, parent, permalink, post type, custom post type, threewp
 Requires at least: 3.0
 Tested up to: 3.0
 Stable tag: trunk
+Donate link: http://mindreantre.se/donate/
+Contributors: tmuka
 
 Network plugin to broadcast a post/page to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
 
@@ -10,9 +12,9 @@ Network plugin to broadcast a post/page to other blogs. Whitelist, blacklist, gr
 
 Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available. All attached images are reposted to the selected blogs.
 
-Broadcasted posts can be linked to their parents: updated parent posts also update the child posts.
+Broadcasted posts can be linked to their parents: updated parent posts also update the child posts. Child post permalinks can be overriden with a link to the parent post.
 
-Inspired by <a href="http://wordpress.org/extend/plugins/broadcast-mu/">Tom Lynch's Broadcast MU plugin</a> that doesn't work nowadays due to autosaving and such.
+Last used settings are remembered between uses. Broadcasted categories keep their parents, as long as the parents already exist on the child blog of if the parent is broadcasted and created simultaneously as the child category.
 
 Has options for whitelisting (required blogs), blacklisting, user role access granularity, category and/or tag posting (if the blogs have the same category slugs) and category/tag creation (automatically, per user role) and an uninstall to completely remove itself. No traces of the plugin are left (assuming the created tables are successfully removed).
 
@@ -31,16 +33,41 @@ Did I miss anything?
 
 == Screenshots ==
 
-1. Broadcast box during post editing
-1. Post / page overview with unlink options
-1. Group editing
-1. More group editing
-1. Site admin settings
-1. Required list settings
-1. Blacklist settings
-1. Uninstall
+1. Broadcast box during post editing.
+2. Post / page overview with unlink options
+3. Admin: General settings
+4. User: Help page
+5. User: Group settings page
+6. Admin: Post types settings page
+7. Admin: Required blog list
+8. Admin: Blacklist
+9. Admin: Uninstall page
+10. Admin: Settings for logging to Activity Monitor
+
+== Frequently Asked Questions ==
+
+= Why can I not see the Broadcast meta box? =
+
+Make sure that:
+
+1. The plugin is network enabled
+2. Your user level has broadcast access (Broadcast access role)
+3. Your user has write access to more than this blog
+4. The correct post type(s) have been selected
 
 == Changelog ==
+= 1.2 =
+* Settings are kept when activating the plugin.
+* Child posts are given link info.
+* Child post permalinks can be overriden.
+* Last used settings are remembered.
+* Broadcasted children cannot be rebroadcasted.
+* Page templates are broadcasted.
+* Broadcasted categories are synchronized with the children.
+* Broadcasted custom fields aren't duplicated anymore.
+* Sticky status is broadcasted.
+* Page parents are kept. The parent page must be broadcasted first.
+* Drafts and future posts can also be broadcasted.
 = 1.1 =
 * Galleries are now broadcastable.
 = 1.0 =

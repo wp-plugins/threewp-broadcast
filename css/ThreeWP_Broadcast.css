@@ -44,3 +44,20 @@ ul.broadcast_blogs li
 {
 	text-align: center;
 }
+
+
+#threewp_broadcast li.blog_is_already_linked
+{
+	background-image: url("../images/link-16.png");
+	background-position: right center;
+	background-repeat: no-repeat;
+}
+#threewp_broadcast li.blog_is_required
+{
+	background-image: url("../images/lock-16.png");
+	background-position: right center;
+	background-repeat: no-repeat;
+}
+
+tr.activity_monitor_broadcast		td.activity_monitor_action		{	background-image: url("../images/threewp_activity_monitor_icon.png");	}
+ 		

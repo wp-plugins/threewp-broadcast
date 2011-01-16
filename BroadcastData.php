@@ -74,21 +74,21 @@ class BroadcastData
 	
 	/**
 	 * Adds a linked child for this post.
-	 * @param int $blogID Blog ID
-	 * @param int $postID Post ID of child post
+	 * @param int $blog_id Blog ID
+	 * @param int $post_id Post ID of child post
 	 */
-	public function add_linked_child($blogID, $postID)
+	public function add_linked_child($blog_id, $post_id)
 	{
-		$this->data['linked_children'][$blogID] = $postID;
+		$this->data['linked_children'][$blog_id] = $post_id;
 		$this->modified();
 	}
 	
 	/**
 	 * Removes a child from a blog.
 	 */
-	public function remove_linked_child($blogID)
+	public function remove_linked_child($blog_id)
 	{
-		unset($this->data['linked_children'][$blogID]);
+		unset($this->data['linked_children'][$blog_id]);
 		if ( count($this->data['linked_children']) < 1)
 			unset( $this->data['linked_children'] );
 		
@@ -104,6 +104,37 @@ class BroadcastData
 		$this->modified();
 	}
 	
+	/**
+	 * Remove linked parent
+	 */
+	public function get_linked_parent()
+	{
+		if (isset($this->data['linked_parent']))
+			return $this->data['linked_parent'];
+		else
+			return false;
+	}
+
+	/**
+	 * Sets the parent post of this post.
+	 * @param int $blog_id Blog ID
+	 * @param int $post_id Post ID of child post
+	 */
+	public function set_linked_parent($blog_id, $post_id)
+	{
+		$this->data['linked_parent'] = array('blog_id' => $blog_id, 'post_id' => $post_id);
+		$this->modified();
+	}
+
+	/**
+	 * Remove linked parent
+	 */
+	public function remove_linked_parent()
+	{
+		unset($this->data['linked_parent']);
+		$this->modified();
+	}
+
 	/**
 	 * Flags the data as "modified".
 	 */

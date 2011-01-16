@@ -6,269 +6,293 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ThreeWP Broadcast 0.0.1\n"
-"Report-Msgid-Bugs-To: http://wordpress.org/tag/threewp-broadcast\n"
-"POT-Creation-Date: 2010-10-17 13:37+0200\n"
-"PO-Revision-Date: 2010-10-17 13:43+0100\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/ThreeWP_Broadcast.php\n"
+"POT-Creation-Date: 2011-01-16 09:08+0100\n"
+"PO-Revision-Date: 2011-01-16 09:09+0100\n"
 "Last-Translator: Edward <edward@edwardh.se>\n"
 "Language-Team: Edward <edward@mindreantre.se>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ThreeWP_Broadcast.php:50
-#: ThreeWP_Broadcast.php:1298
-#: ThreeWP_Broadcast.php:1299
+#: ThreeWP_Broadcast_3Base.php:610
+#, php-format
+msgid "%s ago"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:65
+#: ThreeWP_Broadcast.php:1689
 msgid "Broadcast"
 msgstr "Multiposta"
 
-#: ThreeWP_Broadcast.php:142
-msgid "Help"
-msgstr "Hjälp"
-
-#: ThreeWP_Broadcast.php:147
-#: ThreeWP_Broadcast.php:1273
-#: ThreeWP_Broadcast.php:1285
+#: ThreeWP_Broadcast.php:168
+#: ThreeWP_Broadcast.php:1656
+#: ThreeWP_Broadcast.php:1674
 msgid "Unlink"
 msgstr "Ta bort länk"
 
-#: ThreeWP_Broadcast.php:153
+#: ThreeWP_Broadcast.php:174
+#: ThreeWP_Broadcast.php:1657
+msgid "Trash"
+msgstr "Papperskorgen"
+
+#: ThreeWP_Broadcast.php:178
+msgid "Help"
+msgstr "Hjälp"
+
+#: ThreeWP_Broadcast.php:183
 msgid "ThreeWP Broadcast groups"
 msgstr "Grupper för multipostning"
 
-#: ThreeWP_Broadcast.php:477
+#: ThreeWP_Broadcast.php:620
 msgid "Group blogs have been saved."
 msgstr "Bloggarna har sparats."
 
-#: ThreeWP_Broadcast.php:484
+#: ThreeWP_Broadcast.php:627
 msgid "The group name may not be empty!"
 msgstr "Gruppens namn får ej vara tomt!"
 
-#: ThreeWP_Broadcast.php:489
+#: ThreeWP_Broadcast.php:639
 msgid "The group has been created!"
 msgstr "Gruppen har skapats!"
 
-#: ThreeWP_Broadcast.php:498
+#: ThreeWP_Broadcast.php:645
 msgid "You have not created any groups yet."
 msgstr "Du har inte skapat någon grupp än."
 
-#: ThreeWP_Broadcast.php:504
+#: ThreeWP_Broadcast.php:651
 msgid "Group"
 msgstr "Grupp"
 
-#: ThreeWP_Broadcast.php:509
+#: ThreeWP_Broadcast.php:660
 msgid "Select/deselect all the blogs in the above group."
 msgstr "Markera alla/inga bloggar i gruppen ovanför."
 
-#: ThreeWP_Broadcast.php:518
+#: ThreeWP_Broadcast.php:669
 msgid "Save groups"
 msgstr "Spara grupperna"
 
-#: ThreeWP_Broadcast.php:524
+#: ThreeWP_Broadcast.php:675
 msgid "New group name"
 msgstr "Nya gruppnamnet"
 
-#: ThreeWP_Broadcast.php:531
+#: ThreeWP_Broadcast.php:682
 msgid "Create the new group"
 msgstr "Skapa en ny grupp"
 
-#: ThreeWP_Broadcast.php:537
+#: ThreeWP_Broadcast.php:688
 msgid "Your groups"
 msgstr "Dina grupper"
 
-#: ThreeWP_Broadcast.php:549
+#: ThreeWP_Broadcast.php:700
 msgid "Create a new group"
 msgstr "Skapa en ny grupp"
 
-#: ThreeWP_Broadcast.php:563
+#: ThreeWP_Broadcast.php:714
 msgid "Delete"
 msgstr "Borttagning"
 
-#: ThreeWP_Broadcast.php:566
+#: ThreeWP_Broadcast.php:717
 msgid "To <strong>delete</strong> a group, leave all blogs in that group unmarked and then save."
 msgstr "För att <strong>ta bort</strong> gruppen, avmarkera alla bloggar i gruppen och klicka på spara."
 
-#: ThreeWP_Broadcast.php:594
-msgid "Linked post has been removed!"
-msgstr "Det länkade inlägget har tagits bort!"
+#: ThreeWP_Broadcast.php:771
+msgid "Link to child post has been removed."
+msgstr "Länken till et multipostade inlägget har tagits bort."
 
-#: ThreeWP_Broadcast.php:601
-msgid "All linked posts has been removed!"
-msgstr "Alla länkade inlägg har tagits bort!"
+#: ThreeWP_Broadcast.php:804
+msgid "All links to child posts have been removed!"
+msgstr "Alla inläggets länkar till multipostade inlägg har tagits bort."
 
-#: ThreeWP_Broadcast.php:616
+#: ThreeWP_Broadcast.php:844
+msgid "The broadcasted child post has been put in the trash."
+msgstr "Det multipostade inlägget har lagts i papperskorgen."
+
+#: ThreeWP_Broadcast.php:858
 msgid "What is Broadcast?"
 msgstr "Vad är Multipostning (Broadcast)?"
 
-#: ThreeWP_Broadcast.php:619
+#: ThreeWP_Broadcast.php:861
 msgid "What the Broadcast window looks like"
 msgstr "Hur Multipostningsfönstret ser ut"
 
-#: ThreeWP_Broadcast.php:623
+#: ThreeWP_Broadcast.php:865
 msgid "With Broadcast you can post to several blogs at once. The broadcast window is first shown at the bottom right on the Add New post/page screen."
 msgstr "Med Multipostning kan du posta till flera bloggar samtidigt. Multipostningsfönstret visas första gången längst ner till höger när du skriver ett nytt inlägg."
 
-#: ThreeWP_Broadcast.php:624
+#: ThreeWP_Broadcast.php:866
 msgid "The window contains several options and a list of blogs you have access to."
 msgstr "Fönstret innehåller olika alternativ och en lista över alla bloggar du har tillgång till."
 
-#: ThreeWP_Broadcast.php:628
+#: ThreeWP_Broadcast.php:870
 msgid "Some settings might be disabled by the site administrator and if you do not have write access to any blogs, other than this one, the Broadcast window might not appear."
 msgstr "Det är möjligt att vissa inställningar har avaktiverats av administratören. Har du inte skrivtillgång till fler än en blogg kommer Multipostningsfönstret inte visas."
 
-#: ThreeWP_Broadcast.php:632
+#: ThreeWP_Broadcast.php:874
 msgid "To use the Broadcast plugin, simply select which blogs you want to broadcast the post to and then publish the post normally."
 msgstr "För att använda tillägget, markera vilka bloggar du vill multiposta till och fortsätt sedan redigera inlägget som vanligt."
 
-#: ThreeWP_Broadcast.php:635
+#: ThreeWP_Broadcast.php:877
 msgid "Options"
 msgstr "Inställningar"
 
-#: ThreeWP_Broadcast.php:638
-#: ThreeWP_Broadcast.php:739
+#: ThreeWP_Broadcast.php:880
+#: ThreeWP_Broadcast.php:985
 msgid "Link this post to its children"
 msgstr "Länka det här inlägg till de multipostade inläggen"
 
-#: ThreeWP_Broadcast.php:638
+#: ThreeWP_Broadcast.php:880
 msgid "will create a link from this post (the parent) to all the broadcasted posts (children). Updating the parent will result in all the children being updated. Links to the children can be removed in the page / post overview."
 msgstr "kommer att skapa en länk från detta inlägg (föräldern) till alla multipostade inlägg (barnen). När du uppdaterar föräldern kommer alla barninlägg att uppdateras. Länkningarna till barninläggen kan tas bort från inläggsöversikten."
 
-#: ThreeWP_Broadcast.php:642
+#: ThreeWP_Broadcast.php:884
 msgid "Post overview with unlink options"
 msgstr "Inläggsöversikten med möjlighet att ta bort länkningar"
 
-#: ThreeWP_Broadcast.php:646
+#: ThreeWP_Broadcast.php:888
 msgid "When a post is linked to children, the children are overwritten when post is updated - all the categories, tags and fields (including featured image) are also overwritten -  and when the parent is trashed or deleted the children get the same treatment. If you want to keep any children and delete only the parent, use the unlink links in the post overview. The unlink link below the post name removes all links and the unlinks to the right remove singular links."
 msgstr "När ett inlägg länkas till sina barn kommer barninläggen att skrivas över när förälderinlägget uppdateras - alla kategorier, etiketter och egna fälten (inklusive den utvalda bilden) kommer att skrivas över - och när förälderinlägget läggs in papperskorgen eller tas bort kommer samma sak ske med barninläggen. Om du vill behålla något av barninläggen och bara ta bort föräldern, använd länkborttagningsmöjligheten i inläggsöversikten. Möjligheten att ta bort länkningen som står under inläggsnamnet tar bort alla länkningar och länkarna till höger tar bort länkningarna en och en."
 
-#: ThreeWP_Broadcast.php:650
-#: ThreeWP_Broadcast.php:752
-msgid "Broadcast this post as a draft"
-msgstr "Multiposta det här inlägget som utkast"
-
-#: ThreeWP_Broadcast.php:650
-msgid "will send this post to the selected blogs and mark it as a draft."
-msgstr "skickar inlägget till de markerade bloggarna som utkast."
-
-#: ThreeWP_Broadcast.php:654
-#: ThreeWP_Broadcast.php:765
+#: ThreeWP_Broadcast.php:892
+#: ThreeWP_Broadcast.php:1000
 msgid "Broadcast categories also"
 msgstr "Multiposta kategorierna också"
 
-#: ThreeWP_Broadcast.php:654
+#: ThreeWP_Broadcast.php:892
 msgid "will also try to send the categories together with the post."
 msgstr "försöker att multiposta kategorierna tillsammans med själva inläggt."
 
-#: ThreeWP_Broadcast.php:655
+#: ThreeWP_Broadcast.php:893
 msgid "In order to be able to broadcast the categories, the selected blogs must have the same category names (slugs) as this blog, else the posts will be posted as uncategorized."
 msgstr "För att kunna Multiposta kategorier måste alla valda bloggar ha exakt samma kategorinamn som denna, annars postas inlägget som okategoriserad."
 
-#: ThreeWP_Broadcast.php:659
-#: ThreeWP_Broadcast.php:794
+#: ThreeWP_Broadcast.php:897
+#: ThreeWP_Broadcast.php:1028
 msgid "Broadcast tags also"
 msgstr "Multiposta etiketterna också"
 
-#: ThreeWP_Broadcast.php:659
+#: ThreeWP_Broadcast.php:897
 msgid "will also mark the broadcasted posts with the same tags."
 msgstr "kommer att multiposta etiketterna tillsammans med själva inlägget."
 
-#: ThreeWP_Broadcast.php:663
-#: ThreeWP_Broadcast.php:824
+#: ThreeWP_Broadcast.php:901
+#: ThreeWP_Broadcast.php:1057
 msgid "Broadcast custom fields"
 msgstr "Multiposta egna fälten också"
 
-#: ThreeWP_Broadcast.php:663
+#: ThreeWP_Broadcast.php:901
 msgid "will give the broadcasted posts the same custom fields as the original. Use this setting to broadcast the featured image."
 msgstr "kommer att multiposta egna fälten. Använd den här inställningen att multiposta den utvalda bilden."
 
-#: ThreeWP_Broadcast.php:666
+#: ThreeWP_Broadcast.php:904
 msgid "Groups"
 msgstr "Grupper"
 
-#: ThreeWP_Broadcast.php:669
+#: ThreeWP_Broadcast.php:907
 msgid "If the site administrator allows it you may create groups to quickly select several blogs at once. To create a group, start by typing a group name in the text box and pressing the create button."
 msgstr "Om administratören tillåter kan du skapa grupper för att snabbt och lätt kunna välja flera bloggar samtidigt. För att skapa en grupp börja med att skriv in ett beskrivande gruppnamn i textrutan och tryck sedan på skapa-knappen."
 
-#: ThreeWP_Broadcast.php:673
+#: ThreeWP_Broadcast.php:911
 msgid "Group setup"
 msgstr "Gruppinställningar"
 
-#: ThreeWP_Broadcast.php:677
+#: ThreeWP_Broadcast.php:915
 msgid "Then select which blogs you want to be automatically selected when you choose this group when editing a new post. Press the save button when you are done. Your new group is ready to be used!"
 msgstr "Välj sedan vilka bloggar du vill ska väljas automatiskt när du väljer den här gruppen under inläggredigeringsprocessen. Tryck på spara-knappen när du är klar. Den nya gruppen är färdig att användas!"
 
-#: ThreeWP_Broadcast.php:678
+#: ThreeWP_Broadcast.php:916
 msgid "Simply choose it in the dropdown box and the blogs you specified will be automatically chosen."
 msgstr "Välj den i rullistan och bloggarna du ställt in kommer att väljas automatiskt."
 
-#: ThreeWP_Broadcast.php:682
-msgid "Groups have been selected and saved"
-msgstr "Grupperna har sparats"
+#: ThreeWP_Broadcast.php:946
+msgid "This post is broadcasted child post. It cannot be broadcasted further."
+msgstr "Det här inlägget är ett multipostat inlägg. Funktionen kan inte användas."
 
-#: ThreeWP_Broadcast.php:738
+#: ThreeWP_Broadcast.php:984
 msgid "Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc."
 msgstr "Skapa en länk till barnen, vilka kommer att uppdateras när det här inlägget uppdateras, läggs i papperskorgen, osv."
 
-#: ThreeWP_Broadcast.php:766
+#: ThreeWP_Broadcast.php:1001
 msgid "The categories must have the same name (slug) on the selected blogs."
 msgstr "Kategorierna måste ha samma namn (\"slug\") på de valda bloggarna."
 
-#: ThreeWP_Broadcast.php:780
+#: ThreeWP_Broadcast.php:1014
 msgid "Create categories automatically"
 msgstr "Skapa kategorier automatiskt"
 
-#: ThreeWP_Broadcast.php:781
+#: ThreeWP_Broadcast.php:1015
 msgid "The categories will be created if they don't exist on the selected blogs."
 msgstr "Kategorierna kommer att skapas ifall de inte finns på de valda bloggarna."
 
-#: ThreeWP_Broadcast.php:795
+#: ThreeWP_Broadcast.php:1029
 msgid "The tags must have the same name (slug) on the selected blogs."
 msgstr "Etiketterna måste ha samma namn (\"slug\") på de valda bloggarna."
 
-#: ThreeWP_Broadcast.php:809
+#: ThreeWP_Broadcast.php:1042
 msgid "Create tags automatically"
 msgstr "Skapa etiketter automatiskt"
 
-#: ThreeWP_Broadcast.php:810
+#: ThreeWP_Broadcast.php:1043
 msgid "The tags will be created if they don't exist on the selected blogs."
 msgstr "Etiketterna kommer att skapas om de inte finns på de valda bloggarna."
 
-#: ThreeWP_Broadcast.php:823
+#: ThreeWP_Broadcast.php:1056
 msgid "Broadcast all the custom fields and the featured image?"
 msgstr "Multiposta alla egna fält samt den utvalda bilden?"
 
-#: ThreeWP_Broadcast.php:840
+#: ThreeWP_Broadcast.php:1072
 msgid "Select blogs in group"
 msgstr "Välj bloggarna i gruppen"
 
-#: ThreeWP_Broadcast.php:841
+#: ThreeWP_Broadcast.php:1073
 msgid "No group selected"
 msgstr "Ingen grupp vald"
 
-#: ThreeWP_Broadcast.php:878
+#: ThreeWP_Broadcast.php:1141
+msgid "This blog has already been linked."
+msgstr "Bloggen har redan länkats."
+
+#: ThreeWP_Broadcast.php:1153
+msgid "This blog is required and cannot be unselected."
+msgstr "Den här bloggen måste bli multipostat till, enligt administratören."
+
+#: ThreeWP_Broadcast.php:1170
 msgid "Broadcast to:"
 msgstr "Multiposta till:"
 
-#: ThreeWP_Broadcast.php:884
-#: ThreeWP_Broadcast.php:1338
+#: ThreeWP_Broadcast.php:1172
+#: ThreeWP_Broadcast.php:1187
+#: ThreeWP_Broadcast.php:1753
 msgid "Select/deselect all"
 msgstr "Markera/avmarkera alla"
 
-#: ThreeWP_Broadcast.php:1247
+#: ThreeWP_Broadcast.php:1618
 msgid "Shows which blogs have posts linked to this one"
 msgstr "Visar vilka bloggar har inlägg länkade till detta"
 
-#: ThreeWP_Broadcast.php:1247
+#: ThreeWP_Broadcast.php:1618
 msgid "Broadcasted"
 msgstr "Multipostat"
 
-#: ThreeWP_Broadcast.php:1273
+#: ThreeWP_Broadcast.php:1656
 msgid "Remove links to this broadcasted child"
 msgstr "Ta bort länkningen till det här multipostade inläggsbarnet"
 
-#: ThreeWP_Broadcast.php:1285
+#: ThreeWP_Broadcast.php:1657
+msgid "Put this broadcasted child in the trash"
+msgstr "Lägg det multipostade inlägget i papperskorgen."
+
+#: ThreeWP_Broadcast.php:1674
 msgid "Remove links to all the broadcasted children"
 msgstr "Ta bort alla barnlänkningar"
 
+#~ msgid "Groups have been selected and saved"
+#~ msgstr "Grupperna har sparats"
+#~ msgid "Broadcast this post as a draft"
+#~ msgstr "Multiposta det här inlägget som utkast"
+#~ msgid "will send this post to the selected blogs and mark it as a draft."
+#~ msgstr "skickar inlägget till de markerade bloggarna som utkast."
 #~ msgid "Linked"
 #~ msgstr "Länkad"
 #~ msgid "ThreeWP Broadcast"
