@@ -4,7 +4,7 @@ Requires at least: 3.0
 Tested up to: 3.0
 Stable tag: trunk
 Donate link: http://mindreantre.se/donate/
-Contributors: tmuka
+Contributors: edward mindreantre, tmuka
 
 Network plugin to broadcast a post/page to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
 
