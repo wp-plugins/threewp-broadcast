@@ -301,7 +301,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'label' => 'Action priority',
 				'value' => $this->get_site_option('save_post_priority'),
 				'size' => 3,
-				'maxlength' => 3,
+				'maxlength' => 10,
 				'description' => 'A higher save-post-action priority gives other plugins more time to add their own custom fields before the post is broadcasted. <em>Raise</em> this value if you notice that plugins that use custom fields aren\'t getting their data broadcasted, but 640 should be enough for everybody.',
 				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
