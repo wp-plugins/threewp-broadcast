@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/threewp-activity-monitor/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.2
+Version: 1.2.1
 Author: Edward Hevlund
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -33,10 +33,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 		'activity_monitor_group_changes' => false,			// Reports when a user has created, changed or deleted a group (of blogs)
 		'activity_monitor_unlinks' => false,				// Reports when someone unlinks a child from the parent.
-	);
-	
-	private $custom_field_exceptions = array(
-		'_wp_page_template',								// Page template.
+		'custom_field_exceptions' => array('_wp_page_template', '_wplp_', '_aioseop_'),				// Custom fields that should be broadcasted, even though they start with _
 	);
 	
 	private $blogs_cache = null;
@@ -198,8 +195,12 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			
 		if (isset($_POST['save']))
 		{
+			// Save the exceptions
+			$custom_field_exceptions = str_replace( "\r", "", trim($_POST['custom_field_exceptions']) );
+			$custom_field_exceptions = explode("\n", $custom_field_exceptions );
 			$this->update_site_option('save_post_priority', intval($_POST['save_post_priority']));
 			$this->update_site_option('override_child_permalinks', isset($_POST['override_child_permalinks']) );
+			$this->update_site_option('custom_field_exceptions', $custom_field_exceptions );
 			foreach(array('role_broadcast', 'role_link', 'role_broadcast_as_draft', 'role_broadcast_scheduled_posts', 'role_groups', 'role_categories', 'role_categories_create', 'role_tags', 'role_tags_create', 'role_custom_fields') as $key)
 				$this->update_site_option($key, (isset($roles[$_POST[$key]]) ? $_POST[$key] : 'super_admin'));
 			$this->message('Options saved!');
@@ -258,6 +259,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'value' => $this->get_site_option('role_categories'),
 				'description' => 'Which role is needed to allow category broadcasting? The categories must have the same slug.',
 				'options' => $roles,
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_categories_create' => array(
 				'name' => 'role_categories_create',
@@ -303,6 +305,16 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'size' => 3,
 				'maxlength' => 10,
 				'description' => 'A higher save-post-action priority gives other plugins more time to add their own custom fields before the post is broadcasted. <em>Raise</em> this value if you notice that plugins that use custom fields aren\'t getting their data broadcasted, but 640 should be enough for everybody.',
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
+			),
+			'custom_field_exceptions' => array(
+				'name' => 'custom_field_exceptions',
+				'type' => 'textarea',
+				'label' => 'Custom field exceptions',
+				'value' => implode("\n", $this->get_site_option('custom_field_exceptions')),
+				'cols' => 30,
+				'rows' => 5,
+				'description' => 'Custom fields that begin with underscores (internal fields) are ignored. If you know of an internal field that should be broadcasted, write it down here. One custom field key per line and it can be any part of the key string.',
 				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'override_child_permalinks' => array(
@@ -1349,9 +1361,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			}
 			
 			// Remove all the _internal custom fields.
-			foreach($postCustomFields as $key => $array)
-				if ( strpos($key, '_') === 0 && !in_array($key, $this->custom_field_exceptions) )
-					unset( $postCustomFields[$key] );
+			$postCustomFields = $this->keep_valid_custom_fields($postCustomFields);
 		}
 		
 		// Sticky isn't a tag, cat or custom_field.
@@ -1498,28 +1508,20 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			
 			if ($custom_fields)
 			{
-				// If we're updating a linked post, remove all the tags and start from the top.
-				if ($link)
-					if ($broadcast_data->has_linked_child_on_this_blog())
+				// Remove all old custom fields.
+				$old_custom_fields = get_post_custom($new_post_id);
+
+				foreach($old_custom_fields as $key => $value)
+				{
+					// This post has a featured image! Remove it from disk!
+					if ($key == '_thumbnail_id')
 					{
-						// Remove all old custom fields.
-						$old_custom_fields = get_post_custom($new_post_id);
-						foreach($old_custom_fields as $key => $value)
-							if (strpos($key, '_') !== 0) // But only the normal custom fields, not the _internal ones that Wordpress creates.
-							{
-								// Remove the key
-								delete_post_meta($new_post_id, $key);
-							}
-							else
-							{
-								// This post has a featured image! Remove it from disk!
-								if ($key == '_thumbnail_id')
-								{
-									$thumbnail_post = $value[0];
-									wp_delete_post($thumbnail_post);
-								}
-							}
+						$thumbnail_post = $value[0];
+						wp_delete_post($thumbnail_post);
 					}
+					
+					delete_post_meta($new_post_id, $key);
+				}
 				
 				foreach($postCustomFields as $meta_key => $meta_value)
 					update_post_meta($new_post_id, $meta_key, $meta_value);
@@ -2082,6 +2084,30 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 					</div>
 				</td>
 			</tr>';
+	}
+	
+	private function keep_valid_custom_fields($custom_fields)
+	{
+		foreach($custom_fields as $key => $array)
+			if ( !$this->is_custom_field_valid($key) )
+				unset( $custom_fields[$key] ); 
+
+		return $custom_fields;
+	}
+	
+	private function is_custom_field_valid($custom_field)
+	{
+		if ( !isset($this->custom_field_exceptions_cache) )
+			$this->custom_field_exceptions_cache = $this->get_site_option('custom_field_exceptions');
+
+		if ( strpos($custom_field, '_') !== 0 )
+			return true;
+		
+		foreach($this->custom_field_exceptions_cache as $exception)
+			if (strpos($custom_field, $exception) !== false )
+				return true;
+		
+		return false;
 	}
 	
 	// --------------------------------------------------------------------------------------------

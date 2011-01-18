@@ -56,6 +56,10 @@ Make sure that:
 4. The correct post type(s) have been selected
 
 == Changelog ==
+= 1.2.1 =
+* Custom field exceptions added
+* Priority can now be 10 characters
+* Category broadcast role is back again. :)
 = 1.2 =
 * Settings are kept when activating the plugin.
 * Child posts are given link info.
