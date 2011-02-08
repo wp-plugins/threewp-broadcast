@@ -136,8 +136,11 @@ class edwardForm
 		'displayTwoRows' => false,
 		'style' => 'STYLE1',
 		'cssClass' => '',
+		'css_class' => '',
+		'css_style' => '',
 		'form_method' => 'post',
 		'form_action' => '',
+		'description' => '',
 	);
 	
 	private $namePrefixAll = '';
@@ -305,6 +308,9 @@ class edwardForm
 		// Merge the given options with the options we were constructed with.
 		$options = array_merge($this->options, $options);
 		
+		if ($options['description'] == '')
+			return '';
+		
 		$returnValue = '
 			<div>
 				<div class="screen-reader-text aural-info">
@@ -380,12 +386,17 @@ class edwardForm
 		$classes = $options['type'];
 		if ($options['cssClass'] != '')
 			$classes .= ' ' . $options['cssClass'];
+		if ($options['css_class'] != '')
+			$classes .= ' ' . $options['css_class'];
 		
 		// Add title to all
 		$extraOptions .= ' title="'.$options['title'].'"';
 		// Add alt to all except textarea
 		if (!in_array($options['type'], array('select', 'textarea')))
 			$extraOptions .= ' alt="'.$options['alt'].'"';
+		
+		if ($options['css_style'] != '')
+			$extraOptions .= ' style="'.$options['css_style'].'"';
 			
 		// Add the global prefix
 		$options['nameprefix'] = $this->namePrefixAll . $options['nameprefix'];  

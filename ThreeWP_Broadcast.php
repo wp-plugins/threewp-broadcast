@@ -1,9 +1,9 @@
 <?php
 /*                                                                                                                                                                                                                                                             
 Plugin Name: ThreeWP Broadcast
-Plugin URI: http://mindreantre.se/threewp-activity-monitor/
+Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.2.1
+Version: 1.3
 Author: Edward Hevlund
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -31,12 +31,15 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		'blacklist' => '',									// Comma-separated string of blogs to automatically exclude
 		'post_types' => array('post' => array(), 'page' => array()),			// Custom post types which use broadcasting
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
+		'activity_monitor_broadcasts' => false,				// Reports when a user has used the broadcast function.
 		'activity_monitor_group_changes' => false,			// Reports when a user has created, changed or deleted a group (of blogs)
 		'activity_monitor_unlinks' => false,				// Reports when someone unlinks a child from the parent.
 		'custom_field_exceptions' => array('_wp_page_template', '_wplp_', '_aioseop_'),				// Custom fields that should be broadcasted, even though they start with _
 	);
 	
 	private $blogs_cache = null;
+	
+	private $broadcasting = false;
 	
 	public function __construct()
 	{
@@ -50,16 +53,16 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			add_action('admin_print_styles', array(&$this, 'load_styles') );
 			if ( $this->get_site_option('override_child_permalinks') )
 			{
-				add_action( 'the_permalink', array(&$this, 'the_permalink') );
+				add_action( 'post_link', array(&$this, 'post_link'), 10, 2 );
 			}
 		}
 	}
 	
 	public function add_menu()
-	{		
+	{
 		if (is_super_admin())
 			add_submenu_page('ms-admin.php', 'ThreeWP Broadcast', 'Broadcast', 'activate_plugins', 'ThreeWP_Broadcast', array (&$this, 'admin'));
-		add_options_page('ThreeWP Broadcast', __('Broadcast', _3BC), 'publish_posts', 'ThreeWP_Broadcast', array (&$this, 'user'));
+		add_options_page('ThreeWP Broadcast', __('Broadcast'), 'publish_posts', 'ThreeWP_Broadcast', array (&$this, 'user'));
 		if ($this->role_at_least( $this->get_site_option('role_link') ))
 		{
 			add_action('post_row_actions', array(&$this, 'post_row_actions'));
@@ -153,7 +156,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 	
 	public function user()
 	{
-		$this->loadLanguages(_3BC);
+		$this->load_language();
 		
 		$tab_data = array(
 			'tabs'		=>	array(),
@@ -162,22 +165,22 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		
 		if (isset($_GET['action']) && $_GET['action'] == 'unlink')
 		{
-			$tab_data['tabs'][] = __('Unlink', _3BC);
+			$tab_data['tabs'][] = __('Unlink');
 			$tab_data['functions'][] = 'user_unlink';
 		}
 		
 		if (isset($_GET['action']) && $_GET['action'] == 'trash')
 		{
-			$tab_data['tabs'][] = __('Trash', _3BC);
+			$tab_data['tabs'][] = __('Trash');
 			$tab_data['functions'][] = 'user_trash';
 		}
 		
-		$tab_data['tabs'][] = __('Help', _3BC);
+		$tab_data['tabs'][] = __('Help');
 		$tab_data['functions'][] = 'user_help';
 		
 		if ($this->role_at_least( $this->get_site_option('role_groups') ))
 		{
-			$tab_data['tabs'][] = __('ThreeWP Broadcast groups', _3BC);
+			$tab_data['tabs'][] = __('ThreeWP Broadcast groups');
 			$tab_data['functions'][] = 'user_edit_groups';
 		}
 
@@ -517,12 +520,20 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 
 		if (isset($_POST['submit']))
 		{
-			foreach( array('activity_monitor_group_changes', 'activity_monitor_unlinks') as $key )
+			foreach( array('activity_monitor_broadcasts', 'activity_monitor_group_changes', 'activity_monitor_unlinks') as $key )
 				$this->update_site_option( $key, isset($_POST[ $key ]) );
 			$this->message('Options saved!');
 		}
 			
 		$inputs = array(
+			'activity_monitor_broadcasts' => array(
+				'name' => 'activity_monitor_broadcasts',
+				'type' => 'checkbox',
+				'label' => 'Broadcasts',
+				'checked' => $this->get_site_option('activity_monitor_broadcasts'),
+				'description' => 'Reports when a user has used the broadcast function.',
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
+			),
 			'activity_monitor_unlinks' => array(
 				'name' => 'activity_monitor_unlinks',
 				'type' => 'checkbox',
@@ -608,6 +619,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 						
 						$blog_text .= '.';
 						do_action('threewp_activity_monitor_new_activity', array(
+							'activity_type' => '3wpbc_grp_add',
 							'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_groups activity_monitor_broadcast_group_created',
 							'activity' => array(
 								'' => '%user_display_name_with_link% updated the blog group <em>' . $newGroups[$groupID]['name'] . '</em> with ' . $blog_text,
@@ -619,7 +631,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				{
 					if ( $this->get_option('activity_monitor_group_changes') )
 						do_action('threewp_activity_monitor_new_activity', array(
-							'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_groups activity_monitor_broadcast_group_created',
+							'activity_type' => '3wpbc_grp_del',
+							'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_groups activity_monitor_broadcast_group_deleted',
 							'activity' => array(
 								'' => '%user_display_name_with_link% deleted the blog group <em>' . $data['groups'][$groupID]['name'] . '</em>',
 							),
@@ -629,38 +642,39 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			}
 			$data['groups'] = $newGroups;
 			$this->sqlUserSet($user_id, $data);
-			$this->message(__('Group blogs have been saved.', _3BC));
+			$this->message(__('Group blogs have been saved.'));
 		}
 		
 		if (isset($_POST['groupCreate']))
 		{
 			$groupName = stripslashes( trim($_POST['groupName']) );
 			if ($groupName == '')
-				$this->error(__('The group name may not be empty!', _3BC));
+				$this->error(__('The group name may not be empty!'));
 			else
 			{
 				if ( $this->get_option('activity_monitor_group_changes') )
 					do_action('threewp_activity_monitor_new_activity', array(
-						'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_groups activity_monitor_broadcast_group_created',
+						'activity_type' => '3wpbc_grp_mod',
+						'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcast_groups activity_monitor_broadcast_group_modified',
 						'activity' => array(
 							'' => '%user_display_name_with_link% created the blog group <em>' . $groupName . '</em>',
 						),
 					));
 				$data['groups'][] = array('name' => $groupName, 'blogs' => array());
 				$this->sqlUserSet($user_id, $data);
-				$this->message(__('The group has been created!', _3BC));
+				$this->message(__('The group has been created!'));
 			}
 		}
 		
 		$groupsText = '';
 		if (count($data['groups']) == 0)
-			$groupsText = '<p>'.__('You have not created any groups yet.', _3BC).'</p>';
+			$groupsText = '<p>'.__('You have not created any groups yet.').'</p>';
 		foreach($data['groups'] as $groupID=>$groupData)
 		{
 			$id = 'broadcast_group_'.$groupID;
 			$groupsText .= '
 				<div class="threewp_broadcast_group">
-					<h4>'.__('Group', _3BC).': '.$groupData['name'].'</h4>
+					<h4>'.__('Group').': '.$groupData['name'].'</h4>
 
 					<div id="'.$id.'">
 						'.$this->show_group_blogs(array(
@@ -669,7 +683,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 							'selected' => $groupData['blogs'],
 						)).'
 					</div>
-					<p>'.(count($blogs) > 2 ? $this->showGroupBlogsSelectUnselect(array('selector' => '#' . $id, 'input_label' => __('Select/deselect all the blogs in the above group.', _3BC))): '').'</p>
+					<p>'.(count($blogs) > 2 ? $this->showGroupBlogsSelectUnselect(array('selector' => '#' . $id, 'input_label' => __('Select/deselect all the blogs in the above group.'))): '').'</p>
 				</div>
 			';
 		}
@@ -678,26 +692,26 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			'groupsSave' => array(
 				'name' => 'groupsSave',
 				'type' => 'submit',
-				'value' => __('Save groups', _3BC),
+				'value' => __('Save groups'),
 				'cssClass' => 'button-primary',
 			),
 			'groupName' => array(
 				'name' => 'groupName',
 				'type' => 'text',
-				'label' => __('New group name', _3BC),
+				'label' => __('New group name'),
 				'size' => 25,
 				'maxlength' => 200,
 			),
 			'groupCreate' => array(
 				'name' => 'groupCreate',
 				'type' => 'submit',
-				'value' => __('Create the new group', _3BC),
+				'value' => __('Create the new group'),
 				'cssClass' => 'button-secondary',
 			),
 		);
 		
 		echo '
-			<h3>'.__('Your groups', _3BC).'</h3>
+			<h3>'.__('Your groups').'</h3>
 
 			'.$form->start().'
 
@@ -709,7 +723,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 
 			'.$form->stop().'
 
-			<h3>'.__('Create a new group', _3BC).'</h3>
+			<h3>'.__('Create a new group').'</h3>
 
 			'.$form->start().'
 
@@ -723,10 +737,10 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 
 			'.$form->stop().'
 
-			<h3>'.__('Delete', _3BC).'</h3>
+			<h3>'.__('Delete').'</h3>
 
 			<p>
-				'.__('To <strong>delete</strong> a group, leave all blogs in that group unmarked and then save.', _3BC).'
+				'.__('To <strong>delete</strong> a group, leave all blogs in that group unmarked and then save.').'
 			</p>
 		';
 	}
@@ -780,7 +794,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			$this->delete_post_broadcast_data($child_blog_id, $linked_children[$child_blog_id]);
 			$broadcast_data->remove_linked_child($child_blog_id);
 			$this->set_post_broadcast_data($blog_id, $post_id, $broadcast_data);
-			$message = __('Link to child post has been removed.', _3BC);
+			$message = __('Link to child post has been removed.');
 		}
 		else
 		{
@@ -813,7 +827,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			}
 			$broadcast_data = $this->get_post_broadcast_data($blog_id, $post_id);
 			$broadcast_data->remove_linked_children();
-			$message = __('All links to child posts have been removed!', _3BC);
+			$message = __('All links to child posts have been removed!');
 		}
 		
 		$this->set_post_broadcast_data($blog_id, $post_id, $broadcast_data);
@@ -853,7 +867,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		$broadcast_data->remove_linked_child($blog_id);
 		$this->set_post_broadcast_data($blog_id, $post_id, $broadcast_data);
 		
-		$message = __('The broadcasted child post has been put in the trash.', _3BC);
+		$message = __('The broadcasted child post has been put in the trash.');
 
 		echo '
 			'.$this->message($message).'
@@ -867,65 +881,65 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 	{
 		echo '
 			<div id="broadcast_help">
-				<h2>'.__('What is Broadcast?', _3BC).'</h2>
+				<h2>'.__('What is Broadcast?').'</h2>
 	
 				<p class="float-right">
-					<img src="'.$this->paths['url'].'/screenshot-1.png" alt="" title="'.__('What the Broadcast window looks like', _3BC).'" />
+					<img src="'.$this->paths['url'].'/screenshot-1.png" alt="" title="'.__('What the Broadcast window looks like').'" />
 				</p>
 	
 				<p>
-					'.__('With Broadcast you can post to several blogs at once. The broadcast window is first shown at the bottom right on the Add New post/page screen.', _3BC).'
-					'.__('The window contains several options and a list of blogs you have access to.', _3BC).'
+					'.__('With Broadcast you can post to several blogs at once. The broadcast window is first shown at the bottom right on the Add New post/page screen.').'
+					'.__('The window contains several options and a list of blogs you have access to.').'
 				</p>
 
 				<p>
-					'.__('Some settings might be disabled by the site administrator and if you do not have write access to any blogs, other than this one, the Broadcast window might not appear.', _3BC).' 
+					'.__('Some settings might be disabled by the site administrator and if you do not have write access to any blogs, other than this one, the Broadcast window might not appear.').' 
 				</p>
 
 				<p>
-					'.__('To use the Broadcast plugin, simply select which blogs you want to broadcast the post to and then publish the post normally.', _3BC).' 
+					'.__('To use the Broadcast plugin, simply select which blogs you want to broadcast the post to and then publish the post normally.').' 
 				</p>
 
-				<h3>'.__('Options', _3BC).'</h3>
+				<h3>'.__('Options').'</h3>
 				
 				<p>
-					<em>'.__('Link this post to its children', _3BC).'</em> '.__('will create a link from this post (the parent) to all the broadcasted posts (children). Updating the parent will result in all the children being updated. Links to the children can be removed in the page / post overview.', _3BC).'
+					<em>'.__('Link this post to its children').'</em> '.__('will create a link from this post (the parent) to all the broadcasted posts (children). Updating the parent will result in all the children being updated. Links to the children can be removed in the page / post overview.').'
 				</p>
 
 				<p class="textcenter">
-					<img class="border-single" src="'.$this->paths['url'].'/screenshot-2.png" alt="" title="'.__('Post overview with unlink options', _3BC).'" />
+					<img class="border-single" src="'.$this->paths['url'].'/screenshot-2.png" alt="" title="'.__('Post overview with unlink options').'" />
 				</p>
 
 				<p>
-					'.__('When a post is linked to children, the children are overwritten when post is updated - all the categories, tags and fields (including featured image) are also overwritten -  and when the parent is trashed or deleted the children get the same treatment. If you want to keep any children and delete only the parent, use the unlink links in the post overview. The unlink link below the post name removes all links and the unlinks to the right remove singular links.', _3BC).'
+					'.__('When a post is linked to children, the children are overwritten when post is updated - all the categories, tags and fields (including featured image) are also overwritten -  and when the parent is trashed or deleted the children get the same treatment. If you want to keep any children and delete only the parent, use the unlink links in the post overview. The unlink link below the post name removes all links and the unlinks to the right remove singular links.').'
 				</p>
 
 				<p>
-					<em>'.__('Broadcast categories also', _3BC).'</em> '.__('will also try to send the categories together with the post.', _3BC).'
-					'.__('In order to be able to broadcast the categories, the selected blogs must have the same category names (slugs) as this blog, else the posts will be posted as uncategorized.', _3BC).'
+					<em>'.__('Broadcast categories also').'</em> '.__('will also try to send the categories together with the post.').'
+					'.__('In order to be able to broadcast the categories, the selected blogs must have the same category names (slugs) as this blog, else the posts will be posted as uncategorized.').'
 				</p>
 
 				<p>
-					<em>'.__('Broadcast tags also', _3BC).'</em> '.__('will also mark the broadcasted posts with the same tags.', _3BC).'
+					<em>'.__('Broadcast tags also').'</em> '.__('will also mark the broadcasted posts with the same tags.').'
 				</p>
 
 				<p>
-					<em>'.__('Broadcast custom fields', _3BC).'</em> '.__('will give the broadcasted posts the same custom fields as the original. Use this setting to broadcast the featured image.', _3BC).'
+					<em>'.__('Broadcast custom fields').'</em> '.__('will give the broadcasted posts the same custom fields as the original. Use this setting to broadcast the featured image.').'
 				</p>
 
-				<h3>'.__('Groups', _3BC).'</h3>
+				<h3>'.__('Groups').'</h3>
 
 				<p>
-					'.__('If the site administrator allows it you may create groups to quickly select several blogs at once. To create a group, start by typing a group name in the text box and pressing the create button.', _3BC).' 
+					'.__('If the site administrator allows it you may create groups to quickly select several blogs at once. To create a group, start by typing a group name in the text box and pressing the create button.').' 
 				</p>
 
 				<p class="textcenter">
-					<img class="border-single" src="'.$this->paths['url'].'/screenshot-5.png" alt="" title="'.__('Group setup', _3BC).'" />
+					<img class="border-single" src="'.$this->paths['url'].'/screenshot-5.png" alt="" title="'.__('Group setup').'" />
 				</p>
 
 				<p>
-					'.__('Then select which blogs you want to be automatically selected when you choose this group when editing a new post. Press the save button when you are done. Your new group is ready to be used!', _3BC).'
-					'.__('Simply choose it in the dropdown box and the blogs you specified will be automatically chosen.', _3BC).'
+					'.__('Then select which blogs you want to be automatically selected when you choose this group when editing a new post. Press the save button when you are done. Your new group is ready to be used!').'
+					'.__('Simply choose it in the dropdown box and the blogs you specified will be automatically chosen.').'
 				</p>
 
 			</div>
@@ -955,7 +969,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		if ( $broadcast_data->get_linked_parent() !== false)
 		{
 			echo '<p>';
-			echo __('This post is broadcasted child post. It cannot be broadcasted further.', _3BC);
+			echo __('This post is broadcasted child post. It cannot be broadcasted further.');
 			echo '</p>';
 			return;
 		}
@@ -993,8 +1007,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'nameprefix' => '[broadcast]',
 				'value' => 'link',
 				'checked' => $linked,
-				'title' => __('Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc.', _3BC),
-				'label' => __('Link this post to its children', _3BC),
+				'title' => __('Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc.'),
+				'label' => __('Link this post to its children'),
 			);
 			echo '<p>'.$form->makeInput($inputBroadcastLink).' '.$form->makeLabel($inputBroadcastLink).'</p>';
 		}
@@ -1009,8 +1023,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'nameprefix' => '[broadcast]',
 				'value' => 'categories',
 				'checked' => isset($last_used_settings['categories']),
-				'label' => __('Broadcast categories also', _3BC),
-				'title' => __('The categories must have the same name (slug) on the selected blogs.', _3BC),
+				'label' => __('Broadcast categories also'),
+				'title' => __('The categories must have the same name (slug) on the selected blogs.'),
 			);
 			echo '<p class="broadcast_input_categories">'.$form->makeInput($inputCategories).' '.$form->makeLabel($inputCategories).'</p>';
 		}
@@ -1023,8 +1037,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'nameprefix' => '[broadcast]',
 				'value' => 'categories_create',
 				'checked' => isset($last_used_settings['categories_create']),
-				'label' => __('Create categories automatically', _3BC),
-				'title' => __('The categories will be created if they don\'t exist on the selected blogs.', _3BC),
+				'label' => __('Create categories automatically'),
+				'title' => __('The categories will be created if they don\'t exist on the selected blogs.'),
 			);
 			echo '<p class="broadcast_input_categories_create">&emsp;'.$form->makeInput($inputCategoriesCreate).' '.$form->makeLabel($inputCategoriesCreate).'</p>';
 		}
@@ -1037,8 +1051,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'nameprefix' => '[broadcast]',
 				'value' => 'tags',
 				'checked' => isset($last_used_settings['tags']),
-				'label' => __('Broadcast tags also', _3BC),
-				'title' => __('The tags must have the same name (slug) on the selected blogs.', _3BC),
+				'label' => __('Broadcast tags also'),
+				'title' => __('The tags must have the same name (slug) on the selected blogs.'),
 			);
 			echo '<p class="broadcast_input_tags">'.$form->makeInput($inputTags).' '.$form->makeLabel($inputTags).'</p>';
 		}
@@ -1051,8 +1065,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'nameprefix' => '[broadcast]',
 				'value' => 'tags_create',
 				'checked' => isset($last_used_settings['tags_create']),
-				'label' => __('Create tags automatically', _3BC),
-				'title' => __('The tags will be created if they don\'t exist on the selected blogs.', _3BC),
+				'label' => __('Create tags automatically'),
+				'title' => __('The tags will be created if they don\'t exist on the selected blogs.'),
 			);
 			echo '<p class="broadcast_input_tags_create">&emsp;'.$form->makeInput($inputTagsCreate).' '.$form->makeLabel($inputTagsCreate).'</p>';
 		}
@@ -1065,8 +1079,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'nameprefix' => '[broadcast]',
 				'value' => 'custom_fields',
 				'checked' => isset($last_used_settings['custom_fields']),
-				'title' => __('Broadcast all the custom fields and the featured image?', _3BC),
-				'label' => __('Broadcast custom fields', _3BC),
+				'title' => __('Broadcast all the custom fields and the featured image?'),
+				'label' => __('Broadcast custom fields'),
 			);
 			echo '<p>'.$form->makeInput($inputCustomFields).' '.$form->makeLabel($inputCustomFields).'</p>';
 		}
@@ -1081,8 +1095,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				'name' => 'broadcast_group',
 				'type' => 'select',
 				'nameprefix' => '[broadcast]',
-				'label' => __('Select blogs in group', _3BC),
-				'options' => array(array('value' => '', 'text' => __('No group selected', _3BC))),
+				'label' => __('Select blogs in group'),
+				'options' => array(array('value' => '', 'text' => __('No group selected'))),
 			);
 			
 			foreach($data['groups'] as $groupIndex=>$groupData)
@@ -1179,9 +1193,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		// I think there's a bug in WP since it reports the same post types no matter which blog we've switch_to_blogged.
 		// Therefore, no further action.
 		
-		echo '<p class="howto">'. __('Broadcast to:', _3BC) .'</p>
+		echo '<p class="howto">'. __('Broadcast to:') .'</p>
 
-			<p style="text-align: center;">'.(count($blogs) > 20 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all', _3BC))): '').'</p>
+			<p style="text-align: center;">'.(count($blogs) > 20 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all'))): '').'</p>
 
 			<div class="blogs">
 				<p>' . $this->show_group_blogs(array(
@@ -1196,7 +1210,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				</p>
 			</div>
 	
-			<p style="text-align: center;">'.(count($blogs) > 2 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all', _3BC))): '').'</p>
+			<p style="text-align: center;">'.(count($blogs) > 2 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all'))): '').'</p>
 		';
 	}
 	
@@ -1370,6 +1384,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		// And now save the user's last settings.
 		$this->save_last_used_settings($user_id, $_POST['broadcast']);		
 		
+		$this->broadcasting = $_POST['broadcast'];
+		$to_broadcasted_blogs = array();				// Array of blog names that we're broadcasting to.
+
 		// To prevent recursion
 		unset($_POST['broadcast']);
 		
@@ -1548,10 +1565,26 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				$this->set_post_broadcast_data($blogID, $new_post_id, $new_post_broadcast_data);
 			}
 
+			$to_broadcasted_blogs[] = '<a href="' . get_permalink( $new_post_id ) . '">' . get_bloginfo('name') . '</a>';
+			
 			restore_current_blog();
 		}
 		
 		// Finished broadcasting.
+		$this->broadcasting = false;
+		
+		if ( $this->get_option('activity_monitor_broadcasts') )
+		{
+			$post_url_and_name = '<a href="' . get_permalink( $post_id ) . '">' . $post['post_title']. '</a>';
+			do_action('threewp_activity_monitor_new_activity', array(
+				'activity_type' => '3wp_broadcasted',
+				'tr_class' => 'activity_monitor_broadcast activity_monitor_broadcasted',
+				'activity' => array(
+					'' => '%user_display_name_with_link% has broadcasted '.$post_url_and_name.' to: ' . implode(', ', $to_broadcasted_blogs),
+				),
+			));
+		}
+
 		// Save the post broadcast data.
 		if ($link)
 			$this->set_post_broadcast_data($blog_id, $post_id, $broadcast_data);		
@@ -1617,7 +1650,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 	
 	public function manage_posts_columns($defaults)
 	{
-		$defaults['3wp_broadcast'] = '<span title="'.__('Shows which blogs have posts linked to this one', _3BC).'">'.__('Broadcasted', _3BC).'</span>';
+		$defaults['3wp_broadcast'] = '<span title="'.__('Shows which blogs have posts linked to this one').'">'.__('Broadcasted').'</span>';
 		return $defaults;
 	}
 	
@@ -1634,7 +1667,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			$parent = $broadcast_data->get_linked_parent();
 			$parent_blog_id = $parent['blog_id'];
 			switch_to_blog( $parent_blog_id );
-			echo __(sprintf('Linked from %s', '<a href="' . get_bloginfo('url') . '/wp-admin/post.php?post=' .$parent['post_id'] . '&action=edit">' . get_bloginfo('name') . '</a>' ), _3BC);
+			echo __(sprintf('Linked from %s', '<a href="' . get_bloginfo('url') . '/wp-admin/post.php?post=' .$parent['post_id'] . '&action=edit">' . get_bloginfo('name') . '</a>' ));
 			restore_current_blog();
 		}
 		if ( $broadcast_data->has_linked_children() )
@@ -1655,8 +1688,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				$display[] = '<div class="broadcasted_blog"><a class="broadcasted_child" href="'.$urlChild.'">'.$blogs[$blogID]['blogname'].'</a>
 					<div class="row-actions broadcasted_blog_actions">
 						<small>
-						<a href="'.$urlUnlink.'" title="'.__('Remove links to this broadcasted child', _3BC).'">'.__('Unlink', _3BC).'</a>
-						| <span class="trash"><a href="'.$urlTrash.'" title="'.__('Put this broadcasted child in the trash', _3BC).'">'.__('Trash', _3BC).'</a></span>
+						<a href="'.$urlUnlink.'" title="'.__('Remove links to this broadcasted child').'">'.__('Unlink').'</a>
+						| <span class="trash"><a href="'.$urlTrash.'" title="'.__('Put this broadcasted child in the trash').'">'.__('Trash').'</a></span>
 						</small>
 					</div>
 				</div>
@@ -1673,7 +1706,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		$broadcast_data = $this->get_post_broadcast_data($blog_id, $post->ID);
 		if ($broadcast_data->has_linked_children())
 			$actions = array_merge($actions, array(
-				'broadcast_unlink' => '<a href="'.wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=$post->ID", 'broadcast_unlink_' . $post->ID).'" title="'.__('Remove links to all the broadcasted children', _3BC).'">'.__('Unlink', _3BC).'</a>',
+				'broadcast_unlink' => '<a href="'.wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=$post->ID", 'broadcast_unlink_' . $post->ID).'" title="'.__('Remove links to all the broadcasted children').'">'.__('Unlink').'</a>',
 			));
 		return $actions;
 	}
@@ -1685,10 +1718,10 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			// If the user isn't a site admin, or if the user doesn't have any other blogs to write to...
 			if ( $this->role_at_least('super_admin') || count($this->list_user_writable_blog($this->user_id()))> 1 )	// User always has at least one to write to, if he's gotten THIS far.
 			{
-				$this->loadLanguages(_3BC);
+				$this->load_language();
 				$post_types = $this->get_site_option('post_types');
 				foreach($post_types as $post_type => $ignore)
-					add_meta_box('threewp_broadcast', __('Broadcast', _3BC), array(&$this, 'add_meta_box_type'), $post_type, 'side', 'low' );
+					add_meta_box('threewp_broadcast', __('Broadcast'), array(&$this, 'add_meta_box_type'), $post_type, 'side', 'low' );
 				add_action('save_post', array(&$this, 'save_post'), $this->get_site_option('save_post_priority'));
 			}
 		}
@@ -1710,6 +1743,25 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		$returnValue = get_permalink( $linked_parent['post_id'] );
 		restore_current_blog();
 		return $returnValue;
+	}
+	
+	public function post_link($link, $p2)
+	{
+		global $id;
+		global $blog_id;
+		
+		$broadcast_data = $this->get_post_broadcast_data($blog_id, $id);
+		
+		$linked_parent = $broadcast_data->get_linked_parent();
+		
+		if ($linked_parent === false)
+			return $link;
+
+		switch_to_blog( $linked_parent['blog_id'] );
+		$post = get_post( $linked_parent['post_id'] );
+		restore_current_blog();
+		
+		return $post->guid;
 	}
 	
 	// --------------------------------------------------------------------------------------------
@@ -2038,7 +2090,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 					$found_sources[ $source_category_id ] = $target_category_id;
 				}
 			}
-			
+		
 		// Now we know which of the cats on our target blog exist on the source blog.
 		// Next step: see if the parents are the same on the target as they are on the source.
 		// "Same" meaning pointing to the same slug.
@@ -2047,9 +2099,14 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 			$parent_of_target_category = $target_categories[ $target_category_id ][ 'parent' ];
 			$parent_of_equivalent_source_category = $source_categories[ $source_category_id ]['parent'];
 			
-			if ( $parent_of_target_category != $parent_of_equivalent_source_category && isset( $found_sources[ $parent_of_equivalent_source_category ] ) )
+			if ( $parent_of_target_category != $parent_of_equivalent_source_category &&
+				(isset( $found_sources[ $parent_of_equivalent_source_category ] ) || $parent_of_equivalent_source_category == 0 )
+			)
 			{
-				$new_category_parent = $found_sources[ $parent_of_equivalent_source_category ];
+				if ( $parent_of_equivalent_source_category != 0)
+					$new_category_parent = $found_sources[ $parent_of_equivalent_source_category ];
+				else
+					$new_category_parent = 0;
 				$this->set_category_parent($target_category_id, $new_category_parent);
 			}
 		}
@@ -2108,6 +2165,15 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 				return true;
 		
 		return false;
+	}
+	
+	/**
+		If broadcasting, will return $_POST['broadcast'].
+		Else false.
+	*/
+	public function is_broadcasting()
+	{
+		return $this->broadcasting;
 	}
 	
 	// --------------------------------------------------------------------------------------------

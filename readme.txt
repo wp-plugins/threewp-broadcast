@@ -56,6 +56,11 @@ Make sure that:
 4. The correct post type(s) have been selected
 
 == Changelog ==
+= 1.3 =
+* Category syncing works with unparented categories.
+* Activity Monitor activities have types.
+* $threewp_broadcast->is_broadcasting() is now available.
+* Now even more links can be overrided. 
 = 1.2.1 =
 * Custom field exceptions added
 * Priority can now be 10 characters

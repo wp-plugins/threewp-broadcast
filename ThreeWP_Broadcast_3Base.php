@@ -2,7 +2,10 @@
 /**
  * Base class with some common functions.
  * 
- * Version 2011-01-06 22:16
+ * Version 2011-01-25 00:39
+ 
+ 2011-01-25	13:14	load_language assumes filename as domain.
+ 2011-01-25	13:14	loadLanguages -> load_language.
  */
 class ThreeWP_Broadcast_3Base
 {
@@ -12,6 +15,8 @@ class ThreeWP_Broadcast_3Base
 	protected $options = array();				// The options this module uses. (optionName => defaultValue). Deprecated
 	protected $site_options = array();			// Site options (sitewide)
 	protected $local_options = array();			// Local options
+
+	protected $language_domain = '';			// The domain of the loaded languages. If left unset will be set to the base filename minus the .php
 
 	/**
 	 * List of wordpress user roles.
@@ -156,11 +161,21 @@ class ThreeWP_Broadcast_3Base
 	}
 	
 	/**
-	 * Loads this plugin's language files.;
+	 * Loads this plugin's language files.
 	 */
-	protected function loadLanguages($domain)
+	protected function load_language($domain = '')
 	{
-		load_plugin_textdomain($domain, false, $this->paths['path_from_plugin_directory'] . '/lang');
+		if ( $domain != '')
+			$this->language_domain = $domain;
+		
+		if ($this->language_domain == '')
+			$this->language_domain = str_replace( '.php', '', $this->paths['filename'] );
+		load_plugin_textdomain($this->language_domain, false, $this->paths['path_from_plugin_directory'] . '/lang');
+	}
+	
+	protected function _($string)
+	{
+		return __( $string, $this->language_domain );
 	}
 	
 	// -------------------------------------------------------------------------------------------------
@@ -215,12 +230,12 @@ class ThreeWP_Broadcast_3Base
 	 */
 	protected function role_at_least($role)
 	{
+		if ($role == '')
+			return true;
+
 		if ($role == 'super_admin')
 			if (function_exists('is_super_admin'))
-			{
-				if (is_super_admin())
-					return true;
-			}
+				return is_super_admin();
 			else
 				return false;
 		return current_user_can($this->roles[$role]['current_user_can']);
@@ -524,6 +539,7 @@ class ThreeWP_Broadcast_3Base
 			'displayBeforeTabName' => '<h2>',		// If displayTabName==true, what to display before the tab name.
 			'displayAfterTabName' => '</h2>',		// If displayTabName==true, what to display after the tab name.
 			'getKey' =>	'tab',						// $_GET key to get the tab value from.
+			'valid_get_keys' => array(),			// Display only these _GET keys.
 			'default' => 0,							// Default tab index.
 		), $options);
 		
@@ -532,14 +548,23 @@ class ThreeWP_Broadcast_3Base
 			$_GET[$getKey] = sanitize_title( $options['tabs'][$options['default']] );
 		$selected = $_GET[$getKey];
 		
+		$options['valid_get_keys']['page'] = 'page';
+		
 		$returnValue = '';
 		if (count($options['tabs'])>1)
 		{
 			$returnValue .= '<ul class="subsubsub">';
+			$link = $_SERVER['REQUEST_URI'];
+
+			foreach($_GET as $key => $value)
+				if ( !in_array($key, $options['valid_get_keys']) )
+					$link = remove_query_arg($key, $link);
+			
 			foreach($options['tabs'] as $index=>$tab)
 			{
-				$slug = sanitize_title($tab);
-				$link = ($index == $options['default'] ? self::urlMake($getKey, null) : self::urlMake($getKey, $slug));
+				$slug = $this->tab_slug($tab);
+				$link = ($index == $options['default'] ? self::urlMake($getKey, null, $link) : self::urlMake($getKey, $slug, $link));
+				
 				$text = $tab;
 				if (isset($options['count'][$index]))
 					$text .= ' <span class="count">(' . $options['count'][$index] . ')</span>';
@@ -557,6 +582,9 @@ class ThreeWP_Broadcast_3Base
 		}
 		else
 			$selectedIndex = 0;
+		
+		if ( !isset($selectedIndex) )
+			$selectedIndex = $options['default'];
 		
 		if ($options['display'])
 		{
@@ -576,6 +604,14 @@ class ThreeWP_Broadcast_3Base
 		}
 		else
 			return $returnValue;
+	}
+	
+	/**
+		Sanitizes the name of a tab.
+	**/
+	protected function tab_slug($name)
+	{
+		return sanitize_title($name);
 	}
 	
 	/**
