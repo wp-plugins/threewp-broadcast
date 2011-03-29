@@ -617,7 +617,7 @@ class ThreeWP_Broadcast_3Base
 	/**
 	 * Make a value a key.
 	 */
-	protected function array_moveKey($array, $key)
+	public function array_moveKey($array, $key)
 	{
 		$returnArray = array();
 		foreach($array as $value)
@@ -625,7 +625,7 @@ class ThreeWP_Broadcast_3Base
 		return $returnArray;
 	}
 	
-	protected function object_to_array($object)
+	public function object_to_array($object)
 	{
 		if (is_array($object))
 		{

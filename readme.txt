@@ -1,7 +1,7 @@
 === ThreeWP Broadcast ===
 Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously, child, parent, permalink, post type, custom post type, threewp
-Requires at least: 3.0
-Tested up to: 3.0
+Requires at least: 3.1
+Tested up to: 3.1
 Stable tag: trunk
 Donate link: http://mindreantre.se/donate/
 Contributors: edward mindreantre, tmuka
@@ -56,6 +56,9 @@ Make sure that:
 4. The correct post type(s) have been selected
 
 == Changelog ==
+= 1.4 =
+* Works with WP 3.1
+* Added a shrink / expand control in the broadcast meta box
 = 1.3 =
 * Category syncing works with unparented categories.
 * Activity Monitor activities have types.

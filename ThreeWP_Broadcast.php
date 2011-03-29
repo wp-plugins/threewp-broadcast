@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.3
+Version: 1.4
 Author: Edward Hevlund
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -48,9 +48,10 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		{
 			define("_3BC", get_class($this));
 			register_activation_hook(__FILE__, array(&$this, 'activate') );
+			add_action( 'network_admin_menu', array(&$this, 'network_admin_menu') );
 			add_action('admin_menu', array(&$this, 'add_menu') );
 			add_action('admin_menu', array(&$this, 'create_meta_box'));
-			add_action('admin_print_styles', array(&$this, 'load_styles') );
+			add_action('admin_print_styles', array(&$this, 'admin_print_styles') );
 			if ( $this->get_site_option('override_child_permalinks') )
 			{
 				add_action( 'post_link', array(&$this, 'post_link'), 10, 2 );
@@ -58,10 +59,13 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		}
 	}
 	
+	public function network_admin_menu()
+	{
+		add_submenu_page('settings.php', 'ThreeWP Broadcast', 'Broadcast', 'activate_plugins', 'ThreeWP_Broadcast', array (&$this, 'admin'));
+	}
+
 	public function add_menu()
 	{
-		if (is_super_admin())
-			add_submenu_page('ms-admin.php', 'ThreeWP Broadcast', 'Broadcast', 'activate_plugins', 'ThreeWP_Broadcast', array (&$this, 'admin'));
 		add_options_page('ThreeWP Broadcast', __('Broadcast'), 'publish_posts', 'ThreeWP_Broadcast', array (&$this, 'user'));
 		if ($this->role_at_least( $this->get_site_option('role_link') ))
 		{
@@ -85,7 +89,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		}
 	}
 	
-	public function load_styles()
+	public function admin_print_styles()
 	{
 		$load = false;
 		
@@ -100,6 +104,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		if (!$load)
 			return;
 		
+		wp_enqueue_script( '3wp_broadcast', '/' . $this->paths['path_from_base_directory'] . '/js/user.js' );
 		wp_enqueue_style('3wp_broadcast', '/' . $this->paths['path_from_base_directory'] . '/css/ThreeWP_Broadcast.css', false, '0.0.1', 'screen' );
 	}
 	
@@ -1193,24 +1198,26 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_3Base
 		// I think there's a bug in WP since it reports the same post types no matter which blog we've switch_to_blogged.
 		// Therefore, no further action.
 		
-		echo '<p class="howto">'. __('Broadcast to:') .'</p>
-
-			<p style="text-align: center;">'.(count($blogs) > 20 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all'))): '').'</p>
-
-			<div class="blogs">
-				<p>' . $this->show_group_blogs(array(
-								'blogs' => $blogs,
-								'blog_class' => $blog_class,
-								'blog_title' => $blog_title,
-								'nameprefix' => 666,
-								'selected' => $selectedBlogs,
-								'readonly' => $required_blogs,
-								'disabled' => $required_blogs,
-							)) . '
-				</p>
-			</div>
+		echo '<div class="broadcast_to">
+				<p class="howto">'. __('Broadcast to:') .'</p>
 	
-			<p style="text-align: center;">'.(count($blogs) > 2 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all'))): '').'</p>
+				<p style="text-align: center;">'.(count($blogs) > 20 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all'))): '').'</p>
+	
+				<div class="blogs">
+					<p>' . $this->show_group_blogs(array(
+									'blogs' => $blogs,
+									'blog_class' => $blog_class,
+									'blog_title' => $blog_title,
+									'nameprefix' => 666,
+									'selected' => $selectedBlogs,
+									'readonly' => $required_blogs,
+									'disabled' => $required_blogs,
+								)) . '
+					</p>
+				</div>
+		
+				<p style="text-align: center;">'.(count($blogs) > 2 ? $this->showGroupBlogsSelectUnselect(array('selector' => '.broadcast_blogs', 'input_label' => __('Select/deselect all'))): '').'</p>
+			</div>
 		';
 	}
 	
