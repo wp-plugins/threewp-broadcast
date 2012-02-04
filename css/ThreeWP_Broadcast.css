@@ -59,7 +59,10 @@ ul.broadcast_blogs
 	background-repeat: no-repeat;
 }
 
-tr.activity_monitor_broadcast		td.activity_monitor_action		{	background-image: url("../images/threewp_activity_monitor_icon.png");	}
+tr.action_3broadcast_broadcasted td.activity_monitor_action
+{
+	background-image: url("../images/threewp_activity_monitor_icon.png");
+}
 
 /**
 	Expanding box!
@@ -97,4 +100,14 @@ tr.activity_monitor_broadcast		td.activity_monitor_action		{	background-image: u
 #threewp_broadcast .broadcast_to_closed .arrow
 {
 	background-position: center left;
+}
+
+/**
+	Quick selection changed
+**/
+#threewp_broadcast .selection_change
+{
+	text-align: center;
+	font-size: 80%;
+	cursor: pointer;
 }

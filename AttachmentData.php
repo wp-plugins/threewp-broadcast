@@ -9,14 +9,20 @@ class AttachmentData
 	private $filename_path;			// /var/www/wordpress/image.jpg
 	private $file_metadata;			// Wordpress' metadata for the attached image.
 	private $filename_upload_dir;	// Wordpress' upload directory for this blog / file
+	private $_wp_attachment_image_alt;		// The alt value for this image, if any.
+	public	$post_custom;					// Array of post meta keys and values.
 	
-	public static function from_attachment_id($attachment_id, $upload_dir)
+	public static function from_attachment_id( $attachment_id, $upload_dir )
 	{
 		$returnValue = new AttachmentData();
 		$metadata = wp_get_attachment_metadata($attachment_id);
 		$returnValue->filename_base( basename($metadata['file']) );
 		$returnValue->filename_path( $upload_dir['basedir'] . '/' . $metadata['file'] );
 		$returnValue->file_metadata( $metadata );
+		
+		// Copy all of the custom data for this post.		
+		$returnValue->post_custom = get_post_custom( $attachment_id );
+		
 		return $returnValue;
 	}
 	
@@ -26,7 +32,7 @@ class AttachmentData
 			$this->getset($key, $value);
 	}
 	
-	private function getset($variable, $variable_new = '')
+	private function getset( $variable, $variable_new = '' )
 	{
 		if ($variable_new == '')
 			return $this->$variable;

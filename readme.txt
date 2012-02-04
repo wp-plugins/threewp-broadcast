@@ -1,28 +1,29 @@
 === ThreeWP Broadcast ===
 Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously, child, parent, permalink, post type, custom post type, threewp
-Requires at least: 3.1
-Tested up to: 3.1
+Requires at least: 3.3.1
+Tested up to: 3.3.1
 Stable tag: trunk
 Donate link: http://mindreantre.se/donate/
-Contributors: edward mindreantre, tmuka
+Contributors: edward mindreantre
 
-Network plugin to broadcast a post/page to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available.
+Network plugin to broadcast posts to other blogs. Custom post types, custom taxonomies, post meta and attachments are supported. A blog whitelist and blacklist exist. 
 
 == Description ==
 
-Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag posting/creation available. All attached images are reposted to the selected blogs.
+Network plugin to broadcast posts to other blogs. Custom post types, custom taxonomies, post meta and attachments are supported. A blog whitelist and blacklist exist.
 
 Broadcasted posts can be linked to their parents: updated parent posts also update the child posts. Child post permalinks can be overriden with a link to the parent post.
 
 Last used settings are remembered between uses. Broadcasted categories keep their parents, as long as the parents already exist on the child blog of if the parent is broadcasted and created simultaneously as the child category.
 
-Has options for whitelisting (required blogs), blacklisting, user role access granularity, category and/or tag posting (if the blogs have the same category slugs) and category/tag creation (automatically, per user role) and an uninstall to completely remove itself. No traces of the plugin are left (assuming the created tables are successfully removed).
+Has options for whitelisting (required blogs), blacklisting, user role access granularity, custom post and custom taxonomy support and an uninstall to completely remove itself. No traces of the plugin are left (assuming the created tables are successfully removed).
 
 Available in the following languages:
 
-* English
-* Swedish
 * Dutch
+* English
+* French
+* Swedish
 
 Did I miss anything?
 
@@ -55,7 +56,24 @@ Make sure that:
 3. Your user has write access to more than this blog
 4. The correct post type(s) have been selected
 
+= WPAlchemy =
+
+If you have custom post meta boxes via WPAlchemy, you'll probably need to add the following to the custom field exceptions in the settings:
+
+_bcc_
+
+
 == Changelog ==
+= 1.5 2011-01-25 =
+* Custom post and custom taxonomy support
+* Multiple custom field values with the same key can be broadcasted
+* Will not try to attach files that were deleted from disk
+* Broadcasted images retain their ALT, TITLE and caption. 
+* New link icon
+* New base php
+* Better linking to child posts
+* Post meta fields are maybe unserialized
+* Fixed Activity Monitor support
 = 1.4 =
 * Works with WP 3.1
 * Added a shrink / expand control in the broadcast meta box
