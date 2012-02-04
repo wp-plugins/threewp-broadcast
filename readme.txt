@@ -6,7 +6,7 @@ Stable tag: trunk
 Donate link: http://mindreantre.se/donate/
 Contributors: edward mindreantre
 
-Network plugin to broadcast posts to other blogs. Custom post types, custom taxonomies, post meta and attachments are supported. A blog whitelist and blacklist exist. 
+Network plugin to broadcast posts to other blogs. Custom post types, custom taxonomies, post meta and attachments are supported. 
 
 == Description ==
 
@@ -56,15 +56,27 @@ Make sure that:
 3. Your user has write access to more than this blog
 4. The correct post type(s) have been selected
 
+= Orphans? =
+
+If you have already created posts on other blogs that are supposed to be children of a specific post, you can use the "find orphans" function to find and link them.
+
+Find the post in the post overview and use the row action "find orphans". You will then be presented with a table of possible orphans on each blog. Select the blog and then choose "link orphans" to create the links.
+
+To be considered an orphan the orphaned posts must have the exact same title (name) as the soon-to-be parent.
+
 = WPAlchemy =
 
 If you have custom post meta boxes via WPAlchemy, you'll probably need to add the following to the custom field exceptions in the settings:
 
 _bcc_
 
-
 == Changelog ==
-= 1.5 2011-01-25 =
+
+= 1.6 2011-02-05 =
+* Find orphans
+* Bugs fixed that prevented proper broadcasting
+
+= 1.5 2011-02-04 =
 * Custom post and custom taxonomy support
 * Multiple custom field values with the same key can be broadcasted
 * Will not try to attach files that were deleted from disk
@@ -74,18 +86,22 @@ _bcc_
 * Better linking to child posts
 * Post meta fields are maybe unserialized
 * Fixed Activity Monitor support
+
 = 1.4 =
 * Works with WP 3.1
 * Added a shrink / expand control in the broadcast meta box
+
 = 1.3 =
 * Category syncing works with unparented categories.
 * Activity Monitor activities have types.
 * $threewp_broadcast->is_broadcasting() is now available.
 * Now even more links can be overrided. 
+
 = 1.2.1 =
 * Custom field exceptions added
 * Priority can now be 10 characters
 * Category broadcast role is back again. :)
+
 = 1.2 =
 * Settings are kept when activating the plugin.
 * Child posts are given link info.
@@ -98,17 +114,22 @@ _bcc_
 * Sticky status is broadcasted.
 * Page parents are kept. The parent page must be broadcasted first.
 * Drafts and future posts can also be broadcasted.
+
 = 1.1 =
 * Galleries are now broadcastable.
+
 = 1.0 =
 * Custom fields can be broadcast.
 * Attached images can be broadcast.
 * Broadcasted posts are now linked to the parent post.
 * Pages can be broadcast.
+
 = 0.3 =
 * Dutch translation added, courtesy of Johan Daems.
 * Superadmins have access to all blogs, even though they don't.
+
 = 0.2 =
 * WP3 compatability
+
 = 0.0.1 =
 * Initial public release

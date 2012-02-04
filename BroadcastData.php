@@ -33,7 +33,7 @@ class BroadcastData
 	 */
 	public function has_linked_children()
 	{
-		return isset($this->data['linked_children']);
+		return isset($this->data[ 'linked_children' ]);
 	}
 	
 	/**
@@ -41,10 +41,12 @@ class BroadcastData
 	 * 
 	 * Used after switch_to_blog has been called.
 	 */
-	public function has_linked_child_on_this_blog()
+	public function has_linked_child_on_this_blog( $blog__id = null )
 	{
 		global $blog_id;
-		return isset($this->data['linked_children'][$blog_id]);
+		if ( $blog__id === null )
+			$blog__id = $blog_id;
+		return isset( $this->data[ 'linked_children' ][ $blog__id ] );
 	}
 	
 	/**
@@ -53,8 +55,8 @@ class BroadcastData
 	public function get_linked_child_on_this_blog()
 	{
 		global $blog_id;
-		if ($this->has_linked_child_on_this_blog())
-			return $this->data['linked_children'][$blog_id];
+		if ( $this->has_linked_child_on_this_blog() )
+			return $this->data[ 'linked_children' ][$blog_id];
 		else
 			return null;
 	}
@@ -69,7 +71,7 @@ class BroadcastData
 		if (!$this->has_linked_children())
 			return array();
 		
-		return $this->data['linked_children'];
+		return $this->data[ 'linked_children' ];
 	}
 	
 	/**
@@ -77,20 +79,20 @@ class BroadcastData
 	 * @param int $blog_id Blog ID
 	 * @param int $post_id Post ID of child post
 	 */
-	public function add_linked_child($blog_id, $post_id)
+	public function add_linked_child( $blog_id, $post_id )
 	{
-		$this->data['linked_children'][$blog_id] = $post_id;
+		$this->data[ 'linked_children' ][$blog_id] = $post_id;
 		$this->modified();
 	}
 	
 	/**
 	 * Removes a child from a blog.
 	 */
-	public function remove_linked_child($blog_id)
+	public function remove_linked_child( $blog_id )
 	{
-		unset($this->data['linked_children'][$blog_id]);
-		if ( count($this->data['linked_children']) < 1)
-			unset( $this->data['linked_children'] );
+		unset($this->data[ 'linked_children' ][$blog_id]);
+		if ( count($this->data[ 'linked_children' ]) < 1)
+			unset( $this->data[ 'linked_children' ] );
 		
 		$this->modified();
 	}
@@ -100,7 +102,7 @@ class BroadcastData
 	 */
 	public function remove_linked_children()
 	{
-		unset($this->data['linked_children']);
+		unset($this->data[ 'linked_children' ]);
 		$this->modified();
 	}
 	
@@ -109,8 +111,8 @@ class BroadcastData
 	 */
 	public function get_linked_parent()
 	{
-		if (isset($this->data['linked_parent']))
-			return $this->data['linked_parent'];
+		if (isset($this->data[ 'linked_parent' ]))
+			return $this->data[ 'linked_parent' ];
 		else
 			return false;
 	}
@@ -120,9 +122,9 @@ class BroadcastData
 	 * @param int $blog_id Blog ID
 	 * @param int $post_id Post ID of child post
 	 */
-	public function set_linked_parent($blog_id, $post_id)
+	public function set_linked_parent( $blog_id, $post_id )
 	{
-		$this->data['linked_parent'] = array('blog_id' => $blog_id, 'post_id' => $post_id);
+		$this->data[ 'linked_parent' ] = array('blog_id' => $blog_id, 'post_id' => $post_id);
 		$this->modified();
 	}
 
@@ -131,7 +133,7 @@ class BroadcastData
 	 */
 	public function remove_linked_parent()
 	{
-		unset($this->data['linked_parent']);
+		unset($this->data[ 'linked_parent' ]);
 		$this->modified();
 	}
 
@@ -159,7 +161,7 @@ class BroadcastData
 		return (
 			(count($this->data) == 1)
 			&&
-			( isset($this->data['version']) )
+			( isset($this->data[ 'version' ]) )
 		);
 	}
 }

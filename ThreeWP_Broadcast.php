@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.5
+Version: 1.6
 Author: edward mindreantre
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -64,8 +64,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		add_options_page( 'ThreeWP Broadcast', $this->_( 'Broadcast' ), 'publish_posts', 'ThreeWP_Broadcast', array ( &$this, 'user' ) );
 		if ( $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
 		{
-			add_action( 'post_row_actions', array( &$this, 'post_row_actions' ) );
-			add_action( 'page_row_actions', array( &$this, 'post_row_actions' ) );
+			add_action( 'post_row_actions', array( &$this, 'post_row_actions' ), 10, 2 );
+			add_action( 'page_row_actions', array( &$this, 'post_row_actions' ), 10, 2 );
 			
 			add_filter( 'manage_posts_columns', array( &$this, 'manage_posts_columns' ) ); 
 			add_action( 'manage_posts_custom_column', array( &$this, 'manage_posts_custom_column' ), 10, 2 );
@@ -193,18 +193,25 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			'functions' =>	array(),
 		);
 		
-		if (isset( $_GET['action'] ) && $_GET['action'] == 'unlink' )
+		if ( isset( $_GET['action'] ) )
 		{
-			$tab_data['tabs']['user_unlink'] = $this->_( 'Unlink' );
-			$tab_data['functions']['user_unlink'] = 'user_unlink';
+			switch( $_GET[ 'action' ] )
+			{
+				case 'find_orphans':
+					$tab_data['tabs']['user_find_orphans'] = $this->_( 'Find orphans' );
+					$tab_data['functions']['user_find_orphans'] = 'user_find_orphans';
+					break;
+				case 'trash':
+					$tab_data['tabs']['user_trash'] = $this->_( 'Trash' );
+					$tab_data['functions']['user_trash'] = 'user_trash';
+					break;
+				case 'unlink':
+					$tab_data['tabs']['user_unlink'] = $this->_( 'Unlink' );
+					$tab_data['functions']['user_unlink'] = 'user_unlink';
+					break;
+			}
 		}
-		
-		if (isset( $_GET['action'] ) && $_GET['action'] == 'trash' )
-		{
-			$tab_data['tabs']['user_trash'] = $this->_( 'Trash' );
-			$tab_data['functions']['user_trash'] = 'user_trash';
-		}
-		
+
 		$tab_data['tabs']['user_help'] = $this->_( 'Help' );
 		$tab_data['functions']['user_help'] = 'user_help';
 		
@@ -684,6 +691,200 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		';
 	}
 	
+	/**
+		Finds orhpans for a specific post.
+	**/
+	protected function user_find_orphans()
+	{
+		global $blog_id;
+		$current_blog_id = $blog_id;
+		$nonce = $_GET['_wpnonce'];
+		$post_id = $_GET['post'];
+			
+		// Generate the nonce key to check against.			
+		$nonce_key = 'broadcast_find_orphans';
+		$nonce_key .= '_' . $post_id;
+			
+		if (!wp_verify_nonce( $nonce, $nonce_key) )
+			die("Security check: not finding orphans for you!");
+			
+		$post = get_post( $post_id );
+		$post_type = get_post_type( $post_id );
+		$returnValue = '';
+		$form = $this->form();
+		
+		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
+
+		// Get a list of blogs that this user can link to.		
+		$user_id = $this->user_id();		// Convenience.
+		$blogs = $this->list_user_writable_blogs( $user_id );
+		
+		$orphans = array();
+		
+		foreach( $blogs as $blog )
+		{
+			$temp_blog_id = $blog[ 'blog_id' ];
+			if ( $temp_blog_id == $current_blog_id )
+				continue;
+
+			if ( $broadcast_data->has_linked_child_on_this_blog( $temp_blog_id ) )
+				continue;
+			
+			switch_to_blog( $temp_blog_id );
+			
+			$args = array(
+				'name' => $post->post_title,
+				'numberposts' => 1,
+				'post_type'=> $post_type,
+			);
+			$posts = get_posts( $args );
+			
+			if ( count( $posts ) > 0 )
+			{
+				$orphan = reset( $posts );
+				$orphan->permalink = get_permalink( $orphan->ID );
+				$orphans[ $temp_blog_id ] = $orphan;
+			}
+			
+			restore_current_blog();
+		}
+		
+		if ( isset( $_POST['action_submit'] ) && isset( $_POST['blogs'] ) )
+		{
+			if ( $_POST['action'] == 'link' )
+			{
+				foreach( $orphans as $blog => $orphan )
+				{
+					if ( isset( $_POST[ 'blogs' ][ $blog ] [ $orphan->ID ] ) )
+					{
+						$broadcast_data->add_linked_child( $blog, $orphan->ID );
+						unset( $orphans[ $blog ] );		// There can only be one orphan per blog, so we're not interested in the blog anymore.
+						
+						$child_broadcast_data = $this->get_post_broadcast_data( $blog, $orphan->ID );
+						$child_broadcast_data->set_linked_parent( $blog_id, $post_id );
+						$this->set_post_broadcast_data( $blog, $orphan->ID, $child_broadcast_data );
+					}
+				}
+				// Save the broadcast data.
+				$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
+				echo $this->message( 'The selected children were linked!' ); 
+			}	// link
+		}
+		
+		if ( count( $orphans ) < 1 )
+		{
+			$message = $this->_( 'No possible child posts were found on the other blogs you have write access to. Either there are no posts with the same title as this one, or all possible orphans have already been linked.' );
+		}
+		else
+		{
+			$t_body = '';
+			foreach( $orphans as $blog => $orphan )
+			{
+				$select = array(
+					'type' => 'checkbox',
+					'checked' => false,
+					'label' => $orphan->ID,
+					'name' => $orphan->ID,
+					'nameprefix' => '[blogs][' . $blog . ']',
+				);
+
+				$t_body .= '
+					<th scope="row" class="check-column">' . $form->make_input( $select ) . ' <span class="screen-reader-text">' . $form->make_label( $select ) . '</span></th>
+					<td><a href="' . $orphan->permalink . '">' . $blogs[ $blog ][ 'blogname' ] . '</a></td>
+				';
+			}
+			
+			$input_actions = array(
+				'type' => 'select',
+				'name' => 'action',
+				'label' => $this->_('With the selected rows'),
+				'options' => array(
+					array( 'value' => '', 'text' => $this->_( 'Do nothing' ) ),
+					array( 'value' => 'link', 'text' => $this->_( 'Create link' ) ),
+				),
+			);
+			
+			$input_action_submit = array(
+				'type' => 'submit',
+				'name' => 'action_submit',
+				'value' => $this->_('Apply'),
+				'css_class' => 'button-secondary',
+			);
+			
+			$selected = array(
+				'type' => 'checkbox',
+				'name' => 'check',
+			);
+			
+			$returnValue .= '
+				' . $form->start() . '
+				<p>
+					' . $form->make_label( $input_actions ) . '
+					' . $form->make_input( $input_actions ) . '
+					' . $form->make_input( $input_action_submit ) . '
+				</p>
+				<table class="widefat">
+					<thead>
+						<th class="check-column">' . $form->make_input( $select ) . '<span class="screen-reader-text">' . $this->_('Selected') . '</span></th>
+						<th>' . $this->_( 'Domain' ) . '</th>
+					</thead>
+					<tbody>
+						' . $t_body . '
+					</tbody>
+				</table>
+				' . $form->stop() . '
+			';
+		}
+		
+		if ( isset( $message ) )
+			echo $this->message( $message );
+		
+		echo $returnValue;
+		
+		echo '
+			<p>
+				<a href="edit.php?post_type='.$post_type.'">Back to post overview</a>
+			</p>
+		';
+	}
+	
+	/**
+		Trashes a broadcasted post.
+	**/
+	protected function user_trash()
+	{
+		// Check that we're actually supposed to be removing the link for real.
+		global $blog_id;
+		$nonce = $_GET['_wpnonce'];
+		$post_id = $_GET['post'];
+		$child_blog_id = $_GET['child'];
+			
+		// Generate the nonce key to check against.			
+		$nonce_key = 'broadcast_trash';
+		$nonce_key .= '_' . $child_blog_id;
+		$nonce_key .= '_' . $post_id;
+			
+		if (!wp_verify_nonce( $nonce, $nonce_key) )
+			die("Security check: not supposed to be unlinking broadcasted post!");
+			
+		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
+		switch_to_blog( $child_blog_id );
+		$broadcasted_post_id = $broadcast_data->get_linked_child_on_this_blog();
+		wp_trash_post( $broadcasted_post_id );
+		restore_current_blog();
+		$broadcast_data->remove_linked_child( $blog_id );
+		$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
+		
+		$message = $this->_( 'The broadcasted child post has been put in the trash.' );
+
+		echo '
+			'.$this->message( $message).'
+			<p>
+				<a href="'.wp_get_referer().'">Back to post overview</a>
+			</p>
+		';
+	}
+	
 	protected function user_unlink()
 	{
 		// Check that we're actually supposed to be removing the link for real.
@@ -729,7 +930,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 
 			$this->delete_post_broadcast_data( $child_blog_id, $linked_children[$child_blog_id] );
 			$broadcast_data->remove_linked_child( $child_blog_id );
-			$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data);
+			$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
 			$message = $this->_( 'Link to child post has been removed.' );
 		}
 		else
@@ -764,45 +965,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			$message = $this->_( 'All links to child posts have been removed!' );
 		}
 		
-		$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data);
+		$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
 		
-		echo '
-			'.$this->message( $message).'
-			<p>
-				<a href="'.wp_get_referer().'">Back to post overview</a>
-			</p>
-		';
-	}
-	
-	/**
-		Trashes a broadcasted post.
-	*/
-	protected function user_trash()
-	{
-		// Check that we're actually supposed to be removing the link for real.
-		global $blog_id;
-		$nonce = $_GET['_wpnonce'];
-		$post_id = $_GET['post'];
-		$child_blog_id = $_GET['child'];
-			
-		// Generate the nonce key to check against.			
-		$nonce_key = 'broadcast_trash';
-		$nonce_key .= '_' . $child_blog_id;
-		$nonce_key .= '_' . $post_id;
-			
-		if (!wp_verify_nonce( $nonce, $nonce_key) )
-			die("Security check: not supposed to be unlinking broadcasted post!");
-			
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
-		switch_to_blog( $child_blog_id );
-		$broadcasted_post_id = $broadcast_data->get_linked_child_on_this_blog();
-		wp_trash_post( $broadcasted_post_id );
-		restore_current_blog();
-		$broadcast_data->remove_linked_child( $blog_id );
-		$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data);
-		
-		$message = $this->_( 'The broadcasted child post has been put in the trash.' );
-
 		echo '
 			'.$this->message( $message).'
 			<p>
@@ -1200,7 +1364,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			if ( $post_type_is_hierarchical && $_POST['post_parent'] > 0)
 			{
 				$post_id_parent = $_POST['post_parent'];
-				$parent_broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id_parent);
+				$parent_broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id_parent );
 			}
 		}
 			
@@ -1279,7 +1443,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			// Another safety check. Goes with the safety dance.
 			if (!$this->is_blog_user_writable( $user_id, $blogID) )
 				continue;
-			switch_to_blog( $blogid );
+			switch_to_blog( $blogID );
 			
 			// Post parent
 			if ( $link && isset( $parent_broadcast_data) )
@@ -1435,7 +1599,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			{			
 				$new_post_broadcast_data = $this->get_post_broadcast_data( $blog_id, $new_post_id );
 				$new_post_broadcast_data->set_linked_parent( $original_blog, $post_id );
-				$this->set_post_broadcast_data( $blogID, $new_post_id, $new_post_broadcast_data);
+				$this->set_post_broadcast_data( $blogID, $new_post_id, $new_post_broadcast_data );
 			}
 
 			$to_broadcasted_blogs[] = '<a href="' . get_permalink( $new_post_id ) . '">' . get_bloginfo( 'name' ) . '</a>';
@@ -1456,7 +1620,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 
 		// Save the post broadcast data.
 		if ( $link )
-			$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data);		
+			$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );		
 	}
 	
 	public function trash_post( $post_id)
@@ -1530,7 +1694,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			
 		global $blog_id;		
 		global $post;
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->id );
+		
+		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
 		if ( $broadcast_data->get_linked_parent() !== false)
 		{
 			$parent = $broadcast_data->get_linked_parent();
@@ -1539,6 +1704,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			echo $this->_(sprintf( 'Linked from %s', '<a href="' . get_bloginfo( 'url' ) . '/wp-admin/post.php?post=' .$parent['post_id'] . '&action=edit">' . get_bloginfo( 'name' ) . '</a>' ) );
 			restore_current_blog();
 		}
+		
 		if ( $broadcast_data->has_linked_children() )
 		{
 			$children = $broadcast_data->get_linked_children();
@@ -1568,17 +1734,19 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			}
 			echo '<ul><li>' . implode( '</li><li>', $display) . '</li></ul>';
 		}
+		else
+			echo '&nbsp;';
 	}
 	
-	public function post_row_actions( $actions)
+	public function post_row_actions( $actions, $post )
 	{
 		global $blog_id;
-		global $post;
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->id );
+		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
 		if ( $broadcast_data->has_linked_children() )
 			$actions = array_merge( $actions, array(
-				'broadcast_unlink' => '<a href="'.wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=$post->ID", 'broadcast_unlink_' . $post->ID).'" title="'.$this->_( 'Remove links to all the broadcasted children' ).'">'.$this->_( 'Unlink' ).'</a>',
+				'broadcast_unlink' => '<a href="'.wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=".$post->ID."", 'broadcast_unlink_' . $post->ID).'" title="'.$this->_( 'Remove links to all the broadcasted children' ).'">'.$this->_( 'Unlink' ).'</a>',
 			) );
+		$actions['broadcast_find_orphans'] = '<a href="'.wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=find_orphans&amp;post=".$post->ID."", 'broadcast_find_orphans_' . $post->ID).'" title="'.$this->_( 'Find posts on other blogs that are identical to this post' ).'">'.$this->_( 'Find orphans' ).'</a>';
 		return $actions;
 	}
 	
@@ -1639,6 +1807,43 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	// ----------------------------------------- Misc functions
 	// --------------------------------------------------------------------------------------------
 
+	/**
+		Creates a new attachment, from the $attachment_data, to a post.
+		
+		Returns the attachment's post_id.
+	*/
+	private function copy_attachment( $attachment_data, $post_id)
+	{
+		// Copy the file to the blog's upload directory
+		$upload_dir = wp_upload_dir();
+		
+		if ( ! file_exists( $attachment_data->filename_path() ) )
+			return false;
+
+		copy( $attachment_data->filename_path(), $upload_dir['path'] . '/' . $attachment_data->filename_base() );
+		
+		// And now create the attachment stuff.
+		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
+		$wp_filetype = wp_check_filetype( $attachment_data->filename_base(), null );
+		$attachment = array(
+			'post_mime_type' => $wp_filetype['type'],
+			'post_title' => preg_replace( '/\.[^.]+$/', '', $attachment_data->filename_base() ),
+			'post_content' => '',
+			'post_status' => 'inherit'
+		);
+		$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data->filename_base(), $post_id );
+		
+		require_once(ABSPATH . "wp-admin" . '/includes/image.php' );
+		$attach_data = wp_generate_attachment_metadata( $attach_id, $upload_dir['path'] . '/' . $attachment_data->filename_base() );
+		wp_update_attachment_metadata( $attach_id,  $attach_data );
+		
+		// Update the custom post data for this post.
+		foreach( $attachment_data->post_custom as $key => $value )
+			update_post_meta( $attach_id, $key, $value );
+		
+		return $attach_id;
+	}
+	
 	private function show_group_blogs( $options)
 	{
 		$form = $this->form();
@@ -1843,43 +2048,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	private function delete_post_broadcast_data( $blog_id, $post_id)
 	{
 		$this->sql_delete_broadcast_data( $blog_id, $post_id );
-	}
-	
-	/**
-		Creates a new attachment, from the $attachment_data, to a post.
-		
-		Returns the attachment's post_id.
-	*/
-	private function copy_attachment( $attachment_data, $post_id)
-	{
-		// Copy the file to the blog's upload directory
-		$upload_dir = wp_upload_dir();
-		
-		if ( ! file_exists( $attachment_data->filename_path() ) )
-			return false;
-
-		copy( $attachment_data->filename_path(), $upload_dir['path'] . '/' . $attachment_data->filename_base() );
-		
-		// And now create the attachment stuff.
-		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
-		$wp_filetype = wp_check_filetype( $attachment_data->filename_base(), null );
-		$attachment = array(
-			'post_mime_type' => $wp_filetype['type'],
-			'post_title' => preg_replace( '/\.[^.]+$/', '', $attachment_data->filename_base() ),
-			'post_content' => '',
-			'post_status' => 'inherit'
-		);
-		$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data->filename_base(), $post_id );
-		
-		require_once(ABSPATH . "wp-admin" . '/includes/image.php' );
-		$attach_data = wp_generate_attachment_metadata( $attach_id, $upload_dir['path'] . '/' . $attachment_data->filename_base() );
-		wp_update_attachment_metadata( $attach_id,  $attach_data );
-		
-		// Update the custom post data for this post.
-		foreach( $attachment_data->post_custom as $key => $value )
-			update_post_meta( $attach_id, $key, $value );
-		
-		return $attach_id;
 	}
 	
 	private function load_last_used_settings( $user_id)
