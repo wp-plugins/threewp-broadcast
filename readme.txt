@@ -72,11 +72,14 @@ _bcc_
 
 == Changelog ==
 
-= 1.6 2011-02-05 =
+= 1.7 2012-02-08 =
+* Featured Images work again.
+
+= 1.6 2012-02-05 =
 * Find orphans
 * Bugs fixed that prevented proper broadcasting
 
-= 1.5 2011-02-04 =
+= 1.5 2012-02-04 =
 * Custom post and custom taxonomy support
 * Multiple custom field values with the same key can be broadcasted
 * Will not try to attach files that were deleted from disk
