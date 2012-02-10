@@ -72,6 +72,10 @@ _bcc_
 
 == Changelog ==
 
+= 1.8 2012-02-10 =
+* Old broadcasted images are properly deleted from child blogs.
+* Settings can now be saved again. Sigh.
+
 = 1.7 2012-02-08 =
 * Featured Images work again.
 
