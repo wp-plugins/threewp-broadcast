@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.8
+Version: 1.9
 Author: edward mindreantre
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -61,7 +61,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 
 	public function add_menu()
 	{
-		add_options_page( 'ThreeWP Broadcast', $this->_( 'Broadcast' ), 'publish_posts', 'ThreeWP_Broadcast', array ( &$this, 'user' ) );
+		add_submenu_page( 'profile.php', 'ThreeWP Broadcast', $this->_( 'Broadcast' ), 'edit_posts', 'ThreeWP_Broadcast', array ( &$this, 'user' ) );
 		if ( $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
 		{
 			add_action( 'post_row_actions', array( &$this, 'post_row_actions' ), 10, 2 );
@@ -733,9 +733,10 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			switch_to_blog( $temp_blog_id );
 			
 			$args = array(
-				'name' => $post->post_title,
+				'post_title' => $post->post_title,
 				'numberposts' => 1,
 				'post_type'=> $post_type,
+				'post_status' => $post->post_status,
 			);
 			$posts = get_posts( $args );
 			
@@ -1276,12 +1277,12 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		return $activities;
 	}
 
-	public function save_post( $post_id)
+	public function save_post( $post_id )
 	{
 		if (!$this->role_at_least( $this->get_site_option( 'role_broadcast' ) ) )
 			return;
 			
-		$allowed_post_status = array( 'publish' );
+		$allowed_post_status = array( 'publish', 'pending' );
 		
 		if ( $this->role_at_least( $this->get_site_option( 'role_broadcast_as_draft' ) ) )
 			$allowed_post_status[] = 'draft';
@@ -1326,7 +1327,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			$blogs = array();
 			
 		// Now to add and remove blogs.
-		$blogs = array_flip( $blogs);
+		$blogs = array_flip( $blogs );
 		
 		// Remove the blog we're currently working on. No point in broadcasting to ourselves.
 		global $blog_id;
@@ -1336,18 +1337,18 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 
 		// Remove blacklisted
 		foreach( $blogs as $blogID=>$ignore)	
-			if (!$this->is_blog_user_writable( $user_id, $blogID) )
-				unset( $blogs[$blogID] );
+			if ( !$this->is_blog_user_writable( $user_id, $blogID ) )
+				unset( $blogs[ $blogID ] );
 
 		// Add required blogs.
 		if ( $this->get_site_option( 'always_use_required_list' ) )
 		{
 			$requiredBlogs = $this->get_required_blogs();
 			foreach( $requiredBlogs as $requiredBlog=>$ignore)
-				$blogs[$requiredBlog] = $requiredBlog;
+				$blogs[ $requiredBlog ] = $requiredBlog;
 		}
 
-		$blogs = array_keys( $blogs);
+		$blogs = array_keys( $blogs );
 		// Now to add and remove blogs: done
 		
 		// Do we actually need to to anything?
@@ -1438,7 +1439,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		
 		$original_blog = $blog_id;
 				
-		foreach( $blogs as $blogID)
+		foreach( $blogs as $blogID )
 		{
 			// Another safety check. Goes with the safety dance.
 			if (!$this->is_blog_user_writable( $user_id, $blogID) )
@@ -1720,8 +1721,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				$url_child = get_permalink( $postID );
 				restore_current_blog();
 				// The post id is for the current blog, not the target blog.
-				$url_unlink = wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=$post_id&amp;child=$blogID", 'broadcast_unlink_' . $blogID . '_' . $post_id );
-				$url_trash = wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=trash&amp;post=$post_id&amp;child=$blogID", 'broadcast_trash_' . $blogID . '_' . $post_id );
+				$url_unlink = wp_nonce_url("profile.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=$post_id&amp;child=$blogID", 'broadcast_unlink_' . $blogID . '_' . $post_id );
+				$url_trash = wp_nonce_url("profile.php?page=ThreeWP_Broadcast&amp;action=trash&amp;post=$post_id&amp;child=$blogID", 'broadcast_trash_' . $blogID . '_' . $post_id );
 				$display[] = '<div class="broadcasted_blog"><a class="broadcasted_child" href="'.$url_child.'">'.$blogs[$blogID]['blogname'].'</a>
 					<div class="row-actions broadcasted_blog_actions">
 						<small>
@@ -1744,9 +1745,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
 		if ( $broadcast_data->has_linked_children() )
 			$actions = array_merge( $actions, array(
-				'broadcast_unlink' => '<a href="'.wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=".$post->ID."", 'broadcast_unlink_' . $post->ID).'" title="'.$this->_( 'Remove links to all the broadcasted children' ).'">'.$this->_( 'Unlink' ).'</a>',
+				'broadcast_unlink' => '<a href="'.wp_nonce_url("profile.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=".$post->ID."", 'broadcast_unlink_' . $post->ID).'" title="'.$this->_( 'Remove links to all the broadcasted children' ).'">'.$this->_( 'Unlink' ).'</a>',
 			) );
-		$actions['broadcast_find_orphans'] = '<a href="'.wp_nonce_url("options-general.php?page=ThreeWP_Broadcast&amp;action=find_orphans&amp;post=".$post->ID."", 'broadcast_find_orphans_' . $post->ID).'" title="'.$this->_( 'Find posts on other blogs that are identical to this post' ).'">'.$this->_( 'Find orphans' ).'</a>';
+		$actions['broadcast_find_orphans'] = '<a href="'.wp_nonce_url("profile.php?page=ThreeWP_Broadcast&amp;action=find_orphans&amp;post=".$post->ID."", 'broadcast_find_orphans_' . $post->ID).'" title="'.$this->_( 'Find posts on other blogs that are identical to this post' ).'">'.$this->_( 'Find orphans' ).'</a>';
 		return $actions;
 	}
 	
@@ -1755,7 +1756,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		if ( $this->role_at_least( $this->get_site_option( 'role_broadcast' ) ) )
 		{
 			// If the user isn't a site admin, or if the user doesn't have any other blogs to write to...
-			if ( $this->role_at_least( 'super_admin' ) || count( $this->list_user_writable_blogs( $this->user_id() ))> 1 )	// User always has at least one to write to, if he's gotten THIS far.
+			if ( $this->role_at_least( 'super_admin' ) || count( $this->list_user_writable_blogs( $this->user_id() ) ) > 0 )	// User always has at least one to write to, if he's gotten THIS far.
 			{
 				$this->load_language();
 				$post_types = $this->get_site_option( 'post_types' );
@@ -1784,7 +1785,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		return $returnValue;
 	}
 	
-	public function post_link( $link, $p2)
+	public function post_link( $link )
 	{
 		global $id;
 		global $blog_id;
@@ -1833,17 +1834,30 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		);
 		$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data->filename_base(), $post_id );
 		
+		// Now to handle the metadata.
+		// 1. Create new metadata for this attachment.
+		
 		require_once(ABSPATH . "wp-admin" . '/includes/image.php' );
 		$attach_data = wp_generate_attachment_metadata( $attach_id, $upload_dir['path'] . '/' . $attachment_data->filename_base() );
-		wp_update_attachment_metadata( $attach_id,  $attach_data );
 		
-		// Update the custom post data for this post.
+		// 2. Write the old metadata first.
 		foreach( $attachment_data->post_custom as $key => $value )
 		{
 			$value = reset( $value );
-			update_post_meta( $attach_id, $key, maybe_unserialize( $value ) );
+			$value = maybe_unserialize( $value );
+			switch( $key )
+			{
+				// Some values need to handle completely different upload paths (from different months, for example).
+				case '_wp_attached_file':
+					$value = $attach_data[ 'file' ];
+					break;
+			}
+			update_post_meta( $attach_id, $key, $value );
 		}
 		
+		// 3. Overwrite the metadata that needs to be overwritten with fresh data. 
+		wp_update_attachment_metadata( $attach_id,  $attach_data );
+
 		return $attach_id;
 	}
 	
@@ -1909,7 +1923,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			
 		// Else, check that the user has write access.
 		switch_to_blog( $blog_id );
-		$returnValue = current_user_can( 'publish_posts' );                                                                                                                                                                                                        
+		$returnValue = current_user_can( 'edit_posts' );                                                                                                                                                                                                        
 		restore_current_blog();
 		return $returnValue;
 	}
@@ -1968,7 +1982,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	**/
 	private function get_required_blogs()
 	{
-		$requiredBlogs = explode( ',', $this->get_site_option( 'requiredlist' ) );
+		$requiredBlogs = array_filter( explode( ',', $this->get_site_option( 'requiredlist' ) ) );
 		$requiredBlogs = array_flip( $requiredBlogs);
 		return $requiredBlogs;
 	}

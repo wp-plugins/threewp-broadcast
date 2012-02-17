@@ -4,8 +4,9 @@
 	
 	@par	Changelog
 	
-	- 2011-08-03			tab functions can now be arrays (class, method)
-	- 2011-08-02			array_to_object
+	- 2012-02-10			display_form_table ignores hidden inputs.
+	- 2011-08-03			tab functions can now be arrays (class, method).
+	- 2011-08-02			array_to_object.
 	- 2011-07-28			activate, decactivate and uninstall are public.
 	- 2011-07-19			Documentation added.
 	- 2011-05-12			displayMessage now uses now() instead of date.
@@ -852,13 +853,20 @@ class ThreeWP_Broadcast_Base
 		
 		$tr = array();
 		
+		$returnValue = '';
+		
 		if ( !isset($options['form']) )
 			$options['form'] = $this->form();
 			
 		foreach( $options['inputs'] as $input )
+		{
+			if ( $input[ 'type' ] == 'hidden' )
+			{
+				$returnValue .= $options['form']->make_input( $input );
+				continue;
+			}
 			$tr[] = $this->display_form_table_row( $input, $options['form'] );
-		
-		$returnValue = '';
+		}
 		
 		if ( $options['header'] != '' )
 			$returnValue .= '<'.$options['header_level'].'>' . $options['header'] . '</'.$options['header_level'].'>';

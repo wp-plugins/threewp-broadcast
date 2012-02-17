@@ -72,6 +72,14 @@ _bcc_
 
 == Changelog ==
 
+= 1.9 2012-02-18 =
+* Bug fixed: post_link only receives one parameter.
+* Bug fixed: double-posting when using an empty required list.
+* Rebroadcast of old images now works (thanks Ross Hawkes).
+* Broadcast menu moved to profile menu (for the sake of contributors).
+* Better support for contributor roles.
+* Better finding of orphan posts.
+
 = 1.8 2012-02-10 =
 * Old broadcasted images are properly deleted from child blogs.
 * Settings can now be saved again. Sigh.

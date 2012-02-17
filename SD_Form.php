@@ -577,12 +577,15 @@ class SD_Form
 		}
 	}
 	
-	public function use_post_value(&$input, $post_data, $key)
+	public function use_post_value( &$input, $post_data = null )
 	{
 		if ($input['type']=='submit')		// Submits don't get their values posted, so return the value.
 			return $input['value'];
 			
 		$input['name'] = self::fix_name($input['name']);
+		
+		if ( $post_data === null )
+			$post_data = $_POST;
 			
 		// Merge the default options.
 		// In case this class was created with a nameprefix and the individual inputs weren't, for example.
@@ -595,28 +598,28 @@ class SD_Form
 		if ($input['nameprefix'] != '')
 		{
 			$strings = '';
-			$this->implode_array($post_data, $strings, '__', '', $this->options['class'] . '');
+			$this->implode_array( $post_data, $strings, '__', '', $this->options['class'] . '' );
 		}
 		else
 		{
-			if (isset($post_data[$input['name']]))
-				if (!is_array($post_data[$input['name']]))
-					$input['value'] = @stripslashes($post_data[$input['name']]);		// @ is for unchecked checkboxes. *sigh*
+			if ( isset( $post_data[$input['name']] ) )
+				if ( !is_array( $post_data[$input['name']] ) )
+					$input['value'] = @stripslashes( $post_data[$input['name']] );		// @ is for unchecked checkboxes. *sigh*
 				else
 				{
 					$input['value'] = array();	// Kill the value, otherwise postvalues are just appended and therefore do nothing.
-					foreach($post_data[$input['name']] as $index=>$value)
-						$input['value'][$index] = stripslashes($value);
+					foreach( $post_data[ $input['name'] ] as $index => $value )
+						$input['value'][$index] = stripslashes( $value );
 				}
 		}
 		
-		$inputID = $this->make_id($input);
-		if (isset($strings[$inputID]))
+		$inputID = $this->make_id( $input );
+		if ( isset( $strings[$inputID] ) )
 		{
 			switch($input['type'])
 			{
 				default:
-					@$input['value'] = stripslashes( $strings[$inputID] );
+					@$input[ 'value' ] = stripslashes( $strings[$inputID] );
 			}
 		}
 	}
@@ -756,7 +759,7 @@ class SD_Form
 				$style['sectionNameStop'] . "\n" .
 				$sectionDescription;
 				
-			$returnValue = str_replace('%%CSSCLASS%%', $sectionData['cssClass'], $returnValue);
+			$returnValue = str_replace('%%CSSCLASS%%', $sectionData['css_class'], $returnValue);
 				
 			foreach($sectionData['inputs'] as $index=>$input)
 			{
