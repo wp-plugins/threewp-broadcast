@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.9
+Version: 1.10
 Author: edward mindreantre
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -1279,6 +1279,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 
 	public function save_post( $post_id )
 	{
+		if ( $this->is_broadcasting() )
+			return;
+		
 		if (!$this->role_at_least( $this->get_site_option( 'role_broadcast' ) ) )
 			return;
 			
@@ -1293,20 +1296,15 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$post = get_post( $post_id, 'ARRAY_A' );
 		if ( !in_array( $post['post_status'], $allowed_post_status) )
 			return;
-			
-		if (!isset( $_POST['broadcast'] ) )
+		
+		// Check if the user hasn't marked any blogs for forced broadcasting but it the admin wants forced blogs.
+		if ( !isset( $_POST['broadcast'] ) )
 		{
 			// Site admin is never forced to do anything.
-			if (is_super_admin() )
+			if ( is_super_admin() )
 				return;
-				
-			// Ignore this post. It's being force broadcast.
-			if (isset( $_POST['broadcast_force'] ) )
-				return;
-				
-			if ( $this->get_site_option( 'always_use_required_list' ) == true)
-				$_POST['broadcast_force'] = true;
-			else
+			
+			if ( ! $this->get_site_option( 'always_use_required_list' ) == true )
 				return;
 		}
 		
@@ -1317,9 +1315,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$post_type_is_hierarchical = $post_type_object->hierarchical;
 
 		// Create new post data from the original stuff.
-		$newPost = $post;
+		$new_post = $post;
 		foreach(array( 'ID', 'guid', 'menu_order', 'comment_count', 'post_parent' ) as $key)
-			unset( $newPost[$key] );
+			unset( $new_post[$key] );
 			
 		if (isset( $_POST['broadcast']['groups']['666'] ) )
 			$blogs = array_keys( $_POST['broadcast']['groups']['666'] );
@@ -1352,7 +1350,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		// Now to add and remove blogs: done
 		
 		// Do we actually need to to anything?
-		if (count( $blogs) < 1)
+		if (count( $blogs ) < 1)
 			return;
 
 		$link = ( $this->role_at_least( $this->get_site_option( 'role_link' ) ) && isset( $_POST['broadcast']['link'] ) );
@@ -1425,20 +1423,20 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			$post_custom_fields = $this->keep_valid_custom_fields( $post_custom_fields);
 		}
 		
-		// Sticky isn't a tag, cat or custom_field.
+		// Sticky isn't a tag, taxonomy or custom_field.
 		$post_is_sticky = @( $_POST['sticky'] == 'sticky' );
 		
 		// And now save the user's last settings.
 		$this->save_last_used_settings( $user_id, $_POST['broadcast'] );		
 		
-		$this->broadcasting = $_POST['broadcast'];
-		$to_broadcasted_blogs = array();				// Array of blog names that we're broadcasting to.
+		$to_broadcasted_blogs = array();				// Array of blog names that we're broadcasting to. To be used for the activity monitor action.
 
 		// To prevent recursion
+		$this->broadcasting = $_POST['broadcast'];
 		unset( $_POST['broadcast'] );
 		
 		$original_blog = $blog_id;
-				
+		
 		foreach( $blogs as $blogID )
 		{
 			// Another safety check. Goes with the safety dance.
@@ -1451,7 +1449,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				if ( $parent_broadcast_data->has_linked_child_on_this_blog() )
 				{
 					$linked_parent = $parent_broadcast_data->get_linked_child_on_this_blog();
-					$newPost['post_parent'] = $linked_parent;
+					$new_post['post_parent'] = $linked_parent;
 				}
 			
 			// Insert new? Or update? Depends on whether the parent post was linked before or is newly linked?
@@ -1465,16 +1463,16 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 					$child_post = get_post( $child_post_id );
 					if ( $child_post !== null )
 					{
-						$temp_post_data = $newPost;
+						$temp_post_data = $new_post;
 						$temp_post_data['ID'] = $child_post_id;
 						$new_post_id = wp_update_post( $temp_post_data );
 						$need_to_insert_post = false;
 					}
 				}
-
-			if ( $need_to_insert_post)
+			
+			if ( $need_to_insert_post )
 			{
-				$new_post_id = wp_insert_post( $newPost);
+				$new_post_id = wp_insert_post( $new_post);
 				
 				if ( $link )
 					$broadcast_data->add_linked_child( $blogID, $new_post_id );
@@ -1591,9 +1589,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			
 			// Sticky behaviour
 			$child_post_is_sticky = is_sticky( $new_post_id );
-			if ( $post_is_sticky && !$child_post_is_sticky )
+			if ( $post_is_sticky && ! $child_post_is_sticky )
 				stick_post( $new_post_id );
-			if (!$post_is_sticky && $child_post_is_sticky )
+			if ( ! $post_is_sticky && $child_post_is_sticky )
 				unstick_post( $new_post_id );
 			
 			if ( $link)
@@ -1609,7 +1607,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		}
 		
 		// Finished broadcasting.
-		$this->broadcasting = false;
+		unset( $this->broadcasting );
+		
+		$this->load_language();
 		
 		$post_url_and_name = '<a href="' . get_permalink( $post_id ) . '">' . $post['post_title']. '</a>';
 		do_action( 'threewp_activity_monitor_new_activity', array(
@@ -1655,7 +1655,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				if ( $command == 'wp_delete_post' )
 				{
 					// Delete the broadcast data of this child
-					$this->delete_post_broadcast_data( $childBlog, $childPost);
+					$this->delete_post_broadcast_data( $childBlog, $childPost );
 				}
 				switch_to_blog( $childBlog);
 				$command( $childPost);
@@ -2184,7 +2184,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	*/
 	public function is_broadcasting()
 	{
-		return $this->broadcasting;
+		return isset( $this->broadcasting );
 	}
 	
 	// --------------------------------------------------------------------------------------------

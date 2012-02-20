@@ -22,6 +22,7 @@ Available in the following languages:
 
 * Dutch
 * English
+* Italian
 * French
 * Swedish
 
@@ -64,6 +65,12 @@ Find the post in the post overview and use the row action "find orphans". You wi
 
 To be considered an orphan the orphaned posts must have the exact same title (name) as the soon-to-be parent.
 
+= Bulk broadcast existing pages =
+
+That's not possible until ticket 16031, http://core.trac.wordpress.org/ticket/16031 , gets fixed.
+
+I'm not writing a UI for that function when I'll just have to rewrite it when the ticket gets fixed.
+
 = WPAlchemy =
 
 If you have custom post meta boxes via WPAlchemy, you'll probably need to add the following to the custom field exceptions in the settings:
@@ -71,6 +78,10 @@ If you have custom post meta boxes via WPAlchemy, you'll probably need to add th
 _bcc_
 
 == Changelog ==
+
+= 1.10 2012-02-20 =
+* Italian added.
+* Fixed double-posting bug when using required lists.
 
 = 1.9 2012-02-18 =
 * Bug fixed: post_link only receives one parameter.
