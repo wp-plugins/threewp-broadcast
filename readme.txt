@@ -79,6 +79,9 @@ _bcc_
 
 == Changelog ==
 
+= 1.11 2012-02-11 =
+* Fixed non-broadcasting bug. *sigh*
+
 = 1.10 2012-02-20 =
 * Italian added.
 * Fixed double-posting bug when using required lists.
