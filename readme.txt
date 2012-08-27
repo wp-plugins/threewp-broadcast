@@ -22,8 +22,10 @@ Available in the following languages:
 
 * Dutch
 * English
+* French - Seb giss <sgissinger@gmail.com>
 * Italian
 * French
+* Romanian, Web Geek Sciense <a href="http://webhostinggeeks.com/">Web Hosting Geeks</a> 
 * Swedish
 
 Did I miss anything?
@@ -78,6 +80,11 @@ If you have custom post meta boxes via WPAlchemy, you'll probably need to add th
 _bcc_
 
 == Changelog ==
+
+= 1.12 2012-08-27 =
+* Overridden child permalinks use the nice permalink instead of /?p=123
+* Romanian translation from Alexander Ovsov
+* Added extra Activity Monitor details, from patch from Flyn.
 
 = 1.11 2012-02-11 =
 * Fixed non-broadcasting bug. *sigh*

@@ -4,6 +4,12 @@
 	
 	@par	Changelog
 	
+	- 2012-05-25	11:20	All functions are now public. No more bickering about protected here and there.
+	- 2012-05-21	20:00	tabs now work on tab_slugs, not slugged tab names.
+	- 2012-05-18	13:54	Refactoring of tabs() variable names.
+	- 2012-05-16	19:03	_() can act as sprint.
+							Display form table now has ( $inputs, $options )
+	- 2012-05-08	13:15	Tries to get mime type of attached files when sending mail.
 	- 2012-02-10			display_form_table ignores hidden inputs.
 	- 2011-08-03			tab functions can now be arrays (class, method).
 	- 2011-08-02			array_to_object.
@@ -50,7 +56,7 @@ class ThreeWP_Broadcast_Base
 
 		@var	$paths
 	**/
-	protected $paths = array();
+	public $paths = array();
 	
 	/**
 		Array of options => default_values that this plugin stores sitewide.
@@ -139,7 +145,7 @@ class ThreeWP_Broadcast_Base
 			'path_from_base_directory' => PLUGINDIR . '/' . basename(dirname($filename)),
 			'url' => WP_PLUGIN_URL . '/' . basename(dirname($filename)),
 		);
-		
+
 		register_activation_hook( $this->paths['filename_from_plugin_directory'],	array( $this, 'activate') );
 		register_deactivation_hook( $this->paths['filename_from_plugin_directory'],	array( $this, 'deactivate') );
 		
@@ -166,19 +172,11 @@ class ThreeWP_Broadcast_Base
 	/**
 		Deactivates the plugin.
 	**/
-	protected function deactivate_me()
+	public function deactivate_me()
 	{
 		deactivate_plugins(array(
 			$this->paths['filename_from_plugin_directory']
 		));
-	}
-	
-	/**
-		Overridable uninstall method.
-	**/
-	public function uninstall()
-	{
-		$this->deregister_options();
 	}
 	
 	/**
@@ -207,7 +205,7 @@ class ThreeWP_Broadcast_Base
 		
 		Form is currently only available in English.
 	**/
-	protected function admin_uninstall()
+	public function admin_uninstall()
 	{
 		$form = $this->form();
 		
@@ -254,9 +252,10 @@ class ThreeWP_Broadcast_Base
 		
 		Reads the language data from the class's name domain as default.
 		
-		@param		$domain		Optional domain.
+		@param		$domain
+					Optional domain.
 	**/
-	protected function load_language($domain = '')
+	public function load_language($domain = '')
 	{
 		if ( $domain != '')
 			$this->language_domain = $domain;
@@ -271,12 +270,43 @@ class ThreeWP_Broadcast_Base
 		
 		Like Wordpress' internal _() method except this one automatically uses the plugin's domain.
 		
-		@param		$string		String to translate.
-		@return					Translated string, or the untranslated string.
+		Can function like sprintf, if any %s are specified.
+		
+		@param		$string
+					String to translate. %s will require extra arguments to the method.
+		
+		@return		Translated string, or the untranslated string.
 	**/
-	public function _($string)
+	public function _( $string )
 	{
-		return __( $string, $this->language_domain );
+		$new_string = __( $string, $this->language_domain );
+
+		$count = substr_count( $string, '%s' );
+		if ( $count > 0 )
+		{
+			$args = func_get_args();
+			array_shift( $args );
+			
+			if ( $count != count( $args ) )
+				throw new Exception( sprintf(
+					'_() requires the same amount of arguments as occurrences of %%s. Needed: %s, given %s',
+					$count,
+					count( $args )
+				) );
+
+			array_unshift( $args, $new_string );
+			$new_string =  call_user_func_array( 'sprintf', $args );
+		}
+		
+		return $new_string;
+	}
+	
+	/**
+		Overridable uninstall method.
+	**/
+	public function uninstall()
+	{
+		$this->deregister_options();
 	}
 	
 	// -------------------------------------------------------------------------------------------------
@@ -290,7 +320,7 @@ class ThreeWP_Broadcast_Base
 		@param		$wpdb		An optional, other WPDB if the standard $wpdb isn't good enough for you.
 		@return		array		The rows from the query.
 	**/
-	protected function query($query , $wpdb = null)
+	public function query($query , $wpdb = null)
 	{
 		if ( $wpdb === null )
 			$wpdb = $this->wpdb;
@@ -304,7 +334,7 @@ class ThreeWP_Broadcast_Base
 		@param		$query			The SQL query.
 		@return						Either the row as an array, or false if more than one row.
 	**/
-	protected function query_single($query)
+	public function query_single($query)
 	{
 		$results = $this->wpdb->get_results($query, 'ARRAY_A');
 		if ( count($results) != 1)
@@ -318,7 +348,7 @@ class ThreeWP_Broadcast_Base
 		@param		$query		The SQL query.
 		@return					The inserted ID.
 	**/
-	protected function query_insert_id($query)
+	public function query_insert_id($query)
 	{
 		$this->wpdb->query($query);
 		return $this->wpdb->insert_id;
@@ -330,7 +360,7 @@ class ThreeWP_Broadcast_Base
 		@param		$object		An object.
 		@return					Serialized, base64-encoded string.
 	**/
-	protected function sql_encode( $object )
+	public function sql_encode( $object )
 	{
 		return base64_encode( serialize($object) );
 	}
@@ -340,7 +370,7 @@ class ThreeWP_Broadcast_Base
 		@param		$string			Serialized, base64-encoded string.
 		@return						Object, if possible.
 	**/
-	protected function sql_decode( $string )
+	public function sql_decode( $string )
 	{
 		return unserialize( base64_decode($string) );
 	}
@@ -351,7 +381,7 @@ class ThreeWP_Broadcast_Base
 		@param		$table_name		Table name to check for.
 		@return						True if the table exists.
 	**/
-	protected function sql_table_exists( $table_name )
+	public function sql_table_exists( $table_name )
 	{
 		$query = "SHOW TABLES LIKE '$table_name'";
 		$result = $this->query( $query );
@@ -366,11 +396,25 @@ class ThreeWP_Broadcast_Base
 		Returns the user's role as a string.
 		@return					User's role as a string.
 	**/
-	protected function get_user_role()
+	public function get_user_role()
 	{
 		foreach($this->roles as $role)
 			if (current_user_can($role['current_user_can']))
 				return $role['name'];
+	}
+	
+	/**
+		Returns the user roles as a select options array.
+		@return		The user roles as a select options array.
+	**/ 
+	public function roles_as_options()
+	{
+		$returnValue = array();
+		if (function_exists('is_super_admin'))
+			$returnValue['super_admin'] = $this->_( 'Super admin');
+		foreach( $this->roles as $role )
+			$returnValue[ $role[ 'name' ] ] = __( ucfirst( $role[ 'name' ] ) );		// See how we ask WP to translate the roles for us? See also how it doesn't. Sometimes.
+		return $returnValue;
 	}
 	
 	/**
@@ -379,7 +423,7 @@ class ThreeWP_Broadcast_Base
 		@param		$role		Role as string.
 		@return					True if role is at least $role.
 	**/
-	protected function role_at_least($role)
+	public function role_at_least($role)
 	{
 		global $current_user;
 		wp_get_current_user();
@@ -400,95 +444,20 @@ class ThreeWP_Broadcast_Base
 	}
 	
 	/**
-		Returns the user roles as a select options array.
-		@return		The user roles as a select options array.
-	**/ 
-	protected function roles_as_options()
-	{
-		$returnValue = array();
-		if (function_exists('is_super_admin'))
-			$returnValue['super_admin'] = $this->_( 'Super admin');
-		foreach( $this->roles as $role )
-			$returnValue[ $role[ 'name' ] ] = __( ucfirst( $role[ 'name' ] ) );		// See how we ask WP to translate the roles for us? See also how it doesn't. Sometimes.
-		return $returnValue;
-	}
-	
-	/**
 		Return the user_id of the current user.
 	
 		@return		int						The user's ID.
 	**/
-	protected function user_id()
+	public function user_id()
 	{
 		global $current_user;
 		get_current_user();
 		return $current_user->ID;
 	}
 	
-	/**
-		Creates a new SD_Form.
-		
-		@param		$options	Default options to send to the SD form constructor.
-		@return					A new SD form class.
-	**/ 
-	protected function form($options = array())
-	{
-		$options = array_merge($options, array('language' => preg_replace('/_.*/', '', get_locale())) );
-		if (class_exists('SD_Form'))
-			return new SD_Form($options);
-		require_once('SD_Form.php');
-		return new SD_Form($options);
-	}
-	
 	// -------------------------------------------------------------------------------------------------
 	// ----------------------------------------- OPTIONS
 	// -------------------------------------------------------------------------------------------------
-	
-	/**
-		Normalizes the name of an option.
-		
-		Will prepend the class name in front, to make the options easily findable in the table.
-		
-		@param		$option		Option name to fix.
-	**/
-	protected function fix_option_name($option)
-	{
-		return $this->paths['name'] . '_' . $option;
-	}
-	
-	/**
-		Get a site option.
-		
-		If this is a network, the site option is preferred.
-		
-		@param		$option		Name of option to get.
-		@return					Value.
-	**/
-	protected function get_option($option)
-	{
-		$option = $this->fix_option_name($option);
-		if ($this->is_network)
-			return get_site_option($option);
-		else
-			return get_option($option);
-	}
-	
-	/**
-		Updates a site option.
-		
-		If this is a network, the site option is preferred.
-		
-		@param		$option		Name of option to update.
-		@param		$value		New value
-	**/
-	protected function update_option($option, $value)
-	{
-		$option = $this->fix_option_name($option);
-		if ($this->is_network)
-			update_site_option($option, $value);
-		else
-			update_option($option, $value);
-	}
 	
 	/**
 		Deletes a site option.
@@ -497,7 +466,7 @@ class ThreeWP_Broadcast_Base
 		
 		@param		$option		Name of option to delete.
 	**/
-	protected function delete_option($option)
+	public function delete_option($option)
 	{
 		$option = $this->fix_option_name($option);
 		if ($this->is_network)
@@ -507,72 +476,14 @@ class ThreeWP_Broadcast_Base
 	}
 	
 	/**
-		Gets the value of a local option.
-		
-		@param		$option			Name of option to get.
-		@param		$default		The default value if the option === false
-		@return						Value.
-	**/
-	protected function get_local_option($option, $default = false)
-	{
-		$option = $this->fix_option_name($option);
-		$value = get_option($option);
-		if ( $value === false )
-			return $default;
-		else
-			return $value;
-	}
-	
-	/**
-		Updates a local option.
-		
-		@param		option		Name of option to update.
-		@param		$value		New value
-	**/
-	protected function update_local_option($option, $value)
-	{
-		$option = $this->fix_option_name($option);
-		update_option($option, $value);
-	}
-	
-	/**
 		Deletes a local option.
 		
 		@param		$option		Name of option to delete.
 	**/
-	protected function delete_local_option($option)
+	public function delete_local_option($option)
 	{
 		$option = $this->fix_option_name($option);
 		delete_option($option);
-	}
-	
-	/**
-		Gets the value of a site option.
-		
-		@param		$option		Name of option to get.
-		@param		$default	The default value if the option === false
-		@return					Value.
-	**/
-	protected function get_site_option($option, $default = false)
-	{
-		$option = $this->fix_option_name($option);
-		$value = get_site_option($option);
-		if ( $value === false )
-			return $default;
-		else
-			return $value;
-	}
-	
-	/**
-		Updates a site option.
-		
-		@param		$option		Name of option to update.
-		@param		$value		New value
-	**/
-	protected function update_site_option($option, $value)
-	{
-		$option = $this->fix_option_name($option);
-		update_site_option($option, $value);
 	}
 	
 	/**
@@ -580,54 +491,28 @@ class ThreeWP_Broadcast_Base
 		
 		@param		$option		Name of option to delete.
 	**/
-	protected function delete_site_option($option)
+	public function delete_site_option($option)
 	{
 		$option = $this->fix_option_name($option);
 		delete_site_option($option);
 	}
 	
 	/**
-		Registers all the options this plugin uses.
+		Normalizes the name of an option.
+		
+		Will prepend the class name in front, to make the options easily findable in the table.
+		
+		@param		$option		Option name to fix.
 	**/
-	protected function register_options()
+	public function fix_option_name($option)
 	{
-		foreach($this->options as $option=>$value)
-		{
-			if ($this->get_option($option) === false)
-				$this->update_option($option, $value);
-		}
-
-		foreach($this->local_options as $option=>$value)
-		{
-			$option = $this->fix_option_name($option);
-			if (get_option($option) === false)
-				update_option($option, $value);
-		}
-
-		if ($this->is_network)
-		{
-			foreach($this->site_options as $option=>$value)
-			{
-				$option = $this->fix_option_name($option);
-				if (get_site_option($option) === false)
-					update_site_option($option, $value);
-			}
-		}
-		else
-		{
-			foreach($this->site_options as $option=>$value)
-			{
-				$option = $this->fix_option_name($option);
-				if (get_option($option) === false)
-					update_option($option, $value);
-			}
-		}
+		return $this->paths['name'] . '_' . $option;
 	}
 	
 	/**
 		Removes all the options this plugin uses.
 	**/
-	protected function deregister_options()
+	public function deregister_options()
 	{
 		foreach($this->options as $option=>$value)
 		{
@@ -656,6 +541,136 @@ class ThreeWP_Broadcast_Base
 		}
 	}
 	
+	/**
+		Get a site option.
+		
+		If this is a network, the site option is preferred.
+		
+		@param		$option		Name of option to get.
+		@return					Value.
+	**/
+	public function get_option($option)
+	{
+		$option = $this->fix_option_name($option);
+		if ($this->is_network)
+			return get_site_option($option);
+		else
+			return get_option($option);
+	}
+	
+	/**
+		Gets the value of a local option.
+		
+		@param		$option			Name of option to get.
+		@param		$default		The default value if the option === false
+		@return						Value.
+	**/
+	public function get_local_option($option, $default = false)
+	{
+		$option = $this->fix_option_name($option);
+		$value = get_option($option);
+		if ( $value === false )
+			return $default;
+		else
+			return $value;
+	}
+	
+	/**
+		Gets the value of a site option.
+		
+		@param		$option		Name of option to get.
+		@param		$default	The default value if the option === false
+		@return					Value.
+	**/
+	public function get_site_option($option, $default = false)
+	{
+		$option = $this->fix_option_name($option);
+		$value = get_site_option($option);
+		if ( $value === false )
+			return $default;
+		else
+			return $value;
+	}
+	
+	/**
+		Registers all the options this plugin uses.
+	**/
+	public function register_options()
+	{
+		foreach($this->options as $option=>$value)
+		{
+			if ($this->get_option($option) === false)
+				$this->update_option($option, $value);
+		}
+
+		foreach($this->local_options as $option=>$value)
+		{
+			$option = $this->fix_option_name($option);
+			if (get_option($option) === false)
+				update_option($option, $value);
+		}
+		
+		if ($this->is_network)
+		{
+			foreach($this->site_options as $option=>$value)
+			{
+				$option = $this->fix_option_name($option);
+				if (get_site_option($option) === false)
+					update_site_option($option, $value);
+			}
+		}
+		else
+		{
+			foreach($this->site_options as $option=>$value)
+			{
+				$option = $this->fix_option_name($option);
+				if (get_option($option) === false)
+					update_option($option, $value);
+			}
+		}
+	}
+	
+	/**
+		Updates a site option.
+		
+		If this is a network, the site option is preferred.
+		
+		@param		$option		Name of option to update.
+		@param		$value		New value
+	**/
+	public function update_option($option, $value)
+	{
+		$option = $this->fix_option_name($option);
+		if ($this->is_network)
+			update_site_option($option, $value);
+		else
+			update_option($option, $value);
+	}
+	
+	/**
+		Updates a local option.
+		
+		@param		option		Name of option to update.
+		@param		$value		New value
+	**/
+	public function update_local_option($option, $value)
+	{
+		$option = $this->fix_option_name($option);
+		update_option($option, $value);
+	}
+	
+	/**
+		Updates a site option.
+		
+		@param		$option		Name of option to update.
+		@param		$value		New value
+	**/
+	public function update_site_option($option, $value)
+	{
+		$option = $this->fix_option_name($option);
+		update_site_option($option, $value);
+	}
+	
 	// -------------------------------------------------------------------------------------------------
 	// ----------------------------------------- MESSAGES
 	// -------------------------------------------------------------------------------------------------
@@ -665,8 +680,11 @@ class ThreeWP_Broadcast_Base
 		
 		Autodetects HTML / text.
 		
-		@param		$type		Type of message: error, warning, whatever. Free content.
-		@param		$string		The message to display.
+		@param		$type
+					Type of message: error, warning, whatever. Free content.
+					
+		@param		$string
+					The message to display.
 	**/
 	public function display_message($type, $string)
 	{
@@ -683,219 +701,99 @@ class ThreeWP_Broadcast_Base
 	}
 	
 	/**
-		Displays an error message.
-		
-		The only thing that makes it an error message is that the div has the class "error".
-		
-		@param		$string		String to display.
-	**/
-	public function error($string)
-	{
-		$this->display_message('error', $string);
-	}
-	
-	/**
 		Displays an informational message.
 		
-		@param		$string		String to display.
+		@param		$string
+					String to display.
 	**/
 	public function message($string)
 	{
 		$this->display_message('updated', $string);
 	}
 		
+	/**
+		Displays an error message.
+		
+		The only thing that makes it an error message is that the div has the class "error".
+		
+		@param		$string
+					String to display.
+	**/
+	public function error($string)
+	{
+		$this->display_message('error', $string);
+	}
+	
 	// -------------------------------------------------------------------------------------------------
 	// ----------------------------------------- TOOLS
 	// -------------------------------------------------------------------------------------------------
 	
 	/**
-		Displays Wordpress tabs.
+		@brief		Insert an array into another.
 		
-		@param		$options		See options.
+		Like array_splice but better, because it even inserts the new key.
+		
+		@param		$array
+						Array into which to insert the new array.
+
+		@param		$position
+						Position into which to insert the new array.
+
+		@param		$new_array
+						The new array which is to be inserted.
+		
+		@return		The complete array.
 	**/
-	protected function tabs($options)
+	public function array_insert( $array, $position, $new_array )
 	{
-		$options = array_merge(array(
-			'count' =>		array(),				// Optional array of a strings to display after each tab name. Think: page counts.
-			'default' => null,						// Default tab index.
-			'display' => true,						// Display the tabs or return them.
-			'displayTabName' => true,				// If display==true, display the tab name.
-			'displayBeforeTabName' => '<h2>',		// If displayTabName==true, what to display before the tab name.
-			'displayAfterTabName' => '</h2>',		// If displayTabName==true, what to display after the tab name.
-			'functions' =>	array(),				// Array of functions associated with each tab name.
-			'get_key' =>	'tab',						// $_GET key to get the tab value from.
-			'page_titles' =>	array(),			// Array of page titles associated with each tab.
-			'tabs' =>		array(),				// Array of tab names
-			'valid_get_keys' => array(),			// Display only these _GET keys.
-		), $options);
-		
-		// Work on a copy of the _GET.
-		$get = $_GET;
-		
-		$get_key = $options['get_key'];			// Convenience.
-		
-		// Is the default not set or set to something stupid? Fix it.
-		if ( ! isset( $options['tabs'][ $options['default'] ] ) )
-			$options['default'] = key( $options['tabs'] );
-
-		// Select the default tab if none is selected.
-		if (!isset($get[$get_key]))
-			$get[$get_key] = sanitize_title( $options['tabs'][$options['default']] );
-		$selected = $get[$get_key];
-		
-		$options['valid_get_keys']['page'] = 'page';
-		
-		$returnValue = '';
-		if (count($options['tabs'])>1)
-		{
-			$returnValue .= '<ul class="subsubsub">';
-			$original_link = $_SERVER['REQUEST_URI'];
-
-			foreach($get as $key => $value)
-				if ( !in_array($key, $options['valid_get_keys']) )
-					$original_link = remove_query_arg($key, $original_link);
-			
-			$index = 0;
-			foreach($options['tabs'] as $tab_index => $tab)
-			{
-				$slug = $this->tab_slug($tab);
-				
-				// Make the link.
-				// If we're already on that tab, just return the current url.
-				if ( $get[$get_key] == $slug )
-					$link = remove_query_arg( time() );
-				else
-				{
-					if ( $index == $options['default'] )
-						$link = remove_query_arg( $get_key, $original_link );
-					else
-						$link = add_query_arg( $get_key, $slug, $original_link );
-				}
-				
-				$text = $tab;
-				if (isset($options['count'][$index]))
-					$text .= ' <span class="count">(' . $options['count'][$index] . ')</span>';
-				
-				$separator = ($index+1 < count($options['tabs']) ? ' | ' : '');
-				
-				$current = ($slug == $selected ? ' class="current"' : '');
-				
-				if ($current)
-					$selected_index = $tab_index;
-				 
-				$returnValue .= '<li><a'.$current.' href="'.$link.'">'.$text.'</a>'.$separator.'</li>';
-				$index++;
-			}
-			$returnValue .= '</ul>';
-		}
-		
-		if ( !isset($selected_index) )
-			$selected_index = $options['default'];
-	
-		if ($options['display'])
-		{
-			ob_start();
-			echo '<div class="wrap">';
-			if ($options['displayTabName'])
-			{
-				if ( isset( $options['page_titles'][$selected_index] ) )
-					$page_title = $options['page_titles'][$selected_index];
-				else
-					$page_title = $options['tabs'][$selected_index];
-				
-				echo $options['displayBeforeTabName'] . $page_title . $options['displayAfterTabName'];
-			}
-			echo $returnValue;
-			echo '<div style="clear: both"></div>';
-			if (isset($options['functions'][$selected_index]))
-			{
-				$functionName = $options['functions'][$selected_index];
-				if ( is_array( $functionName ) )
-				{
-					$functionName[0]->$functionName[1]();
-				}
-				else 
-					$this->$functionName();
-			}
-			echo '</div>';
-			ob_end_flush();
-		}
-		else
-			return $returnValue;
+		$part1 = array_slice( $array, 0, $position, true ); 
+		$part2 = array_slice( $array, $position, null, true ); 
+		return $part1 + $new_array + $part2;
 	}
 	
 	/**
-		Sanitizes the name of a tab.
-	
-		@param		$string		String to sanitize.
+		@brief		Sort an array of arrays using a specific key in the subarray as the sort key.
+		
+		@param		$array
+					An array of arrays.
+		@param		$key
+					Key in subarray to use as sort key.
+		
+		@return		The array of arrays. 
 	**/
-	protected function tab_slug( $string )
+	public function array_sort_subarrays( $array, $key )
 	{
-		return $this->slug( $string );
-	}
-	
-	/**
-		Sanitizes a string.
-	
-		@param		$string		String to sanitize.
-	**/
-	protected function slug( $string )
-	{
-		return sanitize_title( $string );
-	}
-	
-	protected function display_form_table($options)
-	{
-		$options = array_merge(array(
-			'header' => '',
-			'header_level' => 'h3',
-		), $options);
+		// In order to be able to sort a bunch of objects, we have to extract the key and use it as a key in another array.
+		// But we can't just use the key, since there could be duplicates, therefore we attach a random value.
+		$rand = rand(0, PHP_INT_MAX / 2);
+		$sorted = array();
 		
-		$tr = array();
+		$is_array = is_array( reset( $array ) );
 		
-		$returnValue = '';
-		
-		if ( !isset($options['form']) )
-			$options['form'] = $this->form();
-			
-		foreach( $options['inputs'] as $input )
+		foreach( $array as $index => $item )
 		{
-			if ( $input[ 'type' ] == 'hidden' )
+			$item = (object) $item;
+			do
 			{
-				$returnValue .= $options['form']->make_input( $input );
-				continue;
+				if ( is_int( $item->$key ) )
+					$random_key = $rand + $item->$key;
+				else
+					$random_key = $item->$key . '-' . $rand;
 			}
-			$tr[] = $this->display_form_table_row( $input, $options['form'] );
+			while ( isset( $sorted[ $random_key ] ) );
+			$sorted[ $random_key ] = array( 'key' => $index, 'value' => $item );
 		}
+		ksort( $sorted );
 		
-		if ( $options['header'] != '' )
-			$returnValue .= '<'.$options['header_level'].'>' . $options['header'] . '</'.$options['header_level'].'>';
-		
-		$returnValue .= '
-			<table class="form-table">
-				<tr>' . implode('</tr><tr>', $tr) . '</tr>
-			</table>
-		';
-		
+		// The array has been sorted, we want the original array again.
+		$returnValue = array();
+		foreach( $sorted as $item )
+		{
+			$value = ( $is_array ? (array)$item[ 'value' ] : $item[ 'value' ] );
+			$returnValue[ $item['key'] ] = $item['value'];
+		}
+			
 		return $returnValue;
-	}
-
-	protected function display_form_table_row($input, $form = null)
-	{
-		if ($form === null)
-			$form = $this->form();
-		return '
-			<tr>
-				<th>'.$form->make_label($input).'</th>
-				<td>
-					<div class="input_itself">
-						'.$form->make_input($input).'
-					</div>
-					<div class="input_description">
-						'.$form->make_description($input).'
-					</div>
-				</td>
-			</tr>';
 	}
 	
 	/**
@@ -907,31 +805,12 @@ class ThreeWP_Broadcast_Base
 		@param		$key		Which if the subarray keys to make the key in the main array.
 		@return		array		Rearranged array.
 	**/
-	public function array_moveKey($array, $key)
+	public function array_rekey($array, $key)
 	{
-		$returnArray = array();
-		foreach($array as $value)
-			$returnArray[ $value[$key] ] = $value;
-		return $returnArray;
-	}
-	
-	/**
-		Convert an object to an array.
-	
-		@param		$object		Object or array of objects to convert to a simple array.
-		@return		Array.
-	**/
-	public function object_to_array( $object )
-	{
-		if (is_array( $object ))
-		{
-			$returnValue = array();
-			foreach($object as $o)
-				$returnValue[] = get_object_vars($o);
-			return $returnValue;
-		}
-		else
-			return get_object_vars($object);
+		$rv = array();
+		foreach( $array as $value )
+			$rv[ $value[ $key ] ] = $value;
+		return $rv;
 	}
 	
 	/**
@@ -962,7 +841,7 @@ class ThreeWP_Broadcast_Base
 		@param		$time			An optional timestamp to base time difference on, if not now.
 		@return						"28 minutes ago"
 	**/
-	protected function ago($time_string, $time = null)
+	public function ago($time_string, $time = null)
 	{
 		if ($time_string == '')
 			return '';
@@ -970,6 +849,328 @@ class ThreeWP_Broadcast_Base
 			$time = current_time('timestamp');
 		$diff = human_time_diff( strtotime($time_string), $time );
 		return '<span title="'.$time_string.'">' . sprintf( __('%s ago'), $diff) . '</span>';
+	}
+	
+	public function check_plain( $text )
+	{
+		$text = strip_tags( $text );
+		return $text;
+	}
+	
+	public function display_form_table( $inputs, $options = array() )
+	{
+		$options = array_merge(array(
+			'header' => '',
+			'header_level' => 'h3',
+		), $options);
+		
+		$tr = array();
+		
+		$returnValue = '';
+		
+		if ( !isset($options['form']) )
+			$options['form'] = $this->form();
+			
+		foreach( $inputs as $input )
+		{
+			if ( $input[ 'type' ] == 'hidden' )
+			{
+				$returnValue .= $options['form']->make_input( $input );
+				continue;
+			}
+			$tr[] = $this->display_form_table_row( $input, $options['form'] );
+		}
+		
+		if ( $options['header'] != '' )
+			$returnValue .= '<'.$options['header_level'].'>' . $options['header'] . '</'.$options['header_level'].'>';
+		
+		$returnValue .= '
+			<table class="form-table">
+				' . implode('', $tr) . '
+			</table>
+		';
+		
+		return $returnValue;
+	}
+
+	public function display_form_table_row($input, $form = null)
+	{
+		if ($form === null)
+			$form = $this->form();
+		
+		if ( $input[ 'type' ] == 'rawtext' )
+			return '<tr><td colspan="2">' . $form->make_input( $input ) . '</td></tr>';
+
+		return '
+			<tr>
+				<th>'.$form->make_label($input).'</th>
+				<td>
+					<div class="input_itself">
+						'.$form->make_input($input).'
+					</div>
+					<div class="input_description">
+						'.$form->make_description($input).'
+					</div>
+				</td>
+			</tr>';
+	}
+	
+	/**
+		@brief		Output a file to the browser for downloading.
+		
+		@param		$file
+					Path to file on disk.
+		
+		@param		$name
+					Downloaded file's name.
+		
+		@param		$mime_type
+					Optional mime_type.
+
+		@author		http://w-shadow.com/blog/2007/08/12/how-to-force-file-download-with-php/
+	**/
+	public function download( $filepath, $options = array() )
+	{
+		if ( ! is_readable( $filepath ) )
+			throw new Exception( "The file $filepath could not be read!" );
+		
+		$o = (object) array_merge( array(
+			'cache' => true,
+			'content_disposition' => 'attachment',
+			'content_type' => '',
+			'etag' => true,
+			'expires' => 3600 * 24 * 7,		// one week
+			'filemtime' => filemtime( $filepath ),
+			'filename' => '',
+			'filesize' => filesize( $filepath ),
+			'md5_file' => true,
+		), $options );
+		
+		// 304 support
+		if ( $o->cache && isset( $_SERVER[ 'HTTP_IF_MODIFIED_SINCE' ] ) )
+		{
+			$since = $_SERVER[ 'HTTP_IF_MODIFIED_SINCE' ];
+			$since = strtotime( $since );
+			if ( $since >= $o->filemtime )
+			{
+				header( 'HTTP/1.1 304 Not Modified' );
+				return;
+			} 
+		}
+		
+		if ( $o->filename == '' )
+			$o->filename = basename( $filepath );
+		
+		$headers = array(
+			'Accept-Ranges: bytes',
+			'Content-Disposition: ' . $o->content_disposition . '; filename="' . $o->filename . '"',
+			'Content-Transfer-Encoding: binary',
+			'Last-Modified: ' . gmdate( 'D, d M Y H:i:s', $o->filemtime ) . ' GMT', 
+		);
+		
+		if ( $o->content_type == '' )
+		{
+			$mime_types = array
+			(
+				'doc' => 'application/msword',
+				'exe' => 'application/octet-stream',
+				'gif' => 'image/gif',
+				'htm' => 'text/html',
+				'html' => 'text/html',
+				'jpeg'=> 'image/jpg',
+				'jpg' => 'image/jpg',
+				'pdf' => 'application/pdf',
+				'php' => 'text/plain',
+				'ppt' => 'application/vnd.ms-powerpoint',
+				'png' => 'image/png',
+				'txt' => 'text/plain',
+				'xls' => 'application/vnd.ms-excel',
+				'zip' => 'application/zip',
+			);
+			$file_extension = strtolower( substr( strrchr( $o->filename, '.' ), 1 ) );
+			if ( isset( $mime_types[ $file_extension ] ) )
+				$o->content_type = $mime_types[ $file_extension ];
+			else
+				$o->content_type = 'application/octet-stream';
+		}
+		$headers[] = 'Content-Type: ' . $o->content_type;
+
+		if ( $o->cache === false )
+		{
+			$headers[] = 'Cache-Control: no-cache, no-store';
+	 		$headers[] = 'Pragma: private';
+	 		$headers[] = 'Expires: Mon, 26 Jul 1995 00:00:00 GMT';
+		}
+		else
+		{
+			$expires = $o->filemtime + $o->expires;
+			$headers[] = 'Expires: ' . gmdate( 'D, d M Y H:i:s', $expires ) . ' GMT'; 
+			$headers[] = 'Cache-Control: max-age=' . $o->expires;
+		}
+		
+		if ( $o->etag !== false )
+		{
+			$etag = ( $o->etag !== true ? $o->etag : md5( filesize( $o->filepath ) . filemtime( $o->filepath ) ) );
+			$headers[] = 'ETag: ' . $etag;
+		}
+		
+		if ( $o->md5_file == true )
+			$headers[]  = 'Content-MD5: ' . base64_encode( md5_file( $filepath ) );
+
+		// Resume support.
+/**
+		if ( isset($_SERVER['HTTP_RANGE']) )
+		{
+			if ( ! function_exists( 'download_416' ) )
+				function download_416( $filesize )
+				{
+					header('HTTP/1.1 416 Requested Range Not Satisfiable');
+					header('Content-Range: bytes *\/' . $o->filesize); // Required in 416.		*\/ *\/ *\/
+				}
+				
+			if (!preg_match('^bytes=\d*-\d*(,\d*-\d*)*$', $_SERVER['HTTP_RANGE'])) {
+			{
+				download_416( $o->filesize );
+				return;
+			}
+			
+			$ranges = explode(',', substr($_SERVER['HTTP_RANGE'], 6) );
+			foreach ( $ranges as $range )
+			{
+				$parts = explode('-', $range);
+				$start = $parts[0];		// If this is empty, this should be 0.
+				$end = $parts[1];		// If this is empty or greater than than filelength - 1, this should be filelength - 1.
+				
+				if ($start > $end)
+				{
+					download_416( $o->filesize );
+					return;
+				}
+			}
+		}
+		else
+**/		
+		{
+			$size_to_send = $o->filesize;
+		}
+		$headers[] = 'Content-Length: ' . $size_to_send;
+		
+		foreach( $headers as $header )
+			header( $header );
+ 
+		$chunksize = 65536;
+		$bytes_sent = 0;
+		$file = fopen($filepath, 'r');
+		if ( ! $file )
+			throw new Exception( "File $filepath could not be opened for reading!" );
+/*		
+		if ( isset( $_SERVER['HTTP_RANGE'] ) )
+			fseek( $file, $range );
+**/			
+		while ( ! feof( $file ) && ( ! connection_aborted() ) && ( $bytes_sent < $size_to_send ) )
+		{
+			$buffer = fread( $file, $chunksize );
+			echo ( $buffer );
+			flush();
+			$bytes_sent += strlen( $buffer );
+		}
+		fclose( $file );
+	}   
+
+	public function filters( $filter_name )
+	{
+		$args = func_get_args();
+		
+		if ( count( $args ) < 2 )
+			$args[] = null;
+		
+		return call_user_func_array( 'apply_filters', $args );
+	}
+	
+	/**
+		Creates a new SD_Form.
+		
+		@param		$options	Default options to send to the SD form constructor.
+		@return					A new SD form class.
+	**/ 
+	public function form($options = array())
+	{
+		$options = array_merge($options, array('language' => preg_replace('/_.*/', '', get_locale())) );
+		if (class_exists('SD_Form'))
+			return new SD_Form($options);
+		require_once('SD_Form.php');
+		return new SD_Form($options);
+	}
+	
+	/**
+		Returns a hash value of a string. The standard hash type is sha512 (64 chars).
+		
+		@param		$string			String to hash.
+		@param		$type			Hash to use. Default is sha512.
+		@return						Hashed string.
+	**/
+	public function hash($string, $type = 'sha512')
+	{
+		return hash($type, $string);
+	}
+	
+	/**
+		@brief		Implode an array in an HTML-friendly way.
+		
+		Used to implode arrays using HTML tags before, between and after the array. Good for lists.
+		
+		@param		$prefix
+					li
+		
+		@param		$suffix
+					/li
+		
+		@param		$array
+					The array of strings to implode.
+		
+		@return		The imploded string.
+	**/
+	public function implode_html( $prefix, $suffix, $array )
+	{
+		return $prefix . implode( $suffix . $prefix, $array ) . $suffix;
+	}
+	
+	/**
+		Returns the number corrected into the min and max values.
+	*/
+	public function minmax($number, $min, $max)
+	{
+		$number = min($max, $number);
+		$number = max($min, $number);
+		return $number;
+	}
+	
+	public function mime_type( $filename )
+	{
+		$rv = 'application/octet-stream';
+
+		if ( is_executable( '/usr/bin/file' ) )
+		{
+			exec( "file -bi '$attachment'", $rv );
+			$rv = reset( $rv );
+			$rv = preg_replace( '/;.*/', '', $rv );
+			return $rv;
+		}
+		
+		if ( class_exists( 'finfo' ) )
+		{
+			$fi = new finfo( FILEINFO_MIME, '/usr/share/file/magic' );
+			$rv = $fi->buffer(file_get_contents( $filename ));
+			return $rv;
+		}
+		
+		if ( function_exists( 'mime_content_type' ) )
+		{
+			$rv = mime_content_type ( $filename );
+			return $rv;
+		}
+		
+		return $rv;
 	}
 	
 	/**
@@ -980,6 +1181,25 @@ class ThreeWP_Broadcast_Base
 	public function now()
 	{
 		return date('Y-m-d H:i:s', current_time('timestamp'));
+	}
+	
+	/**
+		Convert an object to an array.
+	
+		@param		$object		Object or array of objects to convert to a simple array.
+		@return		Array.
+	**/
+	public function object_to_array( $object )
+	{
+		if (is_array( $object ))
+		{
+			$returnValue = array();
+			foreach($object as $o)
+				$returnValue[] = get_object_vars($o);
+			return $returnValue;
+		}
+		else
+			return get_object_vars($object);
 	}
 	
 	/**
@@ -1003,60 +1223,6 @@ class ThreeWP_Broadcast_Base
 				$this->rmdir( $file );
 			rmdir( $directory );
 		}
-	}
-	
-	/**
-		Returns the current time(), corrected for UTC and DST.
-
-		@return		int							Current, corrected timestamp.
-	**/
-	protected function time()
-	{
-		return current_time('timestamp');
-	}
-	
-	/**
-		Returns the number corrected into the min and max values.
-	*/
-	protected function minmax($number, $min, $max)
-	{
-		$number = min($max, $number);
-		$number = max($min, $number);
-		return $number;
-	}
-	
-	/**
-		Returns a hash value of a string. The standard hash type is sha512 (64 chars).
-		
-		@param		$string			String to hash.
-		@param		$type			Hash to use. Default is sha512.
-		@return						Hashed string.
-	**/
-	protected function hash($string, $type = 'sha512')
-	{
-		return hash($type, $string);
-	}
-	
-	/**
-		Multibyte strtolower.
-	
-		@param		$string			String to lowercase.
-		@return						Lowercased string.
-	**/
-	protected function strtolower( $string )
-	{
-		return mb_strtolower( $string ); 
-	}
-	
-	/**
-		Multibyte strtoupper.
-	
-		@param		$string			String to uppercase.
-		@return						Uppercased string.
-	**/
-	protected function strtoupper( $string )
-	{
-		return mb_strtoupper( $string ); 
 	}
 	
 	/**
@@ -1115,11 +1281,16 @@ class ThreeWP_Broadcast_Base
 		
 		if (isset($mail_data['attachments']))
 			foreach($mail_data['attachments'] as $attachment=>$filename)
+			{
+				$encoding = 'base64';
+				$this->mime_type ( $attachment );
+	
 				if (is_numeric($attachment))
-					$mail->AddAttachment($filename);
+					$mail->AddAttachment($filename, '', $encoding, $mime_type);
 				else
-					$mail->AddAttachment($attachment, $filename);
-
+					$mail->AddAttachment($attachment, $filename, $encoding, $mime_type);
+			}
+	
 		if ( isset( $mail_data['reply_to'] ) )
 		{
 			foreach($mail_data['reply_to'] as $email=>$name)
@@ -1165,7 +1336,7 @@ class ThreeWP_Broadcast_Base
 			$mail->Encoding  = $mail_data['encoding'];
 		
 		// Done setting up.
-		if(!$mail->Send())
+		if (!$mail->Send())
 			$returnValue = $mail->ErrorInfo;
 		else 
 			$returnValue = true;
@@ -1173,5 +1344,204 @@ class ThreeWP_Broadcast_Base
 		$mail->SmtpClose();
 		
 		return $returnValue;		
+	}
+	
+	/**
+		Sanitizes a string.
+	
+		@param		$string		String to sanitize.
+	**/
+	public function slug( $string )
+	{
+		return sanitize_title( $string );
+	}
+	
+	public function strip_post_slashes( $post = null )
+	{
+		if ( $post === null )
+			$post = $_POST;
+		foreach( $post as $key => $value )
+			if ( ! is_array( $value ) && strlen( $value ) > 1 )
+				$post[ $key ] = stripslashes( $value );
+		
+		return $post;
+	}
+	
+	/**
+		Multibyte strtolower.
+	
+		@param		$string			String to lowercase.
+		@return						Lowercased string.
+	**/
+	public function strtolower( $string )
+	{
+		return mb_strtolower( $string ); 
+	}
+	
+	/**
+		Multibyte strtoupper.
+	
+		@param		$string			String to uppercase.
+		@return						Uppercased string.
+	**/
+	public function strtoupper( $string )
+	{
+		return mb_strtoupper( $string ); 
+	}
+	
+	/**
+		Sanitizes the name of a tab.
+	
+		@param		$string		String to sanitize.
+	**/
+	public function tab_slug( $string )
+	{
+		return $this->slug( $string );
+	}
+	
+	/**
+		Displays Wordpress tabs.
+		
+		@param		$options		See options.
+	**/
+	public function tabs( $options )
+	{
+		$options = array_merge(array(
+			'count' =>			array(),			// Optional array of a strings to display after each tab name. Think: page counts.
+			'default' => null,						// Default tab index.
+			'descriptions' =>	array(),			// Descriptions (link titles) for each tab
+			'display' => true,						// Display the tabs or return them.
+			'display_tab_name' => true,				// If display==true, display the tab name.
+			'display_before_tab_name' => '<h2>',	// If display_tab_name==true, what to display before the tab name.
+			'display_after_tab_name' => '</h2>',	// If display_tab_name==true, what to display after the tab name.
+			'functions' =>	array(),				// Array of functions associated with each tab name.
+			'get_key' =>	'tab',					// $_GET key to get the tab value from.
+			'page_titles' =>	array(),			// Array of page titles associated with each tab.
+			'tabs' =>			array(),			// Array of tab names
+			'valid_get_keys' => array(),			// Display only these _GET keys.
+		), $options);
+		
+		$get = $_GET;						// Work on a copy of the _GET.
+		$get_key = $options['get_key'];		// Convenience.
+		
+		// Is the default not set or set to something stupid? Fix it.
+		if ( ! isset( $options['tabs'][ $options['default'] ] ) )
+			$options['default'] = key( $options['tabs'] );
+		
+		// Select the default tab if none is selected.
+		if ( ! isset( $get[ $get_key ] ) )
+			$get[ $get_key ] = $options['default'];
+		$selected = $get[ $get_key ];
+		
+		$options['valid_get_keys']['page'] = 'page';
+		
+		$returnValue = '';
+		if ( count( $options['tabs'] ) > 1 )
+		{
+			$returnValue .= '<ul class="subsubsub">';
+			$original_link = $_SERVER['REQUEST_URI'];
+
+			foreach($get as $key => $value)
+				if ( !in_array($key, $options['valid_get_keys']) )
+					$original_link = remove_query_arg( $key, $original_link );
+			
+			$index = 0;
+			foreach( $options['tabs'] as $tab_slug => $text )
+			{
+				// Make the link.
+				// If we're already on that tab, just return the current url.
+				if ( $get[ $get_key ]  == $tab_slug )
+					$link = remove_query_arg( time() );
+				else
+				{
+					if ( $tab_slug == $options['default'] )
+						$link = remove_query_arg( $get_key, $original_link );
+					else
+						$link = add_query_arg( $get_key, $tab_slug, $original_link );
+				}
+				
+				if ( isset( $options[ 'count' ][ $tab_slug ] ) )
+					$text .= ' <span class="count">(' . $options['count'][ $tab_slug ] . ')</span>';
+				
+				$separator = ( $index+1 < count($options['tabs']) ? ' | ' : '' );
+				
+				$current = ( $tab_slug == $selected ? ' class="current"' : '' );
+				
+				if ($current)
+					$selected_index = $tab_slug;
+				
+				$title = '';
+				if ( isset( $options[ 'descriptions' ][ $tab_slug ] ) )
+					$title = 'title="' . $options[ 'descriptions' ][ $tab_slug ] . '"';
+				 
+				$returnValue .= '<li><a'.$current.' '. $title .' href="'.$link.'">'.$text.'</a>'.$separator.'</li>';
+				$index++;
+			}
+			$returnValue .= '</ul>';
+		}
+		
+		if ( !isset($selected_index) )
+			$selected_index = $options['default'];
+		
+		if ($options['display'])
+		{
+			ob_start();
+			echo '<div class="wrap">';
+			if ($options['display_tab_name'])
+			{
+				if ( isset( $options[ 'page_titles' ][ $selected_index ] ) )
+					$page_title = $options[ 'page_titles' ][ $selected_index ];
+				else
+					$page_title = $options[ 'tabs' ][ $selected_index ];
+				
+				echo $options[ 'display_before_tab_name' ] . $page_title . $options[ 'display_after_tab_name' ];
+			}
+			echo $returnValue;
+			echo '<div style="clear: both"></div>';
+			if ( isset( $options[ 'functions' ][ $selected_index ] ) )
+			{
+				$functionName = $options[ 'functions' ][ $selected_index ];
+				if ( is_array( $functionName ) )
+				{
+					$functionName[0]->$functionName[1]();
+				}
+				else 
+					$this->$functionName();
+			}
+			echo '</div>';
+			ob_end_flush();
+		}
+		else
+			return $returnValue;
+	}
+	
+	/**
+		Returns the current time(), corrected for UTC and DST.
+
+		@return		int							Current, corrected timestamp.
+	**/
+	public function time()
+	{
+		return current_time('timestamp');
+	}
+	
+	/**
+		@brief		Outputs the text in Wordpress admin's panel format.
+		
+		@param		$title
+					H2 title to display.
+		
+		@param		$text
+					Text to display.
+		
+		@return		HTML wrapped HTML.
+	**/
+	public function wrap( $title, $text )
+	{
+		echo "<h2>$title</h2>
+			<div class=\"wrap\">
+				$text
+			</div>
+		";
 	}
 }
