@@ -230,7 +230,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		
 		$roles = $this->roles_as_options();
 			
-		if (isset( $_POST['save'] ) )
+		if ( isset( $_POST['save'] ) )
 		{
 			// Save the exceptions
 			$custom_field_exceptions = str_replace( "\r", "", trim( $_POST['custom_field_exceptions'] ) );
@@ -368,7 +368,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		echo '
 			'.$form->start().'
 			
-			' . $this->display_form_table( array( 'inputs' => $table_inputs ) ) . '
+			' . $this->display_form_table( $table_inputs ) . '
 
 			<p>
 				'.$form->make_input( $inputs['save'] ).'
@@ -380,7 +380,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	
 	protected function admin_post_types()
 	{
-		if (isset( $_POST['save_post_types'] ) )
+		if ( isset( $_POST['save_post_types'] ) )
 		{
 			$post_types = trim( $_POST['post_types'] );
 			$post_types = array_filter( explode( ' ', $post_types ) );
@@ -418,7 +418,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		
 		'.$form->start().'
 		
-		' . $this->display_form_table( array( 'inputs' => array( $input_post_types ) ) ) .'
+		' . $this->display_form_table( $input_post_types ) .'
 		
 		<p>
 		'.$form->make_input( $input_submit).'
@@ -433,11 +433,11 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$blogs = $this->get_blog_list();
 		$form = $this->form();
 		
-		if (isset( $_POST['save'] ) )
+		if ( isset( $_POST['save'] ) )
 		{
 			$this->update_site_option( 'always_use_required_list', isset( $_POST['always_use_required_list'] ) );
 			$required = '';
-			if (isset( $_POST['broadcast']['groups']['required'] ) )
+			if ( isset( $_POST['broadcast']['groups']['required'] ) )
 				$required = implode( ',', array_keys( $_POST['broadcast']['groups']['required'] ) );
 			$this->update_site_option( 'requiredlist', $required );
 			$this->message( 'Options saved!' );
@@ -495,10 +495,10 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$blogs = $this->get_blog_list();
 		$form = $this->form();
 		
-		if (isset( $_POST['save'] ) )
+		if ( isset( $_POST['save'] ) )
 		{
 			$blacklist = '';
-			if (isset( $_POST['broadcast']['groups']['blacklist'] ) )
+			if ( isset( $_POST['broadcast']['groups']['blacklist'] ) )
 				$blacklist = implode( ',', array_keys( $_POST['broadcast']['groups']['blacklist'] ) );
 			$this->update_site_option( 'blacklist', $blacklist );
 			$this->message( 'Options saved!' );
@@ -545,12 +545,12 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		
 		$data = $this->sql_user_get( $user_id );
 		
-		if (isset( $_POST['groupsSave'] ) )
+		if ( isset( $_POST['groupsSave'] ) )
 		{
 			$newGroups = array();
 			foreach( $data['groups'] as $groupID=>$ignore)
 			{
-				if (isset( $_POST['broadcast']['groups'][$groupID] ) )
+				if ( isset( $_POST['broadcast']['groups'][$groupID] ) )
 				{
 					$newGroups[$groupID]['name'] = $data['groups'][$groupID]['name'];
 					$selectedBlogs =  $_POST['broadcast']['groups'][$groupID];
@@ -593,7 +593,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			$this->message( $this->_( 'Group blogs have been saved.' ) );
 		}
 		
-		if (isset( $_POST['groupCreate'] ) )
+		if ( isset( $_POST['groupCreate'] ) )
 		{
 			$groupName = stripslashes( trim( $_POST['groupName'] ) );
 			if ( $groupName == '' )
@@ -891,12 +891,12 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		// Check that we're actually supposed to be removing the link for real.
 		$nonce = $_GET['_wpnonce'];
 		$post_id = $_GET['post'];
-		if (isset( $_GET['child'] ) )
+		if ( isset( $_GET['child'] ) )
 			$child_blog_id = $_GET['child'];
 			
 		// Generate the nonce key to check against.			
 		$nonce_key = 'broadcast_unlink';
-		if (isset( $child_blog_id) )
+		if ( isset( $child_blog_id) )
 			$nonce_key .= '_' . $child_blog_id;
 		$nonce_key .= '_' . $post_id;
 			
@@ -909,7 +909,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$linked_children = $broadcast_data->get_linked_children();
 		
 		// Remove just one child?
-		if (isset( $child_blog_id) )
+		if ( isset( $child_blog_id) )
 		{
 			// Inform Activity Monitor that a post has been unlinked.
 			// Get the info about this post.
@@ -1319,7 +1319,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		foreach(array( 'ID', 'guid', 'menu_order', 'comment_count', 'post_parent' ) as $key)
 			unset( $new_post[$key] );
 			
-		if (isset( $_POST['broadcast']['groups']['666'] ) )
+		if ( isset( $_POST['broadcast']['groups']['666'] ) )
 			$blogs = array_keys( $_POST['broadcast']['groups']['666'] );
 		else
 			$blogs = array();
@@ -1430,6 +1430,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$this->save_last_used_settings( $user_id, $_POST['broadcast'] );		
 		
 		$to_broadcasted_blogs = array();				// Array of blog names that we're broadcasting to. To be used for the activity monitor action.
+		$to_broadcasted_blog_details = array(); 		// Array of blog and post IDs that we're broadcasting to. To be used for the activity monitor action.
 
 		// To prevent recursion
 		$this->broadcasting = $_POST['broadcast'];
@@ -1472,7 +1473,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			
 			if ( $need_to_insert_post )
 			{
-				$new_post_id = wp_insert_post( $new_post);
+				$new_post_id = wp_insert_post( $new_post );
 				
 				if ( $link )
 					$broadcast_data->add_linked_child( $blogID, $new_post_id );
@@ -1602,6 +1603,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			}
 
 			$to_broadcasted_blogs[] = '<a href="' . get_permalink( $new_post_id ) . '">' . get_bloginfo( 'name' ) . '</a>';
+			$to_broadcasted_blog_details[] = array( 'blog_id' => $blogID, 'post_id' => $new_post_id, 'inserted' => $need_to_insert_post );
 			
 			restore_current_blog();
 		}
@@ -1615,8 +1617,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		do_action( 'threewp_activity_monitor_new_activity', array(
 			'activity_id' => '3broadcast_broadcasted',
 			'activity_strings' => array(
-				'' => '%user_display_name_with_link% has broadcasted '.$post_url_and_name.' to: ' . implode( ', ', $to_broadcasted_blogs),
+				'' => '%user_display_name_with_link% has broadcasted '.$post_url_and_name.' to: ' . implode( ', ', $to_broadcasted_blogs ),
 			),
+			'activity_details' => $to_broadcasted_blog_details,
 		) );
 
 		// Save the post broadcast data.
@@ -1799,9 +1802,10 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 
 		switch_to_blog( $linked_parent['blog_id'] );
 		$post = get_post( $linked_parent['post_id'] );
+		$permalink = get_permalink( $post );
 		restore_current_blog();
 		
-		return $post->guid;
+		return $permalink;
 	}
 	
 	// --------------------------------------------------------------------------------------------
@@ -1964,7 +1968,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		
 		// Get a custom list of all blogs on this site. This bypasses Wordpress' filter that removes private and mature blogs.
 		$blogs = $this->query("SELECT * FROM `".$this->wpdb->base_prefix."blogs` WHERE site_id = '$site_id' ORDER BY blog_id");
-		$blogs = $this->array_moveKey( $blogs, 'blog_id' );
+		$blogs = $this->array_rekey( $blogs, 'blog_id' );
 		
 		foreach( $blogs as $blog_id=>$blog)
 		{
@@ -2013,13 +2017,13 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		// Make sure the main blog is saved.
 		$firstBlog = array_shift( $blogs);
 		
-		$blogs = self::array_moveKey( $blogs, 'blogname' );
+		$blogs = self::array_rekey( $blogs, 'blogname' );
 		ksort( $blogs);
 		
 		// Put it back up front.
 		array_unshift( $blogs, $firstBlog);
 			
-		return self::array_moveKey( $blogs, 'blog_id' );
+		return self::array_rekey( $blogs, 'blog_id' );
 	}
 	
 	/**
@@ -2088,7 +2092,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			'hide_empty' => false,
 		) );
 		$terms = $this->object_to_array( $terms );
-		$terms = $this->array_moveKey( $terms, 'term_id' );
+		$terms = $this->array_rekey( $terms, 'term_id' );
 		return $terms;
 	}
 	
