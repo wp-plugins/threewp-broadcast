@@ -4,6 +4,14 @@
 	
 	@par	Changelog
 	
+	- 2012-12-14	08:47	Fix: role_at_least works again. It appears as current_user_can is broken somehow.
+	- 2012-12-13	19:55	Fix: super admin can do everything when asked role_at_least
+	- 2012-12-12	12:16	Added is_email function to check for e-mail validity.
+	- 2012-12-10	19:37	Fixed mime typing when attaching files to mails.
+	- 2012-11-07	16:36	Removed static styling from message boxes, added CSS classes.
+	- 2012-11-07	12:39	Fix: error_ returns an error, not a message.
+	- 2012-10-10	19:10	Added message()_ and error_().
+	- 2012-09-17	15:35	Fix neverending loop in array_sort_subarrays.
 	- 2012-05-25	11:20	All functions are now public. No more bickering about protected here and there.
 	- 2012-05-21	20:00	tabs now work on tab_slugs, not slugged tab names.
 	- 2012-05-18	13:54	Refactoring of tabs() variable names.
@@ -34,6 +42,7 @@
 	@brief		Base class for the SD series of Wordpress plugins.
 	@author		Edward Plainview	edward.plainview@sverigedemokraterna.se
 */
+
 class ThreeWP_Broadcast_Base
 {
 	/**
@@ -440,7 +449,10 @@ class ThreeWP_Broadcast_Base
 			else
 				return false;
 		
-		return current_user_can( $this->roles[$role]['current_user_can'] );
+		// This was previously done by current_user_can, but for some reason it doesn't work all the time in WP3.5.
+		// So now I have to check "manually", which probably means that filters are rendered ineffective.
+		$role_cap = $this->roles[$role]['current_user_can'];
+		return isset( $current_user->allcaps[ $role_cap ] ) && $current_user->allcaps[ $role_cap ] == true;
 	}
 	
 	/**
@@ -695,8 +707,8 @@ class ThreeWP_Broadcast_Base
 			$string = explode("\n", $string);
 			$string = implode('</p><p>', $string);
 		}
-		echo '<div class="'.$type.'">
-			<p style="margin-right: 1em; float: left; color: #888;" class="message_timestamp">'.$this->now().'</p>
+		echo '<div class="sd_message_box '.$type.'">
+			<p class="message_timestamp">'.$this->now().'</p>
 			<p>'.$string.'</p></div>';
 	}
 	
@@ -706,9 +718,24 @@ class ThreeWP_Broadcast_Base
 		@param		$string
 					String to display.
 	**/
-	public function message($string)
+	public function message( $string )
 	{
-		$this->display_message('updated', $string);
+		$this->display_message( 'updated', $string );
+	}
+	
+	/**
+		@brief		Convenience function to translate and then create a message from a string and optional sprintf arguments.
+		
+		@param		$string
+					String to translate and create into a message.
+		
+		@return		A translated message.
+	**/
+	public function message_( $string, $args = '' )
+	{
+		$args = func_get_args();
+		$string = call_user_func_array( array( &$this, '_' ), $args );
+		return $this->message( $string );
 	}
 		
 	/**
@@ -719,11 +746,26 @@ class ThreeWP_Broadcast_Base
 		@param		$string
 					String to display.
 	**/
-	public function error($string)
+	public function error( $string )
 	{
-		$this->display_message('error', $string);
+		$this->display_message( 'error', $string );
 	}
 	
+	/**
+		@brief		Convenience function to translate and then create an error message from a string and optional sprintf arguments.
+		
+		@param		$string
+					String to translate and create into an error message.
+		
+		@return		A translated error message.
+	**/
+	public function error_( $string, $args = '' )
+	{
+		$args = func_get_args();
+		$string = call_user_func_array( array( &$this, '_' ), $args );
+		return $this->error( $string );
+	}
+		
 	// -------------------------------------------------------------------------------------------------
 	// ----------------------------------------- TOOLS
 	// -------------------------------------------------------------------------------------------------
@@ -765,7 +807,6 @@ class ThreeWP_Broadcast_Base
 	{
 		// In order to be able to sort a bunch of objects, we have to extract the key and use it as a key in another array.
 		// But we can't just use the key, since there could be duplicates, therefore we attach a random value.
-		$rand = rand(0, PHP_INT_MAX / 2);
 		$sorted = array();
 		
 		$is_array = is_array( reset( $array ) );
@@ -775,12 +816,14 @@ class ThreeWP_Broadcast_Base
 			$item = (object) $item;
 			do
 			{
+				$rand = rand(0, PHP_INT_MAX / 2);
 				if ( is_int( $item->$key ) )
 					$random_key = $rand + $item->$key;
 				else
 					$random_key = $item->$key . '-' . $rand;
 			}
 			while ( isset( $sorted[ $random_key ] ) );
+			
 			$sorted[ $random_key ] = array( 'key' => $index, 'value' => $item );
 		}
 		ksort( $sorted );
@@ -1136,6 +1179,26 @@ class ThreeWP_Broadcast_Base
 	}
 	
 	/**
+		@brief		Check en e-mail address for validity.
+		
+		@param		string		$address		Address to check.
+		
+		@return		boolean		True, if the e-mail address is valid.
+	**/
+	public function is_email( $address )
+	{
+		if ( ! is_email( $address ) )
+			return false;
+		
+		// Check the DNS record.
+		$host = preg_replace( '/.*@/', '', $address );
+		if ( ! checkdnsrr( $host, 'MX' ) )
+			return false;
+		
+		return true;
+	}
+	
+	/**
 		Returns the number corrected into the min and max values.
 	*/
 	public function minmax($number, $min, $max)
@@ -1151,7 +1214,7 @@ class ThreeWP_Broadcast_Base
 
 		if ( is_executable( '/usr/bin/file' ) )
 		{
-			exec( "file -bi '$attachment'", $rv );
+			exec( "file -bi '$filename'", $rv );
 			$rv = reset( $rv );
 			$rv = preg_replace( '/;.*/', '', $rv );
 			return $rv;
@@ -1203,6 +1266,36 @@ class ThreeWP_Broadcast_Base
 	}
 	
 	/**
+		@brief		wpautop's a string, using sprintf to replace arguments.
+		
+		@param		$string
+					String to wpautop.
+		@param		$args
+					Optional arguments to sprintf.
+		@return		The wpautop'd sprintf string.
+	**/
+	public function p( $string, $args = '' )
+	{
+		$args = func_get_args();
+		return wpautop( call_user_func_array( 'sprintf', $args ) );
+	}
+	
+	/**
+		@brief		wpautop's a translated string, using sprintf to replace arguments.
+
+		@param		$string
+					String to translate and then wpautop.
+		@param		$args
+					Optional arguments to _() / sprintf.
+		@return		The wpautop'd, translated string.
+	**/
+	public function p_( $string, $args = '' )
+	{
+		$args = func_get_args();
+		return wpautop( call_user_func_array( array( &$this, '_'), $args ) );
+	}
+	
+	/**
 		Recursively removes a directory.
 		
 		Assumes that all files in the directory, and the dir itself, are writeable.
@@ -1240,9 +1333,11 @@ class ThreeWP_Broadcast_Base
 		$mail = new PHPMailer();
 		
 		// Mandatory
-		$mail->From		= key($mail_data['from']);
-		$mail->FromName	= reset($mail_data['from']);
-		
+		$from_email		= key( $mail_data['from'] );
+		$from_name		= reset( $mail_data['from'] );
+		$mail->From		= $from_email;
+		$mail->FromName	= $from_name;
+		$mail->Sender	= $from_email;
 		$mail->Subject  = $mail_data['subject'];
 		
 		// Optional
@@ -1283,7 +1378,7 @@ class ThreeWP_Broadcast_Base
 			foreach($mail_data['attachments'] as $attachment=>$filename)
 			{
 				$encoding = 'base64';
-				$this->mime_type ( $attachment );
+				$mime_type = $this->mime_type ( $attachment );
 	
 				if (is_numeric($attachment))
 					$mail->AddAttachment($filename, '', $encoding, $mime_type);

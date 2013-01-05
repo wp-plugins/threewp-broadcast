@@ -185,6 +185,10 @@ $input_text = array(
 		
 @par	Changelog
 	
+- 2012-11-30	Required field span now has a class: required_field.
+- 2012-11-30	Form has ID
+- 2012-11-07	Relaxed select selected selection (ints and strings are treated equally).
+- 2012-11-06	Validation requires that each input is an array. Else the "input" is ignored.
 - 2012-04-14	make_input can make rawtext types.
 - 2011-08-08	More documentation.
 - 2011-08-01	More documentation.
@@ -215,6 +219,7 @@ class SD_Form
 		'css_style' => '',
 		'form_method' => 'post',
 		'form_action' => '',
+		'form_id' => '',
 		'description' => '',
 	);
 	
@@ -271,16 +276,16 @@ class SD_Form
 			return $options['class'] . $options['global_nameprefix'] . $options['nameprefix'] . '[' . $options['name'] . ']';
 		else
 		{
-			$returnValue = $options['global_nameprefix'];
+			$rv = $options['global_nameprefix'];
 
 			// Remove the first [ and first ]. Yeah, that's how lovely forms work: the first prefix doesn't have brackets. The rest do.
-			$returnValue .= ($returnValue == '' ?
+			$rv .= ($rv == '' ?
 				preg_replace('/\[/', '',
 					preg_replace('/\]/', '', $options['nameprefix'], 1)
 				, 1) : $options['nameprefix']);
-			$returnValue .= ($returnValue == '' ? $options['name'] : '[' . $options['name'] . ']');
+			$rv .= ($rv == '' ? $options['name'] : '[' . $options['name'] . ']');
 		}
-		return $returnValue;
+		return $rv;
 	}
 	
 	/**
@@ -288,7 +293,10 @@ class SD_Form
 	 */
 	public function start()
 	{
-		return '<form enctype="multipart/form-data" action="'.$this->options['form_action'].'" method="'.$this->options['form_method'].'">' . "\n";
+		$id = '';
+		if ( $this->options[ 'form_id' ] != '' )
+			$id = ' id="' . $this->options[ 'form_id' ] . '" '; 
+		return '<form enctype="multipart/form-data"' . $id . 'action="'.$this->options['form_action'].'" method="'.$this->options['form_method'].'">' . "\n";
 	}
 	
 	/**
@@ -304,7 +312,7 @@ class SD_Form
 	 */
 	private function make_required_field($options)
 	{
-		$returnValue = '';
+		$rv = '';
 		switch($options['type'])
 		{
 			case 'text':
@@ -320,12 +328,12 @@ class SD_Form
 						$needed = false;
 				}
 				if ($needed)
-					$returnValue .= '<sup><span class="screen-reader-text aural-info"> ('.$this->l('Required field').')</span><span title="'.$this->l('Required field').'">*</span></sup>';
+					$rv .= '<sup><span class="screen-reader-text aural-info"> ('.$this->l('Required field').')</span><span class="required_field" title="'.$this->l('Required field').'">*</span></sup>';
 			break;
 			default:
 			break;
 		}
-		return $returnValue;
+		return $rv;
 	}
 	
 	/**
@@ -360,7 +368,7 @@ class SD_Form
 		if ($options['description'] == '')
 			return '';
 		
-		$returnValue = '
+		$rv = '
 			<div>
 				<div class="screen-reader-text aural-info">
 					'.$this->l('Description').':
@@ -368,9 +376,9 @@ class SD_Form
 				'.$options['description'].'
 			</div>';
 
-		$returnValue .= $this->make_validation($options);			
+		$rv .= $this->make_validation($options);			
 			
-		return $returnValue;
+		return $rv;
 	}
 	
 	private function make_validation($options)
@@ -458,16 +466,16 @@ class SD_Form
 						$options['value'] = 1;
 				}
 				$checked = ($options['checked'] == true ? ' checked="checked" ' : '');
-				$returnValue = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'" value="'.$options['value'].'" '.$checked.' '.$extraOptions.' />';
+				$rv = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'" value="'.$options['value'].'" '.$checked.' '.$extraOptions.' />';
 				break;
 			case 'file':
-				$returnValue = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'" value="'.$options['value'].'" '.$extraOptions.' />';
+				$rv = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'" value="'.$options['value'].'" '.$extraOptions.' />';
 				break;
 			case 'hidden':
-				$returnValue = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" value="'.$options['value'].'"'.$extraOptions.' />';
+				$rv = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" value="'.$options['value'].'"'.$extraOptions.' />';
 				break;
 			case 'image':
-				$returnValue = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'[]" id="'.$this->make_id($options).'" value="'.$options['value'].'" title="'.$options['title'].'" src="'.$options['src'].'" '.$extraOptions.' />';
+				$rv = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'[]" id="'.$this->make_id($options).'" value="'.$options['value'].'" title="'.$options['title'].'" src="'.$options['src'].'" '.$extraOptions.' />';
 				break;
 			case 'password':
 				if (isset($options['size']))
@@ -475,11 +483,11 @@ class SD_Form
 					$options['size'] = min($options['size'], $options['maxlength']); // Size can't be bigger than maxlength
 					$text['size'] = 'size="'.$options['size'].'"';
 				}
-				$returnValue = '<input class="'.$classes.'" type="'.$options['type'].'" '.$text['size'].' maxlength="'.$options['maxlength'].'" name="'.self::make_name($options).'"  value="'.htmlspecialchars($options['value']).'" id="'.$this->make_id($options).'"'.$extraOptions.' />';
+				$rv = '<input class="'.$classes.'" type="'.$options['type'].'" '.$text['size'].' maxlength="'.$options['maxlength'].'" name="'.self::make_name($options).'"  value="'.htmlspecialchars($options['value']).'" id="'.$this->make_id($options).'"'.$extraOptions.' />';
 				break;
 			case 'radio':
 				// Make the options
-				$returnValue = '';
+				$rv = '';
 				$baseOptions = array_merge($this->options, $options);
 				foreach( $options['options'] as $option_value => $option_text )
 				{
@@ -487,7 +495,7 @@ class SD_Form
 					$option = $baseOptions;
 					$option['namesuffix'] = $option_value;
 					$option['label'] = $option_text;
-					$returnValue .= '
+					$rv .= '
 						<div>
 							<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" value="'.$option_value.'" id="'.$this->make_id($option).'" '.$checked.' '.$extraOptions.' />
 							'.$this->make_label($option).'
@@ -496,7 +504,7 @@ class SD_Form
 				}
 				break;
 			case 'rawtext':
-				$returnValue .= '<div>' . $options[ 'value' ] . '</div>';
+				$rv = '<div>' . $options[ 'value' ] . '</div>';
 				break;
 			case 'select':
 				if ($options['multiple'])
@@ -522,23 +530,23 @@ class SD_Form
 						$option_text = $option_text['text'];
 					}
 
-					$selected = in_array($option_value, $options['value'], true) ? 'selected="selected"' : '';
+					$selected = in_array( $option_value, $options['value'] ) ? 'selected="selected"' : '';
 					
 					$optionsText .= '
 						<option value="'.$option_value.'" '.$selected.'>'.$option_text.'</option>
 					';
 				}
 				
-				$returnValue = '<select class="'.$classes.'" name="'.self::make_name($options).$nameSuffix.'" id="'.$this->make_id($options).'" size="'.$options['size'].'" '.$extraOptions.'>
+				$rv = '<select class="'.$classes.'" name="'.self::make_name($options).$nameSuffix.'" id="'.$this->make_id($options).'" size="'.$options['size'].'" '.$extraOptions.'>
 					'.$optionsText.'
 					</select>
 				';
 				break;
 			case 'submit':
-				$returnValue = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'" value="'.$options['value'].'" '.$extraOptions.' />';
+				$rv = '<input class="'.$classes.'" type="'.$options['type'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'" value="'.$options['value'].'" '.$extraOptions.' />';
 				break;
 			case 'textarea':
-				$returnValue = '<textarea class="'.$classes.'" cols="'.$options['cols'].'" rows="'.$options['rows'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'"'.$extraOptions.'>'.$options['value'].'</textarea>';
+				$rv = '<textarea class="'.$classes.'" cols="'.$options['cols'].'" rows="'.$options['rows'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'"'.$extraOptions.'>'.$options['value'].'</textarea>';
 				break;
 			default:	// Default = 'text'
 				if (isset($options['size']))
@@ -546,9 +554,9 @@ class SD_Form
 					$options['size'] = min($options['size'], $options['maxlength']); // Size can't be bigger than maxlength
 					$text['size'] = 'size="'.$options['size'].'"';
 				}
-				$returnValue = '<input class="text '.$classes.'" type="text" '.$text['size'].' maxlength="'.$options['maxlength'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'" value="'.htmlspecialchars($options['value']).'"'.$extraOptions.' />';
+				$rv = '<input class="text '.$classes.'" type="text" '.$text['size'].' maxlength="'.$options['maxlength'].'" name="'.self::make_name($options).'" id="'.$this->make_id($options).'" value="'.htmlspecialchars($options['value']).'"'.$extraOptions.' />';
 		}
-		return $returnValue;
+		return $rv;
 	}
 
 	/**
@@ -582,21 +590,25 @@ class SD_Form
 	
 	public function use_post_value( &$input, $post_data = null )
 	{
+		if ( $input[ 'type' ] == 'rawtext' )
+			return;
+		
 		if ($input['type']=='submit')		// Submits don't get their values posted, so return the value.
 			return $input['value'];
 			
 		$input['name'] = self::fix_name($input['name']);
+		$name = $input['name'];				// Conv
 		
 		if ( $post_data === null )
 			$post_data = $_POST;
-			
-		// Merge the default options.
-		// In case this class was created with a nameprefix and the individual inputs weren't, for example.
-		$input = array_merge($this->options, $input);
-			
-		if ($post_data === null)
+		
+		if ( count( $post_data ) < 1 )
 			return;
 		
+		// Merge the default options.
+		// In case this class was created with a nameprefix and the individual inputs weren't, for example.
+		$input = array_merge( $this->options, $input );
+			
 		// Nameprefix? Find the right array section in the post.			
 		if ($input['nameprefix'] != '')
 		{
@@ -605,15 +617,24 @@ class SD_Form
 		}
 		else
 		{
-			if ( isset( $post_data[$input['name']] ) )
-				if ( !is_array( $post_data[$input['name']] ) )
-					$input['value'] = @stripslashes( $post_data[$input['name']] );		// @ is for unchecked checkboxes. *sigh*
-				else
-				{
-					$input['value'] = array();	// Kill the value, otherwise postvalues are just appended and therefore do nothing.
-					foreach( $post_data[ $input['name'] ] as $index => $value )
-						$input['value'][$index] = stripslashes( $value );
-				}
+			switch( $input[ 'type' ] )
+			{
+				case 'checkbox':
+					$input[ 'checked' ] = isset( $post_data[ $name ] );
+				default:
+					if ( isset( $post_data[$input['name']] ) )
+					{
+						if ( ! is_array( $post_data[$input['name']] ) )
+							$input[ 'value' ] = stripslashes( $post_data[ $name ] );
+						else
+						{
+							$input[ 'value' ] = array();	// Kill the value, otherwise postvalues are just appended and therefore do nothing.
+							foreach( $post_data[ $name ] as $index => $value )
+								$input[ 'value' ][$index] = stripslashes( $value );
+						}
+					}
+				break;
+			}
 		}
 		
 		$inputID = $this->make_id( $input );
@@ -633,7 +654,7 @@ class SD_Form
 	 */
 	public function add_section_input($section, $input, $settings, $post_data = null)
 	{
-		if (!is_string($input))
+		if ( !is_string($input) )
 		{
 			$input = array_merge($this->options, $input);
 			if ($input['type'] == 'rawtext')
@@ -645,10 +666,11 @@ class SD_Form
 				'type' => 'rawtext',
 				'value' => $input,
 			);
+
 		if ($input['type'] == 'rawtext')
-			$input['name'] = rand(0, time());
+			$input['name'] = rand( 0, time() );
 			
-		$this->sections[ $section['name'] ]['inputs'][] = $input;
+		$this->sections[ $section['name'] ]['inputs'][ $input['name'] ] = $input;
 	}
 	
 	public function add_text_section($sectionName, $text)
@@ -747,7 +769,7 @@ class SD_Form
 			'descriptionStop'					=> '					</div>',
 		);
 		
-		$returnValue = $style['formStart'] . "\n";
+		$rv = $style['formStart'] . "\n";
 		
 		foreach($this->sections as $sectionName => $sectionData)
 		{
@@ -756,19 +778,19 @@ class SD_Form
 				'css_class' => null,
 			), $sectionData);
 			$sectionDescription = ($sectionData['description']!=null ? $style['sectionDescriptionStart'] . $sectionData['description'] . $style['sectionDescriptionStop'] . "\n" : '');
-			$returnValue .= $style['sectionStart'] . "\n" .
+			$rv .= $style['sectionStart'] . "\n" .
 				$style['sectionNameStart'] . "\n" .
 					'			' . $sectionName . "\n" .
 				$style['sectionNameStop'] . "\n" .
 				$sectionDescription;
 				
-			$returnValue = str_replace('%%CSSCLASS%%', $sectionData['css_class'], $returnValue);
+			$rv = str_replace('%%CSSCLASS%%', $sectionData['css_class'], $rv);
 				
 			foreach($sectionData['inputs'] as $index=>$input)
 			{
 				if ($input['type'] == 'hidden')
 				{
-					$returnValue .= $this->make_input($input);
+					$rv .= $this->make_input($input);
 					continue;
 				}	
 
@@ -838,19 +860,19 @@ class SD_Form
 					}
 				}
 
-				$returnValue .= 
+				$rv .= 
 					'		<div class="row'.($index+1).'">' . "\n" .
 						$style['rowStart'] . "\n".
 							$inputData .  "\n" .
 						$style['rowStop']  . "\n" .
 					'		</div>' . "\n";
 			}
-			$returnValue .= $style['sectionStop'] . "\n";
+			$rv .= $style['sectionStop'] . "\n";
 		}
 		
-		$returnValue .= $style['formStop'] . "\n";
+		$rv .= $style['formStop'] . "\n";
 		
-		return str_replace('%%STYLE%%', $this->options['style'], $returnValue);
+		return str_replace('%%STYLE%%', $this->options['style'], $rv);
 	}
 
 	/**
@@ -905,7 +927,7 @@ class SD_Form
 			$keys = '(' . trim($keys, ', ') . ')';
 			$values = '(' . trim($values, ', ') . ')';
 			
-			$returnValue = 'INSERT INTO ' . $tableName . " $keys VALUES $values";
+			$rv = 'INSERT INTO ' . $tableName . " $keys VALUES $values";
 		}
 		else
 		{
@@ -953,11 +975,11 @@ class SD_Form
 			$sets = trim($sets, ', ');
 			
 			if ($sets != '')
-				$returnValue = 'UPDATE ' . $tableName . ' SET ' . $sets . " WHERE $uniqueKey = '$oldValues[$uniqueKey]'";
+				$rv = 'UPDATE ' . $tableName . ' SET ' . $sets . " WHERE $uniqueKey = '$oldValues[$uniqueKey]'";
 			else
-				$returnValue = '';
+				$rv = '';
 		}
-		return $returnValue;
+		return $rv;
 	}
 
 	/**
@@ -1038,11 +1060,14 @@ class SD_Form
 	 */		
 	public function validate_post($inputs, $inputs_to_check, $values)
 	{
-		$returnValue = array();
+		$rv = array();
 		
 		foreach($inputs_to_check as $key)
 		{
 			$input = $inputs[$key];
+			
+			if ( ! is_array( $input ) )
+				continue;
 			
 			// Because form fixes the name to remove illegal characters, we need to do the same to the key here so that we find the correct values in the POST.
 			$key = self::fix_name($key);
@@ -1056,7 +1081,7 @@ class SD_Form
 					{
 						$email = trim($values[$key]);
 						if (!self::valid_email($email))
-							$returnValue[$key] = $this->l('Invalid email address') . ': ' . $email;
+							$rv[$key] = $this->l('Invalid email address') . ': ' . $email;
 					}
 					if (isset( $input['validation']['datetime']) )
 					{
@@ -1065,19 +1090,19 @@ class SD_Form
 						$dateFormat = $input['validation']['datetime'];
 						
 						if (date($dateFormat, $date) != $text && !isset($input['validation']['empty']))
-							$returnValue[$key] = $this->l('Could not parse date') . ': ' . $text . ' (' . $input['label'] . ')';
+							$rv[$key] = $this->l('Could not parse date') . ': ' . $text . ' (' . $input['label'] . ')';
 					}
 					if (isset( $input['validation']['datemaximum']) )
 					{
 						$date = strtotime($values[$key]);
 						if ($date > strtotime($input['validation']['datemaximum']))
-							$returnValue[$key] = $this->l('Invalid date') . ': ' . $text . ' (' . $input['label'] . ')';
+							$rv[$key] = $this->l('Invalid date') . ': ' . $text . ' (' . $input['label'] . ')';
 					}
 					if (isset( $input['validation']['lengthmin']) )
 					{
 						$text = trim($values[$key]);
 						if (strlen($text) < $input['validation']['lengthmin'])
-							$returnValue[$key] = '<span class="validation-field-name">' . $input['label'] . '</span> ' . $this->l('must be at least') . ' <em>' . $input['validation']['lengthmin'] . '</em> ' . $this->l('characters long') . '.';
+							$rv[$key] = '<span class="validation-field-name">' . $input['label'] . '</span> ' . $this->l('must be at least') . ' <em>' . $input['validation']['lengthmin'] . '</em> ' . $this->l('characters long') . '.';
 					}
 
 					if (isset( $input['validation']['valuemin']) )
@@ -1089,7 +1114,7 @@ class SD_Form
 							$value = intval($values[$key]);
 
 						if ($value < $input['validation']['valuemin'])
-							$returnValue[$key] = '<span class="validation-field-name">' . $input['label'] . '</span> ' . $this->l('may not be smaller than') . ' ' . $input['validation']['valuemin'];
+							$rv[$key] = '<span class="validation-field-name">' . $input['label'] . '</span> ' . $this->l('may not be smaller than') . ' ' . $input['validation']['valuemin'];
 					}
 					if (isset( $input['validation']['valuemax']) )
 					{
@@ -1100,19 +1125,19 @@ class SD_Form
 							$value = intval($values[$key]);
 
 						if ($value > $input['validation']['valuemax'])
-							$returnValue[$key] = '<span class="validation-field-name">' . $input['label'] . '</span> ' . $this->l('may not be larger than') . ' ' . $input['validation']['valuemax'];
+							$rv[$key] = '<span class="validation-field-name">' . $input['label'] . '</span> ' . $this->l('may not be larger than') . ' ' . $input['validation']['valuemax'];
 					}
 				case 'textarea':
 					// Is the value allowed to be empty?
 					if (!isset( $input['validation']['empty']) )
 						if (trim($values[$key]) == '')
-							$returnValue[$key] = '<span class="validation-field-name">' . $input['label'] . '</span> ' . $this->l('may not be empty');
+							$rv[$key] = '<span class="validation-field-name">' . $input['label'] . '</span> ' . $this->l('may not be empty');
 				break;
 			}
 		}
 		
-		if (count($returnValue)> 0)
-			return $returnValue;
+		if (count($rv)> 0)
+			return $rv;
 		else
 			return true;
 	}
@@ -1125,20 +1150,20 @@ class SD_Form
 		$language = $this->options['language'];
 		
 		if (!isset($this->language_data[$string]))
-			$returnValue = $string;
+			$rv = $string;
 		else
 			if (isset($this->language_data[$string][$language]))
-				$returnValue = $this->language_data[$string][$language];
+				$rv = $this->language_data[$string][$language];
 			else
-				$returnValue = $string;
+				$rv = $string;
 				
 		while (count($replacementString) > 0)
 		{
-			$returnValue = preg_replace('/%s/', reset($replacementString), $returnValue, 1);
+			$rv = preg_replace('/%s/', reset($replacementString), $rv, 1);
 			array_shift($replacementString);
 		}
 			
-		return $returnValue; 
+		return $rv; 
 	}
 }
 
