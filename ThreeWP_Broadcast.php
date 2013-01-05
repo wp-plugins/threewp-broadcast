@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.12
+Version: 1.13
 Author: edward mindreantre
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -1927,7 +1927,11 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			
 		// Else, check that the user has write access.
 		switch_to_blog( $blog_id );
-		$returnValue = current_user_can( 'edit_posts' );                                                                                                                                                                                                        
+		
+		global $current_user;
+		wp_get_current_user();
+		$returnValue = current_user_can( 'edit_posts' );
+		
 		restore_current_blog();
 		return $returnValue;
 	}
