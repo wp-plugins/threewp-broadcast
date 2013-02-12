@@ -296,7 +296,7 @@ class SD_Form
 		$id = '';
 		if ( $this->options[ 'form_id' ] != '' )
 			$id = ' id="' . $this->options[ 'form_id' ] . '" '; 
-		return '<form enctype="multipart/form-data"' . $id . 'action="'.$this->options['form_action'].'" method="'.$this->options['form_method'].'">' . "\n";
+		return '<form enctype="multipart/form-data" ' . $id . ' action="'.$this->options['form_action'].'" method="'.$this->options['form_method'].'">' . "\n";
 	}
 	
 	/**

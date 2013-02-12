@@ -28,6 +28,8 @@ Available in the following languages:
 * Romanian, Web Geek Sciense <a href="http://webhostinggeeks.com/">Web Hosting Geeks</a> 
 * Swedish
 
+The git repository can be found at: https://github.com/the-plainview/threewp_broadcast
+
 Did I miss anything?
 
 == Installation ==
@@ -80,6 +82,10 @@ If you have custom post meta boxes via WPAlchemy, you'll probably need to add th
 _bcc_
 
 == Changelog ==
+
+= 1.14 2013-02-12 =
+* Fix: Taxonomies are checked recursively. Thanks to anders@webbgaraget.se.
+* Fix: Arrow in broadcast box fixed
 
 = 1.13 2013-01-05 =
 * Fix: Compatability with WP 3.5 (roles work again).

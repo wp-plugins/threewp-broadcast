@@ -443,7 +443,10 @@ class ThreeWP_Broadcast_Base
 		if ($role == '')
 			return true;
 
-		if ($role == 'super_admin')
+		if (function_exists('is_super_admin') && is_super_admin() )
+			return true;
+
+		if ( $role == 'super_admin' )
 			if (function_exists('is_super_admin'))
 				return is_super_admin();
 			else

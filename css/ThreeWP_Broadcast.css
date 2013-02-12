@@ -77,31 +77,22 @@ tr.action_3broadcast_broadcasted td.activity_monitor_action
 	position: absolute;
 	top: 0;
 	right: 0;
-	height: 16px;
-	width: 16px;
-	background-color: #999;
-	-moz-border-radius: 5px;
+	height: 30px;
+	width: 30px;
+	background-image: url("../../../../wp-admin/images/arrows-2x.png");
+	background-position: center bottom;
 }
 
 #threewp_broadcast .broadcast_to .arrow
 {
-	margin: 4px auto;
-	height: 8px;
-	width: 8px;
-	background-repeat: no-repeat;
-	background-image: url("../../../../wp-admin/images/toggle-arrow.gif");
+	height: 100%;
+	width: 100%;
 }
 
-#threewp_broadcast .broadcast_to_opened .arrow
+#threewp_broadcast .broadcast_to_opened .arrow_container
 {
-	background-position: center right;
+	background-position: center top;
 }
-
-#threewp_broadcast .broadcast_to_closed .arrow
-{
-	background-position: center left;
-}
-
 /**
 	Quick selection changed
 **/
