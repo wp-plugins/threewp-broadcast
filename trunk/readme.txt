@@ -85,6 +85,7 @@ _bcc_
 
 = 1.14 2013-02-12 =
 * Fix: Taxonomies are checked recursively. Thanks to anders@webbgaraget.se.
+* Fix: Arrow in broadcast box fixed
 
 = 1.13 2013-01-05 =
 * Fix: Compatability with WP 3.5 (roles work again).

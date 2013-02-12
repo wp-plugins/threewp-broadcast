@@ -1,0 +1,18 @@
+# ThreeWP Broadcast
+# Copyright (C) 2011
+# This file is distributed under the GPL v3.
+# Mindre än Tre <info@mindreantre.se>, 2011.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ThreeWP Broadcast\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-10-10 07:44+0200\n"
+"PO-Revision-Date: 2011-10-10 07:44+0200\n"
+"Last-Translator: Mindre än Tre <info@mindreantre.se>\n"
+"Language-Team: Mindre än Tre <info@mindreantre.se>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
