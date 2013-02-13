@@ -1,7 +1,7 @@
 === ThreeWP Broadcast ===
 Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously, child, parent, permalink, post type, custom post type, threewp
 Requires at least: 3.3.1
-Tested up to: 3.3.1
+Tested up to: 3.5
 Stable tag: trunk
 Donate link: http://mindreantre.se/donate/
 Contributors: edward mindreantre
@@ -27,6 +27,8 @@ Available in the following languages:
 * French
 * Romanian, Web Geek Sciense <a href="http://webhostinggeeks.com/">Web Hosting Geeks</a> 
 * Swedish
+
+The git repository can be found at: https://github.com/the-plainview/threewp_broadcast
 
 Did I miss anything?
 
@@ -80,6 +82,16 @@ If you have custom post meta boxes via WPAlchemy, you'll probably need to add th
 _bcc_
 
 == Changelog ==
+
+= 1.15 2013-02-13 =
+* Fix: post type settings works again.
+
+= 1.14 2013-02-12 =
+* Fix: Taxonomies are checked recursively. Thanks to anders@webbgaraget.se.
+* Fix: Arrow in broadcast box fixed
+
+= 1.13 2013-01-05 =
+* Fix: Compatability with WP 3.5 (roles work again).
 
 = 1.12 2012-08-27 =
 * Overridden child permalinks use the nice permalink instead of /?p=123
