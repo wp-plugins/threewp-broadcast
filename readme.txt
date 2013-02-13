@@ -83,6 +83,9 @@ _bcc_
 
 == Changelog ==
 
+= 1.15 2013-02-13 =
+* Fix: post type settings works again.
+
 = 1.14 2013-02-12 =
 * Fix: Taxonomies are checked recursively. Thanks to anders@webbgaraget.se.
 * Fix: Arrow in broadcast box fixed
