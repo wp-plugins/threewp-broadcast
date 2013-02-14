@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.12
+Version: 1.16
 Author: edward mindreantre
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -391,7 +391,9 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		
 		$post_types = $this->get_site_option( 'post_types' );
 		
-		$input_post_types = array(
+		$inputs = array();
+		
+		$inputs[ 'post_types' ] =array(
 			'type' => 'text',
 			'name' => 'post_types',
 			'label' => $this->_( 'Post types to broadcast' ),
@@ -418,10 +420,10 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		
 		'.$form->start().'
 		
-		' . $this->display_form_table( $input_post_types ) .'
+		' . $this->display_form_table( $inputs ) .'
 		
 		<p>
-		'.$form->make_input( $input_submit).'
+			'.$form->make_input( $input_submit).'
 		</p>
 		
 		'.$form->stop().'
@@ -1366,7 +1368,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				$parent_broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id_parent );
 			}
 		}
-			
+
 		$taxonomies = (
 			$this->role_at_least( $this->get_site_option( 'role_taxonomies' ) )
 			&&
@@ -1379,8 +1381,14 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'object_type' => $post_type,
 			), 'array' );
 			$source_post_taxonomies = array();
-			foreach( $source_blog_taxonomies as $source_blog_taxonomy => $ignore )
+			foreach( $source_blog_taxonomies as $source_blog_taxonomy => $taxonomy )
 			{
+				// Source blog taxonomy terms are used for creating missing target term ancestors
+				$source_blog_taxonomies[ $source_blog_taxonomy ] = array(
+					'taxonomy' => $taxonomy,
+					'terms'    => $this->get_current_blog_taxonomy_terms( $source_blog_taxonomy ),
+				);
+
 				$source_post_taxonomies[ $source_blog_taxonomy ] = get_the_terms( $post_id, $source_blog_taxonomy );
 				if ( $source_post_taxonomies[ $source_blog_taxonomy ] === false )
 					unset( $source_post_taxonomies[ $source_blog_taxonomy ] ); 
@@ -1490,7 +1498,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 					
 					// Get a list of cats that the target blog has.
 					$target_blog_terms = $this->get_current_blog_taxonomy_terms( $source_post_taxonomy );
-					
+
 					// Go through the original post's terms and compare each slug with the slug of the target terms.
 					$taxonomies_to_add_to = array();
 					$have_created_taxonomies = false;
@@ -1511,14 +1519,29 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 						// Should we create the taxonomy if it doesn't exist?
 						if ( !$found && $taxonomies_create )
 						{
+							// Does the term have a parent?
+							$target_parent_id = 0;
+							if ( 0 != $source_post_term->parent )
+							{
+								// Recursively insert ancestors if needed, and get the target term's parent's ID
+								$target_parent_id = $this->insert_term_ancestors(
+									$this->object_to_array( $source_post_term ),
+									$source_post_taxonomy,
+									$target_blog_terms,
+									$source_blog_taxonomies[ $source_post_taxonomy ]['terms']
+								);
+							}
+
 							$new_taxonomy = wp_insert_term(
 								$source_post_term->name,
 								$source_post_taxonomy,
 								array( 
 									'slug' => $source_post_term->slug,
 									'description' => $source_post_term->description,
+									'parent' => $target_parent_id,
 								)
 							);
+
 							$taxonomies_to_add_to[] = $source_post_term->slug;
 							$have_created_taxonomies = true;
 						}
@@ -1528,7 +1551,13 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 						$this->sync_terms( $source_post_taxonomy, $original_blog, $blogID );
 
 					if ( count( $taxonomies_to_add_to) > 0 )
+					{
+						// This relates to the bug mentioned in the method $this->set_term_parent()
+						delete_option( $source_post_taxonomy . '_children' );
+						clean_term_cache( '', $source_post_taxonomy ); 
+
 						wp_set_object_terms( $new_post_id, $taxonomies_to_add_to, $source_post_taxonomy );
+					}
 				}
 			}
 			
@@ -1625,6 +1654,65 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		// Save the post broadcast data.
 		if ( $link )
 			$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );		
+	}
+
+	/**
+	 * Recursively adds the missing ancestors of the given source term at the
+	 * target blog. 
+	 * 
+	 * @param array $source_post_term           The term to add ancestors for
+	 * @param array $source_post_taxonomy       The taxonomy we're working with
+	 * @param array $target_blog_terms          The existing terms at the target
+	 * @param array $source_blog_taxonomy_terms The existing terms at the source
+	 * @return int The ID of the target parent term
+	 */
+	public function insert_term_ancestors( $source_post_term, $source_post_taxonomy, $target_blog_terms, $source_blog_taxonomy_terms )
+	{
+		// Fetch the parent of the current term among the source terms
+		foreach ( $source_blog_taxonomy_terms as $term )
+		{
+			if ( $term['term_id'] == $source_post_term['parent'] )
+			{
+				$source_parent = $term;
+			}
+		}
+
+		if ( ! isset( $source_parent ) )
+		{
+			return 0; // Sanity check, the source term's parent doesn't exist! Orphan!
+		}
+
+		// Check if the parent already exists at the target
+		foreach ( $target_blog_terms as $term )
+		{
+			if ( $term['slug'] == $source_parent['slug'] )
+			{
+				// The parent already exists, return its ID
+				return $term['term_id'];
+			}
+		}
+
+		// Does the parent also have a parent, and if so, should we create the parent?
+		$target_grandparent_id = 0;
+		if ( 0 != $source_parent['parent'] )
+		{
+			// Recursively insert ancestors, and get the newly inserted parent's ID
+			$target_grandparent_id = $this->insert_term_ancestors( $source_parent, $source_post_taxonomy, $target_blog_terms, $source_blog_taxonomy_terms );
+		}
+
+		// The target parent does not exist, we need to create it
+		$new_term = wp_insert_term(
+			$source_parent['name'],
+			$source_post_taxonomy,
+			array( 
+				'slug' => $source_parent['slug'],
+				'description' => $source_parent['description'],
+				'parent' => $target_grandparent_id,
+			)
+		);
+
+
+		return $new_term['term_id'];
 	}
 	
 	public function trash_post( $post_id)
@@ -1831,10 +1919,11 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
 		$wp_filetype = wp_check_filetype( $attachment_data->filename_base(), null );
 		$attachment = array(
+			'menu_order' => $attachment_data->attachment_menu_order(),
 			'post_mime_type' => $wp_filetype['type'],
-			'post_title' => preg_replace( '/\.[^.]+$/', '', $attachment_data->filename_base() ),
+			'post_title' => $attachment_data->attachment_title(),
 			'post_content' => '',
-			'post_status' => 'inherit'
+			'post_status' => 'inherit',
 		);
 		$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data->filename_base(), $post_id );
 		
@@ -1927,7 +2016,11 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			
 		// Else, check that the user has write access.
 		switch_to_blog( $blog_id );
-		$returnValue = current_user_can( 'edit_posts' );                                                                                                                                                                                                        
+		
+		global $current_user;
+		wp_get_current_user();
+		$returnValue = current_user_can( 'edit_posts' );
+		
 		restore_current_blog();
 		return $returnValue;
 	}
