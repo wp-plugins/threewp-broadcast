@@ -83,6 +83,9 @@ _bcc_
 
 == Changelog ==
 
+= 1.16 2013-02-14 =
+* Fix: Titles and menu order of attached images are also broadcasted. Thanks to werk@haha.nl.
+
 = 1.15 2013-02-13 =
 * Fix: post type settings works again.
 

@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.15
+Version: 1.16
 Author: edward mindreantre
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -1919,10 +1919,11 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
 		$wp_filetype = wp_check_filetype( $attachment_data->filename_base(), null );
 		$attachment = array(
+			'menu_order' => $attachment_data->attachment_menu_order(),
 			'post_mime_type' => $wp_filetype['type'],
-			'post_title' => preg_replace( '/\.[^.]+$/', '', $attachment_data->filename_base() ),
+			'post_title' => $attachment_data->attachment_title(),
 			'post_content' => '',
-			'post_status' => 'inherit'
+			'post_status' => 'inherit',
 		);
 		$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data->filename_base(), $post_id );
 		
