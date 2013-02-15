@@ -83,6 +83,9 @@ _bcc_
 
 == Changelog ==
 
+= 1.17 2013-02-15 =
+* New: Children have their canonical links pointed to the parent.
+
 = 1.16 2013-02-14 =
 * Fix: Titles and menu order of attached images are also broadcasted. Thanks to werk@haha.nl.
 

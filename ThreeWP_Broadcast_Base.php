@@ -3,7 +3,8 @@
 	Provides a simple framework with common Wordpress functions.
 	
 	@par	Changelog
-	
+
+	- 2013-02-15	04:51	Fix: role_at_least optimized for super admin queries.
 	- 2012-12-14	08:47	Fix: role_at_least works again. It appears as current_user_can is broken somehow.
 	- 2012-12-13	19:55	Fix: super admin can do everything when asked role_at_least
 	- 2012-12-12	12:16	Added is_email function to check for e-mail validity.
@@ -442,15 +443,12 @@ class ThreeWP_Broadcast_Base
 
 		if ($role == '')
 			return true;
-
+			
 		if (function_exists('is_super_admin') && is_super_admin() )
 			return true;
-
+		
 		if ( $role == 'super_admin' )
-			if (function_exists('is_super_admin'))
-				return is_super_admin();
-			else
-				return false;
+			return false;			
 		
 		// This was previously done by current_user_can, but for some reason it doesn't work all the time in WP3.5.
 		// So now I have to check "manually", which probably means that filters are rendered ineffective.
