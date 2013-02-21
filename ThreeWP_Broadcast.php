@@ -3,7 +3,7 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.17
+Version: 1.18
 Author: edward mindreantre
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
@@ -16,6 +16,14 @@ require_once( 'ThreeWP_Broadcast_Base.php' );
 class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 {
 	protected $site_options = array(
+		'always_use_required_list' => false,				// Require blogs only when broadcasting?
+		'blacklist' => '',									// Comma-separated string of blogs to automatically exclude
+		'canonical_url' => true,							// Override the canonical URLs with the parent post's.
+		'custom_field_exceptions' => array( '_wp_page_template', '_wplp_', '_aioseop_' ),				// Custom fields that should be broadcasted, even though they start with _
+		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
+		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
+		'post_types' => array( 'post' => array(), 'page' => array() ),			// Custom post types which use broadcasting
+		'requiredlist' => '',								// Comma-separated string of blogs to require
 		'role_broadcast' => 'super_admin',					// Role required to use broadcast function
 		'role_link' => 'super_admin',						// Role required to use the link function
 		'role_broadcast_as_draft' => 'super_admin',			// Role required to broadcast posts as templates
@@ -24,13 +32,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		'role_taxonomies' => 'super_admin',					// Role required to broadcast the taxonomies
 		'role_taxonomies_create' => 'super_admin',			// Role required to create taxonomies automatically
 		'role_custom_fields' => 'super_admin',				// Role required to broadcast the custom fields
-		'requiredlist' => '',								// Comma-separated string of blogs to require
-		'always_use_required_list' => false,				// Require blogs only when broadcasting?
-		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
-		'blacklist' => '',									// Comma-separated string of blogs to automatically exclude
-		'post_types' => array( 'post' => array(), 'page' => array() ),			// Custom post types which use broadcasting
-		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
-		'custom_field_exceptions' => array( '_wp_page_template', '_wplp_', '_aioseop_' ),				// Custom fields that should be broadcasted, even though they start with _
 	);
 	
 	private $blogs_cache = null;
@@ -48,11 +49,11 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		add_action( 'admin_menu', array( &$this, 'create_meta_box' ) );
 		add_action( 'admin_print_styles', array( &$this, 'admin_print_styles' ) );
 		if ( $this->get_site_option( 'override_child_permalinks' ) )
-		{
 			add_action( 'post_link', array( &$this, 'post_link' ) );
-		}
 		add_filter( 'threewp_activity_monitor_list_activities', array( &$this, 'list_activities') );
-		add_action( 'wp_head', array( &$this, 'wp_head' ), 1 );
+		
+		if ( $this->get_site_option( 'canonical_url' ) )
+			add_action( 'wp_head', array( &$this, 'wp_head' ), 1 );
 	}
 	
 	public function network_admin_menu()
@@ -238,6 +239,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			$custom_field_exceptions = explode("\n", $custom_field_exceptions );
 			$this->update_site_option( 'save_post_priority', intval( $_POST['save_post_priority'] ) );
 			$this->update_site_option( 'override_child_permalinks', isset( $_POST['override_child_permalinks'] ) );
+			$this->update_site_option( 'canonical_url', isset( $_POST['canonical_url'] ) );
 			$this->update_site_option( 'custom_field_exceptions', $custom_field_exceptions );
 			foreach(array( 'role_broadcast',
 				'role_link',
@@ -351,6 +353,14 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'label' => 'Override child post permalinks',
 				'checked' => $this->get_site_option( 'override_child_permalinks' ),
 				'description' => 'This will force child posts (those broadcasted to other sites) to keep the original post\'s permalink. If checked, child posts will link back to the original post on the original site.',
+				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
+			),
+			'canonical_url' => array(
+				'name' => 'canonical_url',
+				'type' => 'checkbox',
+				'label' => 'Canonical URLs',
+				'checked' => $this->get_site_option( 'canonical_url' ),
+				'description' => 'Child posts have their canonical URLs pointed to the URL of the parent post.',
 				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'save' => array(
@@ -1290,7 +1300,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		if (!$this->role_at_least( $this->get_site_option( 'role_broadcast' ) ) )
 			return;
 			
-		$allowed_post_status = array( 'publish', 'pending' );
+		$allowed_post_status = array( 'pending', 'private', 'publish' );
 		
 		if ( $this->role_at_least( $this->get_site_option( 'role_broadcast_as_draft' ) ) )
 			$allowed_post_status[] = 'draft';
@@ -1452,7 +1462,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		foreach( $blogs as $blogID )
 		{
 			// Another safety check. Goes with the safety dance.
-			if (!$this->is_blog_user_writable( $user_id, $blogID) )
+			if ( !$this->is_blog_user_writable( $user_id, $blogID) )
 				continue;
 			switch_to_blog( $blogID );
 			
@@ -1568,13 +1578,68 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				Remove the current attachments.
 			*/
 			$attachments_to_remove =& get_children( 'post_parent='.$new_post_id.'&post_type=attachment' );
-			foreach ( $attachments_to_remove as $attachment_to_remove)
+			foreach ( $attachments_to_remove as $attachment_to_remove )
 				wp_delete_attachment( $attachment_to_remove->ID );
 			
-			foreach( $attachment_data as $key=>$attached_file)
+			// Copy the attachments
+			$copied_attachments = array();
+			foreach( $attachment_data as $key=>$attachment )
 			{
 				if ( $key != 'thumbnail' )
-					$this->copy_attachment( $attached_file, $new_post_id );
+				{
+					$new_attachment_id = $this->copy_attachment( $attachment, $new_post_id );
+					$c = new stdClass();
+					$c->old = $attachment;
+					$c->new = $new_attachment_id;
+					$copied_attachments[] = $c;
+				}
+			}
+			
+			// If there were any image attachments copied...
+			if ( count( $copied_attachments ) > 0 )
+			{
+				// Update the URLs in the post to point to the new images.
+				$wp_upload_dir = wp_upload_dir();
+				$modified_post = get_post( $new_post_id );
+				foreach( $copied_attachments as $a )
+				{
+					$ald_attachment = $a->old;
+					
+					$new_attachment_id = $a->new;
+					$new_attachment = AttachmentData::from_attachment_id( $new_attachment_id, $wp_upload_dir );
+					$a->new = $new_attachment;
+					
+					$modified_post->post_content = str_replace( $ald_attachment->guid, $new_attachment->guid, $modified_post->post_content );
+					$modified_post->post_content = str_replace( 'id="attachment_' . $ald_attachment->id . '"', 'id="attachment_' . $new_attachment->id . '"', $modified_post->post_content );
+				}
+				
+				// Update any [gallery] shortcodes found.
+				$rx =get_shortcode_regex();
+				$matches = '';
+				preg_match_all( '/' . $rx . '/', $modified_post->post_content, $matches );
+				
+				// [2] contains only the shortcode command / key. No options.
+				foreach( $matches[ 2 ] as $index => $key )
+				{
+					// Look for only the gallery shortcode.
+					if ( $key !== 'gallery' )
+						continue;
+					// Complete matches are in 0.
+					$old_shortcode = $matches[ 0 ][ $index ];
+					// Extract the IDs
+					$ids = preg_replace( '/.*ids=\"([0-9,]*)".*/', '\1', $old_shortcode );
+					// And put in the new IDs.
+					$new_ids = array();
+					// Try to find the equivalent new attachment ID.
+					// If no attachment found
+					foreach( explode( ',', $ids ) as $old_id )
+						foreach( $copied_attachments as $a )
+							if ( $old_id == $a->old->id )
+								$new_ids[] = $a->new->id;
+					$new_shortcode = str_replace( $ids, implode( ',', $new_ids ) , $old_shortcode );
+					$modified_post->post_content = str_replace( $old_shortcode, $new_shortcode, $modified_post->post_content );
+				}
+				wp_update_post( $modified_post );
 			}
 			
 			if ( $custom_fields )
@@ -1582,7 +1647,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				// Remove all old custom fields.
 				$old_custom_fields = get_post_custom( $new_post_id );
 
-				foreach( $old_custom_fields as $key => $value)
+				foreach( $old_custom_fields as $key => $value )
 				{
 					// This post has a featured image! Remove it from disk!
 					if ( $key == '_thumbnail_id' )
@@ -1591,7 +1656,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 						wp_delete_post( $thumbnail_post);
 					}
 					
-					delete_post_meta( $new_post_id, $key);
+					delete_post_meta( $new_post_id, $key );
 				}
 				
 				foreach( $post_custom_fields as $meta_key => $meta_value )
@@ -1611,7 +1676,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 					}
 				}
 				
-				// Attached files are custom fields... but special custom fields. Therefore they need special treatment. Like retards. Retarded files.
+				// Attached files are custom fields... but special custom fields.
 				if ( $has_thumbnail )
 				{
 					$new_attachment_id = $this->copy_attachment( $attachment_data['thumbnail'], $new_post_id );
@@ -1941,29 +2006,29 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	{
 		// Copy the file to the blog's upload directory
 		$upload_dir = wp_upload_dir();
-		
-		if ( ! file_exists( $attachment_data->filename_path() ) )
+		if ( ! file_exists( $attachment_data->filename_path ) )
 			return false;
 
-		copy( $attachment_data->filename_path(), $upload_dir['path'] . '/' . $attachment_data->filename_base() );
+		copy( $attachment_data->filename_path, $upload_dir['path'] . '/' . $attachment_data->filename_base );
 		
 		// And now create the attachment stuff.
 		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
-		$wp_filetype = wp_check_filetype( $attachment_data->filename_base(), null );
+		$wp_filetype = wp_check_filetype( $attachment_data->filename_base, null );
 		$attachment = array(
-			'menu_order' => $attachment_data->attachment_menu_order(),
+			'guid' => $upload_dir['url'] . '/' . $attachment_data->filename_base,
+			'menu_order' => $attachment_data->menu_order,
+			'post_excerpt' => $attachment_data->post_excerpt,
 			'post_mime_type' => $wp_filetype['type'],
-			'post_title' => $attachment_data->attachment_title(),
+			'post_title' => $attachment_data->post_title,
 			'post_content' => '',
 			'post_status' => 'inherit',
 		);
-		$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data->filename_base(), $post_id );
+		$attach_id = wp_insert_attachment( $attachment, $upload_dir['path'] . '/' . $attachment_data->filename_base, $post_id );
 		
 		// Now to handle the metadata.
 		// 1. Create new metadata for this attachment.
-		
 		require_once(ABSPATH . "wp-admin" . '/includes/image.php' );
-		$attach_data = wp_generate_attachment_metadata( $attach_id, $upload_dir['path'] . '/' . $attachment_data->filename_base() );
+		$attach_data = wp_generate_attachment_metadata( $attach_id, $upload_dir['path'] . '/' . $attachment_data->filename_base );
 		
 		// 2. Write the old metadata first.
 		foreach( $attachment_data->post_custom as $key => $value )
@@ -2371,6 +2436,5 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$this->query("INSERT INTO `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata` (blog_id, post_id, data) VALUES ( '$blog_id', '$post_id', '$data' )");
 	}
 }
-
 $threewp_broadcast = new ThreeWP_Broadcast();
 

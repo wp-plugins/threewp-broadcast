@@ -83,6 +83,11 @@ _bcc_
 
 == Changelog ==
 
+= 1.18 2013-02-22 =
+* New: Option to disable overriding of canonical URLs. Used if other plugins also manipulate the url in the HTML head.
+* New: Private posts can be broadcast.
+* Fix: Broadcasting of attachments works better. Galleries are also broadcasted (due to editing of the gallery shortcodes).
+
 = 1.17 2013-02-15 =
 * New: Children have their canonical links pointed to the parent.
 

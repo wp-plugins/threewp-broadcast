@@ -4,18 +4,22 @@
 	
 	@par	Changelog
 	
-	- @b 2013-02-14 Added extra attachment data from werk@haha.nl: attachment_title and attachment_menu_order
+	- @b 2013-02-21 Added post excerpt, guid, id
+	- @b 2013-02-14 Added extra attachment data from werk@haha.nl: post_title and menu_order
  */
 class AttachmentData
 {
-	private $filename_base;			// img.jpg
-	private $filename_path;			// /var/www/wordpress/image.jpg
-	private $file_metadata;			// Wordpress' metadata for the attached image.
-	private $filename_upload_dir;	// Wordpress' upload directory for this blog / file
-	private $_wp_attachment_image_alt;		// The alt value for this image, if any.
-	private $attachment_title; 		// plaatje echte naam toegevoegd
-	private $attachment_menu_order;	// plaatjes volgorde toegevoegd
+	public	$filename_base;					// img.jpg
+	public	$filename_path;					// /var/www/wordpress/image.jpg
+	public	$file_metadata;					// Wordpress' metadata for the attached image.
+	public	$filename_upload_dir;			// Wordpress' upload directory for this blog / file
+	public	$id;							// ID of attachment.
+	public	$guid;							// Old guid of image.
+	public	$menu_order;					// Menu order
 	public	$post_custom;					// Array of post meta keys and values.
+	public	$post_excerpt;					// Post excerpt is the small caption.
+	public	$post_title;					// Title
+	public	$_wp_attachment_image_alt;		// The alt value for this image, if any.
 	
 	public function __construct( $options = array() )
 	{
@@ -25,22 +29,30 @@ class AttachmentData
 	
 	public static function from_attachment_id( $attachment_id, $upload_dir )
 	{
-		$returnValue = new AttachmentData();
+		$rv = new AttachmentData();
+		$rv->id = $attachment_id;
 		$metadata = wp_get_attachment_metadata($attachment_id);
-		$returnValue->filename_base( basename($metadata['file']) );
-		$returnValue->filename_path( $upload_dir['basedir'] . '/' . $metadata['file'] );
-		$returnValue->file_metadata( $metadata );
+		$rv->filename_base = basename( $metadata['file']);
+		$rv->filename_path = $upload_dir[ 'basedir' ] . '/' . $metadata[ 'file' ];
+		$rv->file_metadata = $metadata;
 		
-		$attachment_data = get_post( $attachment_id );
-		$returnValue->attachment_title( $attachment_data->post_title );
-		$returnValue->attachment_menu_order( $attachment_data->menu_order );
+		$data = get_post( $attachment_id );
+		$rv->guid = $data->guid;
+		$rv->post_title = $data->post_title;
+		$rv->menu_order = $data->menu_order;
+		$rv->post_excerpt = $data->post_excerpt;
 
 		// Copy all of the custom data for this post.		
-		$returnValue->post_custom = get_post_custom( $attachment_id );
+		$rv->post_custom = get_post_custom( $attachment_id );
 		
-		return $returnValue;
+		return $rv;
 	}
 	
+	/**
+		Remove this in about a years time, when nobody uses it anymore.
+		
+		2013-02-21.
+	**/
 	private function getset( $variable, $variable_new = '' )
 	{
 		if ($variable_new == '')
@@ -49,10 +61,15 @@ class AttachmentData
 			$this->$variable = $variable_new;
 	}
 	
-	public function filename_base($filename_base = '')						{	return $this->getset('filename_base', $filename_base);					}
-	public function filename_path($filename_path = '')						{	return $this->getset('filename_path', $filename_path);					}
-	public function file_metadata($file_metadata = '')						{	return $this->getset('file_metadata', $file_metadata);					}
-	public function filename_upload_dir($filename_upload_dir = '')			{	return $this->getset('file_metadata', $filename_upload_dir);			}
-	public function attachment_menu_order($attachment_menu_order = '')		{	return $this->getset('attachment_menu_order', $attachment_menu_order);	}
-	public function attachment_title($attachment_title = '')				{	return $this->getset('attachment_title', $attachment_title);			}
+	// Sometime in the future: remove all of these functions.
+	
+	public function filename_base( $filename_base = '' )						{	return $this->getset( 'filename_base', $filename_base );					}
+	public function filename_path( $filename_path = '' )						{	return $this->getset( 'filename_path', $filename_path );					}
+	public function file_metadata( $file_metadata = '' )						{	return $this->getset( 'file_metadata', $file_metadata );					}
+	public function filename_upload_dir( $filename_upload_dir = '' )			{	return $this->getset( 'file_metadata', $filename_upload_dir );				}
+	public function guid( $guid = '' )											{	return $this->getset( 'guid', $guid );										}
+	public function menu_order( $menu_order = '' )								{	return $this->getset( 'menu_order', $menu_order );							}
+	public function post_excerpt( $post_excerpt = '' )							{	return $this->getset( 'post_excerpt', $post_excerpt );						}
+	public function post_title( $post_title = '' )								{	return $this->getset( 'post_title', $post_title );							}
 }
+
