@@ -1,9 +1,19 @@
 <?php
 /**
+	@brief		Base class for the SD series of Wordpress plugins.
+	
 	Provides a simple framework with common Wordpress functions.
 	
 	@par	Changelog
-	
+
+	- 2013-04-08	20:20	New: sd_table classes.
+							New: merge_objects
+							Fix: check_column and check_column_body accept the table as a parameter.
+	- 2013-03-07	15:43	New: add_submenu_page and add_submenu_pages
+	- 2013-03-05	12:45	Fix: check_plain also stripslashes.
+	- 2013-03-01	10:25	New: check_column() and check_column_body().
+	- 2013-03-01	10:25	Fix: display_form_table inserted input names automatically (based on the array key).
+	- 2013-02-15	04:51	Fix: role_at_least optimized for super admin queries.
 	- 2012-12-14	08:47	Fix: role_at_least works again. It appears as current_user_can is broken somehow.
 	- 2012-12-13	19:55	Fix: super admin can do everything when asked role_at_least
 	- 2012-12-12	12:16	Added is_email function to check for e-mail validity.
@@ -39,7 +49,6 @@
 	- 2011-11-04	09:42	now() is public
 	- 2011-11-07	16:11	new: rmdir().
 	
-	@brief		Base class for the SD series of Wordpress plugins.
 	@author		Edward Plainview	edward.plainview@sverigedemokraterna.se
 */
 
@@ -172,20 +181,35 @@ class ThreeWP_Broadcast_Base
 	}
 	
 	/**
-		Overridable method to deactive the plugin.
+		@brief		Queues a submenu page for adding later.
+		
+		Used to ensure alphabetic sorting of submenu pages independent of language.
+		
+		Uses the same parameters as Wordpress' add_submenu_page. Uses the menu title as the sorting key.
+		
+		After all pages have been add_submenu_page'd, call add_submenu_pages to actually sort and add them.
 	**/
-	public function deactivate()
+	public function add_submenu_page()
 	{
+		if ( ! isset( $this->submenu_pages ) )
+			$this->submenu_pages = array();
+		
+		$args = func_get_args();
+		$key = $args[ 2 ];
+		$key = $this->strtolower( $key );
+		$this->submenu_pages[ $key ] = $args;
 	}
 	
 	/**
-		Deactivates the plugin.
+		@brief		Flush the add_submenu_page cache.
+		
+		Will first sort by key and then add the subpages.
 	**/
-	public function deactivate_me()
+	public function add_submenu_pages()
 	{
-		deactivate_plugins(array(
-			$this->paths['filename_from_plugin_directory']
-		));
+		ksort( $this->submenu_pages );
+		foreach( $this->submenu_pages as $submenu )
+			call_user_func_array( 'add_submenu_page', $submenu );
 	}
 	
 	/**
@@ -254,6 +278,23 @@ class ThreeWP_Broadcast_Base
 			</p>
 			'.$form->stop().'
 		';
+	}
+	
+	/**
+		Overridable method to deactive the plugin.
+	**/
+	public function deactivate()
+	{
+	}
+	
+	/**
+		Deactivates the plugin.
+	**/
+	public function deactivate_me()
+	{
+		deactivate_plugins(array(
+			$this->paths['filename_from_plugin_directory']
+		));
 	}
 	
 	/**
@@ -418,12 +459,12 @@ class ThreeWP_Broadcast_Base
 	**/ 
 	public function roles_as_options()
 	{
-		$returnValue = array();
+		$rv = array();
 		if (function_exists('is_super_admin'))
-			$returnValue['super_admin'] = $this->_( 'Super admin');
+			$rv['super_admin'] = $this->_( 'Super admin');
 		foreach( $this->roles as $role )
-			$returnValue[ $role[ 'name' ] ] = __( ucfirst( $role[ 'name' ] ) );		// See how we ask WP to translate the roles for us? See also how it doesn't. Sometimes.
-		return $returnValue;
+			$rv[ $role[ 'name' ] ] = __( ucfirst( $role[ 'name' ] ) );		// See how we ask WP to translate the roles for us? See also how it doesn't. Sometimes.
+		return $rv;
 	}
 	
 	/**
@@ -442,15 +483,12 @@ class ThreeWP_Broadcast_Base
 
 		if ($role == '')
 			return true;
-
+			
 		if (function_exists('is_super_admin') && is_super_admin() )
 			return true;
-
+		
 		if ( $role == 'super_admin' )
-			if (function_exists('is_super_admin'))
-				return is_super_admin();
-			else
-				return false;
+			return false;			
 		
 		// This was previously done by current_user_can, but for some reason it doesn't work all the time in WP3.5.
 		// So now I have to check "manually", which probably means that filters are rendered ineffective.
@@ -832,14 +870,14 @@ class ThreeWP_Broadcast_Base
 		ksort( $sorted );
 		
 		// The array has been sorted, we want the original array again.
-		$returnValue = array();
+		$rv = array();
 		foreach( $sorted as $item )
 		{
 			$value = ( $is_array ? (array)$item[ 'value' ] : $item[ 'value' ] );
-			$returnValue[ $item['key'] ] = $item['value'];
+			$rv[ $item['key'] ] = $item['value'];
 		}
 			
-		return $returnValue;
+		return $rv;
 	}
 	
 	/**
@@ -897,9 +935,68 @@ class ThreeWP_Broadcast_Base
 		return '<span title="'.$time_string.'">' . sprintf( __('%s ago'), $diff) . '</span>';
 	}
 	
+	public function check_column( $options = array() )
+	{
+		$o = self::merge_objects( array(
+			'sd_table_row' => null,
+		), $options );
+		
+		$selected = array(
+			'name' => 'check',
+			'type' => 'checkbox',
+		);
+		$form = $this->form();
+		
+		// If there is a supplied sd_table_row, use that.
+		if ( $o->sd_table_row !== null )
+		{
+			$row = $o->sd_table_row;	// Conv
+			$text = $form->make_input( $selected ) . '<span class="screen-reader-text">' . $this->_('Selected') . '</span>';
+			$row->th()->css_class( 'check-column' )->text( $text );
+		}
+		
+		// Else return a manual table th.
+		return '<th class="check-column">' . $form->make_input( $selected ) . '<span class="screen-reader-text">' . $this->_('Selected') . '</span></th>';
+	}
+	
+	public function check_column_body( $options )
+	{
+		$options = array_merge( array(
+			'form' => $this->form(),
+			'nameprefix' => '[cb]',
+			'type' => 'checkbox',
+			'sd_table_row' => null,
+		), $options );
+		
+		if ( ! isset( $options[ 'label' ] ) )
+			$options[ 'label' ] = $options[ 'name' ];
+		
+		$form = $options[ 'form' ];		// Conv
+		
+		// If there is a supplied sd_table_row, use it.
+		if ( $options[ 'sd_table_row' ] !== null )
+		{
+			$text = $form->make_input( $options );
+			$text .= '<span class="screen-reader-text">' . $form->make_label( $options ) . '</span>';
+			
+			$row = $options[ 'sd_table_row' ];
+			$row->th()->css_class( 'check-column' )->attribute( 'scope', 'row' )->text( $text );
+			return; 
+		}
+		
+		// Else return a manual table th.
+		return '
+			<th scope="row" class="check-column">
+				' . $form->make_input( $options ) . '
+				<span class="screen-reader-text">' . $form->make_label( $options ) . '</span>
+			</th>
+		';
+	}
+	
 	public function check_plain( $text )
 	{
 		$text = strip_tags( $text );
+		$text = stripslashes( $text );
 		return $text;
 	}
 	
@@ -912,31 +1009,34 @@ class ThreeWP_Broadcast_Base
 		
 		$tr = array();
 		
-		$returnValue = '';
+		$rv = '';
 		
 		if ( !isset($options['form']) )
 			$options['form'] = $this->form();
 			
-		foreach( $inputs as $input )
+		foreach( $inputs as $name => $input )
 		{
+			if ( ! isset( $input[ 'name' ] ) )
+				$input[ 'name' ] = $name;
+			
 			if ( $input[ 'type' ] == 'hidden' )
 			{
-				$returnValue .= $options['form']->make_input( $input );
+				$rv .= $options['form']->make_input( $input );
 				continue;
 			}
 			$tr[] = $this->display_form_table_row( $input, $options['form'] );
 		}
 		
 		if ( $options['header'] != '' )
-			$returnValue .= '<'.$options['header_level'].'>' . $options['header'] . '</'.$options['header_level'].'>';
+			$rv .= '<'.$options['header_level'].'>' . $options['header'] . '</'.$options['header_level'].'>';
 		
-		$returnValue .= '
+		$rv .= '
 			<table class="form-table">
 				' . implode('', $tr) . '
 			</table>
 		';
 		
-		return $returnValue;
+		return $rv;
 	}
 
 	public function display_form_table_row($input, $form = null)
@@ -1142,10 +1242,24 @@ class ThreeWP_Broadcast_Base
 	public function form($options = array())
 	{
 		$options = array_merge($options, array('language' => preg_replace('/_.*/', '', get_locale())) );
-		if (class_exists('SD_Form'))
-			return new SD_Form($options);
-		require_once('SD_Form.php');
-		return new SD_Form($options);
+		if ( ! class_exists('SD_Form') )
+			require_once( 'SD_Form.php' );
+		return new SD_Form( $options );
+	}
+	
+	/**
+		Creates a new SD_Table.
+		
+		@return		sd_table		A new sd_table object.
+	**/ 
+	public function table()
+	{
+		if ( ! class_exists('sd_table') )
+			require_once( 'SD_Table.php' );
+		
+		$rv = new sd_table();
+		$rv->css_class( 'widefat' );
+		return $rv;
 	}
 	
 	/**
@@ -1199,6 +1313,21 @@ class ThreeWP_Broadcast_Base
 			return false;
 		
 		return true;
+	}
+	
+	/**
+		@brief		Merge two objects.
+		
+		@param		mixed		$base		An array or object into which to append the new properties.
+		@param		mixed		$new		New properties to append to $base.
+		@return		object					The expanded $base object.
+	**/
+	public static function merge_objects( $base, $new )
+	{
+		$base = (object)$base;
+		foreach( (array)$new as $key => $value )
+			$base->$key = $value;
+		return $base;
 	}
 	
 	/**
@@ -1259,10 +1388,10 @@ class ThreeWP_Broadcast_Base
 	{
 		if (is_array( $object ))
 		{
-			$returnValue = array();
+			$rv = array();
 			foreach($object as $o)
-				$returnValue[] = get_object_vars($o);
-			return $returnValue;
+				$rv[] = get_object_vars($o);
+			return $rv;
 		}
 		else
 			return get_object_vars($object);
@@ -1435,13 +1564,13 @@ class ThreeWP_Broadcast_Base
 		
 		// Done setting up.
 		if (!$mail->Send())
-			$returnValue = $mail->ErrorInfo;
+			$rv = $mail->ErrorInfo;
 		else 
-			$returnValue = true;
+			$rv = true;
 			
 		$mail->SmtpClose();
 		
-		return $returnValue;		
+		return $rv;		
 	}
 	
 	/**
@@ -1533,10 +1662,10 @@ class ThreeWP_Broadcast_Base
 		
 		$options['valid_get_keys']['page'] = 'page';
 		
-		$returnValue = '';
+		$rv = '';
 		if ( count( $options['tabs'] ) > 1 )
 		{
-			$returnValue .= '<ul class="subsubsub">';
+			$rv .= '<ul class="subsubsub">';
 			$original_link = $_SERVER['REQUEST_URI'];
 
 			foreach($get as $key => $value)
@@ -1572,10 +1701,10 @@ class ThreeWP_Broadcast_Base
 				if ( isset( $options[ 'descriptions' ][ $tab_slug ] ) )
 					$title = 'title="' . $options[ 'descriptions' ][ $tab_slug ] . '"';
 				 
-				$returnValue .= '<li><a'.$current.' '. $title .' href="'.$link.'">'.$text.'</a>'.$separator.'</li>';
+				$rv .= '<li><a'.$current.' '. $title .' href="'.$link.'">'.$text.'</a>'.$separator.'</li>';
 				$index++;
 			}
-			$returnValue .= '</ul>';
+			$rv .= '</ul>';
 		}
 		
 		if ( !isset($selected_index) )
@@ -1594,7 +1723,7 @@ class ThreeWP_Broadcast_Base
 				
 				echo $options[ 'display_before_tab_name' ] . $page_title . $options[ 'display_after_tab_name' ];
 			}
-			echo $returnValue;
+			echo $rv;
 			echo '<div style="clear: both"></div>';
 			if ( isset( $options[ 'functions' ][ $selected_index ] ) )
 			{
@@ -1610,7 +1739,7 @@ class ThreeWP_Broadcast_Base
 			ob_end_flush();
 		}
 		else
-			return $returnValue;
+			return $rv;
 	}
 	
 	/**
@@ -1634,7 +1763,7 @@ class ThreeWP_Broadcast_Base
 		
 		@return		HTML wrapped HTML.
 	**/
-	public function wrap( $title, $text )
+	public function wrap( $text, $title )
 	{
 		echo "<h2>$title</h2>
 			<div class=\"wrap\">
@@ -1643,3 +1772,4 @@ class ThreeWP_Broadcast_Base
 		";
 	}
 }
+
