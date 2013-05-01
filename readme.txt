@@ -18,6 +18,8 @@ Last used settings are remembered between uses. Broadcasted categories keep thei
 
 Has options for whitelisting (required blogs), blacklisting, user role access granularity, custom post and custom taxonomy support and an uninstall to completely remove itself. No traces of the plugin are left (assuming the created tables are successfully removed).
 
+Requires php v5.4 for trait support. Users of php v5.3 should remain with version 1.18.
+
 Available in the following languages:
 
 * Dutch
