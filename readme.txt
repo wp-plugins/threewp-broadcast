@@ -34,6 +34,7 @@ Did I miss anything?
 
 == Installation ==
 
+1. See that you have PHP v5.4 installed (for traits support)
 1. Unzip and copy the zip contents (including directory) into the `/wp-content/plugins/` directory
 1. Activate the plugin sitewide through the 'Plugins' menu in WordPress.
 
