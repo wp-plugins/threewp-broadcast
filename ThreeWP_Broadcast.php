@@ -3,17 +3,16 @@
 Plugin Name: ThreeWP Broadcast
 Plugin URI: http://mindreantre.se/program/threewp/threewp-broadcast/
 Description: Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available. 
-Version: 1.18
+Version: 1.19
 Author: edward mindreantre
 Author URI: http://www.mindreantre.se
 Author Email: edward@mindreantre.se
 */
 
-if ( !defined('ABSPATH') )
-	exit;
+if ( ! class_exists( '\\plainview\\wordpress\\base' ) )	require_once( 'plainview_sdk/wordpress/base.php' );
 
-require_once( 'ThreeWP_Broadcast_Base.php' );
-class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
+class ThreeWP_Broadcast
+	extends \plainview\wordpress\base
 {
 	protected $site_options = array(
 		'always_use_required_list' => false,				// Require blogs only when broadcasting?
@@ -38,29 +37,28 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	
 	private $broadcasting = false;
 	
+	protected $sdk_version_required = 20130425;
+	
 	public function __construct()
 	{
 		parent::__construct(__FILE__);
-		if ( ! $this->is_network )
-			return;
 		
-		add_action( 'network_admin_menu', array( &$this, 'network_admin_menu' ) );
+		if ( ! $this->is_network )
+			wp_die( $this->_( 'Broadcast requires a Wordpress network to function.' ) );
+		
 		add_action( 'admin_menu', array( &$this, 'add_menu' ) );
 		add_action( 'admin_menu', array( &$this, 'create_meta_box' ) );
 		add_action( 'admin_print_styles', array( &$this, 'admin_print_styles' ) );
+		add_action( 'network_admin_menu', array( &$this, 'network_admin_menu' ) );
+		add_filter( 'threewp_activity_monitor_list_activities', array( &$this, 'list_activities') );
+		
 		if ( $this->get_site_option( 'override_child_permalinks' ) )
 			add_action( 'post_link', array( &$this, 'post_link' ) );
-		add_filter( 'threewp_activity_monitor_list_activities', array( &$this, 'list_activities') );
 		
 		if ( $this->get_site_option( 'canonical_url' ) )
 			add_action( 'wp_head', array( &$this, 'wp_head' ), 1 );
 	}
 	
-	public function network_admin_menu()
-	{
-		add_submenu_page( 'settings.php', 'ThreeWP Broadcast', 'Broadcast', 'activate_plugins', 'ThreeWP_Broadcast', array ( &$this, 'admin' ) );
-	}
-
 	public function add_menu()
 	{
 		add_submenu_page( 'profile.php', 'ThreeWP Broadcast', $this->_( 'Broadcast' ), 'edit_posts', 'ThreeWP_Broadcast', array ( &$this, 'user' ) );
@@ -75,6 +73,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			add_filter( 'manage_pages_columns', array( &$this, 'manage_posts_columns' ) ); 
 			add_action( 'manage_pages_custom_column', array( &$this, 'manage_posts_custom_column' ), 10, 2 );
 			
+			add_action( 'wp_trash_post', array( &$this, 'trash_post' ) );
 			add_action( 'trash_post', array( &$this, 'trash_post' ) );
 			add_action( 'trash_page', array( &$this, 'trash_post' ) );
 
@@ -105,19 +104,20 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		wp_enqueue_style( '3wp_broadcast', '/' . $this->paths['path_from_base_directory'] . '/css/ThreeWP_Broadcast.css', false, '0.0.1', 'screen' );
 	}
 	
+	public function network_admin_menu()
+	{
+		add_submenu_page( 'settings.php', 'ThreeWP Broadcast', 'Broadcast', 'activate_plugins', 'ThreeWP_Broadcast', array ( &$this, 'admin' ) );
+	}
+
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Activate / Deactivate
 	// --------------------------------------------------------------------------------------------
 
 	public function activate()
 	{
-		parent::activate();
-		
 		if ( !$this->is_network )
 			wp_die("This plugin requires a Wordpress Network installation.");
 			
-		$this->register_options();
-		
 		// Remove old options
 		$this->delete_site_option( 'requirewhenbroadcasting' );
 
@@ -150,7 +150,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	
 	public function uninstall()
 	{
-		parent::uninstall();
 		$this->query("DROP TABLE `".$this->wpdb->base_prefix."_3wp_broadcast`");
 		$this->query("DROP TABLE `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata`");
 	}
@@ -229,7 +228,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	protected function admin_settings()
 	{
 		$form = $this->form();
-		
 		$roles = $this->roles_as_options();
 			
 		if ( isset( $_POST['save'] ) )
@@ -262,7 +260,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'value' => $this->get_site_option( 'role_broadcast' ),
 				'description' => 'The broadcast access role is the user role required to use the broadcast function at all.',
 				'options' => $roles,
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_link' => array(
 				'name' => 'role_link',
@@ -271,7 +268,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'value' => $this->get_site_option( 'role_link' ),
 				'description' => 'When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated.',
 				'options' => $roles,
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_broadcast_as_draft' => array(
 				'name' => 'role_broadcast_as_draft',
@@ -280,7 +276,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'value' => $this->get_site_option( 'role_broadcast_as_draft' ),
 				'description' => 'Which role is needed to broadcast drafts?',
 				'options' => $roles,
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_broadcast_scheduled_posts' => array(
 				'name' => 'role_broadcast_scheduled_posts',
@@ -289,7 +284,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'value' => $this->get_site_option( 'role_broadcast_scheduled_posts' ),
 				'description' => 'Which role is needed to broadcast scheduled (future) posts?',
 				'options' => $roles,
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_groups' => array(
 				'name' => 'role_groups',
@@ -298,7 +292,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'value' => $this->get_site_option( 'role_groups' ),
 				'description' => 'Role needed to administer their own groups?',
 				'options' => $roles,
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_taxonomies' => array(
 				'name' => 'role_taxonomies',
@@ -307,7 +300,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'value' => $this->get_site_option( 'role_taxonomies' ),
 				'description' => 'Which role is needed to allow taxonomy broadcasting? The taxonomies must have the same slug on all blogs.',
 				'options' => $roles,
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_taxonomies_create' => array(
 				'name' => 'role_taxonomies_create',
@@ -316,7 +308,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'value' => $this->get_site_option( 'role_taxonomies_create' ),
 				'description' => "Which role is needed to allow taxonomy creation? Taxonomy are created if they don't exist.",
 				'options' => $roles,
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'role_custom_fields' => array(
 				'name' => 'role_custom_fields',
@@ -325,7 +316,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'value' => $this->get_site_option( 'role_custom_fields' ),
 				'description' => 'Which role is needed to allow custom field broadcasting?',
 				'options' => $roles,
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'save_post_priority' => array(
 				'name' => 'save_post_priority',
@@ -335,7 +325,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'size' => 3,
 				'maxlength' => 10,
 				'description' => 'A higher save-post-action priority gives other plugins more time to add their own custom fields before the post is broadcasted. <em>Raise</em> this value if you notice that plugins that use custom fields aren\'t getting their data broadcasted, but 640 should be enough for everybody.',
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'custom_field_exceptions' => array(
 				'name' => 'custom_field_exceptions',
@@ -345,7 +334,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'cols' => 30,
 				'rows' => 5,
 				'description' => 'Custom fields that begin with underscores (internal fields) are ignored. If you know of an internal field that should be broadcasted, write it down here. One custom field key per line and it can be any part of the key string.',
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'override_child_permalinks' => array(
 				'name' => 'override_child_permalinks',
@@ -353,7 +341,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'label' => 'Override child post permalinks',
 				'checked' => $this->get_site_option( 'override_child_permalinks' ),
 				'description' => 'This will force child posts (those broadcasted to other sites) to keep the original post\'s permalink. If checked, child posts will link back to the original post on the original site.',
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'canonical_url' => array(
 				'name' => 'canonical_url',
@@ -361,7 +348,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				'label' => 'Canonical URLs',
 				'checked' => $this->get_site_option( 'canonical_url' ),
 				'description' => 'Child posts have their canonical URLs pointed to the URL of the parent post.',
-				'make_table_row' => true,		// Just a marker to tell the function to automake this input in the table.
 			),
 			'save' => array(
 				'name' => 'save',
@@ -371,22 +357,8 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			),
 		);
 		
-		$table_inputs = array();
-		foreach( $inputs as $input )
-			if ( isset( $input['make_table_row'] ) )
-				$table_inputs[] = $input;
-			
-		echo '
-			'.$form->start().'
-			
-			' . $this->display_form_table( $table_inputs ) . '
-
-			<p>
-				'.$form->make_input( $inputs['save'] ).'
-			</p>
-
-			'.$form->stop().'
-		';		
+		$r = $form->start() . $this->display_form_table( $inputs ) . $form->stop();
+		echo $r;
 	}
 	
 	protected function admin_post_types()
@@ -746,7 +718,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			switch_to_blog( $temp_blog_id );
 			
 			$args = array(
-				'post_title' => $post->post_title,
+				'name' => $post->post_name,
 				'numberposts' => 1,
 				'post_type'=> $post_type,
 				'post_status' => $post->post_status,
@@ -1403,8 +1375,6 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 				);
 
 				$source_post_taxonomies[ $source_blog_taxonomy ] = get_the_terms( $post_id, $source_blog_taxonomy );
-				if ( $source_post_taxonomies[ $source_blog_taxonomy ] === false )
-					unset( $source_post_taxonomies[ $source_blog_taxonomy ] ); 
 			}
 		}
 		
@@ -1508,7 +1478,11 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 					if ( $link )
 						if ( $broadcast_data->has_linked_child_on_this_blog() )
 							wp_set_object_terms( $new_post_id, array(), $source_post_taxonomy );
-					
+
+					// Skip this iteration of there are no terms
+					if ( ! is_array( $source_post_terms ) )
+						continue;
+
 					// Get a list of cats that the target blog has.
 					$target_blog_terms = $this->get_current_blog_taxonomy_terms( $source_post_taxonomy );
 
@@ -1538,7 +1512,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 							{
 								// Recursively insert ancestors if needed, and get the target term's parent's ID
 								$target_parent_id = $this->insert_term_ancestors(
-									$this->object_to_array( $source_post_term ),
+									(array) $source_post_term,
 									$source_post_taxonomy,
 									$target_blog_terms,
 									$source_blog_taxonomies[ $source_post_taxonomy ]['terms']
@@ -1753,7 +1727,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		// Check if the parent already exists at the target
 		foreach ( $target_blog_terms as $term )
 		{
-			if ( $term['slug'] == $source_parent['slug'] )
+			if ( $term['slug'] === $source_parent['slug'] )
 			{
 				// The parent already exists, return its ID
 				return $term['term_id'];
@@ -1768,19 +1742,31 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 			$target_grandparent_id = $this->insert_term_ancestors( $source_parent, $source_post_taxonomy, $target_blog_terms, $source_blog_taxonomy_terms );
 		}
 
-		// The target parent does not exist, we need to create it
-		$new_term = wp_insert_term(
-			$source_parent['name'],
-			$source_post_taxonomy,
-			array( 
-				'slug' => $source_parent['slug'],
-				'description' => $source_parent['description'],
-				'parent' => $target_grandparent_id,
-			)
-		);
+		// Check if the parent exists at the target grandparent
+		$term_id = term_exists( $source_parent['name'], $source_post_taxonomy, $target_grandparent_id );
 
+		if ( is_null( $term_id ) || 0 == $term_id )
+		{
+			// The target parent does not exist, we need to create it
+			$new_term = wp_insert_term(
+				$source_parent['name'],
+				$source_post_taxonomy,
+				array( 
+					'slug'        => $source_parent['slug'],
+					'description' => $source_parent['description'],
+					'parent'      => $target_grandparent_id,
+				)
+			);
 
-		return $new_term['term_id'];
+			$term_id = $new_term['term_id'];
+		}
+		elseif ( is_array( $term_id ) )
+		{
+			// The target parent exists and we got an array as response, extract parent id
+			$term_id = $term_id['term_id'];
+		}
+
+		return $term_id;
 	}
 	
 	public function trash_post( $post_id)
@@ -1807,6 +1793,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 	{
 		global $blog_id;
 		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
+
 		if ( $broadcast_data->has_linked_children() )
 		{
 			foreach( $broadcast_data->get_linked_children() as $childBlog=>$childPost)
@@ -2096,7 +2083,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$blogs = get_blogs_of_user( $user_id );
 		foreach( $blogs as $index=>$blog)
 		{
-			$blog = $this->object_to_array( $blog);
+			$blog = (array) $blog;
 			$blog['blog_id'] = $blog['userblog_id'];
 			$blogs[$index] = $blog;
 			if (!$this->is_blog_user_writable( $user_id, $blog['blog_id'] ) )
@@ -2162,7 +2149,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		
 		foreach( $blogs as $blog_id=>$blog)
 		{
-			$tempBlog = $this->object_to_array(get_blog_details( $blog_id, true) );
+			$tempBlog = (array) get_blog_details( $blog_id, true);
 			$blogs[$blog_id]['blogname'] = $tempBlog['blogname'];
 			$blogs[$blog_id]['siteurl'] = $tempBlog['siteurl'];
 			$blogs[$blog_id]['domain'] = $tempBlog['domain'];
@@ -2281,7 +2268,7 @@ class ThreeWP_Broadcast extends ThreeWP_Broadcast_Base
 		$terms = get_terms( $taxonomy, array(
 			'hide_empty' => false,
 		) );
-		$terms = $this->object_to_array( $terms );
+		$terms = (array) $terms;
 		$terms = $this->array_rekey( $terms, 'term_id' );
 		return $terms;
 	}

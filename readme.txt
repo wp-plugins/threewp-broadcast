@@ -83,6 +83,11 @@ _bcc_
 
 == Changelog ==
 
+= 1.19 2013-05-01 =
+* Fix: Trying to add a taxonomy term that already exists at the target blog. Thanks: https://github.com/alisspers
+* Fix: Using new wp_trash_post hook when deleting [child] posts. Thanks: https://github.com/alisspers
+* Code: Using plainview_sdk
+
 = 1.18 2013-02-22 =
 * New: Option to disable overriding of canonical URLs. Used if other plugins also manipulate the url in the HTML head.
 * New: Private posts can be broadcast.
