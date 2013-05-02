@@ -20,7 +20,7 @@ Has options for whitelisting (required blogs), blacklisting, user role access gr
 
 Requires php v5.4 for trait support. Users of php v5.3 should remain with version 1.18.
 
-Users of php v5.4 can only use the <a href="http://mindreantre.se/wp-content/uploads/2010/02/threewp-broadcast_v1.18.zip">latest legacy version: v1.18</a>.
+Users of php v5.3 can only use the <a href="http://mindreantre.se/wp-content/uploads/2010/02/threewp-broadcast_v1.18.zip">latest legacy version: v1.18</a>.
 
 Available in the following languages:
 
@@ -56,6 +56,12 @@ Did I miss anything?
 10. Admin: Settings for logging to Activity Monitor
 
 == Frequently Asked Questions ==
+
+= Is php v5.4 really necessary? =
+
+Yes, if you expect me to write neat, maintainable, legible code.
+
+If you use v5.3 then use the last plugin that works with that version: v1.18. The download link is on the main page.
 
 = Why can I not see the Broadcast meta box? =
 
