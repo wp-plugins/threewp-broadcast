@@ -6,7 +6,7 @@ Stable tag: trunk
 Donate link: http://mindreantre.se/donate/
 Contributors: edward mindreantre
 
-Network plugin for PHP v5.4 to broadcast posts to other blogs. Custom post types, custom taxonomies, post meta and attachments are supported. 
+Network plugin for PHP v5.4 to broadcast posts to other blogs. Custom post types, custom taxonomies, post meta and attachments are supported.
 
 == Description ==
 
@@ -29,7 +29,7 @@ Available in the following languages:
 * French - Seb giss <sgissinger@gmail.com>
 * Italian
 * French
-* Romanian, Web Geek Sciense <a href="http://webhostinggeeks.com/">Web Hosting Geeks</a> 
+* Romanian, Web Geek Sciense <a href="http://webhostinggeeks.com/">Web Hosting Geeks</a>
 * Swedish
 
 The git repository can be found at: https://github.com/the-plainview/threewp_broadcast
@@ -94,6 +94,15 @@ _bcc_
 
 == Changelog ==
 
+= 1.20 2013-06-02 =
+* Fix: Attachments should be properly broadcast now.
+* Code: Added Broadcasting_Data.php.
+* Code: Added $threewp_broadcast->broadcasting_data when broadcasting.
+* Code: Most methods have been made public.
+* Code: Refactoring and cleanup.
+* Code: Tabs, SDK update.
+* Still requires PHP v5.4. Ask your web host to update.
+
 = 1.19 2013-05-01 =
 * Fix: Trying to add a taxonomy term that already exists at the target blog. Thanks: https://github.com/alisspers
 * Fix: Using new wp_trash_post hook when deleting [child] posts. Thanks: https://github.com/alisspers
@@ -155,7 +164,7 @@ _bcc_
 * Custom post and custom taxonomy support
 * Multiple custom field values with the same key can be broadcasted
 * Will not try to attach files that were deleted from disk
-* Broadcasted images retain their ALT, TITLE and caption. 
+* Broadcasted images retain their ALT, TITLE and caption.
 * New link icon
 * New base php
 * Better linking to child posts
@@ -170,7 +179,7 @@ _bcc_
 * Category syncing works with unparented categories.
 * Activity Monitor activities have types.
 * $threewp_broadcast->is_broadcasting() is now available.
-* Now even more links can be overrided. 
+* Now even more links can be overrided.
 
 = 1.2.1 =
 * Custom field exceptions added

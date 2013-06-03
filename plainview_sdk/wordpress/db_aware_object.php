@@ -10,24 +10,24 @@ namespace plainview\wordpress;
 trait db_aware_object
 {
 	use \plainview\db_aware_object;
-	
+
 	public function __db_delete()
-	{	
+	{
 		$id_key = self::id_key();
 		$sql = sprintf( "DELETE FROM `%s` WHERE `%s` = '%s'", self::db_table(), $id_key, $this->$id_key );
 		global $wpdb;
 		$wpdb->query( $sql );
 		return $this;
 	}
-	
+
 	public function __db_update()
 	{
 		global $wpdb;
-		
+
 		// Create a clone of this object so that the serializing doesn't disturb anything.
 		$o = clone $this;
 		self::serialize_keys( $o );
-		
+
 		$fields = $o->fields();
 		$id_key = self::id_key();
 		unset( $fields[ $id_key ] );
@@ -41,7 +41,7 @@ trait db_aware_object
 		{
 			$wpdb->update( self::db_table(), $fields, array( $id_key => $this->$id_key ) );
 		}
-		
+
 		return $this;
 	}
 }

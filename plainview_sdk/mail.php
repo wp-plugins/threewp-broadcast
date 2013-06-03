@@ -8,8 +8,13 @@ if ( ! class_exists( '\\PHPMailer' ) )
 /**
 	@brief		Wrapper for PHPMailer.
 	@details	Provides a more Wordpress-friendly, logical interface to PHPMailer.
+
+	@par		Changelog
+
+	- 201305015	New: attach()
+
 	@author		Edward Plainview		edward@plainview.se
-	@version	20130423
+	@version	20130515
 **/
 class mail
 	extends \PHPMailer
@@ -21,7 +26,7 @@ class mail
 		@since		20130423
 	**/
 	public $error = null;
-	
+
 	/**
 		@brief		Internal function to handle similar add functions.
 		@param		string		$type		Type of function to call.
@@ -40,7 +45,20 @@ class mail
 		$this->$function( $email, $name );
 		return $this;
 	}
-	
+
+	/**
+		@brief		Convenience function to add an attachment.
+		@param		string		$path		The path to the file to attach.
+		@param		string		$name		Optional name of the file, as visible in the mail.
+		@return		mail					This object.
+		@see		attachment
+		@since		20130515
+	**/
+	public function attach( $path, $name = '' )
+	{
+		return call_user_func_array( array( $this, 'attachment' ), func_get_args() );
+	}
+
 	/**
 		@brief		Add an attachment to the mail.
 		@param		string		$path		The path to the file to attach.
@@ -54,7 +72,7 @@ class mail
 		$this->AddAttachment( $path, $name, 'base64', $mime_type );
 		return $this;
 	}
-	
+
 	/**
 		@brief		Add a CC address.
 		@param		string		$email		E-mail address to add.
@@ -66,7 +84,7 @@ class mail
 	{
 		return $this->add( 'CC', $email, $name );
 	}
-	
+
 	/**
 		@brief		Add a BCC address.
 		@param		string		$email		E-mail address to add.
@@ -78,7 +96,7 @@ class mail
 	{
 		return $this->add( 'CC', $email, $name );
 	}
-	
+
 	/**
 		@brief		Set the sender name and e-mail.
 		@param		string		$email		E-mail address to add.
@@ -94,7 +112,7 @@ class mail
 			$this->FromName = $name;
 		return $this;
 	}
-	
+
 	/**
 		@brief		Set the HTML message body.
 		@param		string		$html		Body HTML to set.
@@ -106,7 +124,7 @@ class mail
 		$this->MsgHTML( $html );
 		return $this;
 	}
-	
+
 	/**
 		@brief		Add reply-to address.
 		@param		string		$email		E-mail address to add.
@@ -118,11 +136,11 @@ class mail
 	{
 		return $this->add( 'ReplyTo', $email, $name );
 	}
-	
+
 	/**
 		@brief		Send the mail.
 		@return		mail					This object.
-		@see		send_ok					Use to check if the mail was sent correctly. 
+		@see		send_ok					Use to check if the mail was sent correctly.
 		@see		error
 		@since		20130423
 	**/
@@ -133,7 +151,7 @@ class mail
 			$this->error = $this->ErrorInfo;
 		return $this;
 	}
-	
+
 	/**
 		@brief		Was the mail sent correctly?
 		@return		bool					True if the mail was sent correctly.
@@ -145,7 +163,7 @@ class mail
 	{
 		return $this->error === null;
 	}
-	
+
 	/**
 		@brief		Set the subject of the mail.
 		@param		string		$subject	Subject to set.
@@ -157,7 +175,7 @@ class mail
 		$this->Subject  = $subject;
 		return $this;
 	}
-	
+
 	/**
 		@brief		Set the body of the mail in plaintext format.
 		@param		stirng		$text		Plaintext body to set.
@@ -169,7 +187,7 @@ class mail
 		$this->Body = $text;
 		return $this;
 	}
-	
+
 	/**
 		@brief		Add a to: address.
 		@param		string		$email		E-mail address to add.

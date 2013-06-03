@@ -24,7 +24,7 @@
 	$email_users = email_user:sqls( $rows );
 	
 	@author			Edward Plainview		edward@plainview.se
-	@license		GPL v3
+	@copyright		GPL v3
 	@version		20130430
 	
 	@par		Changelog

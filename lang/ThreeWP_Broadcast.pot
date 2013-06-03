@@ -1,91 +1,75 @@
-# ThreeWP Broadcast
-# Copyright (C) 2011
-# This file is distributed under the GPL v3.
-# Mindre än Tre <info@mindreantre.se>, 2011.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: ThreeWP Broadcast\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-10 07:44+0200\n"
-"PO-Revision-Date: 2011-10-10 07:44+0200\n"
-"Last-Translator: Mindre än Tre <info@mindreantre.se>\n"
-"Language-Team: Mindre än Tre <info@mindreantre.se>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
-#: ThreeWP_Broadcast.php:1244
+#: ThreeWP_Broadcast.php:1230
 msgid "A Broadcast blog group was added."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1247
+#: ThreeWP_Broadcast.php:1233
 msgid "A Broadcast blog group was deleted."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1250
+#: ThreeWP_Broadcast.php:1236
 msgid "A Broadcast blog group was modified."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1241
+#: ThreeWP_Broadcast.php:1227
 msgid "A post was broadcasted."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1253
+#: ThreeWP_Broadcast.php:1239
 msgid "A post was unlinked."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:383
+#: ThreeWP_Broadcast.php:374
 msgid "A space-separated list of post types that have broadcasting enabled. The default value is <code>post page</code>."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:953
+#: ThreeWP_Broadcast.php:939
 msgid "All links to child posts have been removed!"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:798
+#: ThreeWP_Broadcast.php:788
 msgid "Apply"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:179
+#: ThreeWP_Broadcast.php:178
 msgid "Blacklist"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:64 ThreeWP_Broadcast.php:1909
+#: ThreeWP_Broadcast.php:73 ThreeWP_Broadcast.php:1903
 msgid "Broadcast"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1138
+#: ThreeWP_Broadcast.php:1124
 msgid "Broadcast all the custom fields and the featured image?"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1004
+#: ThreeWP_Broadcast.php:990
 msgid "Broadcast categories also"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1013 ThreeWP_Broadcast.php:1139
+#: ThreeWP_Broadcast.php:999 ThreeWP_Broadcast.php:1125
 msgid "Broadcast custom fields"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:47
+#: ThreeWP_Broadcast.php:55
 msgid "Broadcast requires a Wordpress network to function."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1009
+#: ThreeWP_Broadcast.php:995
 msgid "Broadcast tags also"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1110
+#: ThreeWP_Broadcast.php:1096
 msgid "Broadcast taxonomies also"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1218
+#. Disable all blogs that do not have this post type.
+#. I think there's a bug in WP since it reports the same post types no matter which blog we've switch_to_blogged.
+#. Therefore, no further action.
+#: ThreeWP_Broadcast.php:1204
 msgid "Broadcast to:"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1832
+#: ThreeWP_Broadcast.php:1826
 msgid "Broadcasted"
 msgstr ""
 
@@ -93,23 +77,23 @@ msgstr ""
 msgid "Could not parse date"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1094
+#: ThreeWP_Broadcast.php:1080
 msgid "Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:657
+#: ThreeWP_Broadcast.php:648
 msgid "Create a new group"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:791
+#: ThreeWP_Broadcast.php:781
 msgid "Create link"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1124
+#: ThreeWP_Broadcast.php:1110
 msgid "Create taxonomies automatically"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:639
+#: ThreeWP_Broadcast.php:630
 msgid "Create the new group"
 msgstr ""
 
@@ -121,7 +105,7 @@ msgstr ""
 msgid "Date format"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:671
+#: ThreeWP_Broadcast.php:662
 msgid "Delete"
 msgstr ""
 
@@ -129,35 +113,35 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:790
+#: ThreeWP_Broadcast.php:780
 msgid "Do nothing"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:817
+#: ThreeWP_Broadcast.php:807
 msgid "Domain"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:202 ThreeWP_Broadcast.php:1895
+#: ThreeWP_Broadcast.php:196 ThreeWP_Broadcast.php:1889
 msgid "Find orphans"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1895
+#: ThreeWP_Broadcast.php:1889
 msgid "Find posts on other blogs that are identical to this post"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:609
+#: ThreeWP_Broadcast.php:600
 msgid "Group"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:578
+#: ThreeWP_Broadcast.php:569
 msgid "Group blogs have been saved."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1023
+#: ThreeWP_Broadcast.php:1009
 msgid "Group setup"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1016
+#: ThreeWP_Broadcast.php:1002
 msgid "Groups"
 msgstr ""
 
@@ -165,15 +149,15 @@ msgstr ""
 msgid "HH"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:216
+#: ThreeWP_Broadcast.php:210
 msgid "Help"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1019
+#: ThreeWP_Broadcast.php:1005
 msgid "If the site administrator allows it you may create groups to quickly select several blogs at once. To create a group, start by typing a group name in the text box and pressing the create button."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1005
+#: ThreeWP_Broadcast.php:991
 msgid "In order to be able to broadcast the taxonomies, the selected blogs must have the same taxonomy names (slugs) as this blog."
 msgstr ""
 
@@ -185,7 +169,7 @@ msgstr ""
 msgid "Invalid email address"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1148
+#: ThreeWP_Broadcast.php:1134
 msgid "Invert selection"
 msgstr ""
 
@@ -193,11 +177,11 @@ msgstr ""
 msgid "Latest valid date"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:992 ThreeWP_Broadcast.php:1095
+#: ThreeWP_Broadcast.php:978 ThreeWP_Broadcast.php:1081
 msgid "Link this post to its children"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:922
+#: ThreeWP_Broadcast.php:908
 msgid "Link to child post has been removed."
 msgstr ""
 
@@ -209,47 +193,47 @@ msgstr ""
 msgid "Minimum length"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:632
+#: ThreeWP_Broadcast.php:623
 msgid "New group name"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1162
+#: ThreeWP_Broadcast.php:1148
 msgid "No group selected"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:762
+#: ThreeWP_Broadcast.php:752
 msgid "No possible child posts were found on the other blogs you have write access to. Either there are no posts with the same title as this one, or all possible orphans have already been linked."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:989
+#: ThreeWP_Broadcast.php:975
 msgid "Options"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:996
+#: ThreeWP_Broadcast.php:982
 msgid "Post overview with unlink options"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:173
+#: ThreeWP_Broadcast.php:176
 msgid "Post types"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:402
+#: ThreeWP_Broadcast.php:393
 msgid "Post types must be specified using their internal Wordpress names with a space between each. It is not possible to automatically make a list of available post types on the whole network because of limitation within Wordpress."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:382
+#: ThreeWP_Broadcast.php:373
 msgid "Post types to broadcast"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1875
+#: ThreeWP_Broadcast.php:1869
 msgid "Put this broadcasted child in the trash"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1893
+#: ThreeWP_Broadcast.php:1887
 msgid "Remove links to all the broadcasted children"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1874
+#: ThreeWP_Broadcast.php:1868
 msgid "Remove links to this broadcasted child"
 msgstr ""
 
@@ -257,7 +241,7 @@ msgstr ""
 msgid "Required field"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:176
+#: ThreeWP_Broadcast.php:177
 msgid "Required list"
 msgstr ""
 
@@ -265,60 +249,61 @@ msgstr ""
 msgid "SS"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:626
+#: ThreeWP_Broadcast.php:617
 msgid "Save groups"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1147
+#: ThreeWP_Broadcast.php:1133
 msgid "Select / deselect all"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1161
+#: ThreeWP_Broadcast.php:1147
 msgid "Select blogs in group"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:816 plainview_sdk/wordpress/base.php:1009
-#: plainview_sdk/wordpress/base.php:1014
+#. Else return a manual table th.
+#: ThreeWP_Broadcast.php:806 plainview_sdk/wordpress/base.php:1130
+#: plainview_sdk/wordpress/base.php:1135
 msgid "Selected"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:170
+#: ThreeWP_Broadcast.php:175
 msgid "Settings"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1832
+#: ThreeWP_Broadcast.php:1826
 msgid "Shows which blogs have posts linked to this one"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1028
+#: ThreeWP_Broadcast.php:1014
 msgid "Simply choose it in the dropdown box and the blogs you specified will be automatically chosen."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:982
+#: ThreeWP_Broadcast.php:968
 msgid "Some settings might be disabled by the site administrator and if you do not have write access to any blogs, other than this one, the Broadcast window might not appear."
 msgstr ""
 
-#: plainview_sdk/wordpress/base.php:465
+#: plainview_sdk/wordpress/base.php:496
 msgid "Super admin"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:866
+#: ThreeWP_Broadcast.php:852
 msgid "The broadcasted child post has been put in the trash."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:597
+#: ThreeWP_Broadcast.php:588
 msgid "The group has been created!"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:585
+#: ThreeWP_Broadcast.php:576
 msgid "The group name may not be empty!"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1111
+#: ThreeWP_Broadcast.php:1097
 msgid "The taxonomies must have the same name (slug) on the selected blogs."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1125
+#: ThreeWP_Broadcast.php:1111
 msgid "The taxonomies will be created if they don't exist on the selected blogs."
 msgstr ""
 
@@ -330,60 +315,60 @@ msgstr ""
 msgid "The value must be smaller or equal to"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:978
+#: ThreeWP_Broadcast.php:964
 msgid "The window contains several options and a list of blogs you have access to."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1027
+#: ThreeWP_Broadcast.php:1013
 msgid "Then select which blogs you want to be automatically selected when you choose this group when editing a new post. Press the save button when you are done. Your new group is ready to be used!"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1188
+#: ThreeWP_Broadcast.php:1174
 msgid "This blog has already been linked."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1200
+#: ThreeWP_Broadcast.php:1186
 msgid "This blog is required and cannot be unselected."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:400
+#: ThreeWP_Broadcast.php:391
 msgid "This page lets the admin select which post types in the network should be able to be broadcasted."
 msgstr ""
 
-#: plainview_sdk/wordpress/base.php:330
+#: plainview_sdk/wordpress/base.php:361
 msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1058
+#: ThreeWP_Broadcast.php:1044
 msgid "This post is broadcasted child post. It cannot be broadcasted further."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:221
+#: ThreeWP_Broadcast.php:214
 msgid "ThreeWP Broadcast groups"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:674
+#: ThreeWP_Broadcast.php:665
 msgid "To <strong>delete</strong> a group, leave all blogs in that group unmarked and then save."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:986
+#: ThreeWP_Broadcast.php:972
 msgid "To use the Broadcast plugin, simply select which blogs you want to broadcast the post to and then publish the post normally."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:206 ThreeWP_Broadcast.php:1875
+#: ThreeWP_Broadcast.php:200 ThreeWP_Broadcast.php:1869
 msgid "Trash"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:182
+#: ThreeWP_Broadcast.php:179
 msgid "Uninstall"
 msgstr ""
 
-#: plainview_sdk/wordpress/base.php:325
+#: plainview_sdk/wordpress/base.php:356
 msgid "Uninstall plugin"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:210 ThreeWP_Broadcast.php:1874
-#: ThreeWP_Broadcast.php:1893
+#: ThreeWP_Broadcast.php:205 ThreeWP_Broadcast.php:1868
+#: ThreeWP_Broadcast.php:1887
 msgid "Unlink"
 msgstr ""
 
@@ -391,23 +376,23 @@ msgstr ""
 msgid "Valid values"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:970
+#: ThreeWP_Broadcast.php:956
 msgid "What is Broadcast?"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:973
+#: ThreeWP_Broadcast.php:959
 msgid "What the Broadcast window looks like"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1000
+#: ThreeWP_Broadcast.php:986
 msgid "When a post is linked to children, the children are overwritten when post is updated - all the taxonomies, tags and fields (including featured image) are also overwritten -  and when the parent is trashed or deleted the children get the same treatment. If you want to keep any children and delete only the parent, use the unlink links in the post overview. The unlink link below the post name removes all links and the unlinks to the right remove singular links."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:977
+#: ThreeWP_Broadcast.php:963
 msgid "With Broadcast you can post to several blogs at once. The broadcast window is first shown at the bottom right on the Add New post/page screen."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:788
+#: ThreeWP_Broadcast.php:778
 msgid "With the selected rows"
 msgstr ""
 
@@ -415,19 +400,19 @@ msgstr ""
 msgid "YYYY"
 msgstr ""
 
-#: plainview_sdk/wordpress/base.php:318
+#: plainview_sdk/wordpress/base.php:349
 msgid "Yes, I'm sure I want to remove all the plugin tables and settings."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:603
+#: ThreeWP_Broadcast.php:594
 msgid "You have not created any groups yet."
 msgstr ""
 
-#: plainview_sdk/wordpress/base.php:310
+#: plainview_sdk/wordpress/base.php:341
 msgid "You have to check the checkbox in order to uninstall the plugin."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:645
+#: ThreeWP_Broadcast.php:636
 msgid "Your groups"
 msgstr ""
 
@@ -459,18 +444,18 @@ msgstr ""
 msgid "to"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1009
+#: ThreeWP_Broadcast.php:995
 msgid "will also mark the broadcasted posts with the same tags."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1004
+#: ThreeWP_Broadcast.php:990
 msgid "will also try to send the taxonomies together with the post."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:992
+#: ThreeWP_Broadcast.php:978
 msgid "will create a link from this post (the parent) to all the broadcasted posts (children). Updating the parent will result in all the children being updated. Links to the children can be removed in the page / post overview."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1013
+#: ThreeWP_Broadcast.php:999
 msgid "will give the broadcasted posts the same custom fields as the original. Use this setting to broadcast the featured image."
 msgstr ""
