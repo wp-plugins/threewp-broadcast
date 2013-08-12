@@ -1,16 +1,16 @@
 === ThreeWP Broadcast ===
-Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously, child, parent, permalink, post type, custom post type, threewp
+Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously, child, parent, permalink, post type, custom post type, threewp, wpml, sitepress
 Requires at least: 3.3.1
 Tested up to: 3.5
 Stable tag: trunk
 Donate link: http://mindreantre.se/donate/
 Contributors: edward mindreantre
 
-Network plugin for PHP v5.4 to broadcast posts to other blogs. Custom post types, custom taxonomies, post meta and attachments are supported.
+Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Custom post types, custom taxonomies, post meta, attachments and WPML are supported.
 
 == Description ==
 
-Network plugin for PHP v5.4 to broadcast posts to other blogs. Custom post types, custom taxonomies, post meta and attachments are supported. A blog whitelist and blacklist exist.
+Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Custom post types, custom taxonomies, post meta and attachments are supported. A blog whitelist and blacklist exist. Include a plugin that provides nominal support for WPML translations.
 
 Broadcasted posts can be linked to their parents: updated parent posts also update the child posts. Child post permalinks can be overriden with a link to the parent post.
 
@@ -38,13 +38,12 @@ Did I miss anything?
 
 == Installation ==
 
-1. See that you have PHP v5.4 installed (for traits support)
-1. Unzip and copy the zip contents (including directory) into the `/wp-content/plugins/` directory
-1. Activate the plugin sitewide through the 'Plugins' menu in WordPress.
+1. Check that your web host has PHP v5.4.
+1. Activate the plugin locally or sitewide.
 
 == Screenshots ==
 
-1. Broadcast box during post editing.
+1. Broadcast box during post editing, with WPML support line at bottom.
 2. Post / page overview with unlink options
 3. Admin: General settings
 4. User: Help page
@@ -53,7 +52,36 @@ Did I miss anything?
 7. Admin: Required blog list
 8. Admin: Blacklist
 9. Admin: Uninstall page
-10. Admin: Settings for logging to Activity Monitor
+
+== Actions and filters ==
+
+Broadcast offers some actions/filters for plugin developers with which to interact with Broadcast.
+
+The broadcasting actions use the Broadcasting_Data class to store and transmit information. Documentation for this class can be read in `include\Broadcasting_Data.php`.
+
+= action: threewp_broadcast_add_meta_box( $options ) =
+
+Allows the posting meta box to be modified.
+
+$options is a stdClass.
+$options->post The post that is being edited.
+$options->html The HTML of the meta box.
+
+= action: threewp_brodcast_broadcasting_started( $Broadcasting_Data ) =
+
+Fired just before the loop that broadcasts the post to each selected child blog.
+
+= action: threewp_brodcast_broadcasting_after_switch_to_blog( $Broadcasting_Data ) =
+
+Fired in the broadcast loop, after having switch to the child blog but not done any calculations or posting.
+
+= action: threewp_brodcast_broadcasting_before_restore_current_blog( $Broadcasting_Data ) =
+
+Fired in the broadcast loop, after the child post was created/updated, before restoring back to the original blog.
+
+= action: threewp_brodcast_broadcasting_finished( $Broadcasting_Data ) =
+
+Fired after the broadcast loop, before nulling all broadcast data and returning control to the Wordpress save_post function.
 
 == Frequently Asked Questions ==
 
@@ -86,13 +114,42 @@ That's not possible until ticket 16031, http://core.trac.wordpress.org/ticket/16
 
 I'm not writing a UI for that function when I'll just have to rewrite it when the ticket gets fixed.
 
+= Slugs =
+
+Changed slugs (post names) are not updated in the child posts. This is a bug in Wordpress.
+
 = WPAlchemy =
 
 If you have custom post meta boxes via WPAlchemy, you'll probably need to add the following to the custom field exceptions in the settings:
 
 _bcc_
 
+= WPML Sitepress =
+
+There is an included plugin, ThreeWP Broadcast WPML, that provides support for transferring WPML translation data between broadcasted posts.
+
+It works transparently in the background, but in case you've never really used WPML (like myself), here's how I got it working:
+
+1. Enable the Broadcast and Broadcast WPML plugins.
+2. Write a new post in a language. Link and broadcast it to another blog in the network.
+3. The new post should have the same language in the child blog(s).
+4. In the parent blog, create a new translation of the post.
+5. Link and broadcast it to the other blogs in the network.
+6. The other blogs should now have two translations of the same post and the same post overview listing.
+
+Translated categories and tags are untested as of 2013-07-17.
+
 == Changelog ==
+
+= 1.21 2013-08-12 =
+* New: WPML support plugin added.
+* Fix: Moved Broadcast settings to the blog's general settings.
+* Fix: Unlinking works again.
+* Fix: Add PHP v5.4 version check.
+* Code: Added broacast_post() method.
+* Code: Added actions.
+* Code: Added broadcasting actions.
+* Code: More documentation for Broadcasting_Data object, together with refactoring of save_post cost.
 
 = 1.20 2013-06-02 =
 * Fix: Attachments should be properly broadcast now.

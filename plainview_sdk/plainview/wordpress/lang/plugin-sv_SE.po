@@ -1,0 +1,149 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Edward Plainview <edward@plainview.se>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: SWEDEN\n"
+
+#: plainview_sdk/plainview/form.php:909
+msgid "Could not parse date"
+msgstr "Kunde inte tolka datumet"
+
+#: plainview_sdk/plainview/form.php:396
+msgid "DD"
+msgstr "DD"
+
+#: plainview_sdk/plainview/form.php:401
+msgid "Date format"
+msgstr "Datumformat"
+
+#: plainview_sdk/plainview/form.php:368
+msgid "Description"
+msgstr "Beskrivning"
+
+#: plainview_sdk/plainview/form.php:397
+msgid "HH"
+msgstr "HH"
+
+#: plainview_sdk/plainview/form.php:916
+msgid "Invalid date"
+msgstr "Ogiltigt datum"
+
+#: plainview_sdk/plainview/form.php:899
+msgid "Invalid email address"
+msgstr "Ogiltig e-postadress"
+
+#: plainview_sdk/plainview/form.php:404
+msgid "Latest valid date"
+msgstr "Senaste giltiga datum"
+
+#: plainview_sdk/plainview/form.php:395
+#: plainview_sdk/plainview/form.php:398
+msgid "MM"
+msgstr "MM"
+
+#: plainview_sdk/plainview/form.php:390
+msgid "Minimum length"
+msgstr "Minimumlängd"
+
+#: plainview_sdk/plainview/form.php:325
+msgid "Required field"
+msgstr "Måste fyllas i"
+
+#: plainview_sdk/plainview/form.php:399
+msgid "SS"
+msgstr "SS"
+
+#. Else return a manual table th.
+#: plainview_sdk/plainview/wordpress/base.php:1125
+#: plainview_sdk/plainview/wordpress/base.php:1130
+msgid "Selected"
+msgstr "Vald"
+
+#: plainview_sdk/plainview/wordpress/base.php:488
+msgid "Super admin"
+msgstr "Superadmin"
+
+#: plainview_sdk/plainview/form.php:384
+msgid "The value must be larger than or equal to"
+msgstr "Värdet måste vara minst större eller lika med"
+
+#: plainview_sdk/plainview/form.php:386
+msgid "The value must be smaller or equal to"
+msgstr "Värdet måste vara mindre eller lika med"
+
+#: plainview_sdk/plainview/wordpress/base.php:353
+msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
+msgstr "Den här sidan kommer att ta bort tilläggets databas och inställningar och sedan avaktivera tillägget."
+
+#: plainview_sdk/plainview/wordpress/base.php:348
+msgid "Uninstall plugin"
+msgstr "Avinstallera tillägget"
+
+#: plainview_sdk/plainview/form.php:388
+msgid "Valid values"
+msgstr "Giltiga värden"
+
+#: ThreeWP_Broadcast_WPML.php:162
+#, php-format
+msgid "WPML v%s detected. Language: %s"
+msgstr ""
+
+#: ThreeWP_Broadcast_WPML.php:158
+msgid "WPML was not detected."
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:400
+msgid "YYYY"
+msgstr "ÅÅÅÅ"
+
+#: plainview_sdk/plainview/wordpress/base.php:341
+msgid "Yes, I'm sure I want to remove all the plugin tables and settings."
+msgstr "Ja, jag är säker på att jag vill ta bort tilläggets databas och inställningar."
+
+#: plainview_sdk/plainview/wordpress/base.php:333
+msgid "You have to check the checkbox in order to uninstall the plugin."
+msgstr "Du måste kryssa i rutan om du vill avinstallera tilläget."
+
+#: plainview_sdk/plainview/form.php:390
+msgid "characters"
+msgstr "tecken"
+
+#: plainview_sdk/plainview/form.php:926
+msgid "characters long"
+msgstr "tecken långt"
+
+#: plainview_sdk/plainview/form.php:956
+msgid "may not be empty"
+msgstr "får inte lämnas tomt"
+
+#: plainview_sdk/plainview/form.php:950
+msgid "may not be larger than"
+msgstr "får inte vara större än"
+
+#: plainview_sdk/plainview/form.php:938
+msgid "may not be smaller than"
+msgstr "får inte vara mindre än"
+
+#: plainview_sdk/plainview/form.php:926
+msgid "must be at least"
+msgstr "måste vara minst"
+
+#: plainview_sdk/plainview/wordpress/base.php:1847
+msgid "no"
+msgstr "nej"
+
+#: plainview_sdk/plainview/form.php:388
+msgid "to"
+msgstr "till"
+
+#: plainview_sdk/plainview/wordpress/base.php:1847
+msgid "yes"
+msgstr "ja"
+
