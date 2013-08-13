@@ -141,6 +141,10 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
 
+= 1.22 20130813 =
+* Fix: Unlinking works. Again.
+* Code: Removed network_admin_menu code.
+
 = 1.21 2013-08-12 =
 * New: WPML support plugin added.
 * Fix: Moved Broadcast settings to the blog's general settings.

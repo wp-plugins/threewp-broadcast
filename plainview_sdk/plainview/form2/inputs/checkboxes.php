@@ -25,6 +25,12 @@ namespace plainview\form2\inputs;
 class checkboxes
 	extends inputfieldset
 {
+	public function _construct()
+	{
+		parent::_construct();
+		$this->css_class( 'checkboxes' );
+	}
+
 	/**
 		@brief		Create a new checkbox option.
 		@param		object			$o		Options.
@@ -40,7 +46,9 @@ class checkboxes
 		if ( isset( $o->label ) )
 			$input->label( $o->label );
 		if ( isset( $o->name ) )
-			$input->set_attribute( 'name', $o->container_name . '_' . $o->name );
+		{
+			$input->set_attribute( 'name', $this->get_name() . '_' . $o->name );
+		}
 		else
 			$input->set_attribute( 'name', $o->value );
 		$input->set_value( $o->name );
@@ -57,12 +65,7 @@ class checkboxes
 		$name = $this->get_name();
 		foreach( $this->get_options() as $index => $option )
 		{
-			// Create a temporary checkbox, which will contain the complete name inherited from the checkboxes.
-			$o = new \stdClass;
-			$o->container = $this->container;
-			$o->name = $name . '_' . $index;
-			$cb = $this->new_option( $o );
-
+			$cb = clone( $option );
 			// Clear the check
 			$cb->check( false );
 			// And now set it according to the post

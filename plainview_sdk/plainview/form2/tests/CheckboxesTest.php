@@ -70,5 +70,34 @@ class CheckboxesTest extends TestCase
 		$matches = preg_match_all( '/name="testprefix1\[testprefix2\]\[checkboxestest_/', $cbs );
 		$this->assertEquals( 3, $matches );
 	}
+
+	public function test_post_value()
+	{
+		$cbs = $this->checkboxes();
+		$form = $cbs->form();
+		$form->post( [
+			'checkboxestest_cb1' => 'cb1',
+			'checkboxestest_cb3' => 'cb3',
+		] )->use_post_values();
+		$this->assertTrue( $cbs->input( 'checkboxestest_cb1' )->is_checked() );
+		$this->assertFalse( $cbs->input( 'checkboxestest_cb2' )->is_checked() );
+		$this->assertTrue( $cbs->input( 'checkboxestest_cb3' )->is_checked() );
+	}
+
+	public function test_post_value_with_prefix()
+	{
+		$cbs = $this->checkboxes()->prefix( 'goodprefix' );
+		$form = $cbs->form();
+		$form->post( [
+			'goodprefix' =>
+			[
+				'checkboxestest_cb1' => 'cb1',
+				'checkboxestest_cb3' => 'cb3',
+			]
+		] )->use_post_values();
+		$this->assertTrue( $cbs->input( 'checkboxestest_cb1' )->is_checked() );
+		$this->assertFalse( $cbs->input( 'checkboxestest_cb2' )->is_checked() );
+		$this->assertTrue( $cbs->input( 'checkboxestest_cb3' )->is_checked() );
+	}
 }
 

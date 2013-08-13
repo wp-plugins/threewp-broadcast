@@ -74,7 +74,7 @@ use \plainview\html\div;
 class pagination
 {
 	use \plainview\html\element;
-	use \plainview\traits\methodchaining;
+	use \plainview\traits\method_chaining;
 
 	public $count = 100;
 	public $page = 1;

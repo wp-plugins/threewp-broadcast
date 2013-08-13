@@ -181,6 +181,7 @@ trait container
 	**/
 	public function input( $name, $type = null )
 	{
+
 		if ( isset( $this->inputs[ $name ] ) )
 			return $this->inputs[ $name ];
 		else

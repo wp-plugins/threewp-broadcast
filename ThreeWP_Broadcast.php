@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://mindreantre.se/program/threewp/threewp-broadcast/
-Version:		1.21
+Version:		1.22
 */
 
 if ( ! class_exists( '\\plainview\\wordpress\\base' ) )	require_once( __DIR__ . '/plainview_sdk/plainview/autoload.php' );
@@ -25,6 +25,8 @@ class ThreeWP_Broadcast
 		@var	$broadcasting_data
 	**/
 	public $broadcasting_data = null;
+
+	public $plugin_version = 20130813;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -57,7 +59,6 @@ class ThreeWP_Broadcast
 		$this->add_action( 'admin_menu', 'add_menu' );
 		$this->add_action( 'admin_menu', 'create_meta_box' );
 		$this->add_action( 'admin_print_styles' );
-		$this->add_action( 'network_admin_menu' );
 
 		$this->add_filter( 'threewp_activity_monitor_list_activities' );
 
@@ -684,7 +685,7 @@ class ThreeWP_Broadcast
 		$r = '';
 		$form = $this->form();
 
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
+		$broadcast_data = $this->get_post_broadcast_data( $current_blog_id, $post_id );
 
 		// Get a list of blogs that this user can link to.
 		$user_id = $this->user_id();		// Convenience.
@@ -733,12 +734,12 @@ class ThreeWP_Broadcast
 						unset( $orphans[ $blog ] );		// There can only be one orphan per blog, so we're not interested in the blog anymore.
 
 						$child_broadcast_data = $this->get_post_broadcast_data( $blog, $orphan->ID );
-						$child_broadcast_data->set_linked_parent( $blog_id, $post_id );
+						$child_broadcast_data->set_linked_parent( $current_blog_id, $post_id );
 						$this->set_post_broadcast_data( $blog, $orphan->ID, $child_broadcast_data );
 					}
 				}
 				// Save the broadcast data.
-				$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
+				$this->set_post_broadcast_data( $current_blog_id, $post_id, $broadcast_data );
 				echo $this->message( 'The selected children were linked!' );
 			}	// link
 		}
