@@ -87,7 +87,7 @@ Fired after the broadcast loop, before nulling all broadcast data and returning 
 
 = I need support! =
 
-The easist way to get my attention is to donate a sum of money and then send me an e-mail.
+The easiest way to get my attention is to donate a sum of money and then send me an e-mail.
 
 If you're not into donations, try the support forum to see if other users can help you out.
 
