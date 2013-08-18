@@ -89,11 +89,11 @@ Fired after the broadcast loop, before nulling all broadcast data and returning 
 
 The easist way to get my attention is to donate a sum of money and then send me an e-mail.
 
-If you're not into dontaions, try the support forum to see if other users can help you out.
+If you're not into donations, try the support forum to see if other users can help you out.
 
 = I need Broadcast customized or modified =
 
-Get in touch with me via e-mail and I'll see if we make a deal.
+Get in touch with me via e-mail to discuss a deal.
 
 = Is php v5.4 really necessary? =
 
