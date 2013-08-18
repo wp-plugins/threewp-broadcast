@@ -5,7 +5,7 @@ Author Email:	edward@plainview.se
 Author URI:		http://www.plainview.se
 Description:	Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available.
 Plugin Name:	ThreeWP Broadcast
-Plugin URI:		http://mindreantre.se/program/threewp/threewp-broadcast/
+Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
 Version:		1.22
 */
 

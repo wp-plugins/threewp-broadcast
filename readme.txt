@@ -3,14 +3,14 @@ Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously,
 Requires at least: 3.3.1
 Tested up to: 3.5
 Stable tag: trunk
-Donate link: http://mindreantre.se/donate/
+Donate link: http://plainview.se/donate/
 Contributors: edward_plainview, edward mindreantre
 
-Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Custom post types, custom taxonomies, post meta, attachments and WPML are supported.
+Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
 
 == Description ==
 
-Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Custom post types, custom taxonomies, post meta and attachments are supported. A blog whitelist and blacklist exist. Include a plugin that provides nominal support for WPML translations.
+Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Custom post types, custom taxonomies, post meta and attachments are supported. A blog whitelist and blacklist exist. Includes a plugin that provides nominal support for WPML translations.
 
 Broadcasted posts can be linked to their parents: updated parent posts also update the child posts. Child post permalinks can be overriden with a link to the parent post.
 
@@ -20,7 +20,7 @@ Has options for whitelisting (required blogs), blacklisting, user role access gr
 
 Requires php v5.4 for trait support. Users of php v5.3 should remain with version 1.18.
 
-Users of php v5.3 can only use the <a href="http://mindreantre.se/wp-content/uploads/2010/02/threewp-broadcast_v1.18.zip">latest legacy version: v1.18</a>.
+Users of php v5.3 can only use the <a href="http://plainview.se/wp-content/uploads/2013/08/threewp-broadcast_v1.18.zip">latest legacy version: v1.18</a>.
 
 Available in the following languages:
 
@@ -84,6 +84,16 @@ Fired in the broadcast loop, after the child post was created/updated, before re
 Fired after the broadcast loop, before nulling all broadcast data and returning control to the Wordpress save_post function.
 
 == Frequently Asked Questions ==
+
+= I need support! =
+
+The easist way to get my attention is to donate a sum of money and then send me an e-mail.
+
+If you're not into dontaions, try the support forum to see if other users can help you out.
+
+= I need Broadcast customized or modified =
+
+Get in touch with me via e-mail and I'll see if we make a deal.
 
 = Is php v5.4 really necessary? =
 
