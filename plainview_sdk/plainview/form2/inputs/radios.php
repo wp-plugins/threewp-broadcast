@@ -26,7 +26,7 @@ class radios
 
 	public function new_option( $o )
 	{
-		$name = ( isset( $o->id ) ? $o->id : $o->name );
+		$name = $this->get_name() . '_' . $o->name;
 		$input = new radio( $o->container, $name );
 		if ( isset( $o->id ) )
 			$input->set_attribute( 'id', $o->id );
@@ -35,7 +35,31 @@ class radios
 		$input->set_attribute( 'name', $name );
 		$input->set_attribute( 'value', $o->value );
 		$input->label->update_for();
+
+		if ( $this->is_required() )
+			$input->required();
+
 		return $input;
+	}
+
+	/**
+		@brief		Check that the input exists in the post.
+	**/
+	public function validate()
+	{
+		if ( ! $this->is_required() )
+			return $this;
+
+		// Check that the name exists in the post.
+		$value = $this->get_post_value();
+		if ( $value == null )
+		{
+			// Find the first option.
+			$input = reset( $this->inputs );
+			$text = $this->form()->_( 'Please fill in %s.', '<em>' . $this->get_label()->content . '</em>' );
+			$this->validation_error()->set_unfiltered_label_( $text );
+		}
+		return $this;
 	}
 }
 

@@ -20,7 +20,7 @@ namespace plainview\form2\inputs;
 
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130524
+	@version	20130820
 **/
 class checkboxes
 	extends inputfieldset
@@ -29,6 +29,24 @@ class checkboxes
 	{
 		parent::_construct();
 		$this->css_class( 'checkboxes' );
+	}
+
+	/**
+		@brief		Convenience method to retrieve an array of all of the checked values.
+		@return		array		An array of values from the checked checkboxes.
+		@since		20130820
+	**/
+	public function get_post_value()
+	{
+		$r = [];
+		foreach( $this->get_options() as $index => $option )
+		{
+			$cb = clone( $option );
+			$cb->use_post_value();
+			if ( $cb->is_checked() )
+				$r[] = $cb->get_value();
+		}
+		return $r;
 	}
 
 	/**
@@ -55,6 +73,7 @@ class checkboxes
 		$input->label->update_for();
 		return $input;
 	}
+
 
 	/**
 		@brief		Tell each checkbox to use the post value.

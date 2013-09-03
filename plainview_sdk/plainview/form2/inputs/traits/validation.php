@@ -9,11 +9,12 @@ namespace plainview\form2\inputs\traits;
 	Changelog
 	---------
 
+	20130814	has_validation_errors()
 	20130604	validate_required() has better checking.
 
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130524
+	@version	20130814
 **/
 trait validation
 {
@@ -101,6 +102,20 @@ trait validation
 	}
 
 	/**
+		@brief		Convenience function to query if the input has any validation errors.
+		@details
+
+		This method does not do any validation. To validate + query the result at the same time, use validates().
+		@return		bool		True if the input has validation errors.
+		@see		validates()
+		@since		20130814
+	**/
+	public function has_validation_errors()
+	{
+		return count( $this->get_validation_errors() ) > 0;
+	}
+
+	/**
 		@brief		Returns whether this input requires validation of any kind.
 		@return		bool		True if the input requires any sort of validation.
 		@since		20130524
@@ -118,7 +133,7 @@ trait validation
 	**/
 	public function validation_error()
 	{
-		$error = new \plainview\form2\validation\error( $this->container );
+		$error = new \plainview\form2\validation\error( $this );
 		$this->add_validation_error( $error );
 		return $error;
 	}
@@ -163,7 +178,10 @@ trait validation
 			$error = $check_value === null;
 
 		if ( $error )
-			$this->validation_error()->set_unfiltered_label_( 'Please fill in %s.', '<em>' . $this->get_label()->content . '</em>' );
+		{
+			$text = $this->form()->_( 'Please fill in %s.', '<em>' . $this->get_label()->content . '</em>' );
+			$this->validation_error()->set_unfiltered_label_( $text );
+		}
 	}
 
 	/**

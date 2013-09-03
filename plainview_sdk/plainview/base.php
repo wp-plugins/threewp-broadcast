@@ -13,6 +13,13 @@ namespace plainview;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20130902		wordpress/tabs improvements.
+	- 20130826		breadcrumb fix.
+	- 20130825		is_private_ip()
+	- 20130820		form2
+	- 20130819		form2
+	- 20130815		form2
+	- 20130814		form2
 	- 20130812		Version bump.
 	- 20130809		wordpress\tabs.
 	- 20130809		wordpress, human_time(), human_time_span().
@@ -49,7 +56,7 @@ namespace plainview;
 
 	@author			Edward Plainview		edward@plainview.se
 	@copyright		GPL v3
-	@version		20130812
+	@version		20130902
 **/
 class base
 {
@@ -65,7 +72,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20130812;
+	protected $sdk_version = 20130902;
 	/**
 		@brief		Constructor.
 		@since		20130425
@@ -321,6 +328,7 @@ class base
 		$minutes = round( $difference / 60, 0 );
 		$hours = round( $difference / ( 60 * 60 ), 0 );
 		$days = round( $difference / ( 60 * 60 * 24 ), 0 );
+
 		if ( $days > 0 )
 			if ( $days == 1 )
 				return $options->text_day;
@@ -407,6 +415,36 @@ class base
 			return false;
 
 		return true;
+	}
+
+	/**
+		@brief		Check if an IP is private.
+		@param		string		$ip		IP address to check.
+		@return		bool				True, if the IP is private.
+		@since		20130825
+	**/
+	public static function is_private_ip( $ip )
+	{
+		$private_addresses = [
+			'10.0.0.0|10.255.255.255',
+			'172.16.0.0|172.31.255.255',
+			'192.168.0.0|192.168.255.255',
+			'169.254.0.0|169.254.255.255',
+			'127.0.0.0|127.255.255.255'
+		];
+
+		$long_ip = ip2long( $ip );
+		if( $long_ip != -1 )
+		{
+			foreach( $private_addresses as $private_address )
+			{
+				list( $start, $end ) = explode( '|', $private_address );
+
+				 if( $long_ip >= ip2long( $start ) && $long_ip <= ip2long( $end ) )
+					return true;
+			}
+		}
+		return false;
 	}
 
 	/**

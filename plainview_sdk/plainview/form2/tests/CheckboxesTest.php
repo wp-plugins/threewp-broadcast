@@ -82,6 +82,7 @@ class CheckboxesTest extends TestCase
 		$this->assertTrue( $cbs->input( 'checkboxestest_cb1' )->is_checked() );
 		$this->assertFalse( $cbs->input( 'checkboxestest_cb2' )->is_checked() );
 		$this->assertTrue( $cbs->input( 'checkboxestest_cb3' )->is_checked() );
+		$this->assertEquals( [ 'cb1', 'cb3' ], $cbs->get_post_value() );
 	}
 
 	public function test_post_value_with_prefix()

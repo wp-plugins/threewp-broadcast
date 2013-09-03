@@ -9,7 +9,7 @@ namespace plainview\breadcrumbs;
 	Contains a link which has a label().
 
 	@since		20130729
-	@version	20130729
+	@version	20130826
 **/
 class breadcrumb
 {
@@ -76,6 +76,7 @@ class breadcrumb
 	**/
 	public function url( $url )
 	{
-		return $this->a->set_attribute( 'href', $url );
+		$this->a->set_attribute( 'href', $url );
+		return $this;
 	}
 }

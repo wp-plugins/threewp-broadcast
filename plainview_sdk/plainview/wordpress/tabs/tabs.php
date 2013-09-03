@@ -7,6 +7,7 @@ namespace plainview\wordpress\tabs;
 
 	@par		Changelog
 
+	- 20130902	tab_heading_*fix, tab_name_*fix
 	- 20130810	The current tab's link is cleaned.
 	- 20130809	Countable.
 	- 20130530	get() and get_key() added.
@@ -21,6 +22,8 @@ namespace plainview\wordpress\tabs;
 class tabs
 	implements \Countable
 {
+	use \plainview\traits\method_chaining;
+
 	/**
 		@brief		\\plainview\\wordpress\\base object that created these tabs.
 		@since		20130503
@@ -71,17 +74,33 @@ class tabs
 		@brief		The default prefix of the displayed tab name.
 		@details	The tab inherits this value upon creation.
 		@since		20130503
-		@var		$tab_prefix
+		@var		$tab_heading_prefix
 	**/
-	public $tab_prefix = '<h2>';
+	public $tab_heading_prefix = '<h2>';
 
 	/**
 		@brief		The default suffix of the displayed tab name.
 		@details	The tab inherits this value upon creation.
 		@since		20130503
-		@var		$tab_suffix
+		@var		$tab_heading_suffix
 	**/
-	public $tab_suffix = '</h2>';
+	public $tab_heading_suffix = '</h2>';
+
+	/**
+		@brief		The default prefix of the displayed tab name.
+		@details	The tab inherits this value upon creation.
+		@since		20130503
+		@var		$tab_name_prefix
+	**/
+	public $tab_name_prefix = '';
+
+	/**
+		@brief		The default suffix of the displayed tab name.
+		@details	The tab inherits this value upon creation.
+		@since		20130503
+		@var		$tab_name_suffix
+	**/
+	public $tab_name_suffix = '';
 
 	/**
 		@brief		Array of \\plainview\\wordpress\\tabs\\tab objects.
@@ -206,7 +225,7 @@ class tabs
 						$link = add_query_arg( $get_key, $tab_id, $original_link );
 				}
 
-				$text = $tab->name;
+				$text = $tab->display_name();
 
 				if ( $tab->count != '' )
 					$text .= sprintf( ' <span class="count">%s</span>', $tab->count );
@@ -237,10 +256,7 @@ class tabs
 			ob_start();
 			echo '<div class="wrap">';
 			if ( $this->display_tab_name )
-			{
-				$name = ( $tab->heading != '' ? $tab->heading : $tab->name );
-				echo $tab->prefix . $name . $tab->suffix;
-			}
+				echo $tab->display_heading();
 
 			echo $r;
 			echo '<div style="clear: both"></div>';
@@ -267,10 +283,53 @@ class tabs
 		if ( isset( $this->tabs[ $id ] ) )
 			return $this->tabs[ $id ];
 		$tab = new tab( $this );
-		$tab->id = $id;
+		$tab->id( $id );
 		$tab->callback_this( $id );		// Usually the tab's callback is the same as the ID.
 		$this->tabs[ $id ] = $tab;
 		return $this->tabs[ $id ];
 	}
-}
 
+	/**
+		@brief		Sets the page heading prefix for all tabs.
+		@param		string		$tab_heading_prefix		The new tab heading prefix.
+		@return		this								Method chaining.
+		@since		20130902
+	**/
+	public function tab_heading_prefix( $tab_heading_prefix )
+	{
+		return $this->set_key( 'tab_heading_prefix', $tab_heading_prefix );
+	}
+
+	/**
+		@brief		Sets the page heading suffix for all tabs.
+		@param		string		$tab_heading_suffix		The new tab heading suffix.
+		@return		this								Method chaining.
+		@since		20130902
+	**/
+	public function tab_heading_suffix( $tab_heading_suffix )
+	{
+		return $this->set_key( 'tab_heading_suffix', $tab_heading_suffix );
+	}
+
+	/**
+		@brief		Sets the tab name prefix for all tabs.
+		@param		string		$tab_name_prefix		The new tab name prefix.
+		@return		this								Method chaining.
+		@since		20130902
+	**/
+	public function tab_name_prefix( $tab_name_prefix )
+	{
+		return $this->set_key( 'tab_name_prefix', $tab_name_prefix );
+	}
+
+	/**
+		@brief		Sets the tab name suffix for all tabs.
+		@param		string		$tab_name_suffix		The new tab name suffix.
+		@return		this								Method chaining.
+		@since		20130902
+	**/
+	public function tab_name_suffix( $tab_name_suffix )
+	{
+		return $this->set_key( 'tab_name_suffix', $tab_name_suffix );
+	}
+}

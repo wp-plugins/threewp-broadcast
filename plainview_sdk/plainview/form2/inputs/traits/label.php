@@ -12,7 +12,7 @@ namespace plainview\form2\inputs\traits;
 
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130524
+	@version	20130819
 **/
 trait label
 {
@@ -61,7 +61,7 @@ trait label
 	**/
 	public function label_( $label )
 	{
-		$label = call_user_func_array( array( $this->container, '_' ), func_get_args() );
+		$label = call_user_func_array( array( $this->container->form(), '_' ), func_get_args() );
 		return $this->set_label( $label );
 	}
 
@@ -96,7 +96,7 @@ trait label
 	**/
 	public function set_unfiltered_label_( $label )
 	{
-		$label = call_user_func_array( array( $this->container, '_' ), func_get_args() );
+		$label = call_user_func_array( array( $this->container->form(), '_' ), func_get_args() );
 		return $this->set_unfiltered_label( $label );
 	}
 }

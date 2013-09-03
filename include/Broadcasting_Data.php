@@ -1,5 +1,7 @@
 <?php
 
+namespace threewp_broadcast;
+
 /**
 	@brief		Container used when broadcasting data.
 	@details
@@ -9,6 +11,7 @@
 	@since		20130530
 	@version	20130530
 **/
+
 class Broadcasting_Data
 {
 	/**

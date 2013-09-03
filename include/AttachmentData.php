@@ -1,4 +1,7 @@
 <?php
+
+namespace threewp_broadcast;
+
 /**
 	@brief	Data of an attached file.
 
@@ -8,6 +11,7 @@
 	- @b 2013-02-21 Added post excerpt, guid, id
 	- @b 2013-02-14 Added extra attachment data from werk@haha.nl: post_title and menu_order
  */
+
 class AttachmentData
 {
 	public $filename_base;					// img.jpg

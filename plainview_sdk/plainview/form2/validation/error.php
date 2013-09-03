@@ -11,9 +11,10 @@ namespace plainview\form2\validation;
 	Changelog
 	---------
 
+	- 20130819	Container is now the input.
 	- 20130604	__toString() added.
 
-	@version	20130604
+	@version	20130819
 **/
 class error
 {
@@ -25,14 +26,10 @@ class error
 	**/
 	public $container;
 
-	public function __construct( $container )
+	public function __construct( $input )
 	{
-		// Hack because a label requires an input->container.
-		$i = new \plainview\form2\inputs\input( $container, md5( microtime() ) );
-		$i->container = $container;
-
-		$this->container = $container;
-		$this->label = new \plainview\form2\inputs\label( $i );
+		$this->container = $input;
+		$this->label = new \plainview\form2\inputs\label( $input );
 	}
 
 	public function __toString()
@@ -40,4 +37,3 @@ class error
 		return $this->get_label()->content;
 	}
 }
-

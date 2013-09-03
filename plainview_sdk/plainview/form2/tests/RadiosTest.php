@@ -29,6 +29,17 @@ class RadiosTest extends TestCase
 		$this->assertEquals( 3, $matches );
 	}
 
+	public function test_option_names_extract()
+	{
+		// Each individual radios option is actually an input, reachable by using input( RADIOSNAME_VALUE ).
+		$radios = $this->radios();
+		$this->assertNotEquals( false, $radios->input( 'radiostest_r1' ) );
+		$this->assertNotEquals( false, $radios->input( 'radiostest_r2' ) );
+		$this->assertNotEquals( false, $radios->input( 'radiostest_r3' ) );
+		// r100 doesn't exist.
+		$this->assertEquals( false, $radios->input( 'radiostest_r100' ) );
+	}
+
 	public function test_r2_is_checked()
 	{
 		$radios = $this->radios();

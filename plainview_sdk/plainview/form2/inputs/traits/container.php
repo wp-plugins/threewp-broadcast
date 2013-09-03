@@ -181,15 +181,13 @@ trait container
 	**/
 	public function input( $name, $type = null )
 	{
-
 		if ( isset( $this->inputs[ $name ] ) )
 			return $this->inputs[ $name ];
 		else
 		{
 			foreach( $this->inputs as $container )
 			{
-				$uses = class_uses( $container );
-				if ( ! isset( $uses[ 'plainview\\form2\\inputs\\traits\\container' ] ) )
+				if ( ! method_exists( $container, 'input' ) )
 					continue;
 				$r = $container->input( $name );
 				if ( $r !== false )

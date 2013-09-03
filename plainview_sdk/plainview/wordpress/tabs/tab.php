@@ -7,14 +7,17 @@ namespace plainview\wordpress\tabs;
 
 	@par		Changelog
 
+	- 20130902	heading_prefix(), heading_suffix(), name_prefix(), name_suffix(), name(), id(). Uses method_chaining trait.
 	- 20130505	New: parameters()
 	- 20130503	Initial release
 
 	@since		20130503
-	@version	20130505
+	@version	20130902
 **/
 class tab
 {
+	use \plainview\traits\method_chaining;
+
 	/**
 		@brief		Tab callback function.
 		@details	An array of (class, function_name) or just a function name.
@@ -40,6 +43,20 @@ class tab
 	public $heading;
 
 	/**
+		@brief		Prefix that is displayed before displaying the page heading.
+		@since		20130503
+		@var		$heading_prefix
+	**/
+	public $heading_prefix;
+
+	/**
+		@brief		Suffix that is displayed after displaying the page heading.
+		@since		20130503
+		@var		$heading_suffix
+	**/
+	public $heading_suffix;
+
+	/**
 		@brief		The ID of the tab.
 		@since		20130503
 		@var		$id
@@ -54,25 +71,25 @@ class tab
 	public $name;
 
 	/**
+		@brief		Prefix that is displayed before displaying the tab name.
+		@since		20130503
+		@var		$name_prefix
+	**/
+	public $name_prefix;
+
+	/**
+		@brief		Suffix that is displayed after displaying the tab name.
+		@since		20130503
+		@var		$name_suffix
+	**/
+	public $name_suffix;
+
+	/**
 		@brief		An optional array of parameters to send to the callback.
 		@since		20130505
 		@var		$parameters
 	**/
 	public $parameters = array();
-
-	/**
-		@brief		Prefix that is displayed before displaying the tab name.
-		@since		20130503
-		@var		$prefix
-	**/
-	public $prefix;
-
-	/**
-		@brief		Suffix that is displayed after displaying the tab name.
-		@since		20130503
-		@var		$suffix
-	**/
-	public $suffix;
 
 	/**
 		@brief		The \\plainview\\wordpress\\tabs\\tabs object this tab belongs to.
@@ -91,8 +108,10 @@ class tab
 	public function __construct( $tabs )
 	{
 		$this->tabs = $tabs;
-		$this->prefix = $tabs->tab_prefix;
-		$this->suffix = $tabs->tab_suffix;
+		$this->name_prefix( $tabs->tab_name_prefix );
+		$this->name_suffix( $tabs->tab_name_suffix );
+		$this->heading_prefix( $tabs->tab_heading_prefix );
+		$this->heading_suffix( $tabs->tab_heading_suffix );
 		return $this;
 	}
 
@@ -115,12 +134,23 @@ class tab
 	/**
 		@brief		Convenience function to call a method of the base object.
 		@param		string		$method		Name of method to call.
-		@return		object					Object chaining.
+		@return		this					Method chaining.
 		@since		20130503
 	**/
 	public function callback_this( $method )
 	{
 		return $this->callback( $this->tabs->base, $method );
+	}
+
+	public function display_heading()
+	{
+		$name = ( $this->heading != '' ? $this->heading : $this->name );
+		echo $this->heading_prefix . $name . $this->heading_suffix;
+	}
+
+	public function display_name()
+	{
+		return $this->name_prefix . $this->name . $this->name_suffix;
 	}
 
 	/**
@@ -132,15 +162,14 @@ class tab
 	**/
 	public function heading( $heading )
 	{
-		$this->heading = $heading;
-		return $this;
+		return $this->set_key( 'heading', $heading );
 	}
 
 	/**
 		@brief		Translate and set the page heading for this tab.
 		@details	Almost the same as heading(), except the string is translated first.
 		@param		string		$heading		The page heading to translate and set.
-		@return		object						Object chaining.
+		@return		this					Method chaining.
 		@see		heading()
 		@since		20130503
 	**/
@@ -150,22 +179,76 @@ class tab
 	}
 
 	/**
+		@brief		Set the tab prefix in the tab list.
+		@param		string		$heading_prefix		Prefix to set.
+		@return		this					Method chaining.
+		@since		20130902
+	**/
+	public function heading_prefix( $heading_prefix )
+	{
+		return $this->set_key( 'heading_prefix', $heading_prefix );
+	}
+
+	/**
+		@brief		Set the tab suffix in the tab list.
+		@param		string		$heading_suffix		Suffix to set.
+		@return		this					Method chaining.
+		@since		20130902
+	**/
+	public function heading_suffix( $heading_suffix )
+	{
+		return $this->set_key( 'heading_suffix', $heading_suffix );
+	}
+
+	/**
+		@brief		Set the tab's ID.
+		@param		string		$id		The tab's new id.
+		@return		this					Method chaining.
+		@since		20130902
+	**/
+	public function id( $id )
+	{
+		return $this->set_key( 'id', $id );
+	}
+
+	/**
 		@brief		Set the name of this tab.
 		@details	The name is displays in the tab list and as the page heading, if no specific page heading is set.
 		@param		string		$name		The new name of the tab.
-		@return		object					Object chaining.
+		@return		this					Method chaining.
 		@since		20130503
 	**/
 	public function name( $name )
 	{
-		$this->name = $name;
-		return $this;
+		return $this->set_key( 'name', $name );
+	}
+
+	/**
+		@brief		Set the tab prefix in the tab list.
+		@param		string		$name_prefix		Prefix to set.
+		@return		this					Method chaining.
+		@since		20130902
+	**/
+	public function name_prefix( $name_prefix )
+	{
+		return $this->set_key( 'name_prefix', $name_prefix );
+	}
+
+	/**
+		@brief		Set the tab suffix in the tab list.
+		@param		string		$name_suffix		Suffix to set.
+		@return		this					Method chaining.
+		@since		20130902
+	**/
+	public function name_suffix( $name_suffix )
+	{
+		return $this->set_key( 'name_suffix', $name_suffix );
 	}
 
 	/**
 		@brief		Translate and set the name of this tab.
 		@param		string		$name		String to translate and set as the name.
-		@return		object					Object chaining.
+		@return		this					Method chaining.
 		@see		name()
 		@since		20130503
 	**/
@@ -177,7 +260,7 @@ class tab
 	/**
 		@brief		Set the parameters for the tab's callback.
 		@details	All parameters used in this method are also sent directly to the callback.
-		@return		object					Object chaining.
+		@return		this					Method chaining.
 		@since		20130505
 	**/
 	public function parameters()
@@ -187,21 +270,30 @@ class tab
 	}
 
 	/**
+		@brief		Return the tab object this tab belongs to.
+		@return		tabs		The tabs object.
+		@since		20130902
+	**/
+	public function tabs()
+	{
+		return $this->tabs;
+	}
+
+	/**
 		@brief		Set the HTML title of the page name in the tab list.
 		@param		string		$title		Title to set.
-		@return		object					Object chaining.
+		@return		this					Method chaining.
 		@since		20130503
 	**/
 	public function title( $title )
 	{
-		$this->title = $title;
-		return $this;
+		return $this->set_key( 'title', $title );
 	}
 
 	/**
 		@brief		Translate and set the HTML title of the page name.
 		@param		string		$title		Title to translate and set.
-		@return		object					Object chaining.
+		@return		this					Method chaining.
 		@see		title()
 		@since		20130503
 	**/

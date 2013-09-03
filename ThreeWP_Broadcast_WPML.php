@@ -9,6 +9,8 @@ Plugin URI:		http://mindreantre.se/program/threewp/threewp-broadcast/
 Version:		1.22
 */
 
+namespace threewp_broadcast;
+
 if ( ! class_exists( '\\plainview\\wordpress\\base' ) )	require_once( __DIR__ . '/plainview_sdk/plainview/autoload.php' );
 
 /**
@@ -18,8 +20,9 @@ if ( ! class_exists( '\\plainview\\wordpress\\base' ) )	require_once( __DIR__ . 
 
 	@par		Changelog
 
+	- 20130813	Version sync. 1.22
 	- 20130812	v1.21 \n
-				Intial version, synched with Broadcast.
+				Intial version, synced with Broadcast.
 
 	@version	1.21
 **/
@@ -30,12 +33,11 @@ class ThreeWP_Broadcast_WPML
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
-	public function __construct()
+	public function _construct()
 	{
 		// Tell good ol' WPML to load API support.
 		if ( ! defined( 'WPML_LOAD_API_SUPPORT' ) )
 			define( 'WPML_LOAD_API_SUPPORT', true );
-		parent::__construct( __FILE__ );
 
 		$this->add_action( 'threewp_broadcast_add_meta_box' );
 		if( $this->is_wpml() )

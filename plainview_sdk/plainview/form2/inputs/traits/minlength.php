@@ -38,7 +38,10 @@ trait minlength
 	public function validate_minlength()
 	{
 		if ( strlen( $this->validation_value ) < $this->minlength )
-			$this->validation_error()->set_unfiltered_label_( 'The text in %s is too short!', '<em>' . $this->get_label()->content . '</em>' );
+		{
+			$text = $this->form()->_( 'The text in %s is too short!', '<em>' . $this->get_label()->content . '</em>' );
+			$this->validation_error()->set_unfiltered_label_( $text );
+		}
 	}
 }
 

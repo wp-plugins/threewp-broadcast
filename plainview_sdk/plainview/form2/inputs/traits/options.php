@@ -10,15 +10,6 @@ namespace plainview\form2\inputs\traits;
 **/
 trait options
 {
-/*
-	public function __toString()
-	{
-		$input = clone( $this );
-		$input->prepare_to_display();
-		$r = $input->display_label() . $input->options_to_inputs();
-		return $r;
-	}
-*/
 	/**
 		@brief		Return or create an option.
 		@details

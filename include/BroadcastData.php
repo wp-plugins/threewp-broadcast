@@ -1,9 +1,13 @@
 <?php
+
+namespace threewp_broadcast;
+
 /**
  * Data handling class for the post data object.
- * 
+ *
  * Which is basically only an array which we treat special.
  */
+
 class BroadcastData
 {
 	private $defaultData = array(
@@ -11,7 +15,7 @@ class BroadcastData
 	);
 	private $dataModified = false;
 	private $data;
-	
+
 	/**
 	 * Create the class with the specified array as the data.
 	 */
@@ -19,7 +23,7 @@ class BroadcastData
 	{
 		$this->data = array_merge($this->defaultData, $data);
 	}
-	
+
 	/**
 	 * Returns the data array.
 	 */
@@ -27,7 +31,7 @@ class BroadcastData
 	{
 		return $this->data;
 	}
-	
+
 	/**
 	 * Does this post have any linked children?
 	 */
@@ -35,10 +39,10 @@ class BroadcastData
 	{
 		return isset($this->data[ 'linked_children' ]);
 	}
-	
+
 	/**
 	 * Does this post have children on the current blog(
-	 * 
+	 *
 	 * Used after switch_to_blog has been called.
 	 */
 	public function has_linked_child_on_this_blog( $blog__id = null )
@@ -48,7 +52,7 @@ class BroadcastData
 			$blog__id = $blog_id;
 		return isset( $this->data[ 'linked_children' ][ $blog__id ] );
 	}
-	
+
 	/**
 	 * Return the post_id of the child post on the current blog.
 	 */
@@ -60,20 +64,20 @@ class BroadcastData
 		else
 			return null;
 	}
-	
+
 	/**
 	 * Returns an array of all the linked children.
-	 * 
+	 *
 	 * [blog_id] => [post_id]
 	 */
 	public function get_linked_children()
 	{
 		if (!$this->has_linked_children())
 			return array();
-		
+
 		return $this->data[ 'linked_children' ];
 	}
-	
+
 	/**
 	 * Adds a linked child for this post.
 	 * @param int $blog_id Blog ID
@@ -84,7 +88,7 @@ class BroadcastData
 		$this->data[ 'linked_children' ][$blog_id] = $post_id;
 		$this->modified();
 	}
-	
+
 	/**
 	 * Removes a child from a blog.
 	 */
@@ -93,10 +97,10 @@ class BroadcastData
 		unset($this->data[ 'linked_children' ][$blog_id]);
 		if ( count($this->data[ 'linked_children' ]) < 1)
 			unset( $this->data[ 'linked_children' ] );
-		
+
 		$this->modified();
 	}
-	
+
 	/**
 	 * Clears all the linked children.
 	 */
@@ -105,7 +109,7 @@ class BroadcastData
 		unset($this->data[ 'linked_children' ]);
 		$this->modified();
 	}
-	
+
 	/**
 	 * Remove linked parent
 	 */
@@ -144,7 +148,7 @@ class BroadcastData
 	{
 		$this->dataModified = true;
 	}
-	
+
 	/**
 	 * Returns whether this broadcast data has been modified and needs to be saved.
 	 */
@@ -152,7 +156,7 @@ class BroadcastData
 	{
 		return $this->dataModified;
 	}
-	
+
 	/**
 	 * Returns whether the only data contained is worthless default data
 	 */

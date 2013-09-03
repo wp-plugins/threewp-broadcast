@@ -36,12 +36,12 @@ class input
 	public function __construct( $container, $name )
 	{
 		$this->container = $container;
-		if ( $this->has_description )
-			$this->description = new description( $this );
 		$this->set_attribute( 'name', $name );
 		$id = get_class( $this ) . '_' . $name;
 		$id = str_replace( '\\', '_', $id );
 		$this->set_attribute( 'id', $id );
+		if ( $this->has_description )
+			$this->description = new description( $this );
 		if ( $this->has_label )
 			$this->label = new label( $this );
 		if ( isset( $this->type ) )
@@ -70,29 +70,14 @@ class input
 		$placeholders->input = $random . 'input';
 		$placeholders->description = $random . 'description';
 
-		$div = new \plainview\html\div();
-		$div->css_class( 'form_item' )
-			->css_class( 'form_item_' . ( isset( $this->type ) ? $this->type : $this->tag ) )
-			->css_class( 'form_item_' . $this->make_id() );
-
-		// It would be a good idea if the container could include information about the status of the input.
-		if ( ! $this->validates() )
-			$div->css_class( 'does_not_validate' );
-		if ( $this->is_required() )
-			$div->css_class( 'required' );
+		$div = $this->get_display_div();
 
 		// Prepare the input string that will be displayed to the user.
 		$o = new \stdClass;
 		$o->indent = $this->indent();
 		$o->input = $placeholders->input;
 		$o->label = $placeholders->label;
-		if ( $this->description->label->content != '' )
-		{
-			$desc_id = $this->make_id() . '_description';
-			$this->description->set_attribute( 'id', $desc_id );
-			$this->set_attribute( 'aria-describedby', $desc_id );
-			$o->description = $placeholders->description;
-		}
+		$o->description = $placeholders->description;
 		$input_string = $this->assemble_input_string( $o );
 
 		$r = sprintf( '%s%s%s',
@@ -222,6 +207,10 @@ class input
 		$input->set_attribute( 'id', $input->make_id() );
 		$input->set_attribute( 'name', $input->make_name() );
 
+		if ( $input->has_description )
+			if ( $this->description->label->content != '' )
+				$input->set_attribute( 'aria-describedby', $input->description->get_attribute( 'id' ) );
+
 		$input->css_class( isset( $this->type ) ? $this->type : $this->tag );
 
 		if ( $input->is_required() )
@@ -273,6 +262,26 @@ class input
 	public function form()
 	{
 		return $this->container->form();
+	}
+
+	/**
+		@brief		Return an input container div.
+		@return		string		A div HTML element with lots of helpful classes set.
+		@since		20130815
+	**/
+	public function get_display_div()
+	{
+		$r = new \plainview\html\div();
+		$r->css_class( 'form_item' )
+			->css_class( 'form_item_' . ( isset( $this->type ) ? $this->type : $this->tag ) )
+			->css_class( 'form_item_' . $this->make_id() );
+
+		// It would be a good idea if the container could include information about the status of the input.
+		if ( $this->has_validation_errors() )
+			$r->css_class( 'does_not_validate' );
+		if ( $this->is_required() )
+			$r->css_class( 'required' );
+		return $r;
 	}
 
 	/**

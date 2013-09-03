@@ -7,7 +7,7 @@ class NumberTest extends TestCase
 	public function test_value_filter()
 	{
 		$number = $this->form()->number( 'number' )->value( 'a number' );
-		$this->assertEquals( 0, $number->get_value() );
+		$this->assertEquals( '', $number->get_value() );
 
 		$number = $this->form()->number( 'number' )->value( 123 );
 		$this->assertEquals( 123, $number->get_value() );

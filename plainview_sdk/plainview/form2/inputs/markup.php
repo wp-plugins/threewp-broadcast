@@ -10,7 +10,7 @@ namespace plainview\form2\inputs;
 
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130524
+	@version	20130815
 **/
 class markup
 	extends input
@@ -51,14 +51,14 @@ class markup
 	}
 
 	/**
-		@brief		Convenience method to wpautop the markup before setting it.
+		@brief		Convenience method to p the markup before setting it.
 		@param		string		$markup
 		@return		this		Object chaining.
 		@since		20130524
 	**/
 	public function p( $markup )
 	{
-		return $this->markup( wpautop( $markup ) );
+		return $this->markup( \plainview\base::wpautop( $markup ) );
 	}
 
 	/**

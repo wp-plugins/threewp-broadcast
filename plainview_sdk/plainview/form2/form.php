@@ -94,6 +94,11 @@ namespace plainview\form2;
 	Changelog
 	---------
 
+	- 20130820	Fixed number input validation and translation strings. \n
+				Fieldset subclasses can report their inputs.
+	- 20130819	Validation errors now have the input as the container. Radios required() fixed.
+	- 20130815	input->get_display_div.
+	- 20130814	Value filters are functions, not closures, which enables serializing.
 	- 20130807	Added text plaintext() filter.
 	- 20130806	Radios and checkboxes are fieldsets. \n
 				Inputs are described using aria-describedby.
@@ -114,7 +119,7 @@ namespace plainview\form2;
 
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130806
+	@version	20130820
 **/
 class form
 {
@@ -126,7 +131,7 @@ class form
 		@var		$form_version
 		@since		20130805
 	**/
-	public static $form_version = 20130806;
+	public static $form_version = 20130820;
 
 	/**
 		@brief		Has the form handled the POST array?

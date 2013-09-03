@@ -25,36 +25,14 @@ class text
 	public $uppercase = false;
 
 	/**
-		@brief		Require that this textfield's value be trimmed when set.
-		@param		bool		$value		True to trim the value when getting it from the POST.
-		@since		20130712
-	**/
-	public function trim( $value = true )
-	{
-		$this->trim = $value;
-		$this->add_value_filter( 'text.trim', function( $value )
-		{
-			if ( $this->trim )
-				$value = trim( $value );
-			return $value;
-		});
-		return $this;
-	}
-
-	/**
-		@brief		Remove all tags from the string.
+		@brief		Add a value filter that removes all tags from the string.
 		@param		bool		$value		True to strip the string of tags.
 		@since		20130807
 	**/
 	public function plaintext( $value = true )
 	{
 		$this->plaintext = $value;
-		$this->add_value_filter( 'text.plaintext', function( $value )
-		{
-			$value = strip_tags( $value );
-			return $value;
-		});
-		return $this;
+		return $this->add_value_filter( 'plaintext' );
 	}
 
 	/**
@@ -65,12 +43,19 @@ class text
 	public function lowercase( $value = true )
 	{
 		$this->lowercase = $value;
-		$this->add_value_filter( 'text.lowercase', function( $value )
-		{
-			$value = mb_strtolower( $value, 'UTF-8' );
-			return $value;
-		});
-		return $this;
+		return $this->add_value_filter( 'lowercase' );
+	}
+
+	/**
+		@brief		Require that this textfield's value be trimmed when set.
+		@param		bool		$value		True to trim the value when getting it from the POST.
+		@since		20130712
+	**/
+	public function trim( $value = true )
+	{
+		$this->trim = $value;
+		return $this->add_value_filter( [ $this, 'value_filter_trim' ] );
+		return $this->add_value_filter( 'trim' );
 	}
 
 	/**
@@ -81,11 +66,54 @@ class text
 	public function uppercase( $value = true )
 	{
 		$this->uppercase = $value;
-		$this->add_value_filter( 'text.uppercase', function( $value )
-		{
+		return $this->add_value_filter( 'uppercase' );
+	}
+
+	/**
+		@brief		x
+		@param		bool		$value		True to uppercase the value.
+		@since		20130814
+	**/
+	public function value_filter_lowercase( $value )
+	{
+		if ( $this->lowercase )
+			$value = mb_strtolower( $value, 'UTF-8' );
+		return $value;
+	}
+
+	/**
+		@brief		x
+		@param		bool		$value		True to uppercase the value.
+		@since		20130814
+	**/
+	public function value_filter_plaintext( $value )
+	{
+		if ( $this->plaintext )
+			$value = strip_tags( $value );
+		return $value;
+	}
+
+	/**
+		@brief		x
+		@param		bool		$value		True to uppercase the value.
+		@since		20130814
+	**/
+	public function value_filter_trim( $value )
+	{
+		if ( $this->trim )
+			$value = trim( $value );
+		return $value;
+	}
+
+	/**
+		@brief		x
+		@param		bool		$value		True to uppercase the value.
+		@since		20130814
+	**/
+	public function value_filter_uppercase( $value )
+	{
+		if ( $this->uppercase )
 			$value = mb_strtoupper( $value, 'UTF-8' );
-			return $value;
-		});
-		return $this;
+		return $value;
 	}
 }
