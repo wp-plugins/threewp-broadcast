@@ -73,6 +73,20 @@ trait table_element
 	}
 
 	/**
+		@brief		Convenience function to set rowspan property.
+
+		Should only be used on cells.
+
+		@param		string		$rowspan		How much the object should rowspan.
+		@return		$this
+		@since		20130903
+	**/
+	public function rowspan( $rowspan )
+	{
+		return $this->attribute( 'rowspan' )->set( $rowspan );
+	}
+
+	/**
 		@brief		Sets the text of this object.
 		@details	The text is the contents of this object, most often an HTML string.
 		@param		string		$text		Text to set.

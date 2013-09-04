@@ -151,6 +151,9 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
 
+= 1.24 20130904 =
+* Code: Fixed typo.
+
 = 1.23 20130903 =
 * Fix: Image broadcasting works again.
 * Fix: Gallery shortcodes are updated.
