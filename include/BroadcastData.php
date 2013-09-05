@@ -19,9 +19,9 @@ class BroadcastData
 	/**
 	 * Create the class with the specified array as the data.
 	 */
-	public function BroadcastData($data)
+	public function __construct( $data )
 	{
-		$this->data = array_merge($this->defaultData, $data);
+		$this->data = array_merge( $this->defaultData, $data );
 	}
 
 	/**

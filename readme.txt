@@ -151,6 +151,9 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
 
+= 1.25 20130905 =
+* Code: Fixed Broadcast column in posts view.
+
 = 1.24 20130904 =
 * Code: Fixed typo.
 
