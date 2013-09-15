@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		1.25
+Version:		1.26
 */
 
 namespace threewp_broadcast;
@@ -28,7 +28,7 @@ class ThreeWP_Broadcast
 	**/
 	public $broadcasting_data = null;
 
-	public $plugin_version = 20130905;
+	public $plugin_version = 20130915;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -1718,12 +1718,12 @@ class ThreeWP_Broadcast
 			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
 			if ( $bcd->has_thumbnail )
 			{
-				$thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
-				$thumbnail = get_post( $thumbnail_id );
+				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
+				$bcd->thumbnail = get_post( $bcd->thumbnail_id );
 				unset( $bcd->post_custom_fields[ '_thumbnail_id' ] ); // There is a new thumbnail id for each blog.
-				$bcd->attachment_data[ 'thumbnail' ] = AttachmentData::from_attachment_id( $thumbnail, $bcd->upload_dir);
+				$bcd->attachment_data[ 'thumbnail' ] = AttachmentData::from_attachment_id( $bcd->thumbnail, $bcd->upload_dir);
 				// Now that we know what the attachment id the thumbnail has, we must remove it from the attached files to avoid duplicates.
-				unset( $bcd->attachment_data[ $thumbnail_id ] );
+				unset( $bcd->attachment_data[ $bcd->thumbnail_id ] );
 			}
 
 			// Remove all the _internal custom fields.

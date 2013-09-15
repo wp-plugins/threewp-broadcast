@@ -1,7 +1,7 @@
 === ThreeWP Broadcast ===
 Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously, child, parent, permalink, post type, custom post type, threewp, wpml, sitepress
 Requires at least: 3.3.1
-Tested up to: 3.6
+Tested up to: 3.6.1
 Stable tag: trunk
 Donate link: http://plainview.se/donate/
 Contributors: edward_plainview, edward mindreantre
@@ -150,6 +150,10 @@ It works transparently in the background, but in case you've never really used W
 Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
+
+= 1.26 20130915 =
+* Fix: Featured image broadcast works again.
+* WPML plugin version bump.
 
 = 1.25 20130905 =
 * Code: Fixed Broadcast column in posts view.
