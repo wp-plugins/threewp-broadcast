@@ -151,6 +151,11 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
 
+= 1.27 20130923 =
+* New: Override child post permalinks works with custom post types.
+* New: Permalink cache when overriding child permalinks. Speeds up looking up the same post during a page view.
+* WPML plugin version bump.
+
 = 1.26 20130915 =
 * Fix: Featured image broadcast works again.
 * WPML plugin version bump.

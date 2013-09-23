@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		1.26
+Version:		1.27
 */
 
 namespace threewp_broadcast;
@@ -28,7 +28,14 @@ class ThreeWP_Broadcast
 	**/
 	public $broadcasting_data = null;
 
-	public $plugin_version = 20130915;
+	/**
+		@brief		Caches permalinks looked up during this page view.
+		@see		post_link()
+		@since		20130923
+	**/
+	public $permalink_cache;
+
+	public $plugin_version = 20130923;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -63,10 +70,15 @@ class ThreeWP_Broadcast
 		$this->add_filter( 'threewp_activity_monitor_list_activities' );
 
 		if ( $this->get_site_option( 'override_child_permalinks' ) )
-			$this->add_action( 'post_link' );
+		{
+			$this->add_filter( 'post_link', 10, 3 );
+			$this->add_filter( 'post_type_link', 'post_link', 10, 3 );
+		}
 
 		if ( $this->get_site_option( 'canonical_url' ) )
 			$this->add_action( 'wp_head', 1 );
+
+		$this->permalink_cache = new \stdClass;
 	}
 
 	public function add_menu()
@@ -1536,40 +1548,31 @@ class ThreeWP_Broadcast
 		}
 	}
 
-	public function the_permalink( $link)
+	public function post_link( $link, $post )
 	{
-		global $id;
 		global $blog_id;
 
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $id );
+		// Have we already checked this post ID for a link?
+		$key = 'b' . $blog_id . '_p' . $post->ID;
+		if ( property_exists( $this->permalink_cache, $key ) )
+			return $this->permalink_cache->$key;
+
+		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
 
 		$linked_parent = $broadcast_data->get_linked_parent();
 
 		if ( $linked_parent === false)
+		{
+			$this->permalink_cache->$key = $link;
 			return $link;
-
-		switch_to_blog( $linked_parent['blog_id'] );
-		$r = get_permalink( $linked_parent['post_id'] );
-		restore_current_blog();
-		return $r;
-	}
-
-	public function post_link( $link )
-	{
-		global $id;
-		global $blog_id;
-
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $id );
-
-		$linked_parent = $broadcast_data->get_linked_parent();
-
-		if ( $linked_parent === false)
-			return $link;
+		}
 
 		switch_to_blog( $linked_parent['blog_id'] );
 		$post = get_post( $linked_parent['post_id'] );
 		$permalink = get_permalink( $post );
 		restore_current_blog();
+
+		$this->permalink_cache->$key = $permalink;
 
 		return $permalink;
 	}
