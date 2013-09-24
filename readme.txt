@@ -151,6 +151,9 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
 
+= 1.28 20130924 =
+* Fix: Category matching uses more fuzzy searching. Fixes WP_Error on line 1850.
+
 = 1.27 20130923 =
 * New: Override child post permalinks works with custom post types.
 * New: Permalink cache when overriding child permalinks. Speeds up looking up the same post during a page view.

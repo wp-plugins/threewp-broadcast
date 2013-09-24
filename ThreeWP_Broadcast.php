@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		1.27
+Version:		1.28
 */
 
 namespace threewp_broadcast;
@@ -35,7 +35,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 20130923;
+	public $plugin_version = 20130924;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -1852,8 +1852,21 @@ class ThreeWP_Broadcast
 								)
 							);
 
-							$taxonomies_to_add_to[] = $new_taxonomy[ 'term_taxonomy_id' ];
-							$have_created_taxonomies = true;
+							// Sometimes the search didn't find the term because it's SIMILAR and not exact.
+							// WP will complain and give us the term tax id.
+							if ( is_wp_error( $new_taxonomy ) )
+							{
+								$wp_error = $new_taxonomy;
+								if ( isset( $wp_error->error_data[ 'term_exists' ] ) )
+									$term_taxonomy_id = $wp_error->error_data[ 'term_exists' ];
+							}
+							else
+							{
+								$term_taxonomy_id = $new_taxonomy[ 'term_taxonomy_id' ];
+								$have_created_taxonomies = true;
+							}
+
+							$taxonomies_to_add_to[] = $term_taxonomy_id;
 						}
 					}
 
