@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Network plugin to broadcast a post to other blogs. Whitelist, blacklist, groups and automatic category+tag+custom field posting/creation available.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		1.28
+Version:		1.29
 */
 
 namespace threewp_broadcast;
@@ -35,7 +35,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 20130924;
+	public $plugin_version = 20130926;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -43,10 +43,11 @@ class ThreeWP_Broadcast
 		'always_use_required_list' => false,				// Require blogs only when broadcasting?
 		'blacklist' => '',									// Comma-separated string of blogs to automatically exclude
 		'canonical_url' => true,							// Override the canonical URLs with the parent post's.
-		'custom_field_exceptions' => array( '_wp_page_template', '_wplp_', '_aioseop_' ),				// Custom fields that should be broadcasted, even though they start with _
+		'custom_field_exceptions' => '_wp_page_template _wplp_ _aioseop_',				// Custom fields that should be broadcasted, even though they start with _
+		'database_version' => 1,							// Version of database and settings
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
-		'post_types' => array( 'post' => array(), 'page' => array() ),			// Custom post types which use broadcasting
+		'post_types' => 'post page',						// Custom post types which use broadcasting
 		'requiredlist' => '',								// Comma-separated string of blogs to require
 		'role_broadcast' => 'super_admin',					// Role required to use broadcast function
 		'role_link' => 'super_admin',						// Role required to use the link function
@@ -164,6 +165,26 @@ class ThreeWP_Broadcast
 		$this->delete_site_option( 'role_categories_create' );
 		$this->delete_site_option( 'role_tags' );
 		$this->delete_site_option( 'role_tags_create' );
+
+		$db_ver = $this->get_site_option( 'database_version', 1 );
+
+		if ( $db_ver < 2 )
+		{
+			// Convert the array site options to strings.
+			foreach( [ 'custom_field_exceptions', 'post_types' ] as $key )
+			{
+				$value = $this->get_site_option( $key, '' );
+				if ( is_array( $value ) )
+				{
+					$value = array_filter( $value );
+					$value = implode( ' ', $value );
+				}
+				$this->update_site_option( $key, $value );
+			}
+			$db_ver = 2;
+		}
+
+		$this->update_site_option( 'database_version', $db_ver );
 	}
 
 	public function uninstall()
@@ -201,16 +222,14 @@ class ThreeWP_Broadcast
 			{
 				case 'find_orphans':
 					$tabs->tab( 'find_orphans' )
-						->callback_this( 'user_find_orphans' )
 						->name_( 'Find orphans' );
 					break;
-				case 'trash':
+				case 'user_trash':
 					$tabs->tab( 'user_trash' )
-						->name_( 'Trash' );
+						->name_( 'Trash2' );
 					break;
 				case 'unlink':
-					$tabs->tab( 'user_unlink' )
-						->callback_this( 'user_unlink' )
+					$tabs->tab( 'unlink' )
 						->name_( 'Unlink' );
 					break;
 			}
@@ -233,12 +252,11 @@ class ThreeWP_Broadcast
 		if ( isset( $_POST['save'] ) )
 		{
 			// Save the exceptions
-			$custom_field_exceptions = str_replace( "\r", "", trim( $_POST['custom_field_exceptions'] ) );
-			$custom_field_exceptions = explode("\n", $custom_field_exceptions );
+			$custom_field_exceptions = trim( $_POST['custom_field_exceptions'] );
+			$this->update_site_option( 'custom_field_exceptions', $custom_field_exceptions );
 			$this->update_site_option( 'save_post_priority', intval( $_POST['save_post_priority'] ) );
 			$this->update_site_option( 'override_child_permalinks', isset( $_POST['override_child_permalinks'] ) );
 			$this->update_site_option( 'canonical_url', isset( $_POST['canonical_url'] ) );
-			$this->update_site_option( 'custom_field_exceptions', $custom_field_exceptions );
 			foreach(array( 'role_broadcast',
 				'role_link',
 				'role_broadcast_as_draft',
@@ -328,12 +346,12 @@ class ThreeWP_Broadcast
 			),
 			'custom_field_exceptions' => array(
 				'name' => 'custom_field_exceptions',
-				'type' => 'textarea',
+				'type' => 'text',
 				'label' => 'Custom field exceptions',
-				'value' => implode("\n", $this->get_site_option( 'custom_field_exceptions' ) ),
-				'cols' => 30,
-				'rows' => 5,
-				'description' => 'Custom fields that begin with underscores (internal fields) are ignored. If you know of an internal field that should be broadcasted, write it down here. One custom field key per line and it can be any part of the key string.',
+				'value' => $this->get_site_option( 'custom_field_exceptions' ),
+				'maxlength' => 128,
+				'size' => 40,
+				'description' => 'Custom fields that begin with underscores (internal fields) are ignored. If you know of an internal field that should be broadcasted, write it down here. Separate the fields with a space. The exception can be any part of the key string.',
 			),
 			'override_child_permalinks' => array(
 				'name' => 'override_child_permalinks',
@@ -363,37 +381,27 @@ class ThreeWP_Broadcast
 
 	public function admin_post_types()
 	{
-		if ( isset( $_POST['save_post_types'] ) )
-		{
-			$post_types = trim( $_POST['post_types'] );
-			$post_types = array_filter( explode( ' ', $post_types ) );
-			$post_types = array_flip( $post_types );
-			$this->update_site_option( 'post_types', $post_types);
-			$this->message( 'Custom post types saved!' );
-		}
+		$form = $this->form2();
 
 		$post_types = $this->get_site_option( 'post_types' );
 
-		$inputs = array();
+		$input_pt = $form->text( 'post_types' )
+			->label( 'Post types to broadcast' )
+			->size( 50, 1024 )
+			->value( $post_types );
+		$label = $this->_( 'A space-separated list of post types that have broadcasting enabled. The default value is <code>post page</code>.' );
+		$input_pt->description->set_unfiltered_label( $label );
 
-		$inputs[ 'post_types' ] = array(
-			'type' => 'text',
-			'name' => 'post_types',
-			'label' => $this->_( 'Post types to broadcast' ),
-			'description' => $this->_( 'A space-separated list of post types that have broadcasting enabled. The default value is <code>post page</code>.' ),
-			'value' => implode( ' ', array_keys( $post_types ) ),
-			'size' => 50,
-			'max_length' => 1024,
-		);
+		$form->primary_button( 'save_post_types' )
+			->value( $this->_( 'Save the allowed post types' ) );
 
-		$input_submit = array(
-			'name' => 'save_post_types',
-			'type' => 'submit',
-			'value' => 'Save the allowed post types',
-			'css_class' => 'button-primary',
-		);
-
-		$form = $this->form();
+		if ( $form->is_posting() )
+		{
+			$form->post()->use_post_values();
+			$post_types = $form->input( 'post_types' )->get_value();
+			$this->update_site_option( 'post_types', $post_types);
+			$this->message( 'Custom post types saved!' );
+		}
 
 		echo '
 
@@ -401,15 +409,11 @@ class ThreeWP_Broadcast
 
 		<p>' . $this->_( 'Post types must be specified using their internal Wordpress names with a space between each. It is not possible to automatically make a list of available post types on the whole network because of limitation within Wordpress.' ) . '</p>
 
-		'.$form->start().'
+		'.$form->open_tag().'
 
-		' . $this->display_form_table( $inputs ) .'
+		' . $form->display_form_table() .'
 
-		<p>
-			'.$form->make_input( $input_submit).'
-		</p>
-
-		'.$form->stop().'
+		'.$form->close_tag().'
 		';
 	}
 
@@ -679,7 +683,7 @@ class ThreeWP_Broadcast
 	/**
 		Finds orhpans for a specific post.
 	**/
-	public function user_find_orphans()
+	public function find_orphans()
 	{
 		$current_blog_id = get_current_blog_id();
 		$nonce = $_GET['_wpnonce'];
@@ -882,7 +886,7 @@ class ThreeWP_Broadcast
 			$nonce_key .= '_' . $child_blog_id;
 		$nonce_key .= '_' . $post_id;
 
-		if (!wp_verify_nonce( $nonce, $nonce_key) )
+		if ( !wp_verify_nonce( $nonce, $nonce_key) )
 			die("Security check: not supposed to be unlinking broadcasted post!");
 
 		global $blog_id;
@@ -1503,7 +1507,7 @@ class ThreeWP_Broadcast
 				restore_current_blog();
 				// The post id is for the current blog, not the target blog.
 				$url_unlink = wp_nonce_url("profile.php?page=ThreeWP_Broadcast&amp;action=unlink&amp;post=$post_id&amp;child=$blogID", 'broadcast_unlink_' . $blogID . '_' . $post_id );
-				$url_trash = wp_nonce_url("profile.php?page=ThreeWP_Broadcast&amp;action=trash&amp;post=$post_id&amp;child=$blogID", 'broadcast_trash_' . $blogID . '_' . $post_id );
+				$url_trash = wp_nonce_url("profile.php?page=ThreeWP_Broadcast&amp;action=user_trash&amp;post=$post_id&amp;child=$blogID", 'broadcast_trash_' . $blogID . '_' . $post_id );
 				$display[] = '<div class="broadcasted_blog"><a class="broadcasted_child" href="'.$url_child.'">'.$blogs[$blogID]['blogname'].'</a>
 					<div class="row-actions broadcasted_blog_actions">
 						<small>
@@ -1541,7 +1545,7 @@ class ThreeWP_Broadcast
 			{
 				$this->load_language();
 				$post_types = $this->get_site_option( 'post_types' );
-				foreach( $post_types as $post_type => $ignore )
+				foreach( explode( ' ', $post_types ) as $post_type )
 					add_meta_box( 'threewp_broadcast', $this->_( 'Broadcast' ), array( &$this, 'add_meta_box' ), $post_type, 'side', 'low' );
 				add_action( 'save_post', array( &$this, 'save_post' ), $this->get_site_option( 'save_post_priority' ) );
 			}
@@ -2269,7 +2273,7 @@ class ThreeWP_Broadcast
 		return $terms;
 	}
 
-	private function keep_valid_custom_fields( $custom_fields)
+	private function keep_valid_custom_fields( $custom_fields )
 	{
 		foreach( $custom_fields as $key => $array)
 			if ( !$this->is_custom_field_valid( $key) )
@@ -2278,31 +2282,47 @@ class ThreeWP_Broadcast
 		return $custom_fields;
 	}
 
-	private function is_custom_field_valid( $custom_field)
+	/**
+		@brief		Is this custom field (1) external or (2) underscored, but excepted?
+		@details
+
+		Internal fields start with underscore and are generally not interesting to broadcast.
+
+		Some plugins store important information as internal fields and should have their fields broadcasted.
+
+		Documented 20130926.
+
+		@param		string		$custom_field		The name of the custom field to check.
+		@return		bool		True if the field is OK to broadcast.
+		@since		20130926
+	**/
+	private function is_custom_field_valid( $custom_field )
 	{
 		if ( !isset( $this->custom_field_exceptions_cache) )
-			$this->custom_field_exceptions_cache = $this->get_site_option( 'custom_field_exceptions' );
+			$this->custom_field_exceptions_cache = explode( ' ', $this->get_site_option( 'custom_field_exceptions' ) );
 
+		// If the field does not start with an underscore, it is automatically valid.
 		if ( strpos( $custom_field, '_' ) !== 0 )
 			return true;
 
 		foreach( $this->custom_field_exceptions_cache as $exception)
-			if (strpos( $custom_field, $exception) !== false )
+			if ( strpos( $custom_field, $exception) !== false )
 				return true;
 
 		return false;
 	}
 
 	/**
-		If broadcasting, will return $_POST['broadcast'].
-		Else false.
+		@brief		Are we in the middle of a broadcast?
+		@return		bool		True if we're broadcasting.
+		@since		20130926
 	*/
 	public function is_broadcasting()
 	{
 		return $this->broadcasting !== false;
 	}
 
-	private function save_last_used_settings( $user_id, $settings)
+	private function save_last_used_settings( $user_id, $settings )
 	{
 		$data = $this->sql_user_get( $user_id );
 		$data['last_used_settings'] = $settings;

@@ -149,7 +149,19 @@ It works transparently in the background, but in case you've never really used W
 
 Translated categories and tags are untested as of 2013-07-17.
 
+== Upgrade Notice ==
+
+= 1.29 =
+
+Users are requested to check their post type and custom field exception settings after upgrading.
+
+
 == Changelog ==
+
+= 1.29 20130926 =
+* Users are requested to check their post type and custom field exception settings after upgrading.
+* Fix: Converted array settings to strings, which fixes the foreach() error on line 1544.
+* Fix: Posts can be trashed from the parent post overview.
 
 = 1.28 20130924 =
 * Fix: Category matching uses more fuzzy searching. Fixes WP_Error on line 1850.
