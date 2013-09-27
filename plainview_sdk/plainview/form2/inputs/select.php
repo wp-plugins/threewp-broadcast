@@ -6,14 +6,14 @@ namespace plainview\form2\inputs;
 	@brief		Select input.
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130730
+	@version	20130910
 **/
 class select
 	extends optionsinput
 	implements \Countable
 {
 	use traits\size;
-	use traits\value
+	use traits\value, traits\options
 	{
 		traits\options::use_post_value insteadof traits\value;
 		traits\options::value insteadof traits\value;

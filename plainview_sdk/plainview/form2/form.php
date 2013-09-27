@@ -94,6 +94,8 @@ namespace plainview\form2;
 	Changelog
 	---------
 
+	- 20130925	Input datetime_local changed to datetimelocal.
+	- 20130910	Select option uses traits more verbosely.
 	- 20130820	Fixed number input validation and translation strings. \n
 				Fieldset subclasses can report their inputs.
 	- 20130819	Validation errors now have the input as the container. Radios required() fixed.
@@ -119,7 +121,7 @@ namespace plainview\form2;
 
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130820
+	@version	20130925
 **/
 class form
 {
@@ -131,7 +133,7 @@ class form
 		@var		$form_version
 		@since		20130805
 	**/
-	public static $form_version = 20130820;
+	public static $form_version = 20130925;
 
 	/**
 		@brief		Has the form handled the POST array?
@@ -168,7 +170,7 @@ class form
 			'datalist',
 			'date',
 			'datetime',
-			'datetime_local',
+			'datetimelocal',
 			'email',
 			'fieldset',
 			'hidden',

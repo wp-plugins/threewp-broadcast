@@ -158,6 +158,10 @@ Users are requested to check their post type and custom field exception settings
 
 == Changelog ==
 
+= 1.30 20130927 =
+* Fix: Fixed bug that sometimes skipped some blogs, at random, when broadcasting.
+
+
 = 1.29 20130926 =
 * Users are requested to check their post type and custom field exception settings after upgrading.
 * Fix: Converted array settings to strings, which fixes the foreach() error on line 1544.
