@@ -10,4 +10,3 @@ class secondary_button
 		$this->css_class( 'button-secondary' );
 	}
 }
-

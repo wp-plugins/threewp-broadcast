@@ -10,4 +10,3 @@ class primary_button
 		$this->css_class( 'button-primary' );
 	}
 }
-

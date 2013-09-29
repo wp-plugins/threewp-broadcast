@@ -15,6 +15,7 @@ class input
 	use traits\disabled;		// Most elements can be disabled, so instead of including it 500 times later, just include it once here.
 	use traits\label;			// Same reason as _disabled.
 	use traits\datalist;		// Same reason as _disabled.
+	use traits\prefix;
 	use traits\readonly;		// Same reason as _disabled.
 	use traits\validation;		// All subinputs will inherit the validation methods.
 
@@ -22,12 +23,19 @@ class input
 
 	public $description = '';
 
+	/**
+		@brief		Does this input have a description?
+		@var		$has_description
+	**/
 	public $has_description = true;
+
+	/**
+		@brief		Does this input have a label?
+		@var		$has_label
+	**/
 	public $has_label = true;
 
 	public $label;
-
-	public $prefix = array();
 
 	public $self_closing = true;
 
@@ -77,7 +85,8 @@ class input
 		$o->indent = $this->indent();
 		$o->input = $placeholders->input;
 		$o->label = $placeholders->label;
-		$o->description = $placeholders->description;
+		if ( ! $this->description->is_empty() )
+			$o->description = $placeholders->description;
 		$input_string = $this->assemble_input_string( $o );
 
 		$r = sprintf( '%s%s%s',
@@ -106,21 +115,6 @@ class input
 	**/
 	public function _construct()
 	{
-	}
-
-	/**
-		@brief		Append a / several prefixes.
-		@details	All arguments to this method are discovered and appended.
-		@return		this		Object chaining.
-		@see		prefix()
-		@see		prepend_prefix()
-		@since		20130524
-	**/
-	public function append_prefix( $prefix )
-	{
-		foreach( func_get_args() as $arg )
-			$this->prefix[] = $arg;
-		return $this;
 	}
 
 	/**
@@ -276,6 +270,9 @@ class input
 			->css_class( 'form_item_' . ( isset( $this->type ) ? $this->type : $this->tag ) )
 			->css_class( 'form_item_' . $this->make_id() );
 
+		// Get all the css classes for this input and add them to the div
+		$r->css_class( $this->get_attribute( 'class' ) );
+
 		// It would be a good idea if the container could include information about the status of the input.
 		if ( $this->has_validation_errors() )
 			$r->css_class( 'does_not_validate' );
@@ -292,16 +289,6 @@ class input
 	public function get_id()
 	{
 		return $this->get_attribute( 'id' );
-	}
-
-	/**
-		@brief		Does this input have any prefixes set?
-		@return		bool		True if the input has prefixes.
-		@since		20130718
-	**/
-	public function has_prefix()
-	{
-		return count( $this->prefix ) > 0;
 	}
 
 	public function indentation()
@@ -333,7 +320,7 @@ class input
 	public function make_name()
 	{
 		$name = $this->get_attribute( 'name' );
-		$names = array_merge( $this->prefix, array( $name ) );
+		$names = array_merge( $this->get_prefixes(), [ $name ] );
 
 		// The first prefix does NOT have brackets. The rest do. *sigh*
 		$r = array_shift( $names );
@@ -343,37 +330,8 @@ class input
 		return $r;
 	}
 
-	/**
-		@brief		Set the prefix(es) for this input.
-		@details	Clears the prefixes before setting them.
-		@return		this		Object chaining.
-		@see		append_prefix()
-		@see		prepend_prefix()
-		@since		20130524
-	**/
-	public function prefix( $prefix )
-	{
-		$this->prefix = func_get_args();
-		return $this;
-	}
-
 	public function prepare_to_display()
 	{
-	}
-
-	/**
-		@brief		Prepend a / several prefixes.
-		@details	All arguments to this method are discovered and prepended to the beginning of the current prefixes.
-		@return		this		Object chaining.
-		@see		append_prefix()
-		@see		prefix()
-		@since		20130524
-	**/
-	public function prepend_prefix( $prefix )
-	{
-		foreach( func_get_args() as $arg )
-			array_unshift( $this->prefix, $arg );
-		return $this;
 	}
 
 	/**

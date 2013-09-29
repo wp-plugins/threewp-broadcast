@@ -342,15 +342,13 @@ class base
 	public function admin_uninstall()
 	{
 		$form = $this->form2();
-
-		$prefix = get_class( $this );
+		$form->prefix( get_class( $this ) );
 
 		$form->checkbox( 'sure' )
 			->label_( "Yes, I'm sure I want to remove all the plugin tables and settings." )
-			->prefix( $prefix )
 			->required();
+
 		$form->primary_button( 'uninstall' )
-			->prefix( $prefix )
 			->value_( "Uninstall plugin" );
 
 		if ( $form->is_posting() )
@@ -379,9 +377,9 @@ class base
 		echo $form->start().'
 			<p>' . $this->_( 'This page will remove all the plugin tables and settings from the database and then deactivate the plugin.' ) . '</p>
 
-			<p>' . $form->input( 'sure' ) . '</p>
+			' . $form->input( 'sure' ) . '
 
-			<p>' . $form->input( 'uninstall' ) . '</p>
+			' . $form->input( 'uninstall' )->display_input() . '
 
 			'.$form->stop();
 	}

@@ -17,4 +17,3 @@ class button
 		return $this->set_value( $value );
 	}
 }
-

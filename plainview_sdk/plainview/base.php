@@ -13,6 +13,7 @@ namespace plainview;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20130929		form2
 	- 20130925		form2
 	- 20130910		form2
 	- 20130902		wordpress/tabs improvements.

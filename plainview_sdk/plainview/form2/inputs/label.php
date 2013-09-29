@@ -6,7 +6,7 @@ namespace plainview\form2\inputs;
 	@brief		HTML element being the label of an input.
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130709
+	@version	20130929
 **/
 class label
 {
@@ -36,6 +36,16 @@ class label
 	public function input()
 	{
 		return $this->input;
+	}
+
+	/**
+		@brief		Is this label empty?
+		@return		bool		True if the label is empty.
+		@since		20130929
+	**/
+	public function is_empty()
+	{
+		return $this->content == '';
 	}
 
 	/**

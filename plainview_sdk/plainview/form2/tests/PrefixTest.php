@@ -39,4 +39,18 @@ class PrefixTest extends TestCase
 		$select = $this->form()->select( 'select' )->multiple();
 		$this->assertStringContains( 'name="select[]"', $select->display_input() );
 	}
+
+	public function test_form_prefix()
+	{
+		$form = $this->form();
+		$form->prefix( 'prefix1' );
+
+		// Add an input without a prefix.
+		$form->text( 'text' );
+		$this->assertStringContains( 'name="prefix1[text]"', $form );
+
+		// Add an input with its own prefix.
+		$form->text( 'text2' )->prefix( 'prefix2' );
+		$this->assertStringContains( 'name="prefix1[prefix2][text2]"', $form );
+	}
 }

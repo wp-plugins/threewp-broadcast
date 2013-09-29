@@ -35,18 +35,4 @@ class inputfieldset
 	{
 		return $this->inputs;
 	}
-
-	/**
-		@brief		Assign the prefix to each of the options.
-		@param		string		$prefix		Prefix to append to the options.
-		@return		this		Method chaining.
-		@since		20130524
-	**/
-	public function prefix( $prefix )
-	{
-		$this->prefix = func_get_args();
-		foreach( $this->get_options() as $option )
-			call_user_func_array( array( $option, 'prefix' ), $this->prefix );
-		return $this;
-	}
 }

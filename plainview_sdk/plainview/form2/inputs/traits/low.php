@@ -21,4 +21,3 @@ trait low
 		return $this->set_attribute( 'low', $low );
 	}
 }
-

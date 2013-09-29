@@ -6,7 +6,7 @@ namespace plainview\form2\inputs;
 	@brief		HTML element containing the description of an input.
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130524
+	@version	20130929
 **/
 class description
 {
@@ -41,5 +41,15 @@ class description
 	public function input()
 	{
 		return $this->input;
+	}
+
+	/**
+		@brief		Is this description empty?
+		@return		bool			True if the description is empty.
+		@since		20130929
+	**/
+	public function is_empty()
+	{
+		return $this->label->is_empty();
 	}
 }

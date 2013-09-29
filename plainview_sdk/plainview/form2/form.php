@@ -94,6 +94,8 @@ namespace plainview\form2;
 	Changelog
 	---------
 
+	- 20130929	description->is_empty(), label->is_empty() \n
+				Input div container inherits the input's css classes.
 	- 20130925	Input datetime_local changed to datetimelocal.
 	- 20130910	Select option uses traits more verbosely.
 	- 20130820	Fixed number input validation and translation strings. \n
@@ -127,6 +129,7 @@ class form
 {
 	use \plainview\html\element;
 	use inputs\traits\container;
+	use inputs\traits\prefix;
 
 	/**
 		@brief		Version of the form object.

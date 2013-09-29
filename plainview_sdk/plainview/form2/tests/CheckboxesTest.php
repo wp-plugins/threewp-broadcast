@@ -16,7 +16,7 @@ class CheckboxesTest extends TestCase
 
 	public function test_ids()
 	{
-		$cbs = $this->checkboxes() . '';
+		$cbs = $this->checkboxes();
 		$this->assertStringContainsRegExp( '/id=".*checkboxestest_cb1"/', $cbs );
 		$this->assertStringContainsRegExp( '/id=".*checkboxestest_cb2"/', $cbs );
 		$this->assertStringContainsRegExp( '/id=".*checkboxestest_cb3"/', $cbs );

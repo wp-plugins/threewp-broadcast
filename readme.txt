@@ -158,9 +158,11 @@ Users are requested to check their post type and custom field exception settings
 
 == Changelog ==
 
+= 1.31 20130929 =
+* Fix: Taxonomies are sometimes missed if uncategorized is used.
+
 = 1.30 20130927 =
 * Fix: Fixed bug that sometimes skipped some blogs, at random, when broadcasting.
-
 
 = 1.29 20130926 =
 * Users are requested to check their post type and custom field exception settings after upgrading.

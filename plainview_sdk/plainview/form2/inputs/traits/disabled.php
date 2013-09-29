@@ -32,4 +32,3 @@ trait disabled
 		return $this->get_boolean_attribute( 'disabled' );
 	}
 }
-
