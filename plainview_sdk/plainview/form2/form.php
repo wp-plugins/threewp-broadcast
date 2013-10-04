@@ -94,6 +94,8 @@ namespace plainview\form2;
 	Changelog
 	---------
 
+	- 20131004	markup ignores post values - will no longer disappear.
+	- 20131001	input->title also sets the title of the label.
 	- 20130929	description->is_empty(), label->is_empty() \n
 				Input div container inherits the input's css classes.
 	- 20130925	Input datetime_local changed to datetimelocal.
@@ -123,7 +125,6 @@ namespace plainview\form2;
 
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130925
 **/
 class form
 {
@@ -136,7 +137,7 @@ class form
 		@var		$form_version
 		@since		20130805
 	**/
-	public static $form_version = 20130925;
+	public static $form_version = 20131004;
 
 	/**
 		@brief		Has the form handled the POST array?

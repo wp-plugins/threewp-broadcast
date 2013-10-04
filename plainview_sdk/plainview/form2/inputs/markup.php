@@ -10,7 +10,7 @@ namespace plainview\form2\inputs;
 
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130815
+	@version	20131004
 **/
 class markup
 	extends input
@@ -71,6 +71,14 @@ class markup
 	{
 		$markup = call_user_func_array( array( $this->container, '_' ), func_get_args() );
 		return $this->p( $markup );
+	}
+
+	/**
+		@brief		We are uninterested in the POST.
+		@since		20131004
+	**/
+	public function use_post_value()
+	{
 	}
 }
 

@@ -118,11 +118,11 @@ Find the post in the post overview and use the row action "find orphans". You wi
 
 To be considered an orphan the orphaned posts must have the exact same title (name) as the soon-to-be parent.
 
-= Bulk broadcast existing pages =
+= Broadcast existing pages in bulk =
 
-That's not possible until ticket 16031, http://core.trac.wordpress.org/ticket/16031 , gets fixed.
+Want to broadcast a bunch of existing pages at once? This function will be released after Broadcast 2.0.
 
-I'm not writing a UI for that function when I'll just have to rewrite it when the ticket gets fixed.
+As of today, ticket 16031, http://core.trac.wordpress.org/ticket/16031 , is causing the problem.
 
 = Slugs =
 
@@ -155,8 +155,10 @@ Translated categories and tags are untested as of 2013-07-17.
 
 Users are requested to check their post type and custom field exception settings after upgrading.
 
-
 == Changelog ==
+
+= 1.32 20131004 =
+* Fix: Broadcasting of featured images, attachments and galleries works much better.
 
 = 1.31 20130929 =
 * Fix: Taxonomies are sometimes missed if uncategorized is used.

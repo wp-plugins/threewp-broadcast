@@ -6,7 +6,7 @@ namespace plainview\form2\inputs;
 	@brief		Input superclass.
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130524
+	@version	20131001
 **/
 class input
 {
@@ -335,6 +335,19 @@ class input
 	}
 
 	/**
+		@brief		Set the title attribute.
+		@details	Also sets the title attribute of the label.
+		@return		this		Object chaining.
+		@since		20131001
+	**/
+	public function title( $title )
+	{
+		$title = \plainview\form2\form::filter_text( $title );
+		$this->label->title( $title );
+		return \plainview\html\element::title( $title );
+	}
+
+	/**
 		@brief		Convenience method to translate the title before setting it.
 		@return		this		Object chaining.
 		@since		20130524
@@ -345,4 +358,3 @@ class input
 		return $this->title( $title );
 	}
 }
-
