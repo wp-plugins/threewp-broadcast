@@ -13,7 +13,8 @@ namespace plainview;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
-	- 20131004		form2
+	- 20131005		collections\collection
+	- 20131004		wordpress
 	- 20131002		collections\collection
 	- 20131001		form2
 	- 20130929		form2
@@ -77,7 +78,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20131004;
+	protected $sdk_version = 20131005;
 	/**
 		@brief		Constructor.
 		@since		20130425

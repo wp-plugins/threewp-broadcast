@@ -16,6 +16,8 @@
 
 	@par	Changelog
 
+	- 20131004				Converted submenu_pages to collection.
+	- 20131004				cli_sdk_info(). Call using php PLUGIN.PHP --sdk_info
 	- 20130811				$plugin_version
 	- 20130810				time_to_string()
 	- 20130809				No longer needs to be constructed with the __FILE__ as a parameter. \n
@@ -95,7 +97,7 @@
 
 	@author		Edward Plainview	edward@plainview.se
 	@copyright	GPL v3
-	@version	20130811
+	@version	20131004
 
 */
 
@@ -315,12 +317,12 @@ class base
 	public function add_submenu_page()
 	{
 		if ( ! isset( $this->submenu_pages ) )
-			$this->submenu_pages = array();
+			$this->submenu_pages = new \plainview\collections\collection;
 
 		$args = func_get_args();
-		$key = $args[ 2 ];
+		$key = $args[ 4 ];
 		$key = $this->strtolower( $key );
-		$this->submenu_pages[ $key ] = $args;
+		$this->submenu_pages->set( $key, $args );
 	}
 
 	/**
@@ -330,7 +332,10 @@ class base
 	**/
 	public function add_submenu_pages()
 	{
-		ksort( $this->submenu_pages );
+		$this->submenu_pages->sortBy( function( $item )
+		{
+			return $item[ 2 ];
+		} );
 		foreach( $this->submenu_pages as $submenu )
 			call_user_func_array( 'add_submenu_page', $submenu );
 	}
@@ -1194,6 +1199,81 @@ class base
 	}
 
 	/**
+		@brief		Return the version of the SDK required by the plugin.
+		@details	Will examine the plugin file and try to figure out which version of the SDK the plugin requires.
+		@return		string		The version required by the Wordpress plugin.
+		@since		20131004
+	**/
+	public function cli_sdk_info()
+	{
+		$version_required = 20010101;
+		$because_of = 'undefined';
+
+		$file = $this->paths[ '__FILE__' ];
+
+		// Find all of the function of the plugin.
+		$functions = new \plainview\collections\collection;
+		$lines = file_get_contents( $file );
+		$lines = explode( "\n", $lines );
+		$lines = array_filter( $lines );
+		foreach( $lines as $line )
+		{
+			// Find all "$this->ABC(" strings.
+			preg_match_all( '/\$this-\>[A-Z_a-z?]*\(/', $line, $matches );
+			foreach( $matches[ 0 ] as $function )
+			{
+				// Clean up the string
+				$function = preg_replace( '/.*-\>([A-Z_a-z_]*)\(/', '\1', $function );
+				// And store it.
+				$functions->put( $function, $function );
+			}
+		}
+
+		// Now read the Wordpress SDK and the base.
+		foreach( [
+			__FILE__,
+			__DIR__ . '/../base.php',
+		] as $file )
+		{
+			$contents = file_get_contents( $file );
+			$lines = explode( "\n", $contents );
+			$lines = array_reverse( $lines );
+
+			$since = null;
+			foreach( $lines as $line )
+			{
+				$line = trim( $line );
+
+				if ( $since !== null )
+				{
+					if ( strpos( $line, '@since' ) !== 0 )
+						continue;
+					$date = preg_replace( '/([^0-9])/', '', $line );
+					if ( $date > $version_required )
+					{
+						$version_required = $date;
+						$because_of = $function;
+					}
+					$since = null;
+				}
+
+				foreach( $functions as $function )
+				{
+					if ( strpos( $line, 'function ' . $function . '(' ) === false )
+						continue;
+					$since = $function;
+					// We've found this function in the SDK file. Remove it so we don't look it up later.
+					$functions->forget( $function );
+				}
+			}
+				// Are we looking for a @since?
+		}
+
+		echo sprintf( "Version %s is required because of the function %s().", $version_required, $because_of );
+		echo "\n";
+	}
+
+	/**
 		@brief		Displays an array of inputs using Wordpress table formatting.
 		@param		array		$inputs		Array of \\plainview\\wordpress\\form inputs.
 		@param		array		$options	Array of options.
@@ -1264,7 +1344,7 @@ class base
 	**/
 	public function do_cli()
 	{
-		$long_options = array_merge( array( 'pot' ), $this->long_options() );
+		$long_options = array_merge( [ 'pot', 'sdk_info' ], $this->long_options() );
 		$options = (object) getopt( '', $long_options );
 
 		foreach( $options as $option => $value )
