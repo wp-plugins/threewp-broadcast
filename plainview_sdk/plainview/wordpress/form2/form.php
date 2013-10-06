@@ -14,10 +14,11 @@ require_once( 'inputs/class.secondary_button.php' );
 	Changelog
 	---------
 
+	- 20131006		display_form_table() reacts to inputfieldsets.
 	- 20130604		display_form_table() displays asterisks for required inputs.
 	- 20130416		Initial version.
 
-	@version		20130604
+	@version		20131006
 **/
 class form
 	extends \plainview\form2\form
@@ -79,8 +80,12 @@ class form
 		foreach( $o->inputs as $input )
 		{
 			// Input containers (fieldsets) must be recursed.
+			$container = false;
+			$container |= is_subclass_of( $input, 'plainview\\form2\\inputs\\inputfieldset' );
 			$uses = class_uses( $input );
-			if ( isset( $uses[ 'plainview\\form2\\inputs\\traits\\container' ] ) )
+			$container |= isset( $uses[ 'plainview\\form2\\inputs\\traits\\container' ] );
+
+			if ( $container )
 			{
 				// Should the table be displayed?
 				if ( count( $o->table->body->rows ) > 0 )

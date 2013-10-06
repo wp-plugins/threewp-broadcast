@@ -262,7 +262,7 @@ trait db_aware_object
 	public static function unserialize_keys( $object )
 	{
 		foreach( $object->keys_to_serialize() as $key )
-			$object->$key = unserialize( base64_decode( $object->$key ) );
+			$object->$key = @unserialize( base64_decode( $object->$key ) );
 	}
 }
 

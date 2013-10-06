@@ -227,6 +227,56 @@ implements
 		return implode( $glue, $this->lists( $value ) );
 	}
 
+	public function insert_after( $key, $item )
+	{
+		$args = array_merge( [ 'after' ], func_get_args() );
+		return call_user_func_array( [ $this, 'insert_before_after' ], $args );
+	}
+
+	public function insert_before_after( $which, $search_key, $item )
+	{
+		$args = func_get_args();
+		$has_new_item_key = ( count( $args ) == 4 );
+
+		$new_items = [];
+		foreach( $this->items as $item_key => $item_value )
+		{
+			if ( ( $item_key == $search_key ) && $which == 'before' )
+			{
+				if ( $has_new_item_key )
+					$new_items[ $args[ 2 ] ] = $args[ 3 ];
+				else
+					$new_items[] = $args[ 2 ];
+			}
+
+			$new_items[ $item_key ] = $item_value;
+
+			if ( ( $item_key == $search_key ) && $which == 'after' )
+			{
+				if ( $has_new_item_key )
+					$new_items[ $args[ 2 ] ] = $args[ 3 ];
+				else
+					$new_items[] = $args[ 2 ];
+			}
+		}
+		$this->items = $new_items;
+		return $this;
+	}
+
+	/**
+		@brief		Inserts the item (or item key + item ) before a specified key.
+		@param		string		$key		Key before which to insert the item.
+		@param		mixed		$item		Item or item key + item to insert.
+		@return		this		Method chaining.
+		@see		insert_before_after()
+		@since		20131006
+	**/
+	public function insert_before( $key, $item )
+	{
+		$args = array_merge( [ 'before' ], func_get_args() );
+		return call_user_func_array( [ $this, 'insert_before_after' ], $args );
+	}
+
 	/**
 		@brief		Is this object a collection?
 		@param		object		$object		Object to query.

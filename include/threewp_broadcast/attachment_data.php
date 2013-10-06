@@ -12,7 +12,7 @@ namespace threewp_broadcast;
 	- @b 2013-02-14 Added extra attachment data from werk@haha.nl: post_title and menu_order
  */
 
-class AttachmentData
+class attachment_data
 {
 	use \plainview\traits\method_chaining;
 
@@ -33,7 +33,7 @@ class AttachmentData
 
 	public static function from_attachment_id( $attachment, $upload_dir )
 	{
-		$r = new AttachmentData();
+		$r = new attachment_data;
 
 		if ( is_object( $attachment ) )
 			$r->id = $attachment->ID;

@@ -7,6 +7,7 @@ namespace plainview\wordpress\tabs;
 
 	@par		Changelog
 
+	- 20131006	get_is()
 	- 20130902	tab_heading_*fix, tab_name_*fix
 	- 20130810	The current tab's link is cleaned.
 	- 20130809	Countable.
@@ -16,7 +17,7 @@ namespace plainview\wordpress\tabs;
 
 	@author		Edward Plainview	edward@plainview.se
 	@since		20130503
-	@version	20130810
+	@version	20131006
 **/
 
 class tabs
@@ -158,6 +159,24 @@ class tabs
 	{
 		$this->get = $get;
 		return $this;
+	}
+
+	/**
+		@brief		Is the _GET tab key equal to this value?
+		@param		string		$value		Value to check
+		@return		bool		True if the get key is equal to the value.
+		@since		20131006
+	**/
+	public function get_is( $value )
+	{
+		if ( $this->get === null )
+			$get = $_GET;
+		else
+			$get = $this->get;
+
+		if ( ! isset( $get[ $this->get_key ] ) )
+			return false;
+		return ( $get[ $this->get_key ] == $value );
 	}
 
 	/**

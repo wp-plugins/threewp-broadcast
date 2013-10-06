@@ -344,7 +344,8 @@ class input
 	{
 		$title = \plainview\form2\form::filter_text( $title );
 		$this->label->title( $title );
-		return \plainview\html\element::title( $title );
+		$this->set_attribute( 'title', $title );
+		return $this;
 	}
 
 	/**

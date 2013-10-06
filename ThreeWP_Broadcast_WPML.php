@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Add WPML support to ThreeWP Broadcast.
 Plugin Name:	ThreeWP Broadcast WPML support
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		1.32
+Version:		2.0
 */
 
 namespace threewp_broadcast;
@@ -37,11 +37,11 @@ class ThreeWP_Broadcast_WPML
 		if ( ! defined( 'WPML_LOAD_API_SUPPORT' ) )
 			define( 'WPML_LOAD_API_SUPPORT', true );
 
-		$this->add_action( 'threewp_broadcast_add_meta_box' );
+		$this->add_action( 'threewp_broadcast_added_meta_box' );
 		if( $this->is_wpml() )
 		{
-			$this->add_action( 'threewp_brodcast_broadcasting_before_restore_current_blog' );
-			$this->add_action( 'threewp_brodcast_broadcasting_started' );
+			$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
+			$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		}
 	}
 
@@ -53,11 +53,11 @@ class ThreeWP_Broadcast_WPML
 		@brief		Add information to the broadcast box about the status of Broadcast WPML.
 		@since		20130717
 	**/
-	public function threewp_broadcast_add_meta_box( $o )
+	public function threewp_broadcast_added_meta_box( $action )
 	{
-		$o->html .= '<div class="broadcast_wpml">';
-		$o->html .= $this->generate_meta_box_info( $o );
-		$o->html .= '</div><!-- broadcast_wpml -->';
+		$action->meta_box_data->html->put( 'broadcast_wpml', sprintf( '<div class="broadcast_wpml">%s</div><!-- broadcast_wpml -->',
+			$this->generate_meta_box_info()
+		) );
 	}
 
 	/**
@@ -71,9 +71,12 @@ class ThreeWP_Broadcast_WPML
 		@param		Broadcast_Data		The BCD object.
 		@since		20130717
 	**/
-	public function threewp_brodcast_broadcasting_before_restore_current_blog( $bcd )
+	public function threewp_broadcast_broadcasting_before_restore_current_blog( $action )
 	{
-		global $blog_id;
+		$bcd = $action->broadcasting_data;
+
+		// Conv
+		$current_child_blog_id = $bcd->current_child_blog_id;
 
 		// Some convenience variables.
 		$new_post = (object)$bcd->new_post;
@@ -88,19 +91,20 @@ class ThreeWP_Broadcast_WPML
 		// Do any of the current translations have a functional trid?
 		$trid = false;
 		// Loop through each child on this blog and query it for a language / trid.
-		foreach( $bcd->wpml->broadcast_data as $lang => $data )
+		foreach( $bcd->wpml->broadcast_data as $lang => $broadcast_data )
 		{
-			$child = $data->get_linked_child_on_this_blog();
+			$child = $broadcast_data->get_linked_child_on_this_blog();
+			if ( ! $child )
+				continue;
 			$trid = wpml_get_content_trid( $type, $child );
 			if ( $trid > 0 )
-					break;
+				break;
 		}
 
 		// If no trid was found then fine.
 		wpml_add_translatable_content( $type, $id, $bcd->wpml->language, $trid );
-
 		// We have a trid now. Could be useful for later.
-		$bcd->wpml->trid->$blog_id = wpml_get_content_trid( $type, $id );
+		$bcd->wpml->trid->$current_child_blog_id = wpml_get_content_trid( $type, $id );
 	}
 
 	/**
@@ -108,15 +112,17 @@ class ThreeWP_Broadcast_WPML
 		@param		Broadcast_Data		The BCD object.
 		@since		20130717
 	**/
-	public function threewp_brodcast_broadcasting_started( $bcd )
+	public function threewp_broadcast_broadcasting_started( $action )
 	{
-		global $blog_id;
+		$bcd = $action->broadcasting_data;
+
+		// Conv
+		$parent_blog_id = $bcd->parent_blog_id;
 
 		$bcd->wpml = new \stdClass;
 
 		// Retrieve the broadcast instance
-		global $threewp_broadcast;
-		$broadcast = $threewp_broadcast;
+		$broadcast = \threewp_broadcast\ThreeWP_Broadcast::instance();
 
 		// Collect info about the translations, in order to link this language with the other languages on the child posts.
 		$id = $bcd->post->ID;
@@ -132,10 +138,10 @@ class ThreeWP_Broadcast_WPML
 			}
 
 		$bcd->wpml->trid = new \stdClass;
-		$bcd->wpml->trid->$blog_id = wpml_get_content_trid( $type, $id );
+		$bcd->wpml->trid->$parent_blog_id = wpml_get_content_trid( $type, $id );
 		$bcd->wpml->broadcast_data = new \stdClass;
 		foreach( $bcd->wpml->translations as $lang => $element_id )
-			$bcd->wpml->broadcast_data->$lang = $broadcast->get_post_broadcast_data( $blog_id, $element_id );
+			$bcd->wpml->broadcast_data->$lang = $broadcast->get_post_broadcast_data( $parent_blog_id, $element_id );
 	}
 
 
@@ -148,7 +154,7 @@ class ThreeWP_Broadcast_WPML
 		@return		string		HTML string containing Broadcast WPML info.
 		@since		20130717
 	**/
-	public function generate_meta_box_info( $o )
+	public function generate_meta_box_info( $o = [] )
 	{
 		$this->load_language();
 

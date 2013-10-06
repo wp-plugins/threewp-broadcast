@@ -1,26 +1,41 @@
 === ThreeWP Broadcast ===
-Tags: network, wpms, wpmu, broadcast, multipost, blogs, posting, simultaneously, child, parent, permalink, post type, custom post type, threewp, wpml, sitepress
-Requires at least: 3.3.1
-Tested up to: 3.6.1
-Stable tag: trunk
+Contributors: edward_plainview
 Donate link: http://plainview.se/donate/
-Contributors: edward_plainview, edward mindreantre
+License: GPLv3
+Requires at least: 3.3.1
+Stable tag: trunk
+Tags: broadcast, multipost, duplicate, posts, sitepress, threewp
+Tested up to: 3.6.1
 
-Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
+Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
 
 == Description ==
 
-Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Custom post types, custom taxonomies, post meta and attachments are supported. A blog whitelist and blacklist exist. Includes a plugin that provides nominal support for WPML translations.
+Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Broadcastable features include:
 
-Broadcasted posts can be linked to their parents: updated parent posts also update the child posts. Child post permalinks can be overriden with a link to the parent post.
+* Parent post links to child posts
+* Posts, pages
+* Taxonomies (categories, tags, etc)
+* Custom fields
+* Attached images
+* Featured images
+* Galleries
+* WPML support
 
-Last used settings are remembered between uses. Broadcasted categories keep their parents, as long as the parents already exist on the child blog of if the parent is broadcasted and created simultaneously as the child category.
+Broadcasted posts can be linked to their parents, which updates child posts when the parent post is updated. This includes all data: title, slug, content, custom fields, attachments, etc.
 
-Has options for whitelisting (required blogs), blacklisting, user role access granularity, custom post and custom taxonomy support and an uninstall to completely remove itself. No traces of the plugin are left (assuming the created tables are successfully removed).
+= SEO support =
 
-Requires php v5.4 for trait support. Users of php v5.3 should remain with version 1.18.
+* Permalinks of child posts
+* Canonical URLs of child posts
 
-Users of php v5.3 can only use the <a href="http://plainview.se/wp-content/uploads/2013/08/threewp-broadcast_v1.18.zip">latest legacy version: v1.18</a>.
+= Other features =
+
+* Blogs can be grouped by users
+* Last used settings are remembered
+* User role access granularity
+
+Requires php v5.4 for trait support. Users of php v5.3 should remain with version 1.18. Users of php v5.3 can only use the <a href="http://plainview.se/wp-content/uploads/2013/08/threewp-broadcast_v1.18.zip">latest legacy version: v1.18</a>.
 
 Available in the following languages:
 
@@ -34,72 +49,76 @@ Available in the following languages:
 
 The git repository can be found at: https://github.com/the-plainview/threewp_broadcast
 
-Did I miss anything?
+= Actions and filters =
+
+Broadcast offers some actions/filters for plugin developers with which to interact with Broadcast. See the main broadcast file and the include/threewp_broadcast/filter and /actions directories for documentation and live examples.
+
+= Premium Pack =
+
+The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
+
+For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>.
+
+Currently the Premium Pack offers:
+
+* Queue - to broadcast posts to tens / hundreds of blogs at a time, bypassing Wordpress and PHP limitations.
 
 == Installation ==
 
 1. Check that your web host has PHP v5.4.
-1. Activate the plugin locally or sitewide.
+1. Activate the plugin locally or sitewide. The latter option is more common (and useful).
 
 == Screenshots ==
 
-1. Broadcast box during post editing, with WPML support line at bottom.
-2. Post / page overview with unlink options
-3. Admin: General settings
-4. User: Help page
-5. User: Group settings page
-6. Admin: Post types settings page
-7. Admin: Required blog list
-8. Admin: Blacklist
-9. Admin: Uninstall page
-
-== Actions and filters ==
-
-Broadcast offers some actions/filters for plugin developers with which to interact with Broadcast.
-
-The broadcasting actions use the Broadcasting_Data class to store and transmit information. Documentation for this class can be read in `include\Broadcasting_Data.php`.
-
-= action: threewp_broadcast_add_meta_box( $options ) =
-
-Allows the posting meta box to be modified.
-
-$options is a stdClass.
-$options->post The post that is being edited.
-$options->html The HTML of the meta box.
-
-= action: threewp_brodcast_broadcasting_started( $Broadcasting_Data ) =
-
-Fired just before the loop that broadcasts the post to each selected child blog.
-
-= action: threewp_brodcast_broadcasting_after_switch_to_blog( $Broadcasting_Data ) =
-
-Fired in the broadcast loop, after having switch to the child blog but not done any calculations or posting.
-
-= action: threewp_brodcast_broadcasting_before_restore_current_blog( $Broadcasting_Data ) =
-
-Fired in the broadcast loop, after the child post was created/updated, before restoring back to the original blog.
-
-= action: threewp_brodcast_broadcasting_finished( $Broadcasting_Data ) =
-
-Fired after the broadcast loop, before nulling all broadcast data and returning control to the Wordpress save_post function.
+1. Broadcast meta box when editing posts
+2. Post overview table showing Broadcast linking features
+3. Broadcast settings tab
+4. Custom post types tab
+5. Uninstall tab
+6. Broadcast and its associated companions in the plugin list
+7. Broadcast menu with groups enabled
+8. Broadcast meta box with groups enabled
+9. Blog group overview
+10. Editing a blog group
+11. Blog group settings
 
 == Frequently Asked Questions ==
 
 = I need support! =
 
-The easiest way to get my attention is to donate a sum of money and then send me an e-mail.
+The easiest way to get my attention is to <a href="mailto:edward@plainview.se">contact me via e-mail</a> and then use <a href="http://plainview.se/donate/">my donation page</a>.
+
+For contract work such as the following, contact me so we can make a deal:
+
+* Broadcast is missing a feature you need
+* Broadcast isn't properly interacting with other plugins
+* Broadcast doesn't work on your custom site
 
 If you're not into donations, try the support forum to see if other users can help you out.
 
-= I need Broadcast customized or modified =
+= Bulk broadcast existing pages =
 
-Get in touch with me via e-mail to discuss a deal.
+This is currently not possible due to the Wordpress UI not having support for extra action hooks. This will be solved by a plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+
+= Galleries and attachments =
+
+Attachments are force-broadcasted: the child posts have all their attachments deleted and then copied again.
+
+If you have a gallery shortcode in the post ( [gallery columns="2" ids="427,433,430,429,428"] ) then Broadcast will first check that the image does not already exist on the child blog. It does this by searching for the post name (the filename minus the extension). If no image is found, it is copied.
 
 = Is php v5.4 really necessary? =
 
 Yes, if you expect me to write neat, maintainable, legible code.
 
 If you use v5.3 then use the last plugin that works with that version: v1.18. The download link is on the main page.
+
+= Orphans? =
+
+If you have already created posts on other blogs that are supposed to be children of a specific post, you can use the "find orphans" function to find and link them.
+
+Find the post in the post overview and use the row action "find orphans". You will then be presented with a table of possible orphans on each blog. Select the blog and then choose "link orphans" to create the links.
+
+To be considered an orphan the orphaned posts must have the exact same title (name) as the soon-to-be parent.
 
 = Why can I not see the Broadcast meta box? =
 
@@ -110,29 +129,11 @@ Make sure that:
 3. Your user has write access to more than this blog
 4. The correct post type(s) have been selected
 
-= Orphans? =
-
-If you have already created posts on other blogs that are supposed to be children of a specific post, you can use the "find orphans" function to find and link them.
-
-Find the post in the post overview and use the row action "find orphans". You will then be presented with a table of possible orphans on each blog. Select the blog and then choose "link orphans" to create the links.
-
-To be considered an orphan the orphaned posts must have the exact same title (name) as the soon-to-be parent.
-
-= Broadcast existing pages in bulk =
-
-Want to broadcast a bunch of existing pages at once? This function will be released after Broadcast 2.0.
-
-As of today, ticket 16031, http://core.trac.wordpress.org/ticket/16031 , is causing the problem.
-
-= Slugs =
-
-Changed slugs (post names) are not updated in the child posts. This is a bug in Wordpress.
-
 = WPAlchemy =
 
-If you have custom post meta boxes via WPAlchemy, you'll probably need to add the following to the custom field exceptions in the settings:
+If you have custom post meta boxes via WPAlchemy, you'll probably need to add the following to the custom field inclusions in the settings:
 
-_bcc_
+	_bcc_
 
 = WPML Sitepress =
 
@@ -151,13 +152,29 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Upgrade Notice ==
 
+= 2.00 =
+
+* Blacklist and whitelist have been removed. Their functionality will be replaced by a plugin.
+* Blog grouping has been moved into a separate plugin. Requires that users recreate their blog lists.
+* Plugin authors will want to look at the old and new filters and actions that Broadcast offers.
+
 = 1.29 =
 
 Users are requested to check their post type and custom field exception settings after upgrading.
 
 == Changelog ==
 
-= 1.32 20131004 =
+= 2.0 20131006 =
+* Removed: Unecessary role to create taxonomies, which are now automatically created and synced.
+* Removed: Blacklisted blogs - replaced with per-blog per-user functionality in Premium pack.
+* Removed: Required blogs - replaced with per-blog per-user functionality in Premium pack.
+* Fix: Category broadcast bug
+* Code: Large rewrites. New actions and filters.
+* Code: Minified css.
+* Code: Modernized user.js.
+* Code: $plugin_version now matches the actual version.
+
+= 1.32 20131003 =
 * Fix: Broadcasting of featured images, attachments and galleries works much better.
 
 = 1.31 20130929 =
