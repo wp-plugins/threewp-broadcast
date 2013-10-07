@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.0
+Version:		2.1
 */
 
 namespace threewp_broadcast;
@@ -23,10 +23,10 @@ class ThreeWP_Broadcast
 {
 	/**
 		@brief		Add the meta box in the post editor?
-		@details	Standard is true.
+		@details	Standard is null, which means the plugin(s) should work it out first.
 		@since		20130928
 	**/
-	public	$add_meta_box = true;
+	public	$add_meta_box = null;
 
 	private $broadcasting = false;
 
@@ -78,6 +78,7 @@ class ThreeWP_Broadcast
 		if ( ! $this->is_network )
 			wp_die( $this->_( 'Broadcast requires a Wordpress network to function.' ) );
 
+		$this->add_action( 'add_meta_boxes' );
 		$this->add_action( 'admin_menu' );
 		$this->add_action( 'admin_print_styles' );
 
@@ -90,7 +91,6 @@ class ThreeWP_Broadcast
 		}
 
 		$this->add_filter( 'threewp_broadcast_add_meta_box' );
-		$this->add_filter( 'threewp_broadcast_add_meta_boxes' );
 		$this->add_filter( 'threewp_broadcast_broadcast_post' );
 		$this->add_filter( 'threewp_broadcast_get_user_writable_blogs' );
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 9 );		// Just before the standard 10.
@@ -101,29 +101,6 @@ class ThreeWP_Broadcast
 			$this->add_action( 'wp_head', 1 );
 
 		$this->permalink_cache = new \stdClass;
-	}
-
-	public function threewp_broadcast_add_meta_boxes( $broadcast )
-	{
-		// Is it false? Then someone else has decided that it should not be shown.
-		if ( $this->add_meta_box === false )
-			return $broadcast;
-
-		// If it's true, then show it to all post types!
-		if ( $this->add_meta_box === true )
-		{
-			$post_types = $this->get_site_option( 'post_types' );
-			foreach( explode( ' ', $post_types ) as $post_type )
-				add_meta_box( 'threewp_broadcast', $this->_( 'Broadcast' ), array( &$this, 'threewp_broadcast_add_meta_box' ), $post_type, 'side', 'low' );
-			return;
-		}
-
-		// No decision yet. Decide.
-		$this->add_meta_box |= is_super_admin();
-		$this->add_meta_box |= $this->role_at_least( $this->get_site_option( 'role_broadcast' ) );
-
-		if ( $this->add_meta_box === true )
-			return $this->threewp_broadcast_add_meta_boxes( $broadcast );
 	}
 
 	public function admin_menu()
@@ -175,8 +152,6 @@ class ThreeWP_Broadcast
 		}
 
 		$this->add_submenu_pages();
-
-		$this->filters( 'threewp_broadcast_add_meta_boxes' );
 
 		// Hook into save_post, no matter is the meta box is displayed or not.
 		$this->add_action( 'save_post', intval( $this->get_site_option( 'save_post_priority' ) ) );
@@ -829,8 +804,176 @@ class ThreeWP_Broadcast
 	// ----------------------------------------- Callbacks
 	// --------------------------------------------------------------------------------------------
 
+	public function add_meta_boxes()
+	{
+		// Is it false? Then someone else has decided that it should not be shown.
+		if ( $this->add_meta_box === false )
+			return $broadcast;
+
+		// If it's true, then show it to all post types!
+		if ( $this->add_meta_box === true )
+		{
+			$post_types = $this->get_site_option( 'post_types' );
+			foreach( explode( ' ', $post_types ) as $post_type )
+				add_meta_box( 'threewp_broadcast', $this->_( 'Broadcast' ), array( &$this, 'threewp_broadcast_add_meta_box' ), $post_type, 'side', 'low' );
+			return;
+		}
+
+		// No decision yet. Decide.
+		$this->add_meta_box |= is_super_admin();
+		$this->add_meta_box |= $this->role_at_least( $this->get_site_option( 'role_broadcast' ) );
+
+		// No access to any other blogs = no point in displaying it.
+		$filter = new filters\get_user_writable_blogs( $this->user_id() );
+		$blogs = $filter->apply()->blogs;
+		if ( count( $blogs ) <= 1 )
+			$this->add_meta_box = false;
+
+		// Convert to a bool value
+		$this->add_meta_box = ( $this->add_meta_box == true );
+
+		if ( $this->add_meta_box == true )
+			return $this->add_meta_boxes();
+	}
+
+	public function delete_post( $post_id)
+	{
+		$this->trash_untrash_delete_post( 'wp_delete_post', $post_id );
+	}
+
+	public function manage_posts_custom_column( $column_name, $parent_post_id )
+	{
+		if ( $column_name != '3wp_broadcast' )
+			return;
+
+		global $post;
+
+		$action = new actions\manage_posts_custom_column();
+		$action->post = $post;
+		$action->parent_blog_id = get_current_blog_id();
+		$action->parent_post_id = $parent_post_id;
+		$action->broadcast_data = $this->get_post_broadcast_data( $action->parent_blog_id , $parent_post_id );
+		$action->apply();
+
+		echo $action->render();
+	}
+
+	public function manage_posts_columns( $defaults)
+	{
+		$defaults[ '3wp_broadcast' ] = '<span title="'.$this->_( 'Shows which blogs have posts linked to this one' ).'">'.$this->_( 'Broadcasted' ).'</span>';
+		return $defaults;
+	}
+
+	public function post_link( $link, $post )
+	{
+		global $blog_id;
+
+		// Have we already checked this post ID for a link?
+		$key = 'b' . $blog_id . '_p' . $post->ID;
+		if ( property_exists( $this->permalink_cache, $key ) )
+			return $this->permalink_cache->$key;
+
+		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
+
+		$linked_parent = $broadcast_data->get_linked_parent();
+
+		if ( $linked_parent === false)
+		{
+			$this->permalink_cache->$key = $link;
+			return $link;
+		}
+
+		switch_to_blog( $linked_parent[ 'blog_id' ] );
+		$post = get_post( $linked_parent[ 'post_id' ] );
+		$permalink = get_permalink( $post );
+		restore_current_blog();
+
+		$this->permalink_cache->$key = $permalink;
+
+		return $permalink;
+	}
+
+	public function post_row_actions( $actions, $post )
+	{
+		global $blog_id;
+		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
+		if ( $broadcast_data->has_linked_children() )
+			$actions = array_merge( $actions, array(
+				'broadcast_unlink' => '<a href="'.wp_nonce_url("admin.php?page=threewp_broadcast&amp;action=unlink&amp;post=".$post->ID."", 'broadcast_unlink_' . $post->ID).'" title="'.$this->_( 'Remove links to all the broadcasted children' ).'">'.$this->_( 'Unlink' ).'</a>',
+			) );
+		$actions[ 'broadcast_find_orphans' ] = '<a href="'.wp_nonce_url("admin.php?page=threewp_broadcast&amp;action=user_find_orphans&amp;post=".$post->ID."", 'broadcast_find_orphans_' . $post->ID).'" title="'.$this->_( 'Find posts on other blogs that are identical to this post' ).'">'.$this->_( 'Find orphans' ).'</a>';
+		return $actions;
+	}
+
+	public function save_post( $post_id )
+	{
+		// Loop check.
+		if ( $this->is_broadcasting() )
+			return;
+
+		if ( count( $_POST ) < 1 )
+			return;
+
+		// No permission.
+		if ( ! $this->role_at_least( $this->get_site_option( 'role_broadcast' ) ) )
+			return;
+
+		// Save the user's last settings.
+		$this->save_last_used_settings( $this->user_id(), $_POST[ 'broadcast' ] );
+
+		$broadcasting_data = new broadcasting_data( [
+			'_POST' => $_POST,
+			'parent_blog_id' => get_current_blog_id(),
+			'parent_post_id' => $post_id,
+			'post' => get_post( $post_id ),
+			'upload_dir' => wp_upload_dir(),
+		] );
+
+		$this->filters( 'threewp_broadcast_prepare_broadcasting_data', $broadcasting_data );
+
+		if ( $broadcasting_data->has_blogs() )
+			$this->filters( 'threewp_broadcast_broadcast_post', $broadcasting_data );
+	}
+
+	public function threewp_activity_monitor_list_activities( $activities )
+	{
+		// First, fill in our own activities.
+		$this->activities = array(
+			'3broadcast_broadcasted' => array(
+				'name' => $this->_( 'A post was broadcasted.' ),
+			),
+			'3broadcast_group_added' => array(
+				'name' => $this->_( 'A Broadcast blog group was added.' ),
+			),
+			'3broadcast_group_deleted' => array(
+				'name' => $this->_( 'A Broadcast blog group was deleted.' ),
+			),
+			'3broadcast_group_modified' => array(
+				'name' => $this->_( 'A Broadcast blog group was modified.' ),
+			),
+			'3broadcast_unlinked' => array(
+				'name' => $this->_( 'A post was unlinked.' ),
+			),
+		);
+
+		// Insert our module name in all the values.
+		foreach( $this->activities as $index => $activity )
+		{
+			$activity[ 'plugin' ] = 'ThreeWP Broadcast';
+			$activities[ $index ] = $activity;
+		}
+
+		return $activities;
+	}
+
+	/**
+		@brief		Prepare and display the meta box data.
+		@since		20131003
+	**/
 	public function threewp_broadcast_add_meta_box( $post )
 	{
+		// Pre
+		// Has this meta data
 		global $blog_id;
 
 		// Find out if this post is already linked
@@ -989,132 +1132,6 @@ class ThreeWP_Broadcast
 				$meta_box_data->html->put( $type, ${ $type . '_input' } );
 
 		echo $meta_box_data->html;
-	}
-
-	public function delete_post( $post_id)
-	{
-		$this->trash_untrash_delete_post( 'wp_delete_post', $post_id );
-	}
-
-	public function manage_posts_custom_column( $column_name, $parent_post_id )
-	{
-		if ( $column_name != '3wp_broadcast' )
-			return;
-
-		global $post;
-
-		$action = new actions\manage_posts_custom_column();
-		$action->post = $post;
-		$action->parent_blog_id = get_current_blog_id();
-		$action->parent_post_id = $parent_post_id;
-		$action->broadcast_data = $this->get_post_broadcast_data( $action->parent_blog_id , $parent_post_id );
-		$action->apply();
-
-		echo $action->render();
-	}
-
-	public function manage_posts_columns( $defaults)
-	{
-		$defaults[ '3wp_broadcast' ] = '<span title="'.$this->_( 'Shows which blogs have posts linked to this one' ).'">'.$this->_( 'Broadcasted' ).'</span>';
-		return $defaults;
-	}
-
-	public function post_link( $link, $post )
-	{
-		global $blog_id;
-
-		// Have we already checked this post ID for a link?
-		$key = 'b' . $blog_id . '_p' . $post->ID;
-		if ( property_exists( $this->permalink_cache, $key ) )
-			return $this->permalink_cache->$key;
-
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
-
-		$linked_parent = $broadcast_data->get_linked_parent();
-
-		if ( $linked_parent === false)
-		{
-			$this->permalink_cache->$key = $link;
-			return $link;
-		}
-
-		switch_to_blog( $linked_parent[ 'blog_id' ] );
-		$post = get_post( $linked_parent[ 'post_id' ] );
-		$permalink = get_permalink( $post );
-		restore_current_blog();
-
-		$this->permalink_cache->$key = $permalink;
-
-		return $permalink;
-	}
-
-	public function post_row_actions( $actions, $post )
-	{
-		global $blog_id;
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
-		if ( $broadcast_data->has_linked_children() )
-			$actions = array_merge( $actions, array(
-				'broadcast_unlink' => '<a href="'.wp_nonce_url("admin.php?page=threewp_broadcast&amp;action=unlink&amp;post=".$post->ID."", 'broadcast_unlink_' . $post->ID).'" title="'.$this->_( 'Remove links to all the broadcasted children' ).'">'.$this->_( 'Unlink' ).'</a>',
-			) );
-		$actions[ 'broadcast_find_orphans' ] = '<a href="'.wp_nonce_url("admin.php?page=threewp_broadcast&amp;action=user_find_orphans&amp;post=".$post->ID."", 'broadcast_find_orphans_' . $post->ID).'" title="'.$this->_( 'Find posts on other blogs that are identical to this post' ).'">'.$this->_( 'Find orphans' ).'</a>';
-		return $actions;
-	}
-
-	public function save_post( $post_id )
-	{
-		// Loop check.
-		if ( $this->is_broadcasting() )
-			return;
-
-		if ( count( $_POST ) < 1 )
-			return;
-
-		// Save the user's last settings.
-		$this->save_last_used_settings( $this->user_id(), $_POST[ 'broadcast' ] );
-
-		$broadcasting_data = new broadcasting_data( [
-			'_POST' => $_POST,
-			'parent_blog_id' => get_current_blog_id(),
-			'parent_post_id' => $post_id,
-			'post' => get_post( $post_id ),
-			'upload_dir' => wp_upload_dir(),
-		] );
-
-		$this->filters( 'threewp_broadcast_prepare_broadcasting_data', $broadcasting_data );
-
-		if ( $broadcasting_data->has_blogs() )
-			$this->filters( 'threewp_broadcast_broadcast_post', $broadcasting_data );
-	}
-
-	public function threewp_activity_monitor_list_activities( $activities )
-	{
-		// First, fill in our own activities.
-		$this->activities = array(
-			'3broadcast_broadcasted' => array(
-				'name' => $this->_( 'A post was broadcasted.' ),
-			),
-			'3broadcast_group_added' => array(
-				'name' => $this->_( 'A Broadcast blog group was added.' ),
-			),
-			'3broadcast_group_deleted' => array(
-				'name' => $this->_( 'A Broadcast blog group was deleted.' ),
-			),
-			'3broadcast_group_modified' => array(
-				'name' => $this->_( 'A Broadcast blog group was modified.' ),
-			),
-			'3broadcast_unlinked' => array(
-				'name' => $this->_( 'A post was unlinked.' ),
-			),
-		);
-
-		// Insert our module name in all the values.
-		foreach( $this->activities as $index => $activity )
-		{
-			$activity[ 'plugin' ] = 'ThreeWP Broadcast';
-			$activities[ $index ] = $activity;
-		}
-
-		return $activities;
 	}
 
 	/**

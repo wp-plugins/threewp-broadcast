@@ -74,7 +74,7 @@ msgstr "Multiposta egna fälten också"
 
 #: ThreeWP_Broadcast.php:787
 msgid "Broadcast information"
-msgstr "Multipostningsinfomration"
+msgstr "Multipostningsinformation"
 
 #: ThreeWP_Broadcast.php:396
 msgid "Broadcast internal custom fields"

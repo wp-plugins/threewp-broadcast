@@ -164,6 +164,9 @@ Users are requested to check their post type and custom field exception settings
 
 == Changelog ==
 
+= 2.1 20131007 =
+* Fix: Don't display broadcast meta box if no access, only access to 1 blog.
+
 = 2.0 20131006 =
 * Removed: Unecessary role to create taxonomies, which are now automatically created and synced.
 * Removed: Blacklisted blogs - replaced with per-blog per-user functionality in Premium pack.
