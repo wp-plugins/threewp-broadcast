@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.1
+Version:		2.2
 */
 
 namespace threewp_broadcast;
@@ -53,14 +53,15 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.0;
+	public $plugin_version = 2.2;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
 	protected $site_options = array(
 		'broadcast_internal_custom_fields' => false,		// Broadcast internal custom fields?
 		'canonical_url' => true,							// Override the canonical URLs with the parent post's.
-		'custom_field_exceptions' => '_wp_page_template _wplp_ _aioseop_',				// Custom fields that should be broadcasted, even though they start with _
+		'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
+		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
 		'database_version' => 1,							// Version of database and settings
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
@@ -172,7 +173,7 @@ class ThreeWP_Broadcast
 		if ( !$load )
 			return;
 
-		wp_enqueue_script( '3wp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/js/user.min.js' );
+		$this->enqueue_js();
 		wp_enqueue_style( '3wp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/css/ThreeWP_Broadcast.scss.min.css', false, '20131003', 'screen' );
 	}
 
@@ -242,6 +243,14 @@ class ThreeWP_Broadcast
 			$db_ver = 3;
 		}
 
+		if ( $db_ver < 4 )
+		{
+			$exceptions = $this->get_site_option( 'custom_field_exceptions', '' );
+			$this->delete_site_option( 'custom_field_exceptions' );
+			$whitelist = $this->get_site_option( 'custom_field_whitelist', $exceptions );
+			$db_ver = 4;
+		}
+
 		$this->update_site_option( 'database_version', $db_ver );
 	}
 
@@ -303,7 +312,9 @@ class ThreeWP_Broadcast
 
 	public function admin_menu_settings()
 	{
+		$this->enqueue_js();
 		$form = $this->form2();
+		$form->id( 'broadcast_settings' );
 		$roles = $this->roles_as_options();
 		$roles = array_flip( $roles );
 
@@ -370,17 +381,26 @@ class ThreeWP_Broadcast
 			->description_( 'Broadcast all fields, including those beginning with underscores.' )
 			->label_( 'Broadcast internal custom fields' );
 
-		$exceptions = $this->get_site_option( 'custom_field_exceptions' );
-		$exceptions = str_replace( ' ', "\n", $exceptions );
-		$custom_field_exceptions = $fs->textarea( 'custom_field_exceptions' )
+		$blacklist = $this->get_site_option( 'custom_field_blacklist' );
+		$blacklist = str_replace( ' ', "\n", $blacklist );
+		$custom_field_blacklist = $fs->textarea( 'custom_field_blacklist' )
 			->cols( 40, 10 )
-			->description_( 'Do not broadcast internal fields, except for the fields listed in the text box. Any part of the custom field name is can be used.' )
-			->label_( 'Internal field inclusions' )
+			->description_( 'When broadcasting internal custom fields, override and do not broadcast these fields.' )
+			->label_( 'Internal field blacklist' )
 			->trim()
-			->value( $exceptions );
+			->value( $blacklist );
 
-		$fs->markup( 'inclusion_defaults' )
-			->p_( 'The default inclusions are: %s', "<code>\n_wp_page_template\n_wplp_\n_aioseop_</code>" );
+		$whitelist = $this->get_site_option( 'custom_field_whitelist' );
+		$whitelist = str_replace( ' ', "\n", $whitelist );
+		$custom_field_whitelist = $fs->textarea( 'custom_field_whitelist' )
+			->cols( 40, 10 )
+			->description_( 'When not broadcasting internal custom fields, override and broadcast these fields.' )
+			->label_( 'Internal field whitelist' )
+			->trim()
+			->value( $whitelist );
+
+		$fs->markup( 'whitelist_defaults' )
+			->p_( 'The default whitelist is: %s', "<code>\n_wp_page_template\n_wplp_\n_aioseop_</code>" );
 
 		$fs = $form->fieldset( 'misc' )
 			->label_( 'Miscellaneous' );
@@ -413,9 +433,13 @@ class ThreeWP_Broadcast
 
 			$this->update_site_option( 'broadcast_internal_custom_fields', $broadcast_internal_custom_fields->is_checked() );
 
-			$exceptions = $custom_field_exceptions->get_post_value();
-			$exceptions = $this->lines_to_string( $exceptions );
-			$this->update_site_option( 'custom_field_exceptions', $exceptions );
+			$blacklist = $custom_field_blacklist->get_post_value();
+			$blacklist = $this->lines_to_string( $blacklist );
+			$this->update_site_option( 'custom_field_blacklist', $blacklist );
+
+			$whitelist = $custom_field_whitelist->get_post_value();
+			$whitelist = $this->lines_to_string( $whitelist );
+			$this->update_site_option( 'custom_field_whitelist', $whitelist );
 
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
 			$this->message( 'Options saved!' );
@@ -1908,6 +1932,18 @@ class ThreeWP_Broadcast
 	}
 
 	/**
+		@brief		Enqueue the JS file.
+		@since		20131007
+	**/
+	public function enqueue_js()
+	{
+		if ( isset( $this->_js_enqueued ) )
+			return;
+		wp_enqueue_script( '3wp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/js/user.min.js' );
+		$this->_js_enqueued = true;
+	}
+
+	/**
 		@brief		Lists ALL of the blogs. Including the main blog.
 		@since		20131004
 	**/
@@ -2083,16 +2119,31 @@ class ThreeWP_Broadcast
 		// Has the user requested that all internal fields be broadcasted?
 		$broadcast_internal_custom_fields = $this->get_site_option( 'broadcast_internal_custom_fields' );
 		if ( $broadcast_internal_custom_fields )
+		{
+			// Prep the cache.
+			if ( ! isset( $this->custom_field_blacklist_cache ) )
+				$this->custom_field_blacklist_cache = explode( ' ', $this->get_site_option( 'custom_field_blacklist' ) );
+
+			foreach( $this->custom_field_blacklist_cache as $exception)
+				if ( strpos( $custom_field, $exception) !== false )
+					return false;
+
+			// Not found in the blacklist. Broadcast the field!
 			return true;
+		}
+		else
+		{
+			// Prep the cache.
+			if ( !isset( $this->custom_field_whitelist_cache ) )
+				$this->custom_field_whitelist_cache = explode( ' ', $this->get_site_option( 'custom_field_whitelist' ) );
 
-		if ( !isset( $this->custom_field_exceptions_cache) )
-			$this->custom_field_exceptions_cache = explode( ' ', $this->get_site_option( 'custom_field_exceptions' ) );
+			foreach( $this->custom_field_whitelist_cache as $exception)
+				if ( strpos( $custom_field, $exception) !== false )
+					return true;
 
-		foreach( $this->custom_field_exceptions_cache as $exception)
-			if ( strpos( $custom_field, $exception) !== false )
-				return true;
-
-		return false;
+			// Not found in the whitelist. Do not broadcast.
+			return false;
+		}
 	}
 
 	private function keep_valid_custom_fields( $custom_fields )

@@ -31,7 +31,8 @@ Broadcasted posts can be linked to their parents, which updates child posts when
 
 = Other features =
 
-* Blogs can be grouped by users
+* Blogs plugin enables blog grouping for easy selection
+* Custom field blacklist and whitelist
 * Last used settings are remembered
 * User role access granularity
 
@@ -61,7 +62,8 @@ For a complete list of features and more information, see <a href="http://plainv
 
 Currently the Premium Pack offers:
 
-* Queue - to broadcast posts to tens / hundreds of blogs at a time, bypassing Wordpress and PHP limitations.
+* Queue adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
+* Views adds support for WP Types and Views content templates.
 
 == Installation ==
 
@@ -152,7 +154,11 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Upgrade Notice ==
 
-= 2.00 =
+= 2.2 =
+
+* Check that your custom field blacklists and whitelists are in good working order.
+
+= 2.0 =
 
 * Blacklist and whitelist have been removed. Their functionality will be replaced by a plugin.
 * Blog grouping has been moved into a separate plugin. Requires that users recreate their blog lists.
@@ -163,6 +169,9 @@ Translated categories and tags are untested as of 2013-07-17.
 Users are requested to check their post type and custom field exception settings after upgrading.
 
 == Changelog ==
+
+= 2.2 20131007 =
+* New: Custom field exceptions are now separated into a blacklist and a whitelist.
 
 = 2.1 20131007 =
 * Fix: Don't display broadcast meta box if no access, only access to 1 blog.

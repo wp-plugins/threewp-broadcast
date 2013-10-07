@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Add WPML support to ThreeWP Broadcast.
 Plugin Name:	ThreeWP Broadcast WPML support
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.1
+Version:		2.2
 */
 
 namespace threewp_broadcast;
@@ -15,19 +15,16 @@ if ( ! class_exists( '\\plainview\\wordpress\\base' ) )	require_once( __DIR__ . 
 
 /**
 	@brief		Adds WPML support to ThreeWP Broadcast.
-
 	@details
 
 	@par		Changelog
-
-	Version syncs with Broadcast are not documented.
 
 	- 20130812	Intial version v1.21.
 **/
 class ThreeWP_Broadcast_WPML
 	extends \plainview\wordpress\base
 {
-	public $plugin_version = 20130929;
+	public $plugin_version = 2.2;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
