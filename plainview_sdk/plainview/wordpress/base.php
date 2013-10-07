@@ -16,6 +16,7 @@
 
 	@par	Changelog
 
+	- 20131007				Fixed add_submenu_pages bug.
 	- 20131004				Converted submenu_pages to collection.
 	- 20131004				cli_sdk_info(). Call using php PLUGIN.PHP --sdk_info
 	- 20130811				$plugin_version
@@ -244,6 +245,8 @@ class base
 		$this->is_network = MULTISITE;
 		$this->is_multisite = MULTISITE;
 
+		$this->submenu_pages = new \plainview\collections\collection;
+
 		$this->paths = array(
 			'__FILE__' => $filename,
 			'name' => get_class( $this ),
@@ -316,9 +319,6 @@ class base
 	**/
 	public function add_submenu_page()
 	{
-		if ( ! isset( $this->submenu_pages ) )
-			$this->submenu_pages = new \plainview\collections\collection;
-
 		$args = func_get_args();
 		$key = $args[ 4 ];
 		$key = $this->strtolower( $key );

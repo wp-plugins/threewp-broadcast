@@ -139,7 +139,7 @@ msgstr "Datumformat"
 #: ThreeWP_Broadcast.php:774
 #: ThreeWP_Broadcast.php:1219
 msgid "Delete"
-msgstr "Borttagning"
+msgstr "Ta bort"
 
 #: plainview_sdk/plainview/form.php:368
 msgid "Description"
@@ -378,7 +378,7 @@ msgstr "ThreeWP Multipost Premium Pack-information"
 #: ThreeWP_Broadcast.php:782
 #: ThreeWP_Broadcast.php:1216
 msgid "Trash"
-msgstr "Papperskorgen"
+msgstr "Kasta i papperskorgen"
 
 #: ThreeWP_Broadcast.php:463
 msgid "Uninstall"

@@ -13,6 +13,7 @@ namespace plainview;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20131007		wordpress\base
 	- 20131006		wordpress\tabs
 	- 20131005		collections\collection
 	- 20131004		wordpress
