@@ -13,6 +13,7 @@ namespace plainview;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20131008		current_url recognized HTTPS properly.
 	- 20131007		wordpress\base
 	- 20131006		wordpress\tabs
 	- 20131005		collections\collection
@@ -80,7 +81,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20131006;
+	protected $sdk_version = 20131008;
 	/**
 		@brief		Constructor.
 		@since		20130425
@@ -215,7 +216,7 @@ class base
 		if ( ! isset( $SERVER[ 'SERVER_PORT' ] ) )
 			return '';
 
-		$ssl = ( $SERVER[ 'SSL_PROTOCOL' ] != '' );
+		$ssl = ( $SERVER[ 'HTTPS' ] != '' );
 
 		$port = $SERVER[ 'SERVER_PORT' ];
 		if ( $ssl && $port == 443 )
