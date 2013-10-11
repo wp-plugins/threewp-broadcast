@@ -36,6 +36,20 @@ Broadcasted posts can be linked to their parents, which updates child posts when
 * Last used settings are remembered
 * User role access granularity
 
+= Premium Pack =
+
+The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
+
+For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>.
+
+Currently the Premium Pack offers:
+
+* Queue adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
+* Send To Many broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
+* Views adds support for WP Types and Views content templates.
+
+= Misc =
+
 Requires php v5.4 for trait support. Users of php v5.3 should remain with version 1.18. Users of php v5.3 can only use the <a href="http://plainview.se/wp-content/uploads/2013/08/threewp-broadcast_v1.18.zip">latest legacy version: v1.18</a>.
 
 Available in the following languages:
@@ -53,18 +67,6 @@ The git repository can be found at: https://github.com/the-plainview/threewp_bro
 = Actions and filters =
 
 Broadcast offers some actions/filters for plugin developers with which to interact with Broadcast. See the main broadcast file and the include/threewp_broadcast/filter and /actions directories for documentation and live examples.
-
-= Premium Pack =
-
-The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
-
-For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>.
-
-Currently the Premium Pack offers:
-
-* Queue adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
-* Send To Many broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
-* Views adds support for WP Types and Views content templates.
 
 == Installation ==
 
