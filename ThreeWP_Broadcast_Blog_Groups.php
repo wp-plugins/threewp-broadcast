@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Allows users to create blog groups to ease blog selection when broadcasting.
 Plugin Name:	ThreeWP Broadcast Blog Groups
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.2
+Version:		2.3
 */
 
 namespace threewp_broadcast\blog_groups;
@@ -35,7 +35,7 @@ class ThreeWP_Broadcast_Blog_Groups
 
 	public function _construct()
 	{
-		$this->add_action( 'threewp_broadcast_added_meta_box' );
+		$this->add_action( 'threewp_broadcast_prepare_meta_box' );
 		$this->add_action( 'threewp_broadcast_menu' );
 	}
 
@@ -242,7 +242,7 @@ class ThreeWP_Broadcast_Blog_Groups
 	// ----------------------------------------- Callbacks
 	// --------------------------------------------------------------------------------------------
 
-	public function threewp_broadcast_added_meta_box( $action )
+	public function threewp_broadcast_prepare_meta_box( $action )
 	{
 		if ( ! $this->role_at_least( $this->get_site_option( 'role_use_groups' ) ) )
 			return;
@@ -286,10 +286,6 @@ class ThreeWP_Broadcast_Blog_Groups
 	}
 
 	// --------------------------------------------------------------------------------------------
-	// ----------------------------------------- Misc functions
-	// --------------------------------------------------------------------------------------------
-
-	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- SQL
 	// --------------------------------------------------------------------------------------------
 
@@ -314,8 +310,7 @@ class ThreeWP_Broadcast_Blog_Groups
 	public function get_blog_groups_for_user( $user_id )
 	{
 		$query = ( "SELECT * FROM `".$this->wpdb->base_prefix."3wp_broadcast_blog_groups` as b
-			WHERE b.`user_id` = '$user_id'
-			LIMIT 1"
+			WHERE b.`user_id` = '$user_id'"
 		);
 		$result = $this->query($query);
 		return blog_group::sqls( $result );

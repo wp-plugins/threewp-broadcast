@@ -12,26 +12,26 @@ msgstr ""
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:388
+#: ThreeWP_Broadcast_Blog_Groups.php:389
 msgid "Blog group saved!"
 msgstr "Gruppen har sparats!"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:255
-#: ThreeWP_Broadcast_Blog_Groups.php:278
-#: ThreeWP_Broadcast_Blog_Groups.php:279
+#: ThreeWP_Broadcast_Blog_Groups.php:257
+#: ThreeWP_Broadcast_Blog_Groups.php:280
+#: ThreeWP_Broadcast_Blog_Groups.php:281
 msgid "Blog groups"
 msgstr "Bloggrupper"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:111
+#: ThreeWP_Broadcast_Blog_Groups.php:113
 msgid "Blog groups help you to quickly add blogs to the broadcast. First create a blog group and select the blogs you want. When broadcasting the list of blog groups will appear above the blog list."
 msgstr "Bloggrupper hjälper dig att snabbt lägga till bloggar till multipostningen. Skapa först en bloggrupp och välj vilka bloggar du vill ha i gruppen. När du sedan mutlipostar ett inlägg kommer bloggruppen att synas i rutan ovanför blogglistan."
 
-#: ThreeWP_Broadcast_Blog_Groups.php:128
-#: ThreeWP_Broadcast_Blog_Groups.php:355
+#: ThreeWP_Broadcast_Blog_Groups.php:130
+#: ThreeWP_Broadcast_Blog_Groups.php:356
 msgid "Blogs"
 msgstr "Bloggar"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:119
+#: ThreeWP_Broadcast_Blog_Groups.php:121
 msgid "Click on the group name to edit or delete it."
 msgstr "Klicka på gruppnamnet för att redigera eller ta bort det."
 
@@ -40,11 +40,11 @@ msgid "Could not parse date"
 msgstr "Kunde inte tolka datumet"
 
 #. Form to add a new blog group.
-#: ThreeWP_Broadcast_Blog_Groups.php:168
+#: ThreeWP_Broadcast_Blog_Groups.php:170
 msgid "Create a new blog group"
 msgstr "Skapa en ny grupp"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:88
+#: ThreeWP_Broadcast_Blog_Groups.php:90
 msgid "Create the blog group"
 msgstr "Skapa gruppen"
 
@@ -56,11 +56,11 @@ msgstr "DD"
 msgid "Date format"
 msgstr "Datumformat"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:407
+#: ThreeWP_Broadcast_Blog_Groups.php:408
 msgid "Delete the group"
 msgstr "Ta bort gruppen"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:400
+#: ThreeWP_Broadcast_Blog_Groups.php:401
 msgid "Delete this blog group"
 msgstr "Ta bort den här gruppen"
 
@@ -68,20 +68,20 @@ msgstr "Ta bort den här gruppen"
 msgid "Description"
 msgstr "Beskrivning"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:227
+#: ThreeWP_Broadcast_Blog_Groups.php:229
 msgid "Edit blog group"
 msgstr "Redigera gruppen"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:138
+#: ThreeWP_Broadcast_Blog_Groups.php:140
 msgid "Edit or delete this blog group"
 msgstr "Redigera eller ta bort gruppen"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:340
+#: ThreeWP_Broadcast_Blog_Groups.php:341
 msgid "General settings"
 msgstr "Allmänna inställningar"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:82
-#: ThreeWP_Broadcast_Blog_Groups.php:343
+#: ThreeWP_Broadcast_Blog_Groups.php:84
+#: ThreeWP_Broadcast_Blog_Groups.php:344
 msgid "Group name"
 msgstr "Gruppnamn"
 
@@ -89,7 +89,7 @@ msgstr "Gruppnamn"
 msgid "HH"
 msgstr "HH"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:403
+#: ThreeWP_Broadcast_Blog_Groups.php:404
 msgid "I want to delete this blog group"
 msgstr "Jag vill ta bort den här gruppen"
 
@@ -114,19 +114,19 @@ msgstr "MM"
 msgid "Minimum length"
 msgstr "Minimumlängd"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:127
+#: ThreeWP_Broadcast_Blog_Groups.php:129
 msgid "Name"
 msgstr "Namn"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:145
+#: ThreeWP_Broadcast_Blog_Groups.php:147
 msgid "No group has no blogs assigned."
 msgstr "Inga bloggar har lagts till i gruppen."
 
-#: ThreeWP_Broadcast_Blog_Groups.php:256
+#: ThreeWP_Broadcast_Blog_Groups.php:258
 msgid "No group selected"
 msgstr "Ingen grupp vald"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:222
+#: ThreeWP_Broadcast_Blog_Groups.php:224
 msgid "Overview"
 msgstr "Översikt"
 
@@ -140,7 +140,7 @@ msgstr "Du måste fylla i %s."
 msgid "Required field"
 msgstr "Måste fyllas i"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:184
+#: ThreeWP_Broadcast_Blog_Groups.php:186
 msgid "Roles"
 msgstr "Roller"
 
@@ -148,7 +148,7 @@ msgstr "Roller"
 msgid "SS"
 msgstr "SS"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:194
+#: ThreeWP_Broadcast_Blog_Groups.php:196
 msgid "Save settings"
 msgstr "Spara inställningar"
 
@@ -158,7 +158,7 @@ msgstr "Spara inställningar"
 msgid "Selected"
 msgstr "Vald"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:232
+#: ThreeWP_Broadcast_Blog_Groups.php:234
 msgid "Settings"
 msgstr "Inställningar"
 
@@ -166,12 +166,12 @@ msgstr "Inställningar"
 msgid "Super admin"
 msgstr "Superadmin"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:100
+#: ThreeWP_Broadcast_Blog_Groups.php:102
 #, php-format
 msgid "The blog group %s has been created!"
 msgstr "Gruppen %s har skapats!"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:419
+#: ThreeWP_Broadcast_Blog_Groups.php:420
 msgid "The blog group has been deleted. Please return to the overview."
 msgstr "Gruppen har tagits bort. Klicka dig tillbaka till översikten."
 
@@ -221,7 +221,7 @@ msgstr "Den här länken tar dig till indexsidan"
 msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
 msgstr "Den här sidan kommer att ta bort tilläggets databas och inställningar och sedan avaktivera tillägget."
 
-#: ThreeWP_Broadcast_Blog_Groups.php:233
+#: ThreeWP_Broadcast_Blog_Groups.php:235
 msgid "Uninstall"
 msgstr "Avinstallera"
 
@@ -229,11 +229,11 @@ msgstr "Avinstallera"
 msgid "Uninstall plugin"
 msgstr "Avinstallera tillägget"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:375
+#: ThreeWP_Broadcast_Blog_Groups.php:376
 msgid "Update the blog group"
 msgstr "Uppdatera gruppen"
 
-#: ThreeWP_Broadcast_Blog_Groups.php:189
+#: ThreeWP_Broadcast_Blog_Groups.php:191
 msgid "Use groups"
 msgstr "Använd grupper"
 
@@ -249,7 +249,7 @@ msgstr "ÅÅÅÅ"
 msgid "Yes, I'm sure I want to remove all the plugin tables and settings."
 msgstr "Ja, jag är säker på att jag vill ta bort tilläggets databas och inställningar."
 
-#: ThreeWP_Broadcast_Blog_Groups.php:115
+#: ThreeWP_Broadcast_Blog_Groups.php:117
 msgid "You have not created any blog groups yet."
 msgstr "Du har inte skapat några grupper än."
 

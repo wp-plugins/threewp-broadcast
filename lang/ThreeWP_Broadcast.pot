@@ -1,88 +1,88 @@
-#: ThreeWP_Broadcast.php:967
+#: ThreeWP_Broadcast.php:1166
 #, php-format
 msgid "%sQueue%s not available."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:750
+#: ThreeWP_Broadcast.php:755
 #, php-format
 msgid "%sThreeWP Broadcast%s version %s is installed."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1097
+#: ThreeWP_Broadcast.php:984
 msgid "A Broadcast blog group was added."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1100
+#: ThreeWP_Broadcast.php:987
 msgid "A Broadcast blog group was deleted."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1103
+#: ThreeWP_Broadcast.php:990
 msgid "A Broadcast blog group was modified."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:294
+#: ThreeWP_Broadcast.php:284
 #, php-format
 msgid "A list of custom post types that have broadcasting enabled. The default value is %s."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1094
+#: ThreeWP_Broadcast.php:981
 msgid "A post was broadcasted."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1106
+#: ThreeWP_Broadcast.php:993
 msgid "A post was unlinked."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:545
+#: ThreeWP_Broadcast.php:550
 msgid "All links to child posts have been removed!"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:711
+#: ThreeWP_Broadcast.php:716
 msgid "Apply"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:590 ThreeWP_Broadcast.php:824
+#: ThreeWP_Broadcast.php:595 ThreeWP_Broadcast.php:829
 msgid "Back to post overview"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:117 ThreeWP_Broadcast.php:135
-#: ThreeWP_Broadcast.php:341
+#: ThreeWP_Broadcast.php:115 ThreeWP_Broadcast.php:333
+#: ThreeWP_Broadcast.php:848
 msgid "Broadcast"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:365
+#: ThreeWP_Broadcast.php:357
 msgid "Broadcast as draft"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:353
+#: ThreeWP_Broadcast.php:345
 msgid "Broadcast custom fields"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:787
+#: ThreeWP_Broadcast.php:792
 msgid "Broadcast information"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:396
+#: ThreeWP_Broadcast.php:388
 msgid "Broadcast internal custom fields"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:79
+#: ThreeWP_Broadcast.php:80
 msgid "Broadcast requires a Wordpress network to function."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:371
+#: ThreeWP_Broadcast.php:363
 msgid "Broadcast scheduled posts"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:359
+#: ThreeWP_Broadcast.php:351
 msgid "Broadcast taxonomies"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1018
+#: ThreeWP_Broadcast.php:899
 msgid "Broadcasted"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:385
+#: ThreeWP_Broadcast.php:377
 msgid "Canonical URL"
 msgstr ""
 
@@ -90,27 +90,27 @@ msgstr ""
 msgid "Could not parse date"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:880
+#: ThreeWP_Broadcast.php:1079
 msgid "Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:704
+#: ThreeWP_Broadcast.php:709
 msgid "Create link"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:388
+#: ThreeWP_Broadcast.php:380
 msgid "Custom field handling"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:892
+#: ThreeWP_Broadcast.php:1091
 msgid "Custom fields"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:462
+#: ThreeWP_Broadcast.php:467
 msgid "Custom post types"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:311
+#: ThreeWP_Broadcast.php:301
 msgid "Custom post types must be specified using their internal Wordpress names with a space between each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types)."
 msgstr ""
 
@@ -122,7 +122,7 @@ msgstr ""
 msgid "Date format"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:774 ThreeWP_Broadcast.php:1219
+#: ThreeWP_Broadcast.php:779 ThreeWP_Broadcast.php:1304
 msgid "Delete"
 msgstr ""
 
@@ -130,19 +130,19 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:703
+#: ThreeWP_Broadcast.php:708
 msgid "Do nothing"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:730
+#: ThreeWP_Broadcast.php:735
 msgid "Domain"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:778 ThreeWP_Broadcast.php:1059
+#: ThreeWP_Broadcast.php:783 ThreeWP_Broadcast.php:942
 msgid "Find orphans"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1059
+#: ThreeWP_Broadcast.php:942
 msgid "Find posts on other blogs that are identical to this post"
 msgstr ""
 
@@ -150,12 +150,16 @@ msgstr ""
 msgid "HH"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:970
+#: ThreeWP_Broadcast.php:1169
 msgid "Information about the Broadcast Queue Plugin"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:403
-msgid "Internal field inclusions"
+#: ThreeWP_Broadcast.php:395
+msgid "Internal field blacklist"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:404
+msgid "Internal field whitelist"
 msgstr ""
 
 #: plainview_sdk/plainview/form.php:916
@@ -166,7 +170,7 @@ msgstr ""
 msgid "Invalid email address"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:910
+#: ThreeWP_Broadcast.php:1109
 msgid "Invert selection"
 msgstr ""
 
@@ -174,15 +178,15 @@ msgstr ""
 msgid "Latest valid date"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:879
+#: ThreeWP_Broadcast.php:1078
 msgid "Link this post to its children"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:514
+#: ThreeWP_Broadcast.php:519
 msgid "Link to child post has been removed."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:347
+#: ThreeWP_Broadcast.php:339
 msgid "Link to child posts"
 msgstr ""
 
@@ -194,11 +198,11 @@ msgstr ""
 msgid "Minimum length"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:411
+#: ThreeWP_Broadcast.php:412
 msgid "Miscellaneous"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:675
+#: ThreeWP_Broadcast.php:680
 msgid "No possible child posts were found on the other blogs you have write access to. Either there are no posts with the same title as this one, or all possible orphans have already been linked."
 msgstr ""
 
@@ -208,23 +212,23 @@ msgstr ""
 msgid "Please fill in %s."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:145
+#: ThreeWP_Broadcast.php:125
 msgid "Premium Pack"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:144
+#: ThreeWP_Broadcast.php:124
 msgid "Premium Pack info"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1215
+#: ThreeWP_Broadcast.php:1300
 msgid "Put this broadcasted child post in the trash"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1212
+#: ThreeWP_Broadcast.php:1297
 msgid "Remove link to this broadcasted child post"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1057
+#: ThreeWP_Broadcast.php:940
 msgid "Remove links to all the broadcasted children"
 msgstr ""
 
@@ -232,11 +236,11 @@ msgstr ""
 msgid "Required field"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:336
+#: ThreeWP_Broadcast.php:328
 msgid "Roles"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:375
+#: ThreeWP_Broadcast.php:367
 msgid "SEO"
 msgstr ""
 
@@ -244,37 +248,37 @@ msgstr ""
 msgid "SS"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:422
+#: ThreeWP_Broadcast.php:423
 msgid "Save settings"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:298
+#: ThreeWP_Broadcast.php:288
 msgid "Save the broadcastable custom post types"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:911
+#: ThreeWP_Broadcast.php:1110
 msgid "Select / deselect all"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:922
+#: ThreeWP_Broadcast.php:1121
 msgid "Select blogs in group"
 msgstr ""
 
 #. Else return a manual table th.
-#: ThreeWP_Broadcast.php:729 plainview_sdk/plainview/wordpress/base.php:1147
+#: ThreeWP_Broadcast.php:734 plainview_sdk/plainview/wordpress/base.php:1147
 #: plainview_sdk/plainview/wordpress/base.php:1152
 msgid "Selected"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:461
+#: ThreeWP_Broadcast.php:466
 msgid "Settings"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1018
+#: ThreeWP_Broadcast.php:899
 msgid "Shows which blogs have posts linked to this one"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:391
+#: ThreeWP_Broadcast.php:383
 msgid "Some custom fields start with underscores. They are generally Wordpress internal fields and therefore not broadcasted. Some plugins store their information as underscored custom fields. If you wish them, or some of them, to be broadcasted, use either of the options below."
 msgstr ""
 
@@ -282,21 +286,21 @@ msgstr ""
 msgid "Super admin"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:901
+#: ThreeWP_Broadcast.php:1100
 msgid "Taxonomies"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:585
+#: ThreeWP_Broadcast.php:590
 msgid "The broadcasted child post has been deleted."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:819
+#: ThreeWP_Broadcast.php:824
 msgid "The broadcasted child post has been put in the trash."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:408
+#: ThreeWP_Broadcast.php:409
 #, php-format
-msgid "The default inclusions are: %s"
+msgid "The default whitelist is: %s"
 msgstr ""
 
 #: plainview_sdk/plainview/form2/inputs/email.php:29
@@ -345,23 +349,23 @@ msgstr ""
 msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:842
+#: ThreeWP_Broadcast.php:1047
 msgid "This post is broadcasted child post. It cannot be broadcasted further."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:134
+#: ThreeWP_Broadcast.php:114
 msgid "ThreeWP Broadcast"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:325
+#: ThreeWP_Broadcast.php:315
 msgid "ThreeWP Broadcast Premium Pack info"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:782 ThreeWP_Broadcast.php:1216
+#: ThreeWP_Broadcast.php:787 ThreeWP_Broadcast.php:1301
 msgid "Trash"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:463
+#: ThreeWP_Broadcast.php:468
 msgid "Uninstall"
 msgstr ""
 
@@ -369,16 +373,16 @@ msgstr ""
 msgid "Uninstall plugin"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:770 ThreeWP_Broadcast.php:1057
-#: ThreeWP_Broadcast.php:1213
+#: ThreeWP_Broadcast.php:775 ThreeWP_Broadcast.php:940
+#: ThreeWP_Broadcast.php:1298
 msgid "Unlink"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1218
+#: ThreeWP_Broadcast.php:1303
 msgid "Unlink and delete this broadcasted child post"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:380
+#: ThreeWP_Broadcast.php:372
 msgid "Use parent permalink"
 msgstr ""
 
@@ -386,7 +390,7 @@ msgstr ""
 msgid "Valid values"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:701
+#: ThreeWP_Broadcast.php:706
 msgid "With the selected rows"
 msgstr ""
 
@@ -410,7 +414,7 @@ msgstr ""
 msgid "characters long"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:909
+#: ThreeWP_Broadcast.php:1108
 msgid "hide all"
 msgstr ""
 
@@ -434,11 +438,11 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:415
+#: ThreeWP_Broadcast.php:416
 msgid "save_post priority"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:912
+#: ThreeWP_Broadcast.php:1111
 msgid "show all"
 msgstr ""
 

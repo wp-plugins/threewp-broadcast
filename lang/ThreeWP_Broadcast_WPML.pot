@@ -116,12 +116,12 @@ msgstr ""
 msgid "Valid values"
 msgstr ""
 
-#: ThreeWP_Broadcast_WPML.php:166
+#: ThreeWP_Broadcast_WPML.php:163
 #, php-format
 msgid "WPML v%s detected. Language: %s"
 msgstr ""
 
-#: ThreeWP_Broadcast_WPML.php:162
+#: ThreeWP_Broadcast_WPML.php:159
 msgid "WPML was not detected."
 msgstr ""
 

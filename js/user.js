@@ -25,6 +25,7 @@ jQuery(document).ready(function($) {
 
 			// Container for selection change.
 			this.$selection_change_container = $( '<div />' )
+				.addClass( 'clear' )
 				.addClass( 'selection_change_container' )
 				.appendTo( this.$blogs_html );
 

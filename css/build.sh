@@ -1,4 +1,4 @@
 #!/bin/bash
-FILE=ThreeWP_Broadcast.scss
+FILE=css.scss
 scss $FILE
 minify.css $FILE.css

@@ -1,21 +1,21 @@
-#: ThreeWP_Broadcast_Blog_Groups.php:388
+#: ThreeWP_Broadcast_Blog_Groups.php:389
 msgid "Blog group saved!"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:255 ThreeWP_Broadcast_Blog_Groups.php:278
-#: ThreeWP_Broadcast_Blog_Groups.php:279
+#: ThreeWP_Broadcast_Blog_Groups.php:257 ThreeWP_Broadcast_Blog_Groups.php:280
+#: ThreeWP_Broadcast_Blog_Groups.php:281
 msgid "Blog groups"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:111
+#: ThreeWP_Broadcast_Blog_Groups.php:113
 msgid "Blog groups help you to quickly add blogs to the broadcast. First create a blog group and select the blogs you want. When broadcasting the list of blog groups will appear above the blog list."
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:128 ThreeWP_Broadcast_Blog_Groups.php:355
+#: ThreeWP_Broadcast_Blog_Groups.php:130 ThreeWP_Broadcast_Blog_Groups.php:356
 msgid "Blogs"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:119
+#: ThreeWP_Broadcast_Blog_Groups.php:121
 msgid "Click on the group name to edit or delete it."
 msgstr ""
 
@@ -24,11 +24,11 @@ msgid "Could not parse date"
 msgstr ""
 
 #. Form to add a new blog group.
-#: ThreeWP_Broadcast_Blog_Groups.php:168
+#: ThreeWP_Broadcast_Blog_Groups.php:170
 msgid "Create a new blog group"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:88
+#: ThreeWP_Broadcast_Blog_Groups.php:90
 msgid "Create the blog group"
 msgstr ""
 
@@ -40,11 +40,11 @@ msgstr ""
 msgid "Date format"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:407
+#: ThreeWP_Broadcast_Blog_Groups.php:408
 msgid "Delete the group"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:400
+#: ThreeWP_Broadcast_Blog_Groups.php:401
 msgid "Delete this blog group"
 msgstr ""
 
@@ -52,19 +52,19 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:227
+#: ThreeWP_Broadcast_Blog_Groups.php:229
 msgid "Edit blog group"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:138
+#: ThreeWP_Broadcast_Blog_Groups.php:140
 msgid "Edit or delete this blog group"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:340
+#: ThreeWP_Broadcast_Blog_Groups.php:341
 msgid "General settings"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:82 ThreeWP_Broadcast_Blog_Groups.php:343
+#: ThreeWP_Broadcast_Blog_Groups.php:84 ThreeWP_Broadcast_Blog_Groups.php:344
 msgid "Group name"
 msgstr ""
 
@@ -72,7 +72,7 @@ msgstr ""
 msgid "HH"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:403
+#: ThreeWP_Broadcast_Blog_Groups.php:404
 msgid "I want to delete this blog group"
 msgstr ""
 
@@ -96,19 +96,19 @@ msgstr ""
 msgid "Minimum length"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:127
+#: ThreeWP_Broadcast_Blog_Groups.php:129
 msgid "Name"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:145
+#: ThreeWP_Broadcast_Blog_Groups.php:147
 msgid "No group has no blogs assigned."
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:256
+#: ThreeWP_Broadcast_Blog_Groups.php:258
 msgid "No group selected"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:222
+#: ThreeWP_Broadcast_Blog_Groups.php:224
 msgid "Overview"
 msgstr ""
 
@@ -122,7 +122,7 @@ msgstr ""
 msgid "Required field"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:184
+#: ThreeWP_Broadcast_Blog_Groups.php:186
 msgid "Roles"
 msgstr ""
 
@@ -130,7 +130,7 @@ msgstr ""
 msgid "SS"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:194
+#: ThreeWP_Broadcast_Blog_Groups.php:196
 msgid "Save settings"
 msgstr ""
 
@@ -140,7 +140,7 @@ msgstr ""
 msgid "Selected"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:232
+#: ThreeWP_Broadcast_Blog_Groups.php:234
 msgid "Settings"
 msgstr ""
 
@@ -148,12 +148,12 @@ msgstr ""
 msgid "Super admin"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:100
+#: ThreeWP_Broadcast_Blog_Groups.php:102
 #, php-format
 msgid "The blog group %s has been created!"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:419
+#: ThreeWP_Broadcast_Blog_Groups.php:420
 msgid "The blog group has been deleted. Please return to the overview."
 msgstr ""
 
@@ -203,7 +203,7 @@ msgstr ""
 msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:233
+#: ThreeWP_Broadcast_Blog_Groups.php:235
 msgid "Uninstall"
 msgstr ""
 
@@ -211,11 +211,11 @@ msgstr ""
 msgid "Uninstall plugin"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:375
+#: ThreeWP_Broadcast_Blog_Groups.php:376
 msgid "Update the blog group"
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:189
+#: ThreeWP_Broadcast_Blog_Groups.php:191
 msgid "Use groups"
 msgstr ""
 
@@ -231,7 +231,7 @@ msgstr ""
 msgid "Yes, I'm sure I want to remove all the plugin tables and settings."
 msgstr ""
 
-#: ThreeWP_Broadcast_Blog_Groups.php:115
+#: ThreeWP_Broadcast_Blog_Groups.php:117
 msgid "You have not created any blog groups yet."
 msgstr ""
 

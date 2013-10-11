@@ -94,6 +94,7 @@ namespace plainview\form2;
 	Changelog
 	---------
 
+	- 20131009	enctype fix. Added file input.
 	- 20131004	markup ignores post values - will no longer disappear.
 	- 20131001	input->title also sets the title of the label.
 	- 20130929	description->is_empty(), label->is_empty() \n
@@ -177,6 +178,7 @@ class form
 			'datetimelocal',
 			'email',
 			'fieldset',
+			'file',
 			'hidden',
 			'markup',
 			'meter',
@@ -260,7 +262,7 @@ class form
 		$enctypes = array( 'application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain' );
 		if ( ! in_array( $enctype, $enctypes ) )
 			$enctype = reset( $enctypes );
-		return $this->set_attribute( 'enctype', $enctypes );
+		return $this->set_attribute( 'enctype', $enctype );
 	}
 
 	/**

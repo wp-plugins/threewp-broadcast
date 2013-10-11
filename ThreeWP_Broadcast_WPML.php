@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Add WPML support to ThreeWP Broadcast.
 Plugin Name:	ThreeWP Broadcast WPML support
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.2
+Version:		2.3
 */
 
 namespace threewp_broadcast;
@@ -34,7 +34,7 @@ class ThreeWP_Broadcast_WPML
 		if ( ! defined( 'WPML_LOAD_API_SUPPORT' ) )
 			define( 'WPML_LOAD_API_SUPPORT', true );
 
-		$this->add_action( 'threewp_broadcast_added_meta_box' );
+		$this->add_action( 'threewp_broadcast_prepare_meta_box' );
 		if( $this->is_wpml() )
 		{
 			$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
@@ -50,7 +50,7 @@ class ThreeWP_Broadcast_WPML
 		@brief		Add information to the broadcast box about the status of Broadcast WPML.
 		@since		20130717
 	**/
-	public function threewp_broadcast_added_meta_box( $action )
+	public function threewp_broadcast_prepare_meta_box( $action )
 	{
 		$action->meta_box_data->html->put( 'broadcast_wpml', sprintf( '<div class="broadcast_wpml">%s</div><!-- broadcast_wpml -->',
 			$this->generate_meta_box_info()
@@ -177,10 +177,6 @@ class ThreeWP_Broadcast_WPML
 	{
 		return defined( 'ICL_SITEPRESS_VERSION' );
 	}
-
-	// --------------------------------------------------------------------------------------------
-	// ----------------------------------------- SQL
-	// --------------------------------------------------------------------------------------------
 
 }
 $threewp_broadcast_wpml = new ThreeWP_Broadcast_WPML();

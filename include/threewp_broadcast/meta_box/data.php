@@ -9,35 +9,49 @@ namespace threewp_broadcast\meta_box;
 class data
 {
 	/**
-		@brief		ID of the blog.
+		@brief		INPUT: ID of the blog.
 		@since		20131005
 		@var		$blog_id
 	**/
 	public $blog_id;
 
 	/**
-		@brief		The Form2 object from the Plainview SDK.
+		@brief		OUTPUT: Collection of CSS files that should be loaded.
+		@since		20131010
+		@var		$css
+	**/
+	public $css;
+
+	/**
+		@brief		INPUT: The Form2 object from the Plainview SDK.
 		@since		20131005
 		@var		$form
 	**/
 	public $form;
 
 	/**
-		@brief		HTML object containing data to be displayed.
+		@brief		OUTPUT: HTML object containing data to be displayed.
 		@since		20130928
 		@var		$html
 	**/
 	public $html;
 
 	/**
-		@brief		The Wordpress Post object for this meta box.
+		@brief		OUTPUT: Collection of JS files that should be loaded.
+		@since		20131010
+		@var		$js
+	**/
+	public $js;
+
+	/**
+		@brief		INPUT: The Wordpress Post object for this meta box.
 		@since		20130928
 		@var		$post
 	**/
 	public $post;
 
 	/**
-		@brief		ID of the post. Convenience property.
+		@brief		INPUT: ID of the post. Convenience property.
 		@since		20131005
 		@var		$post_id
 	**/
@@ -45,6 +59,8 @@ class data
 
 	public function __construct()
 	{
+		$this->css = new \plainview\collections\collection;
 		$this->html = new html;
+		$this->js = new \plainview\collections\collection;
 	}
 }

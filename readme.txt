@@ -63,6 +63,7 @@ For a complete list of features and more information, see <a href="http://plainv
 Currently the Premium Pack offers:
 
 * Queue adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
+* Send To Many broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
 * Views adds support for WP Types and Views content templates.
 
 == Installation ==
@@ -100,7 +101,7 @@ If you're not into donations, try the support forum to see if other users can he
 
 = Bulk broadcast existing pages =
 
-This is currently not possible due to the Wordpress UI not having support for extra action hooks. This will be solved by a plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Galleries and attachments =
 
@@ -152,23 +153,12 @@ It works transparently in the background, but in case you've never really used W
 
 Translated categories and tags are untested as of 2013-07-17.
 
-== Upgrade Notice ==
-
-= 2.2 =
-
-* Check that your custom field blacklists and whitelists are in good working order.
-
-= 2.0 =
-
-* Blacklist and whitelist have been removed. Their functionality will be replaced by a plugin.
-* Blog grouping has been moved into a separate plugin. Requires that users recreate their blog lists.
-* Plugin authors will want to look at the old and new filters and actions that Broadcast offers.
-
-= 1.29 =
-
-Users are requested to check their post type and custom field exception settings after upgrading.
-
 == Changelog ==
+
+= 2.3 20131011 =
+* New: Caching of BroadcastData speeds up the post overview.
+* Fix: More than one blog group is visible.
+* Code: prepare_meta_box action added. added_meta_box action removed.
 
 = 2.2 20131007 =
 * New: Custom field exceptions are now separated into a blacklist and a whitelist.
@@ -359,3 +349,19 @@ Users are requested to check their post type and custom field exception settings
 
 = 0.0.1 =
 * Initial public release
+
+== Upgrade Notice ==
+
+= 2.2 =
+
+* Check that your custom field blacklists and whitelists are in good working order.
+
+= 2.0 =
+
+* Blacklist and whitelist have been removed. Their functionality will be replaced by a plugin.
+* Blog grouping has been moved into a separate plugin. Requires that users recreate their blog lists.
+* Plugin authors will want to look at the old and new filters and actions that Broadcast offers.
+
+= 1.29 =
+
+Users are requested to check their post type and custom field exception settings after upgrading.

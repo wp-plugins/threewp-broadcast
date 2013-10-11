@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.2
+Version:		2.3
 */
 
 namespace threewp_broadcast;
@@ -62,7 +62,7 @@ class ThreeWP_Broadcast
 		'canonical_url' => true,							// Override the canonical URLs with the parent post's.
 		'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
 		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
-		'database_version' => 1,							// Version of database and settings
+		'database_version' => 0,							// Version of database and settings
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 		'post_types' => 'post page',						// Custom post types which use broadcasting
@@ -92,6 +92,8 @@ class ThreeWP_Broadcast
 		}
 
 		$this->add_filter( 'threewp_broadcast_add_meta_box' );
+		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 9 );
+		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
 		$this->add_filter( 'threewp_broadcast_broadcast_post' );
 		$this->add_filter( 'threewp_broadcast_get_user_writable_blogs' );
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 9 );		// Just before the standard 10.
@@ -174,7 +176,7 @@ class ThreeWP_Broadcast
 			return;
 
 		$this->enqueue_js();
-		wp_enqueue_style( '3wp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/css/ThreeWP_Broadcast.scss.min.css', false, '20131003', 'screen' );
+		wp_enqueue_style( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/css/css.scss.min.css'  );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -186,36 +188,40 @@ class ThreeWP_Broadcast
 		if ( !$this->is_network )
 			wp_die("This plugin requires a Wordpress Network installation.");
 
-		// Remove old options
-		$this->delete_site_option( 'requirewhenbroadcasting' );
+		$db_ver = $this->get_site_option( 'database_version', 0 );
 
-		// Removed 1.5
-		$this->delete_site_option( 'activity_monitor_broadcasts' );
-		$this->delete_site_option( 'activity_monitor_group_changes' );
-		$this->delete_site_option( 'activity_monitor_unlinks' );
+		if ( $db_ver < 1 )
+		{
+			// Remove old options
+			$this->delete_site_option( 'requirewhenbroadcasting' );
 
-		$this->query("CREATE TABLE IF NOT EXISTS `".$this->wpdb->base_prefix."_3wp_broadcast` (
-		  `user_id` int(11) NOT NULL COMMENT 'User ID',
-		  `data` text NOT NULL COMMENT 'User''s data',
-		  PRIMARY KEY (`user_id`)
-		) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Contains the group settings for all the users';
-		");
+			// Removed 1.5
+			$this->delete_site_option( 'activity_monitor_broadcasts' );
+			$this->delete_site_option( 'activity_monitor_group_changes' );
+			$this->delete_site_option( 'activity_monitor_unlinks' );
 
-		$this->query("CREATE TABLE IF NOT EXISTS `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata` (
-		  `blog_id` int(11) NOT NULL COMMENT 'Blog ID',
-		  `post_id` int(11) NOT NULL COMMENT 'Post ID',
-		  `data` text NOT NULL COMMENT 'Serialized BroadcastData',
-		  KEY `blog_id` (`blog_id`,`post_id`)
-		) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-		");
+			$this->query("CREATE TABLE IF NOT EXISTS `".$this->wpdb->base_prefix."_3wp_broadcast` (
+			  `user_id` int(11) NOT NULL COMMENT 'User ID',
+			  `data` text NOT NULL COMMENT 'User''s data',
+			  PRIMARY KEY (`user_id`)
+			) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Contains the group settings for all the users';
+			");
 
-		// Cats and tags replaced by taxonomy support. Version 1.5
-		$this->delete_site_option( 'role_categories' );
-		$this->delete_site_option( 'role_categories_create' );
-		$this->delete_site_option( 'role_tags' );
-		$this->delete_site_option( 'role_tags_create' );
+			$this->query("CREATE TABLE IF NOT EXISTS `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata` (
+			  `blog_id` int(11) NOT NULL COMMENT 'Blog ID',
+			  `post_id` int(11) NOT NULL COMMENT 'Post ID',
+			  `data` text NOT NULL COMMENT 'Serialized BroadcastData',
+			  KEY `blog_id` (`blog_id`,`post_id`)
+			) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+			");
 
-		$db_ver = $this->get_site_option( 'database_version', 1 );
+			// Cats and tags replaced by taxonomy support. Version 1.5
+			$this->delete_site_option( 'role_categories' );
+			$this->delete_site_option( 'role_categories_create' );
+			$this->delete_site_option( 'role_tags' );
+			$this->delete_site_option( 'role_tags_create' );
+			$db_ver = 1;
+		}
 
 		if ( $db_ver < 2 )
 		{
@@ -870,13 +876,19 @@ class ThreeWP_Broadcast
 		if ( $column_name != '3wp_broadcast' )
 			return;
 
-		global $post;
+		$blog_id = get_current_blog_id();
 
+		// Prep the bcd cache.
+		$broadcast_data = $this->broadcast_data_cache()
+			->expect_from_wp_query()
+			->get_for( $blog_id, $parent_post_id );
+
+		global $post;
 		$action = new actions\manage_posts_custom_column();
 		$action->post = $post;
-		$action->parent_blog_id = get_current_blog_id();
+		$action->parent_blog_id = $blog_id;
 		$action->parent_post_id = $parent_post_id;
-		$action->broadcast_data = $this->get_post_broadcast_data( $action->parent_blog_id , $parent_post_id );
+		$action->broadcast_data = $broadcast_data;
 		$action->apply();
 
 		echo $action->render();
@@ -919,6 +931,8 @@ class ThreeWP_Broadcast
 
 	public function post_row_actions( $actions, $post )
 	{
+		$this->broadcast_data_cache()->expect_from_wp_query();
+
 		global $blog_id;
 		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
 		if ( $broadcast_data->has_linked_children() )
@@ -996,38 +1010,56 @@ class ThreeWP_Broadcast
 	**/
 	public function threewp_broadcast_add_meta_box( $post )
 	{
-		// Pre
-		// Has this meta data
-		global $blog_id;
-
-		// Find out if this post is already linked
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
-
-		if ( $broadcast_data->get_linked_parent() !== false)
-		{
-			echo sprintf( '<p>%s</p>',
-				$this->_( 'This post is broadcasted child post. It cannot be broadcasted further.' )
-			);
-			return;
-		}
-
 		$meta_box_data = new meta_box\data;
-		$meta_box_data->blog_id = $blog_id;
+		$meta_box_data->blog_id = get_current_blog_id();
+		$meta_box_data->broadcast_data = $this->get_post_broadcast_data( $meta_box_data->blog_id, $post->ID );
 		$meta_box_data->form = $this->form2();
 		$meta_box_data->post = $post;
 		$meta_box_data->post_id = $post->ID;
 
+		// Allow plugins to modify the meta box with their own info.
+		$action = new actions\prepare_meta_box;
+		$action->meta_box_data = $meta_box_data;
+		$action->apply();
+
+		foreach( $meta_box_data->css as $key => $value )
+			wp_enqueue_style( $key, $value );
+		foreach( $meta_box_data->js as $key => $value )
+			wp_enqueue_script( $key, $value );
+
+		echo $meta_box_data->html;
+	}
+
+	/**
+		@brief		Prepare and display the meta box data.
+		@since		20131010
+	**/
+	public function threewp_broadcast_prepare_meta_box( $action )
+	{
+		if ( $action->is_applied() )
+			return;
+
+		$meta_box_data = $action->meta_box_data;	// Convenience.
+
+		if ( $meta_box_data->broadcast_data->get_linked_parent() !== false)
+		{
+			$meta_box_data->html->put( 'already_broadcasted',  sprintf( '<p>%s</p>',
+				$this->_( 'This post is broadcasted child post. It cannot be broadcasted further.' )
+			) );
+			$action->applied();
+			return;
+		}
 
 		$form = $meta_box_data->form;		// Convenience
 		$form->prefix( 'broadcast' );		// Create all inputs with this prefix.
 
-		$published = $post->post_status == 'publish';
+		$published = $meta_box_data->post->post_status == 'publish';
 
-		$has_linked_children = $broadcast_data->has_linked_children();
+		$has_linked_children = $meta_box_data->broadcast_data->has_linked_children();
 
 		$last_used_settings = $this->load_last_used_settings( $this->user_id() );
 
-		$post_type = $post->post_type;
+		$post_type = $meta_box_data->post->post_type;
 		$post_type_object = get_post_type_object( $post_type );
 		$post_type_supports_thumbnails = post_type_supports( $post_type, 'thumbnail' );
 		$post_type_supports_custom_fields = post_type_supports( $post_type, 'custom-fields' );
@@ -1037,7 +1069,7 @@ class ThreeWP_Broadcast
 		{
 			// Check the link box is the post has been published and has children OR it isn't published yet.
 			$linked = (
-				( $published && $broadcast_data->has_linked_children() )
+				( $published && $meta_box_data->broadcast_data->has_linked_children() )
 				||
 				! $published
 			);
@@ -1097,14 +1129,14 @@ class ThreeWP_Broadcast
 		$filter = new filters\get_user_writable_blogs( $this->user_id() );
 		$blogs = $filter->apply()->blogs;
 		// Remove the blog we're currently working on from the list of writable blogs.
-		$blogs->forget( $blog_id );
+		$blogs->forget( $meta_box_data->blog_id );
 
 		$blogs_input = $form->checkboxes( 'blogs' )
 			->label( 'Broadcast to' )
 			->prefix( 'blogs' );
 
 		// Preselect those children that this post has.
-		$linked_children = $broadcast_data->get_linked_children();
+		$linked_children = $meta_box_data->broadcast_data->get_linked_children();
 		foreach( $linked_children as $blog_id => $ignore )
 		{
 			$blog = $blogs->get( $blog_id );
@@ -1139,12 +1171,23 @@ class ThreeWP_Broadcast
 			'</a>'
 		) );
 
-		// Allow plugins to modify the meta box with their own info.
-		// The string, $box, must be modified or appended to using string search and replace.
-		$action = new actions\added_meta_box;
-		$action->meta_box_data = $meta_box_data;
-		$action->apply();
+		// We require some js.
+		$meta_box_data->js->put( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/js/user.min.js' );
+		// And some CSS
+		$meta_box_data->css->put( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/css/css.scss.min.css'  );
 
+		$action->applied();
+	}
+
+	/**
+		@brief		Fix up the inputs.
+		@since		20131010
+	**/
+	public function threewp_broadcast_prepared_meta_box( $action )
+	{
+		$meta_box_data = $action->meta_box_data;
+
+		// If our places in the html are still left, insert the inputs.
 		foreach( [
 			'link',
 			'custom_fields',
@@ -1153,9 +1196,10 @@ class ThreeWP_Broadcast
 			'blogs'
 		] as $type )
 			if ( $meta_box_data->html->has( $type ) )
-				$meta_box_data->html->put( $type, ${ $type . '_input' } );
-
-		echo $meta_box_data->html;
+			{
+				$input = $meta_box_data->form->input( $type );
+				$meta_box_data->html->put( $type, $input );
+			}
 	}
 
 	/**
@@ -1321,7 +1365,9 @@ class ThreeWP_Broadcast
 		$bcd->taxonomies = isset( $POST[ 'taxonomies' ] )
 			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) );
 
-		$bcd->post_is_sticky = @( $POST[ 'sticky' ] == 'sticky' );		// Sticky isn't a tag, taxonomy or custom_field.
+		// Is this post sticky? This info is hidden in a blog option.
+		$stickies = get_option( 'sticky_posts' );
+		$bcd->post_is_sticky = in_array( $bcd->post->ID, $stickies );
 	}
 
 	public function trash_post( $post_id)
@@ -1442,6 +1488,19 @@ class ThreeWP_Broadcast
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Misc functions
 	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Returns the current broadcast_data cache object.
+		@return		broadcast_data\\cache		A newly-created or old cache object.
+		@since		201301009
+	**/
+	public function broadcast_data_cache()
+	{
+		$property = 'broadcast_data_cache';
+		if ( ! property_exists( $this, 'broadcast_data_cache' ) )
+			$this->$property = new \threewp_broadcast\broadcast_data\cache;
+		return $this->$property;
+	}
 
 	/**
 		@brief		Broadcast a post.
@@ -1817,7 +1876,7 @@ class ThreeWP_Broadcast
 			if ( ! $bcd->post_is_sticky && $child_post_is_sticky )
 				unstick_post( $bcd->new_post[ 'ID' ] );
 
-			if ( $bcd->link)
+			if ( $bcd->link )
 			{
 				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->new_post[ 'ID' ] );
 				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
@@ -1928,6 +1987,7 @@ class ThreeWP_Broadcast
 	*/
 	public function delete_post_broadcast_data( $blog_id, $post_id)
 	{
+		$this->broadcast_data_cache()->set_for( $blog_id, $post_id, new BroadcastData );
 		$this->sql_delete_broadcast_data( $blog_id, $post_id );
 	}
 
@@ -1939,7 +1999,7 @@ class ThreeWP_Broadcast
 	{
 		if ( isset( $this->_js_enqueued ) )
 			return;
-		wp_enqueue_script( '3wp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/js/user.min.js' );
+		wp_enqueue_script( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/js/user.min.js' );
 		$this->_js_enqueued = true;
 	}
 
@@ -1984,11 +2044,7 @@ class ThreeWP_Broadcast
 	 */
 	public function get_post_broadcast_data( $blog_id, $post_id )
 	{
-		$r = $this->sql_get_broadcast_data( $blog_id, $post_id );
-
-		if ( count( $r ) < 1 )
-			return new BroadcastData( [] );
-		return new BroadcastData( $r );
+		return $this->broadcast_data_cache()->get_for( $blog_id, $post_id );
 	}
 
 	/**
@@ -2238,6 +2294,9 @@ class ThreeWP_Broadcast
 	 */
 	public function set_post_broadcast_data( $blog_id, $post_id, $broadcast_data )
 	{
+		// Update the cache.
+		$this->broadcast_data_cache()->set_for( $blog_id, $post_id, $broadcast_data );
+
 		if ( $broadcast_data->is_modified() )
 			if ( $broadcast_data->is_empty() )
 				$this->sql_delete_broadcast_data( $blog_id, $post_id );
@@ -2313,7 +2372,7 @@ class ThreeWP_Broadcast
 	 *
 	 * Returns an array of user data.
 	 */
-	private function sql_user_get( $user_id)
+	public function sql_user_get( $user_id)
 	{
 		$r = $this->query("SELECT * FROM `".$this->wpdb->base_prefix."_3wp_broadcast` WHERE user_id = '$user_id'");
 		$r = @unserialize( base64_decode( $r[0][ 'data' ] ) );		// Unserialize the data column of the first row.
@@ -2329,7 +2388,7 @@ class ThreeWP_Broadcast
 	/**
 	 * Saves the user data.
 	 */
-	private function sql_user_set( $user_id, $data)
+	public function sql_user_set( $user_id, $data)
 	{
 		$data = serialize( $data);
 		$data = base64_encode( $data);
@@ -2337,21 +2396,42 @@ class ThreeWP_Broadcast
 		$this->query("INSERT INTO `".$this->wpdb->base_prefix."_3wp_broadcast` (user_id, data) VALUES ( '$user_id', '$data' )");
 	}
 
-	private function sql_get_broadcast_data( $blog_id, $post_id )
+	/**
+		@brief		Returns an array of SQL rows for these post_ids.
+		@param		int		$blog_id		ID of blog for which to fetch the datas
+		@param		mixed	$post_ids		An array of ints or a string signifying which datas to retrieve.
+		@return		array					An array of database rows. Each row has a BroadcastData object in the data column.
+		@since		20131009
+	**/
+	public function sql_get_broadcast_datas( $blog_id, $post_ids )
 	{
-		$r = $this->query("SELECT data FROM `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata` WHERE blog_id = '$blog_id' AND post_id = '$post_id'");
-		$r = @unserialize( base64_decode( $r[0][ 'data' ] ) );		// Unserialize the data column of the first row.
-		if ( $r === false)
-			$r = [];
-		return $r;
+		if ( ! is_array( $post_ids ) )
+			$post_ids = [ $post_ids ];
+
+		$query = sprintf( "SELECT * FROM `%s` WHERE `blog_id` = '%s' AND `post_id` IN ('%s')",
+			$this->wpdb->base_prefix . '_3wp_broadcast_broadcastdata',
+			$blog_id,
+			implode( "', '", $post_ids )
+		);
+		$results = $this->query( $query );
+		foreach( $results as $index => $result )
+		{
+			$data = @ unserialize( base64_decode( $result[ 'data' ] ) );
+			if ( ! $data )
+				$data = new BroadcastData;
+			else
+				$data = new BroadcastData( $data );
+			$results[ $index ][ 'data' ] = $data;
+		}
+		return $results;
 	}
 
-	private function sql_delete_broadcast_data( $blog_id, $post_id )
+	public function sql_delete_broadcast_data( $blog_id, $post_id )
 	{
 		$this->query("DELETE FROM `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata` WHERE blog_id = '$blog_id' AND post_id = '$post_id'");
 	}
 
-	private function sql_update_broadcast_data( $blog_id, $post_id, $data )
+	public function sql_update_broadcast_data( $blog_id, $post_id, $data )
 	{
 		$data = serialize( $data);
 		$data = base64_encode( $data);
