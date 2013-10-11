@@ -1172,9 +1172,9 @@ class ThreeWP_Broadcast
 		) );
 
 		// We require some js.
-		$meta_box_data->js->put( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/js/user.min.js' );
+		$meta_box_data->js->put( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/user.min.js' );
 		// And some CSS
-		$meta_box_data->css->put( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/css/css.scss.min.css'  );
+		$meta_box_data->css->put( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.scss.min.css'  );
 
 		$action->applied();
 	}
