@@ -31,7 +31,7 @@ Broadcasted posts can be linked to their parents, which updates child posts when
 
 = Other features =
 
-* Blogs plugin enables blog grouping for easy selection
+* Groups plugin enables blog grouping for easy selection
 * Custom field blacklist and whitelist
 * Last used settings are remembered
 * User role access granularity
@@ -40,13 +40,12 @@ Broadcasted posts can be linked to their parents, which updates child posts when
 
 The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
 
-For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>.
+For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
-Currently the Premium Pack offers:
-
-* Queue adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
-* Send To Many broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
-* Views adds support for WP Types and Views content templates.
+* <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
+* <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
+* <strong>User & Blog Settings</strong> can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
+* <strong>Views</strong> adds support for WP Types and Views content templates.
 
 = Misc =
 
@@ -101,6 +100,10 @@ For contract work such as the following, contact me so we can make a deal:
 
 If you're not into donations, try the support forum to see if other users can help you out.
 
+= Blacklist, whitelisting, force broadcast =
+
+Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+
 = Bulk broadcast existing pages =
 
 To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
@@ -110,6 +113,10 @@ To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a 
 Attachments are force-broadcasted: the child posts have all their attachments deleted and then copied again.
 
 If you have a gallery shortcode in the post ( [gallery columns="2" ids="427,433,430,429,428"] ) then Broadcast will first check that the image does not already exist on the child blog. It does this by searching for the post name (the filename minus the extension). If no image is found, it is copied.
+
+= Hide broadcast from the users =
+
+The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Is php v5.4 really necessary? =
 
@@ -133,6 +140,7 @@ Make sure that:
 2. Your user level has broadcast access (Broadcast access role)
 3. Your user has write access to more than this blog
 4. The correct post type(s) have been selected
+5. <em>User & Blog Settings</em> is not set to hide the meta box from the user / role / blog
 
 = WPAlchemy =
 
@@ -156,6 +164,13 @@ It works transparently in the background, but in case you've never really used W
 Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
+
+= 2.4 20131018 =
+* Fix: Selected blogs are shown after selecting a group.
+* Fix: Better JS and CSS loading for subdirectory installs.
+* Fix: Allow editing of slugs when overriding child permalinks.
+* Fix: Child deletion link doesn't delete twice.
+* New: Support to hide broadcast box, menu, columns. See User & Blog Settings plugin.
 
 = 2.3 20131011 =
 * New: Caching of BroadcastData speeds up the post overview.

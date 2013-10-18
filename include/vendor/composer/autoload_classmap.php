@@ -9,6 +9,7 @@ return array(
     'threewp_broadcast\\BroadcastData' => $baseDir . '/threewp_broadcast/BroadcastData.php',
     'threewp_broadcast\\actionfilter' => $baseDir . '/threewp_broadcast/actionfilter.php',
     'threewp_broadcast\\actions\\action' => $baseDir . '/threewp_broadcast/actions/action.php',
+    'threewp_broadcast\\actions\\admin_menu' => $baseDir . '/threewp_broadcast/actions/admin_menu.php',
     'threewp_broadcast\\actions\\broadcasting_after_switch_to_blog' => $baseDir . '/threewp_broadcast/actions/broadcasting_after_switch_to_blog.php',
     'threewp_broadcast\\actions\\broadcasting_before_restore_current_blog' => $baseDir . '/threewp_broadcast/actions/broadcasting_before_restore_current_blog.php',
     'threewp_broadcast\\actions\\broadcasting_finished' => $baseDir . '/threewp_broadcast/actions/broadcasting_finished.php',

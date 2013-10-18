@@ -3,7 +3,7 @@
 namespace threewp_broadcast;
 
 class blog_collection
-	extends \plainview\collections\collection
+	extends \plainview\sdk\collections\collection
 {
 	/**
 		@brief		Sort with the root blog first, then the rest alphabetically.

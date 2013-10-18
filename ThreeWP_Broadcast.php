@@ -6,28 +6,21 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.3
+Version:		2.4
 */
 
 namespace threewp_broadcast;
 
-if ( ! class_exists( '\\plainview\\wordpress\\base' ) )	require_once( __DIR__ . '/plainview_sdk/plainview/autoload.php' );
+if ( ! class_exists( '\\threewp_broadcast\\base' ) )	require_once( __DIR__ . '/ThreeWP_Broadcast_Base.php' );
 
 require_once( 'include/vendor/autoload.php' );
 
-use \plainview\collections\collection;
+use \plainview\sdk\collections\collection;
 use \threewp_broadcast\broadcast_data\blog;
 
 class ThreeWP_Broadcast
-	extends \plainview\wordpress\base
+	extends \threewp_broadcast\ThreeWP_Broadcast_Base
 {
-	/**
-		@brief		Add the meta box in the post editor?
-		@details	Standard is null, which means the plugin(s) should work it out first.
-		@since		20130928
-	**/
-	public	$add_meta_box = null;
-
 	private $broadcasting = false;
 
 	/**
@@ -37,6 +30,36 @@ class ThreeWP_Broadcast
 		@var	$broadcasting_data
 	**/
 	public $broadcasting_data = null;
+
+	/**
+		@brief		Display Broadcast completely, including menus and post overview columns.
+		@since		20131015
+		@var		$display_broadcast
+	**/
+	public $display_broadcast = true;
+
+	/**
+		@brief		Display the Broadcast columns in the post overview.
+		@details	Disabling this will prevent the user from unlinking posts.
+		@since		20131015
+		@var		$display_broadcast_columns
+	**/
+	public $display_broadcast_columns = true;
+
+	/**
+		@brief		Display the Broadcast menu
+		@since		20131015
+		@var		$display_broadcast_menu
+	**/
+	public $display_broadcast_menu = true;
+
+	/**
+		@brief		Add the meta box in the post editor?
+		@details	Standard is null, which means the plugin(s) should work it out first.
+		@since		20131015
+		@var		$display_broadcast_meta_box
+	**/
+	public	$display_broadcast_meta_box = true;
 
 	/**
 		@brief	Display information in the menu about the premium pack?
@@ -53,7 +76,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.2;
+	public $plugin_version = 2.4;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -92,12 +115,14 @@ class ThreeWP_Broadcast
 		}
 
 		$this->add_filter( 'threewp_broadcast_add_meta_box' );
+		$this->add_filter( 'threewp_broadcast_admin_menu', 100 );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 9 );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
 		$this->add_filter( 'threewp_broadcast_broadcast_post' );
 		$this->add_filter( 'threewp_broadcast_get_user_writable_blogs' );
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 9 );		// Just before the standard 10.
-		$this->add_action( 'threewp_broadcast_menu' );
+		$this->add_action( 'threewp_broadcast_menu', 9 );
+		$this->add_action( 'threewp_broadcast_menu', 'threewp_broadcast_menu_final', 100 );
 		$this->add_filter( 'threewp_broadcast_prepare_broadcasting_data' );
 
 		if ( $this->get_site_option( 'canonical_url' ) )
@@ -110,51 +135,12 @@ class ThreeWP_Broadcast
 	{
 		$this->load_language();
 
-		add_menu_page(
-			$this->_( 'ThreeWP Broadcast' ),
-			$this->_( 'Broadcast' ),
-			'edit_posts',
-			'threewp_broadcast',
-			[ &$this, 'user_menu_tabs' ]
-		);
-
-		if ( $this->display_premium_pack_info && is_super_admin() )
-			$this->add_submenu_page(
-				'threewp_broadcast',
-				$this->_( 'Premium Pack info' ),
-				$this->_( 'Premium Pack' ),
-				'edit_posts',
-				'threewp_broadcast_premium_pack_info',
-				[ &$this, 'admin_menu_premium_pack_info' ]
-			);
+		$action = new actions\admin_menu;
+		$action->apply();
 
 		$action = new actions\menu;
 		$action->broadcast = $this;
 		$action->apply();
-
-		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
-		{
-			$this->add_action( 'post_row_actions', 10, 2 );
-			$this->add_action( 'page_row_actions', 'post_row_actions', 10, 2 );
-
-			$this->add_filter( 'manage_posts_columns' );
-			$this->add_action( 'manage_posts_custom_column', 10, 2 );
-
-			$this->add_filter( 'manage_pages_columns', 'manage_posts_columns' );
-			$this->add_action( 'manage_pages_custom_column', 'manage_posts_custom_column', 10, 2 );
-
-			$this->add_action( 'wp_trash_post', 'trash_post' );
-			$this->add_action( 'trash_post' );
-			$this->add_action( 'trash_page', 'trash_post' );
-
-			$this->add_action( 'untrash_post' );
-			$this->add_action( 'untrash_page', 'untrash_post' );
-
-			$this->add_action( 'delete_post' );
-			$this->add_action( 'delete_page', 'delete_post' );
-		}
-
-		$this->add_submenu_pages();
 
 		// Hook into save_post, no matter is the meta box is displayed or not.
 		$this->add_action( 'save_post', intval( $this->get_site_option( 'save_post_priority' ) ) );
@@ -582,10 +568,10 @@ class ThreeWP_Broadcast
 		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
 		switch_to_blog( $child_blog_id );
 		$broadcasted_post_id = $broadcast_data->get_linked_child_on_this_blog();
+		if ( $broadcasted_post_id === null )
+			wp_die( 'No broadcasted child post found on this blog!' );
 		wp_delete_post( $broadcasted_post_id, true );
-		$broadcast_data->remove_linked_child( $blog_id );
 		restore_current_blog();
-		$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
 
 		$message = $this->_( 'The broadcasted child post has been deleted.' );
 
@@ -836,12 +822,15 @@ class ThreeWP_Broadcast
 
 	public function add_meta_boxes()
 	{
-		// Is it false? Then someone else has decided that it should not be shown.
-		if ( $this->add_meta_box === false )
-			return $broadcast;
+		// Display broadcast at all?
+		if ( ! $this->display_broadcast )
+			return false;
+		// Display the meta box?
+		if ( $this->display_broadcast_meta_box === false )
+			return;
 
 		// If it's true, then show it to all post types!
-		if ( $this->add_meta_box === true )
+		if ( $this->display_broadcast_meta_box === true )
 		{
 			$post_types = $this->get_site_option( 'post_types' );
 			foreach( explode( ' ', $post_types ) as $post_type )
@@ -850,19 +839,19 @@ class ThreeWP_Broadcast
 		}
 
 		// No decision yet. Decide.
-		$this->add_meta_box |= is_super_admin();
-		$this->add_meta_box |= $this->role_at_least( $this->get_site_option( 'role_broadcast' ) );
+		$this->display_broadcast_meta_box |= is_super_admin();
+		$this->display_broadcast_meta_box |= $this->role_at_least( $this->get_site_option( 'role_broadcast' ) );
 
 		// No access to any other blogs = no point in displaying it.
 		$filter = new filters\get_user_writable_blogs( $this->user_id() );
 		$blogs = $filter->apply()->blogs;
 		if ( count( $blogs ) <= 1 )
-			$this->add_meta_box = false;
+			$this->display_broadcast_meta_box = false;
 
 		// Convert to a bool value
-		$this->add_meta_box = ( $this->add_meta_box == true );
+		$this->display_broadcast_meta_box = ( $this->display_broadcast_meta_box == true );
 
-		if ( $this->add_meta_box == true )
+		if ( $this->display_broadcast_meta_box == true )
 			return $this->add_meta_boxes();
 	}
 
@@ -902,7 +891,12 @@ class ThreeWP_Broadcast
 
 	public function post_link( $link, $post )
 	{
-		global $blog_id;
+		// Don't overwrite the permalink if we're in the editing window.
+		// This allows the user to change the permalink.
+		if ( $_SERVER[ 'SCRIPT_NAME' ] == '/wp-admin/post.php' )
+			return $link;
+
+		$blog_id = get_current_blog_id();
 
 		// Have we already checked this post ID for a link?
 		$key = 'b' . $blog_id . '_p' . $post->ID;
@@ -957,13 +951,24 @@ class ThreeWP_Broadcast
 			return;
 
 		// Save the user's last settings.
-		$this->save_last_used_settings( $this->user_id(), $_POST[ 'broadcast' ] );
+		if ( isset( $_POST[ 'broadcast' ] ) )
+			$this->save_last_used_settings( $this->user_id(), $_POST[ 'broadcast' ] );
+
+		$post = get_post( $post_id );
+
+		$meta_box_data = $this->create_meta_box( $post );
+
+		// Allow plugins to modify the meta box with their own info.
+		$action = new actions\prepare_meta_box;
+		$action->meta_box_data = $meta_box_data;
+		$action->apply();
 
 		$broadcasting_data = new broadcasting_data( [
 			'_POST' => $_POST,
+			'meta_box_data' => $meta_box_data,
 			'parent_blog_id' => get_current_blog_id(),
 			'parent_post_id' => $post_id,
-			'post' => get_post( $post_id ),
+			'post' => $post,
 			'upload_dir' => wp_upload_dir(),
 		] );
 
@@ -1010,12 +1015,7 @@ class ThreeWP_Broadcast
 	**/
 	public function threewp_broadcast_add_meta_box( $post )
 	{
-		$meta_box_data = new meta_box\data;
-		$meta_box_data->blog_id = get_current_blog_id();
-		$meta_box_data->broadcast_data = $this->get_post_broadcast_data( $meta_box_data->blog_id, $post->ID );
-		$meta_box_data->form = $this->form2();
-		$meta_box_data->post = $post;
-		$meta_box_data->post_id = $post->ID;
+		$meta_box_data = $this->create_meta_box( $post );
 
 		// Allow plugins to modify the meta box with their own info.
 		$action = new actions\prepare_meta_box;
@@ -1028,6 +1028,39 @@ class ThreeWP_Broadcast
 			wp_enqueue_script( $key, $value );
 
 		echo $meta_box_data->html;
+	}
+
+	/**
+		@brief		Begin adding admin hooks.
+		@since		20131015
+	**/
+	public function threewp_broadcast_admin_menu()
+	{
+		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
+		{
+			if (  $this->display_broadcast_columns )
+			{
+				$this->add_action( 'post_row_actions', 10, 2 );
+				$this->add_action( 'page_row_actions', 'post_row_actions', 10, 2 );
+
+				$this->add_filter( 'manage_posts_columns' );
+				$this->add_action( 'manage_posts_custom_column', 10, 2 );
+
+				$this->add_filter( 'manage_pages_columns', 'manage_posts_columns' );
+				$this->add_action( 'manage_pages_custom_column', 'manage_posts_custom_column', 10, 2 );
+			}
+
+			// Hook into the actions that keep track of the broadcast data.
+			$this->add_action( 'wp_trash_post', 'trash_post' );
+			$this->add_action( 'trash_post' );
+			$this->add_action( 'trash_page', 'trash_post' );
+
+			$this->add_action( 'untrash_post' );
+			$this->add_action( 'untrash_page', 'untrash_post' );
+
+			$this->add_action( 'delete_post' );
+			$this->add_action( 'delete_page', 'delete_post' );
+		}
 	}
 
 	/**
@@ -1113,23 +1146,8 @@ class ThreeWP_Broadcast
 			</script>
 		' );
 
-		// Similarly, groups are only available to those who are allowed to use them.
-		$data = $this->sql_user_get( $this->user_id() );
-		if ( count( $data[ 'groups' ] ) > 0 )
-		{
-			$groups_input = $form->select( 'groups' )
-				->label_( 'Select blogs in group' )
-				->option( 'No group selected', '' );
-
-			foreach( $data[ 'groups' ] as $groupIndex=>$groupData)
-				$groups_input->option( $groupData[ 'name' ], implode( ' ', array_keys( $groupData[ 'blogs' ] ) ) );
-			$meta_box_data->html->put( 'groups', '' );
-		}
-
 		$filter = new filters\get_user_writable_blogs( $this->user_id() );
 		$blogs = $filter->apply()->blogs;
-		// Remove the blog we're currently working on from the list of writable blogs.
-		$blogs->forget( $meta_box_data->blog_id );
 
 		$blogs_input = $form->checkboxes( 'blogs' )
 			->label( 'Broadcast to' )
@@ -1157,6 +1175,9 @@ class ThreeWP_Broadcast
 				$option->css_class( 'required' )->title_( 'This blog is required' );
 			if ( $blog->is_selected() )
 				$option->checked( true );
+			// The current blog should be "selectable", for the sake of other plugins that modify the meta box. But hidden from users.
+			if ( $blog->id == $meta_box_data->blog_id )
+				$option->hidden();
 		}
 
 		$meta_box_data->html->put( 'blogs', '' );
@@ -1256,7 +1277,7 @@ class ThreeWP_Broadcast
 
 			if ( count( $children ) > 0 )
 			{
-				$blogs = new \plainview\collections\collection;
+				$blogs = new \plainview\sdk\collections\collection;
 				$output = '';
 
 				foreach( $children as $child_blog_id => $child_post_id )
@@ -1340,34 +1361,50 @@ class ThreeWP_Broadcast
 		if ( ! in_array( $bcd->post->post_status, $allowed_post_status ) )
 			return;
 
-		$POST = $bcd->_POST[ 'broadcast' ];		// convenience
+		$form = $bcd->meta_box_data->form;
+		$form->post();
 
-		// Collect the list of blogs.
-		if ( isset( $POST[ 'blogs' ] ) )
-			foreach( $POST[ 'blogs' ] as $blog_id )
+		// Collect the list of blogs from the meta box.
+		$blogs_input = $form->input( 'blogs' );
+		foreach( $blogs_input->inputs() as $blog_input )
+			if ( $blog_input->is_checked() )
 			{
+				$blog_id = $blog_input->get_name();
+				$blog_id = str_replace( 'blogs_', '', $blog_id );
 				$blog = new broadcast_data\blog;
 				$blog->id = $blog_id;
 				$bcd->broadcast_to( $blog );
 			}
+
+		// Remove the current blog
+		$bcd->blogs->forget( $bcd->parent_blog_id );
 
 		$bcd->post_type_object = get_post_type_object( $bcd->post->post_type );
 		$bcd->post_type_supports_thumbnails = post_type_supports( $bcd->post->post_type, 'thumbnail' );
 		$bcd->post_type_supports_custom_fields = post_type_supports( $bcd->post->post_type, 'custom-fields' );
 		$bcd->post_type_is_hierarchical = $bcd->post_type_object->hierarchical;
 
-		$bcd->custom_fields = isset( $POST[ 'custom_fields' ] )
+		$bcd->custom_fields = $form->checkbox( 'custom_fields' )->get_post_value()
 			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) );
 
-		$bcd->link = isset( $POST[ 'link' ] )
+		$bcd->link = $form->checkbox( 'link' )->get_post_value()
 			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) );
 
-		$bcd->taxonomies = isset( $POST[ 'taxonomies' ] )
+		$bcd->taxonomies = $form->checkbox( 'taxonomies' )->get_post_value()
 			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) );
 
 		// Is this post sticky? This info is hidden in a blog option.
 		$stickies = get_option( 'sticky_posts' );
 		$bcd->post_is_sticky = in_array( $bcd->post->ID, $stickies );
+
+		return;
+
+		ddd( $bcd->blogs );
+		ddd( $bcd->link );
+		ddd( $bcd->custom_fields );
+		ddd( $bcd->taxonomies );
+		ddd( 'noooooooooooo mooooooooooooooooooreeeeeeeeee' );
+		exit;
 	}
 
 	public function trash_post( $post_id)
@@ -1425,17 +1462,46 @@ class ThreeWP_Broadcast
 	**/
 	public function threewp_broadcast_menu( $action )
 	{
-		if ( ! is_super_admin() )
+		if ( $this->display_premium_pack_info && is_super_admin() )
+			$this->add_submenu_page(
+				'threewp_broadcast',
+				$this->_( 'Premium Pack info' ),
+				$this->_( 'Premium Pack' ),
+				'edit_posts',
+				'threewp_broadcast_premium_pack_info',
+				[ &$this, 'admin_menu_premium_pack_info' ]
+			);
+
+		if ( is_super_admin() )
+			$action->broadcast->add_submenu_page(
+				'threewp_broadcast',
+				'Admin settings',
+				'Admin settings',
+				'activate_plugins',
+				'threewp_broadcast_admin_menu',
+				[ &$this, 'admin_menu_tabs' ]
+			);
+	}
+
+	/**
+		@brief		Adds to the broadcast menu.
+		@param		threewp_broadcast		$threewp_broadcast		The broadcast object.
+		@since		20130927
+	**/
+	public function threewp_broadcast_menu_final( $action )
+	{
+		if ( ! $this->display_broadcast_menu )
 			return;
 
-		$action->broadcast->add_submenu_page(
+		add_menu_page(
+			$this->_( 'ThreeWP Broadcast' ),
+			$this->_( 'Broadcast' ),
+			'edit_posts',
 			'threewp_broadcast',
-			'Admin settings',
-			'Admin settings',
-			'activate_plugins',
-			'threewp_broadcast_admin_menu',
-			[ &$this, 'admin_menu_tabs' ]
+			[ &$this, 'user_menu_tabs' ]
 		);
+
+		$this->add_submenu_pages();
 	}
 
 	/**
@@ -1983,6 +2049,21 @@ class ThreeWP_Broadcast
 	}
 
 	/**
+		@brief		Create a meta box for this post.
+		@since		20131015
+	**/
+	public function create_meta_box( $post )
+	{
+		$meta_box_data = new meta_box\data;
+		$meta_box_data->blog_id = get_current_blog_id();
+		$meta_box_data->broadcast_data = $this->get_post_broadcast_data( $meta_box_data->blog_id, $post->ID );
+		$meta_box_data->form = $this->form2();
+		$meta_box_data->post = $post;
+		$meta_box_data->post_id = $post->ID;
+		return $meta_box_data;
+	}
+
+	/**
 		Deletes the broadcast data completely of a post in a blog.
 	*/
 	public function delete_post_broadcast_data( $blog_id, $post_id)
@@ -1997,31 +2078,11 @@ class ThreeWP_Broadcast
 	**/
 	public function enqueue_js()
 	{
+		return;
 		if ( isset( $this->_js_enqueued ) )
 			return;
 		wp_enqueue_script( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/js/user.min.js' );
 		$this->_js_enqueued = true;
-	}
-
-	/**
-		@brief		Lists ALL of the blogs. Including the main blog.
-		@since		20131004
-	**/
-	public function get_blog_list()
-	{
-		$site_id = get_current_site();
-		$site_id = $site_id->id;
-
-		// Get a custom list of all blogs on this site. This bypasses Wordpress' filter that removes private and mature blogs.
-		$blogs = $this->query("SELECT * FROM `".$this->wpdb->base_prefix."blogs` WHERE site_id = '$site_id' ORDER BY blog_id");
-		$r = new blog_collection;
-		foreach( $blogs as $blog )
-		{
-			$blog = blog::make( $blog );
-			$r->set( $blog->id, $blog );
-		}
-		$r->sort_logically();
-		return $r;
 	}
 
 	private function get_current_blog_taxonomy_terms( $taxonomy )
@@ -2045,16 +2106,6 @@ class ThreeWP_Broadcast
 	public function get_post_broadcast_data( $blog_id, $post_id )
 	{
 		return $this->broadcast_data_cache()->get_for( $blog_id, $post_id );
-	}
-
-	/**
-		Returns a list of all the, as per admin, required blogs to broadcast to.
-	**/
-	private function get_required_blogs()
-	{
-		$requiredBlogs = array_filter( explode( ',', $this->get_site_option( 'requiredlist' ) ) );
-		$requiredBlogs = array_flip( $requiredBlogs);
-		return $requiredBlogs;
 	}
 
 	public function is_blog_user_writable( $user_id, $blog )

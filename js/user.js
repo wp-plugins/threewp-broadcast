@@ -89,6 +89,10 @@ jQuery(document).ready(function($) {
 					$( "#plainview_form2_inputs_checkboxes_blogs_" + blogs[counter], window.broadcast.$broadcast ).prop( 'checked', true );
 				// Select the "no value" option.
 				$this.val( '' );
+
+				// If the blog list is closed, then expand and then close again to show the newly selected blogs.
+				if ( window.broadcast.$blogs_html.hasClass( 'closed' ) )
+					window.broadcast.$arrow.click().click();
 			});
 
 		},
@@ -101,12 +105,14 @@ jQuery(document).ready(function($) {
 			window.broadcast.$blogs_html.removeClass( 'opened' ).addClass( 'closed' );
 			this.$arrow.html( broadcast_strings.show_all );
 
-
 			// Hide all those blogs that aren't checked
 			this.$broadcast_blogs_htmls.each( function( index, item )
 			{
 				var $this = $( this );
 				var checked = $this.prop( 'checked' );
+				// Ignore inputs that are supposed to be hidden.
+				if ( $this.prop( 'hidden' ) === true )
+					return;
 				if ( ! checked )
 					$this.parent().hide();
 			});
@@ -149,7 +155,13 @@ jQuery(document).ready(function($) {
 		{
 			window.broadcast.$blogs_html.removeClass( 'closed' ).addClass( 'opened' );
 			this.$arrow.html( broadcast_strings.hide_all );
-			this.$broadcast_blogs_htmls.parent().show();
+			$.each( this.$broadcast_blogs_htmls, function( index, item )
+			{
+				var $this = $( this );
+				if ( $this.prop( 'hidden' ) === true )
+					return;
+				$this.parent().show();
+			});
 		}
 	};
 
