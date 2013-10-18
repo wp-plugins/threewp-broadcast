@@ -167,7 +167,7 @@ class ThreeWP_Broadcast_WPML
 			self::open_close_tag( wpml_get_current_language(), 'em' )
 		);
 
-		return \plainview\base::implode_html( $r, '<div>', '</div>' );
+		return \plainview\sdk\base::implode_html( $r, '<div>', '</div>' );
 	}
 
 	/**
