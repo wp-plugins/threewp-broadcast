@@ -11,7 +11,7 @@ class manage_posts_custom_column
 
 	public function _construct()
 	{
-		$this->html = new \plainview\collections\collection;
+		$this->html = new \plainview\sdk\collections\collection;
 	}
 
 	public function render()

@@ -3,7 +3,7 @@
 namespace threewp_broadcast\meta_box;
 
 class html
-	extends \plainview\collections\collection
+	extends \plainview\sdk\collections\collection
 {
 	public function __toString()
 	{

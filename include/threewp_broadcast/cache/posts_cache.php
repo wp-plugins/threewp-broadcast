@@ -7,7 +7,7 @@ namespace threewp_broadcast\cache;
 	@since		20131010
 **/
 abstract class posts_cache
-	extends \plainview\collections\collection
+	extends \plainview\sdk\collections\collection
 {
 
 	/**
@@ -86,7 +86,7 @@ abstract class posts_cache
 
 		// Fetch them!
 		$lookups = $this->lookup( $blog_id, $missing_post_ids );
-		$lookups = new \plainview\collections\collection( $lookups );
+		$lookups = new \plainview\sdk\collections\collection( $lookups );
 
 		// Since not all requested post IDs have broadcast data, foreach the missing post ids, not the results, and add them to the cache.
 		foreach( $missing_post_ids as $post_id )

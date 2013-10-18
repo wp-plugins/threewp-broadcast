@@ -59,8 +59,8 @@ class data
 
 	public function __construct()
 	{
-		$this->css = new \plainview\collections\collection;
+		$this->css = new \plainview\sdk\collections\collection;
 		$this->html = new html;
-		$this->js = new \plainview\collections\collection;
+		$this->js = new \plainview\sdk\collections\collection;
 	}
 }
