@@ -7,7 +7,7 @@ use \threewp_broadcast\blog_collection;
 class blog_group
 	extends \threewp_broadcast\db_object
 {
-	use \plainview\wordpress\traits\db_aware_object;
+	use \plainview\sdk\wordpress\traits\db_aware_object;
 
 	public $id;
 	public $data;
