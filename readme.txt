@@ -4,7 +4,7 @@ Donate link: http://plainview.se/donate/
 License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
-Tags: broadcast, multipost, duplicate, posts, sitepress, threewp
+Tags: broadcast, multipost, duplicate, posts, sitepress, threewp, linking, posts, multiple, blogs
 Tested up to: 3.6.1
 
 Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
