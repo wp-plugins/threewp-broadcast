@@ -85,6 +85,13 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 9. Blog group overview
 10. Editing a blog group
 11. Blog group settings
+12. Premium Pack: Queue overview (Queue plugin)
+13. Premium Pack: Send To Many button (Send To Many plugin)
+14. Premium Pack: Send To Many interface shown after the posts have been selected (Send To Many plugin)
+15. Premium Pack: All Broadcast modification options (Blog & User Settings plugin)
+16. Premium Pack: Showing how to hide Broadcast from the users (Blog & User Settings plugin)
+17. Premium Pack: Showing a modification, info and to whom the modification applies (Blog & User Settings plugin)
+18. Premium Pack: Adding one row of criteria for a modification (Blog & User Settings plugin)
 
 == Frequently Asked Questions ==
 
