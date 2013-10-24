@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.4
+Version:		2.5
 */
 
 namespace threewp_broadcast;
@@ -76,7 +76,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.4;
+	public $plugin_version = 2.5;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -296,10 +296,12 @@ class ThreeWP_Broadcast
 
 	public function admin_menu_premium_pack_info()
 	{
+		$r = '';
+		$r .= file_get_contents( __DIR__ . '/html/style.css' );
 		$contents = file_get_contents( __DIR__ . '/html/premium_pack_info.html' );
-		$contents = wpautop( $contents );
-		$contents = $this->wrap( $contents, $this->_( 'ThreeWP Broadcast Premium Pack info' ) );
-		echo $contents;
+		//$contents = wpautop( $contents );
+		$r .= $this->wrap( $contents, $this->_( 'ThreeWP Broadcast Premium Pack info' ) );
+		echo $r;
 	}
 
 	public function admin_menu_settings()
@@ -598,10 +600,17 @@ class ThreeWP_Broadcast
 		if ( ! wp_verify_nonce( $nonce, $nonce_key) )
 			die("Security check: not finding orphans for you!");
 
+		$form = $this->form2();
 		$post = get_post( $post_id );
-		$post_type = get_post_type( $post_id );
 		$r = '';
-		$form = $this->form();
+		$table = $this->table();
+
+		$row = $table->head()->row();
+		$table->bulk_actions()
+			->form( $form )
+			->add( $this->_( 'Create link' ), 'create_link' )
+			->cb( $row );
+		$row->th()->text_( 'Domain' );
 
 		$broadcast_data = $this->get_post_broadcast_data( $current_blog_id, $post_id );
 
@@ -619,12 +628,12 @@ class ThreeWP_Broadcast
 			if ( $broadcast_data->has_linked_child_on_this_blog( $blog->id ) )
 				continue;
 
-			switch_to_blog( $blog->id );
+			$blog->switch_to();
 
 			$args = array(
 				'name' => $post->post_name,
 				'numberposts' => 1,
-				'post_type'=> $post_type,
+				'post_type'=> $post->post_type,
 				'post_status' => $post->post_status,
 			);
 			$posts = get_posts( $args );
@@ -636,104 +645,63 @@ class ThreeWP_Broadcast
 				$orphans[ $blog->id ] = $orphan;
 			}
 
-			restore_current_blog();
+			$blog->switch_from();
 		}
 
-		if ( isset( $_POST[ 'action_submit' ] ) && isset( $_POST[ 'blogs' ] ) )
+		if ( $form->is_posting() )
 		{
-			if ( $_POST[ 'action' ] == 'link' )
+			$form->post();
+			if ( $table->bulk_actions()->pressed() )
 			{
-				foreach( $orphans as $blog_id => $orphan )
+				switch ( $table->bulk_actions()->get_action() )
 				{
-					if ( isset( $_POST[ 'blogs' ][ $blog_id ] [ $orphan->ID ] ) )
-					{
-						$broadcast_data->add_linked_child( $blog_id, $orphan->ID );
-						unset( $orphans[ $blog_id ] );		// There can only be one orphan per blog, so we're not interested in the blog anymore.
+					case 'create_link':
+						$ids = $table->bulk_actions()->get_rows();
 
-						$child_broadcast_data = $this->get_post_broadcast_data( $blog_id, $orphan->ID );
-						$child_broadcast_data->set_linked_parent( $current_blog_id, $post_id );
-						$this->set_post_broadcast_data( $blog_id, $orphan->ID, $child_broadcast_data );
-					}
+						foreach( $orphans as $blog_id => $orphan )
+						{
+							$bulk_id = sprintf( '%s_%s', $blog_id, $orphan->ID );
+							if ( ! in_array( $bulk_id, $ids ) )
+								continue;
+
+							$broadcast_data->add_linked_child( $blog_id, $orphan->ID );
+							unset( $orphans[ $blog_id ] );		// There can only be one orphan per blog, so we're not interested in the blog anymore.
+
+							// Update the child's broadcast data.
+							$child_broadcast_data = $this->get_post_broadcast_data( $blog_id, $orphan->ID );
+							$child_broadcast_data->set_linked_parent( $current_blog_id, $post_id );
+							$this->set_post_broadcast_data( $blog_id, $orphan->ID, $child_broadcast_data );
+						}
+
+						// Update the broadcast data for the parent post.
+						$this->set_post_broadcast_data( $current_blog_id, $post_id, $broadcast_data );
+						echo $this->message_( 'The selected children were linked!' );
+					break;
 				}
-				// Save the broadcast data.
-				$this->set_post_broadcast_data( $current_blog_id, $post_id, $broadcast_data );
-				echo $this->message( 'The selected children were linked!' );
-			}	// link
+			}
 		}
 
 		if ( count( $orphans ) < 1 )
 		{
-			$message = $this->_( 'No possible child posts were found on the other blogs you have write access to. Either there are no posts with the same title as this one, or all possible orphans have already been linked.' );
+			$r .= $this->_( 'No possible child posts were found on the other blogs you have write access to. Either there are no posts with the same title as this one, or all possible orphans have already been linked.' );
 		}
 		else
 		{
-			$t_body = '';
 			foreach( $orphans as $blog_id => $orphan )
 			{
-				$select = array(
-					'type' => 'checkbox',
-					'checked' => false,
-					'label' => $orphan->ID,
-					'name' => $orphan->ID,
-					'nameprefix' => '[blogs][' . $blog_id . ']',
-				);
-
-				$t_body .= '
-					<tr>
-						<th scope="row" class="check-column">' . $form->make_input( $select ) . ' <span class="screen-reader-text">' . $form->make_label( $select ) . '</span></th>
-						<td><a href="' . $orphan->permalink . '">' . $blogs[ $blog_id ]->blogname . '</a></td>
-					</tr>
-				';
+				$row = $table->body()->row();
+				$bulk_id = sprintf( '%s_%s', $blog_id, $orphan->ID );
+				$table->bulk_actions()->cb( $row, $bulk_id );
+				$row->td()->text( '<a href="' . $orphan->permalink . '">' . $blogs[ $blog_id ]->blogname . '</a>' );
 			}
-
-			$input_actions = array(
-				'type' => 'select',
-				'name' => 'action',
-				'label' => $this->_( 'With the selected rows' ),
-				'options' => array(
-					array( 'value' => '', 'text' => $this->_( 'Do nothing' ) ),
-					array( 'value' => 'link', 'text' => $this->_( 'Create link' ) ),
-				),
-			);
-
-			$input_action_submit = array(
-				'type' => 'submit',
-				'name' => 'action_submit',
-				'value' => $this->_( 'Apply' ),
-				'css_class' => 'button-secondary',
-			);
-
-			$selected = array(
-				'type' => 'checkbox',
-				'name' => 'check',
-			);
-
-			$r .= '
-				' . $form->start() . '
-				<p>
-					' . $form->make_label( $input_actions ) . '
-					' . $form->make_input( $input_actions ) . '
-					' . $form->make_input( $input_action_submit ) . '
-				</p>
-				<table class="widefat">
-					<thead>
-						<th class="check-column">' . $form->make_input( $select ) . '<span class="screen-reader-text">' . $this->_( 'Selected' ) . '</span></th>
-						<th>' . $this->_( 'Domain' ) . '</th>
-					</thead>
-					<tbody>
-						' . $t_body . '
-					</tbody>
-				</table>
-				' . $form->stop() . '
-			';
+			$r .= $form->open_tag();
+			$r .= $table;
+			$r .= $form->close_tag();
 		}
-
-		if ( isset( $message ) )
-			echo $this->message( $message );
 
 		echo $r;
 
-		echo '<p><a href="edit.php?post_type='.$post_type.'">Back to post overview</a></p>';
+		echo '<p><a href="edit.php?post_type='.$post->post_type.'">Back to post overview</a></p>';
 	}
 
 	public function user_broadcast_info()
@@ -941,6 +909,11 @@ class ThreeWP_Broadcast
 	{
 		// Loop check.
 		if ( $this->is_broadcasting() )
+			return;
+
+		// Is this post a child?
+		$broadcast_data = $this->get_post_broadcast_data( get_current_blog_id(), $post_id );
+		if ( $broadcast_data->get_linked_parent() !== false )
 			return;
 
 		if ( count( $_POST ) < 1 )

@@ -172,6 +172,10 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
 
+= 2.5 20131024 =
+* Fix: No more fatal errors when editing child posts.
+* Fix: Finding orphans works again.
+
 = 2.4 20131018 =
 * Fix: Selected blogs are shown after selecting a group.
 * Fix: Better JS and CSS loading for subdirectory installs.
