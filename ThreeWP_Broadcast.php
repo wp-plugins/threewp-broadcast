@@ -865,12 +865,20 @@ class ThreeWP_Broadcast
 		if ( $_SERVER[ 'SCRIPT_NAME' ] == '/wp-admin/post.php' )
 			return $link;
 
+		if ( isset( $this->_is_getting_permalink ) )
+			return $link;
+
+		$this->_is_getting_permalink = true;
+
 		$blog_id = get_current_blog_id();
 
 		// Have we already checked this post ID for a link?
 		$key = 'b' . $blog_id . '_p' . $post->ID;
 		if ( property_exists( $this->permalink_cache, $key ) )
+		{
+			unset( $this->_is_getting_permalink );
 			return $this->permalink_cache->$key;
+		}
 
 		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
 
@@ -879,6 +887,7 @@ class ThreeWP_Broadcast
 		if ( $linked_parent === false)
 		{
 			$this->permalink_cache->$key = $link;
+			unset( $this->_is_getting_permalink );
 			return $link;
 		}
 
@@ -889,6 +898,7 @@ class ThreeWP_Broadcast
 
 		$this->permalink_cache->$key = $permalink;
 
+		unset( $this->_is_getting_permalink );
 		return $permalink;
 	}
 
