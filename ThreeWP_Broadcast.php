@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.5
+Version:		2.6
 */
 
 namespace threewp_broadcast;
@@ -76,7 +76,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.5;
+	public $plugin_version = 2.6;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -116,14 +116,14 @@ class ThreeWP_Broadcast
 
 		$this->add_filter( 'threewp_broadcast_add_meta_box' );
 		$this->add_filter( 'threewp_broadcast_admin_menu', 100 );
-		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 9 );
-		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
 		$this->add_filter( 'threewp_broadcast_broadcast_post' );
 		$this->add_filter( 'threewp_broadcast_get_user_writable_blogs' );
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 9 );		// Just before the standard 10.
 		$this->add_action( 'threewp_broadcast_menu', 9 );
 		$this->add_action( 'threewp_broadcast_menu', 'threewp_broadcast_menu_final', 100 );
-		$this->add_filter( 'threewp_broadcast_prepare_broadcasting_data' );
+		$this->add_action( 'threewp_broadcast_prepare_broadcasting_data' );
+		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 9 );
+		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
 
 		if ( $this->get_site_option( 'canonical_url' ) )
 			$this->add_action( 'wp_head', 1 );
@@ -631,6 +631,7 @@ class ThreeWP_Broadcast
 			$blog->switch_to();
 
 			$args = array(
+				'cache_results' => false,
 				'name' => $post->post_name,
 				'numberposts' => 1,
 				'post_type'=> $post->post_type,
@@ -945,7 +946,9 @@ class ThreeWP_Broadcast
 			'upload_dir' => wp_upload_dir(),
 		] );
 
-		$this->filters( 'threewp_broadcast_prepare_broadcasting_data', $broadcasting_data );
+		$action = new actions\prepare_broadcasting_data;
+		$action->broadcasting_data = $broadcasting_data;
+		$action->apply();
 
 		if ( $broadcasting_data->has_blogs() )
 			$this->filters( 'threewp_broadcast_broadcast_post', $broadcasting_data );
@@ -1000,7 +1003,7 @@ class ThreeWP_Broadcast
 		foreach( $meta_box_data->js as $key => $value )
 			wp_enqueue_script( $key, $value );
 
-		echo $meta_box_data->html;
+		echo $meta_box_data->html->render();
 	}
 
 	/**
@@ -1063,7 +1066,7 @@ class ThreeWP_Broadcast
 
 		$has_linked_children = $meta_box_data->broadcast_data->has_linked_children();
 
-		$last_used_settings = $this->load_last_used_settings( $this->user_id() );
+		$meta_box_data->last_used_settings = $this->load_last_used_settings( $this->user_id() );
 
 		$post_type = $meta_box_data->post->post_type;
 		$post_type_object = get_post_type_object( $post_type );
@@ -1093,7 +1096,7 @@ class ThreeWP_Broadcast
 		)
 		{
 			$custom_fields_input = $form->checkbox( 'custom_fields' )
-				->checked( isset( $last_used_settings[ 'custom_fields' ] ) )
+				->checked( isset( $meta_box_data->last_used_settings[ 'custom_fields' ] ) )
 				->label_( 'Custom fields' )
 				->title( 'Broadcast all the custom fields and the featured image?' );
 			$meta_box_data->html->put( 'custom_fields', '' );
@@ -1102,7 +1105,7 @@ class ThreeWP_Broadcast
 		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) )
 		{
 			$taxonomies_input = $form->checkbox( 'taxonomies' )
-				->checked( isset( $last_used_settings[ 'taxonomies' ] ) )
+				->checked( isset( $meta_box_data->last_used_settings[ 'taxonomies' ] ) )
 				->label_( 'Taxonomies' )
 				->title( 'The taxonomies must have the same name (slug) on the selected blogs.' );
 			$meta_box_data->html->put( 'taxonomies', '' );
@@ -1321,8 +1324,9 @@ class ThreeWP_Broadcast
 
 		@since		20131004
 	**/
-	public function threewp_broadcast_prepare_broadcasting_data( $bcd )
+	public function threewp_broadcast_prepare_broadcasting_data( $action )
 	{
+		$bcd = $action->broadcasting_data;
 		$allowed_post_status = [ 'pending', 'private', 'publish' ];
 
 		if ( $bcd->post->post_status == 'draft' && $this->role_at_least( $this->get_site_option( 'role_broadcast_as_draft' ) ) )
@@ -1369,15 +1373,6 @@ class ThreeWP_Broadcast
 		// Is this post sticky? This info is hidden in a blog option.
 		$stickies = get_option( 'sticky_posts' );
 		$bcd->post_is_sticky = in_array( $bcd->post->ID, $stickies );
-
-		return;
-
-		ddd( $bcd->blogs );
-		ddd( $bcd->link );
-		ddd( $bcd->custom_fields );
-		ddd( $bcd->taxonomies );
-		ddd( 'noooooooooooo mooooooooooooooooooreeeeeeeeee' );
-		exit;
 	}
 
 	public function trash_post( $post_id)
@@ -1552,11 +1547,6 @@ class ThreeWP_Broadcast
 		$this->broadcasting_data = $broadcasting_data;					// Global copy.
 		$bcd = $this->broadcasting_data;								// Convenience.
 
-		// Create new post data from the original stuff.
-		$bcd->new_post = (array) $bcd->post;
-		foreach( array( 'comment_count', 'guid', 'ID', 'menu_order', 'post_parent' ) as $key )
-			unset( $bcd->new_post[ $key ] );
-
 		if ( $bcd->link )
 		{
 			// Prepare the broadcast data for linked children.
@@ -1656,6 +1646,11 @@ class ThreeWP_Broadcast
 		{
 			$child_blog->switch_to();
 			$bcd->current_child_blog_id = $child_blog->get_id();
+
+			// Create new post data from the original stuff.
+			$bcd->new_post = (array) $bcd->post;
+			foreach( array( 'comment_count', 'guid', 'ID', 'menu_order', 'post_parent' ) as $key )
+				unset( $bcd->new_post[ $key ] );
 
 			$action = new actions\broadcasting_after_switch_to_blog;
 			$action->broadcasting_data = $bcd;
@@ -1899,8 +1894,11 @@ class ThreeWP_Broadcast
 					$o->attachment_data = $bcd->attachment_data[ 'thumbnail' ];
 
 					// Clear the attachment cache for this blog because the featured image could have been copied by the file copy.
-					if ( isset( $this->attachment_cache ) )
-						$this->attachment_cache->forget( get_current_blog_id() );
+					if ( property_exists( $this, 'attachment_cache' ) )
+						$this->attachment_cache->forget( $bcd->current_child_blog_id );
+
+					if ( $o->attachment_data->post->post_parent > 0 )
+						$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
 
 					$this->maybe_copy_attachment( $o );
 					if ( $o->attachment_id !== false )
@@ -2278,8 +2276,11 @@ class ThreeWP_Broadcast
 		if ( $attachment_posts === null )
 		{
 			$attachment_posts = get_posts( [
+				'cache_results' => false,
+				'numberposts' => PHP_INT_MAX,
 				'post_name' => $attachment_data->post->post_name,			// Isn't used, though it should be. Maybe a patch is in order...
 				'post_type' => 'attachment',
+
 			] );
 			$this->attachment_cache->put( $key, $attachment_posts );
 		}

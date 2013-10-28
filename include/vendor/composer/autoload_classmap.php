@@ -16,6 +16,7 @@ return array(
     'threewp_broadcast\\actions\\broadcasting_started' => $baseDir . '/threewp_broadcast/actions/broadcasting_started.php',
     'threewp_broadcast\\actions\\manage_posts_custom_column' => $baseDir . '/threewp_broadcast/actions/manage_posts_custom_column.php',
     'threewp_broadcast\\actions\\menu' => $baseDir . '/threewp_broadcast/actions/menu.php',
+    'threewp_broadcast\\actions\\prepare_broadcasting_data' => $baseDir . '/threewp_broadcast/actions/prepare_broadcasting_data.php',
     'threewp_broadcast\\actions\\prepare_meta_box' => $baseDir . '/threewp_broadcast/actions/prepare_meta_box.php',
     'threewp_broadcast\\attachment_data' => $baseDir . '/threewp_broadcast/attachment_data.php',
     'threewp_broadcast\\blog_collection' => $baseDir . '/threewp_broadcast/blog_collection.php',
@@ -29,4 +30,5 @@ return array(
     'threewp_broadcast\\filters\\get_user_writable_blogs' => $baseDir . '/threewp_broadcast/filters/get_user_writable_blogs.php',
     'threewp_broadcast\\meta_box\\data' => $baseDir . '/threewp_broadcast/meta_box/data.php',
     'threewp_broadcast\\meta_box\\html' => $baseDir . '/threewp_broadcast/meta_box/html.php',
+    'threewp_broadcast\\meta_box\\item' => $baseDir . '/threewp_broadcast/meta_box/item.php',
 );

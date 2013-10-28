@@ -172,6 +172,13 @@ Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
 
+= 2.6 20131028 =
+* Fix: Broadcasted featured image is attached to post if necessary.
+* Fix: List of attachments when broadcasting is not allowed to be cached anymore.
+* Code: prepare_broadcasting_data is now an action.
+* Code: last_used_settings copied into meta_box_data.
+* Code: broadcasting_data->new_post is newly created for each child blog.
+
 = 2.5 20131024 =
 * Fix: No more fatal errors when editing child posts.
 * Fix: Finding orphans works again.
