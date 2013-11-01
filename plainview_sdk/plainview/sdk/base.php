@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20131019		wordpress table top()
 	- 20131018		wordpress
 	- 20131016		wordpress roles, wordpress table bulk actions
 	- 20131015		form2
@@ -85,7 +86,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20131018;
+	protected $sdk_version = 20131019;
 
 	/**
 		@brief		Constructor.

@@ -16,6 +16,7 @@
 
 	@par	Changelog
 
+	- 20131019				table top().
 	- 20131018				display_message uses pv_message div class.
 	- 20131016				Added description_ to pot. Nicer admin_uninstall.
 	- 20131015				Removed check_column_body and check_column_head. Added roles().
