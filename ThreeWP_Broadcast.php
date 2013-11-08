@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.7
+Version:		2.8
 */
 
 namespace threewp_broadcast;
@@ -76,7 +76,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.7;
+	public $plugin_version = 2.8;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -193,7 +193,7 @@ class ThreeWP_Broadcast
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Contains the group settings for all the users';
 			");
 
-			$this->query("CREATE TABLE IF NOT EXISTS `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata` (
+			$this->query("CREATE TABLE IF NOT EXISTS `". $this->broadcast_data_table() . "` (
 			  `blog_id` int(11) NOT NULL COMMENT 'Blog ID',
 			  `post_id` int(11) NOT NULL COMMENT 'Post ID',
 			  `data` text NOT NULL COMMENT 'Serialized BroadcastData',
@@ -243,13 +243,23 @@ class ThreeWP_Broadcast
 			$db_ver = 4;
 		}
 
+		if ( $db_ver < 5 )
+		{
+			$query = sprintf( "ALTER TABLE `%s` ADD `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ID of row' FIRST;",
+				$this->broadcast_data_table()
+			);
+			$this->query( $query );
+			$db_ver = 5;
+		}
+
 		$this->update_site_option( 'database_version', $db_ver );
 	}
 
 	public function uninstall()
 	{
 		$this->query("DROP TABLE `".$this->wpdb->base_prefix."_3wp_broadcast`");
-		$this->query("DROP TABLE `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata`");
+		$query = sprintf( "DROP TABLE `%s`", $this->broadcast_data_table() );
+		$this->query( $query );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -258,36 +268,12 @@ class ThreeWP_Broadcast
 
 	/**
 		@brief		Show maintenance options.
+		@since		20131107
 	**/
 	public function admin_menu_maintenance()
 	{
-		$form = $this->form2();
-		$r = '';
-
-		$fs = $form->fieldset( 'fs_broadcast_data' )
-			->label_( 'Broadcast data' );
-
-		$markup = $this->p_( 'The broadcast data contains information about which posts are linked to which posts and on which blogs. Use the button below to sanity-check the database and try to repair errors.' );
-		$markup .= $this->p_( 'Repair is done by assuming that this current blog is where the parent posts are, in case of conflicts.' );
-		$fs->markup( 'bcd_explain' )
-			->markup( $markup );
-
-		$button_check_broadcast_data = $fs->primary_button( 'check_broadcast_data' )
-			->value_( 'Check the broadcast data' );
-
-		if ( $form->is_posting() )
-		{
-			$form->post();
-			if ( $button_check_broadcast_data->pressed() )
-			{
-				$this->message_( 'Checking the broadcast data.' );
-			}
-		}
-
-		$r .= $form->open_tag();
-		$r .= $form->display_form_table();
-		$r .= $form->close_tag();
-		echo $r;
+		$maintenance = new maintenance\controller;
+		echo $maintenance;
 	}
 
 	public function admin_menu_post_types()
@@ -486,7 +472,7 @@ class ThreeWP_Broadcast
 
 		$tabs = $this->tabs();
 		$tabs->tab( 'settings' )		->callback_this( 'admin_menu_settings' )		->name_( 'Settings' );
-		//$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );		// Not yet. 20131101
+		$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );
 		$tabs->tab( 'post_types' )		->callback_this( 'admin_menu_post_types' )		->name_( 'Custom post types' );
 		$tabs->tab( 'uninstall' )		->callback_this( 'admin_uninstall' )			->name_( 'Uninstall' );
 
@@ -695,19 +681,49 @@ class ThreeWP_Broadcast
 
 	public function user_broadcast_info()
 	{
-		$r = $this->p_( '%sThreeWP Broadcast%s version %s is installed.',
+		$table = $this->table();
+		$table->caption()->text( 'Information' );
+
+		$row = $table->head()->row();
+		$row->th()->text( 'Key' );
+		$row->th()->text( 'Value' );
+
+		// Broadcast version
+		$row = $table->body()->row();
+		$row->td()->text( 'Broadcast version' );
+		$text = sprintf( '%sVersion %s%s is installed.',
 			sprintf( '<a href="%s">', 'http://wordpress.org/plugins/threewp-broadcast/' ),
-			'</a>',
-			$this->plugin_version
+			$this->plugin_version,
+			'</a>'
 		);
-		$object = new \ReflectionObject( new \plainview\sdk\wordpress\base );
-		$r .= $this->p( 'Using %sPlainview Wordpress SDK%s version %s from %s.',
+		$row->td()->text( $text );
+
+		// SDK version
+		$row = $table->body()->row();
+		$text = sprintf( '%sPlainview Wordpress SDK%s',
 			'<a href="https://github.com/the-plainview/sdk">',
-			'</a>',
-			$this->sdk_version,
-			$object->getFilename()
+			'</a>'
 		);
-		echo $r;
+		$row->td()->text( $text );
+		$object = new \ReflectionObject( new \plainview\sdk\wordpress\base );
+		$text = sprintf( 'Version %s',
+			$this->sdk_version
+		);
+		$row->td()->text( $text );
+
+		// SDK path
+		$row = $table->body()->row();
+		$row->td()->text( 'Plainview Wordpress SDK path' );
+		$object = new \ReflectionObject( new \plainview\sdk\wordpress\base );
+		$row->td()->text( $object->getFilename() );
+
+		// PHP maximum execution time
+		$row = $table->body()->row();
+		$row->td()->text( 'PHP maximum execution time' );
+		$text = sprintf( '%s seconds', ini_get ( 'max_execution_time' ) );
+		$row->td()->text( $text );
+
+		echo $table;
 	}
 
 	public function user_menu_tabs()
@@ -1826,6 +1842,15 @@ class ThreeWP_Broadcast
 	}
 
 	/**
+		@brief		Returns the name of the broadcast data table.
+		@since		20131104
+	**/
+	public function broadcast_data_table()
+	{
+		return $this->wpdb->base_prefix . '_3wp_broadcast_broadcastdata';
+	}
+
+	/**
 		@brief		Broadcast a post.
 		@details	The BC data parameter contains all necessary information about what is being broadcasted, to which blogs, options, etc.
 		@param		broadcasting_data		$broadcasting_data		The broadcasting data object.
@@ -2273,6 +2298,7 @@ class ThreeWP_Broadcast
 		$attachment = [
 			'guid' => $upload_dir[ 'url' ] . '/' . $o->attachment_data->filename_base,
 			'menu_order' => $o->attachment_data->post->menu_order,
+			'post_author' => $o->attachment_data->post->post_author,
 			'post_excerpt' => $o->attachment_data->post->post_excerpt,
 			'post_mime_type' => $wp_filetype[ 'type' ],
 			'post_title' => $o->attachment_data->post->post_title,
@@ -2585,12 +2611,12 @@ class ThreeWP_Broadcast
 
 		// Is there an existing media file?
 		// Try to find the filename in the GUID.
-		foreach( $attachment_posts as $post )
+		foreach( $attachment_posts as $attachment_post )
 		{
-			if ( $post->post_name !== $attachment_data->post->post_name )
+			if ( $attachment_post->post_name !== $attachment_data->post->post_name )
 				continue;
 			// The ID is the important part.
-			$options->attachment_id = $post->ID;
+			$options->attachment_id = $attachment_post->ID;
 			return $options;
 		}
 
@@ -2624,7 +2650,7 @@ class ThreeWP_Broadcast
 			if ( $broadcast_data->is_empty() )
 				$this->sql_delete_broadcast_data( $blog_id, $post_id );
 			else
-				$this->sql_update_broadcast_data( $blog_id, $post_id, $broadcast_data->getData() );
+				$this->sql_update_broadcast_data( $blog_id, $post_id, $broadcast_data );
 	}
 
 	/**
@@ -2732,34 +2758,73 @@ class ThreeWP_Broadcast
 			$post_ids = [ $post_ids ];
 
 		$query = sprintf( "SELECT * FROM `%s` WHERE `blog_id` = '%s' AND `post_id` IN ('%s')",
-			$this->wpdb->base_prefix . '_3wp_broadcast_broadcastdata',
+			$this->broadcast_data_table(),
 			$blog_id,
 			implode( "', '", $post_ids )
 		);
 		$results = $this->query( $query );
 		foreach( $results as $index => $result )
-		{
-			$data = @ unserialize( base64_decode( $result[ 'data' ] ) );
-			if ( ! $data )
-				$data = new BroadcastData;
-			else
-				$data = new BroadcastData( $data );
-			$results[ $index ][ 'data' ] = $data;
-		}
+			$results[ $index ][ 'data' ] = BroadcastData::sql( $result );
 		return $results;
 	}
 
-	public function sql_delete_broadcast_data( $blog_id, $post_id )
+	/**
+		@brief		Delete broadcast data.
+		@details	If $post_id is not used, then the $blog_id is assumed to be just the row ID.
+
+		If $post_id is used, then $blog_id is the actual $blog_id.
+		@since		20131105
+	**/
+	public function sql_delete_broadcast_data( $blog_id, $post_id = null )
 	{
-		$this->query("DELETE FROM `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata` WHERE blog_id = '$blog_id' AND post_id = '$post_id'");
+		if ( $post_id === null )
+			$query = sprintf( "DELETE FROM `%s` WHERE `id` = '%s'",
+				$this->broadcast_data_table(),
+				$blog_id
+			);
+		else
+			$query = sprintf( "DELETE FROM `%s` WHERE blog_id = '%s' AND post_id = '%s'",
+				$this->broadcast_data_table(),
+				$blog_id,
+				$post_id
+			);
+		$this->query( $query );
 	}
 
-	public function sql_update_broadcast_data( $blog_id, $post_id, $data )
+	public function sql_update_broadcast_data( $broadcast_data )
 	{
-		$data = serialize( $data);
-		$data = base64_encode( $data);
-		$this->sql_delete_broadcast_data( $blog_id, $post_id );
-		$this->query("INSERT INTO `".$this->wpdb->base_prefix."_3wp_broadcast_broadcastdata` (blog_id, post_id, data) VALUES ( '$blog_id', '$post_id', '$data' )");
+		$args = func_get_args();
+		if ( count( $args ) == 1 )
+			return $this->sql_update_broadcast_data_old( null, null, $broadcast_data );
+		else
+			return call_user_func_array( [ $this, 'sql_update_broadcast_data_old' ], $args );
+	}
+
+	public function sql_update_broadcast_data_object( $broadcast_data )
+	{
+	}
+
+	public function sql_update_broadcast_data_old( $blog_id, $post_id, $bcd )
+	{
+		$data = serialize( $bcd->getData() );
+		$data = base64_encode( $data );
+
+		if ( $bcd->id > 0 )
+		{
+			$query = sprintf( "UPDATE `%s` SET `data` = '%s' WHERE `id` = '%s'",
+				$this->broadcast_data_table(),
+				$data,
+				$bcd->id
+			);
+		}
+		else
+			$query = sprintf( "INSERT INTO `%s` (blog_id, post_id, data) VALUES ( '%s', '%s', '%s' )",
+				$this->broadcast_data_table(),
+				$blog_id,
+				$post_id,
+				$data
+			);
+		$this->query( $query );
 	}
 
 }
