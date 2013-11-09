@@ -94,6 +94,7 @@ namespace plainview\sdk\form2;
 	Changelog
 	---------
 
+	- 20131109	select input __toString gets its own display div (with hidden support)
 	- 20131015	container trait gets inputs()
 	- 20131009	enctype fix. Added file input.
 	- 20131004	markup ignores post values - will no longer disappear.
@@ -139,7 +140,7 @@ class form
 		@var		$form_version
 		@since		20130805
 	**/
-	public static $form_version = 20131015;
+	public static $form_version = 20131109;
 
 	/**
 		@brief		Has the form handled the POST array?
