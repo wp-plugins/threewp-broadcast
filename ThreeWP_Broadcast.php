@@ -698,6 +698,11 @@ class ThreeWP_Broadcast
 		);
 		$row->td()->text( $text );
 
+		// PHP version
+		$row = $table->body()->row();
+		$row->td()->text( 'PHP version' );
+		$row->td()->text( phpversion() );
+
 		// SDK version
 		$row = $table->body()->row();
 		$text = sprintf( '%sPlainview Wordpress SDK%s',
