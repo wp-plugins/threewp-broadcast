@@ -691,12 +691,7 @@ class ThreeWP_Broadcast
 		// Broadcast version
 		$row = $table->body()->row();
 		$row->td()->text( 'Broadcast version' );
-		$text = sprintf( '%sVersion %s%s is installed.',
-			sprintf( '<a href="%s">', 'http://wordpress.org/plugins/threewp-broadcast/' ),
-			$this->plugin_version,
-			'</a>'
-		);
-		$row->td()->text( $text );
+		$row->td()->text( $this->plugin_version );
 
 		// PHP version
 		$row = $table->body()->row();
@@ -711,10 +706,7 @@ class ThreeWP_Broadcast
 		);
 		$row->td()->text( $text );
 		$object = new \ReflectionObject( new \plainview\sdk\wordpress\base );
-		$text = sprintf( 'Version %s',
-			$this->sdk_version
-		);
-		$row->td()->text( $text );
+		$row->td()->text( $this->sdk_version );
 
 		// SDK path
 		$row = $table->body()->row();
