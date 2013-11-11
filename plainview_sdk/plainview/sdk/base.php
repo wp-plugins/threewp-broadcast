@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20131111		Check for mb extension before strtolower and strtoupper
 	- 20131109		form2
 	- 20131019		wordpress table top()
 	- 20131018		wordpress
@@ -87,7 +88,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20131109;
+	protected $sdk_version = 20131111;
 
 	/**
 		@brief		Constructor.
@@ -649,7 +650,10 @@ class base
 	**/
 	public static function strtolower( $string )
 	{
-		return mb_strtolower( $string );
+		if ( function_exists( 'mb_strtolower' ) )
+			return mb_strtolower( $string );
+		else
+		return strtolower( $string );
 	}
 
 	/**
@@ -660,7 +664,10 @@ class base
 	**/
 	public static function strtoupper( $string )
 	{
-		return mb_strtoupper( $string );
+		if ( function_exists( 'mb_strtoupper' ) )
+			return mb_strtoupper( $string );
+		else
+		return strtoupper( $string );
 	}
 
 	/**
