@@ -63,7 +63,9 @@ jQuery(document).ready(function($) {
 				.appendTo( this.$selection_change_container );
 
 			// Need to hide the blog list?
-			if ( this.$broadcast_blogs_htmls.length > 5 )
+			if ( broadcast_blogs_to_hide === undefined )
+				broadcast_blogs_to_hide = 5;
+			if ( this.$broadcast_blogs_htmls.length > broadcast_blogs_to_hide )
 			{
 				this.$arrow = $( '<div />' )
 					.addClass( 'arrow howto' )

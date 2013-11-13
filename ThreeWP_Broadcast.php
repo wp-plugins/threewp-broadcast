@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.8
+Version:		2.9
 */
 
 namespace threewp_broadcast;
@@ -76,11 +76,12 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.8;
+	public $plugin_version = 2.9;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
 	protected $site_options = array(
+		'blogs_to_hide' => 5,								// How many blogs to auto-hide
 		'broadcast_internal_custom_fields' => false,		// Broadcast internal custom fields?
 		'canonical_url' => true,							// Override the canonical URLs with the parent post's.
 		'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
@@ -427,6 +428,14 @@ class ThreeWP_Broadcast
 			->size( 5, 5 )
 			->value( $this->get_site_option( 'save_post_priority' ) );
 
+		$blogs_to_hide = $fs->number( 'blogs_to_hide' )
+			->description_( 'In the broadcast meta box, after how many blogs the list should be auto-hidden.' )
+			->label_( 'Blogs to hide' )
+			->min( 1 )
+			->required()
+			->size( 3, 3 )
+			->value( $this->get_site_option( 'blogs_to_hide' ) );
+
 		$save = $form->primary_button( 'save' )
 			->value_( 'Save settings' );
 
@@ -456,6 +465,7 @@ class ThreeWP_Broadcast
 			$this->update_site_option( 'custom_field_whitelist', $whitelist );
 
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
+			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
 			$this->message( 'Options saved!' );
 		}
 
@@ -1188,6 +1198,10 @@ class ThreeWP_Broadcast
 		$action->meta_box_data = $meta_box_data;
 		$action->apply();
 
+		// Post the form.
+		$meta_box_data->form->post();
+		$meta_box_data->form->use_post_values();
+
 		$broadcasting_data = new broadcasting_data( [
 			'_POST' => $_POST,
 			'meta_box_data' => $meta_box_data,
@@ -1211,15 +1225,6 @@ class ThreeWP_Broadcast
 		$this->activities = array(
 			'3broadcast_broadcasted' => array(
 				'name' => $this->_( 'A post was broadcasted.' ),
-			),
-			'3broadcast_group_added' => array(
-				'name' => $this->_( 'A Broadcast blog group was added.' ),
-			),
-			'3broadcast_group_deleted' => array(
-				'name' => $this->_( 'A Broadcast blog group was deleted.' ),
-			),
-			'3broadcast_group_modified' => array(
-				'name' => $this->_( 'A Broadcast blog group was modified.' ),
 			),
 			'3broadcast_unlinked' => array(
 				'name' => $this->_( 'A post was unlinked.' ),
@@ -1394,6 +1399,7 @@ class ThreeWP_Broadcast
 		{
 			$blogs_input->option( $blog->blogname, $blog->id );
 			$option = $blogs_input->input( 'blogs_' . $blog->id );
+			$option->get_label()->content = $form::unfilter_text( $blog->blogname );
 			if ( $blog->is_disabled() )
 				$option->disabled()->css_class( 'disabled' );
 			if ( $blog->is_linked() )
@@ -1418,6 +1424,8 @@ class ThreeWP_Broadcast
 			),
 			'</a>'
 		) );
+		$js = sprintf( '<script type="">var broadcast_blogs_to_hide = %s;</script>', $this->get_site_option( 'blogs_to_hide', 5 ) );
+		$meta_box_data->html->put( 'blogs_js', $js );
 
 		// We require some js.
 		$meta_box_data->js->put( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/user.min.js' );
@@ -1947,7 +1955,6 @@ class ThreeWP_Broadcast
 
 		// To prevent recursion
 		$this->broadcasting = true;
-		unset( $_POST[ 'broadcast' ] );
 
 		$action = new actions\broadcasting_started;
 		$action->broadcasting_data = $bcd;

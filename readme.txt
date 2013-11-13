@@ -44,6 +44,7 @@ The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" titl
 For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting image field types using the ACF plugin.
+* <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
@@ -96,6 +97,7 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 17. Premium Pack: Showing a modification, info and to whom the modification applies (Blog & User Settings plugin)
 18. Premium Pack: Adding one row of criteria for a modification (Blog & User Settings plugin)
 19. Premium Pack: Advanced Custom Fields image support
+20. Premium Pack: Make the child posts have a different status from the parent (Keep Child Status plugin)
 
 == Frequently Asked Questions ==
 
@@ -169,6 +171,12 @@ It works transparently in the background, but in case you've never really used W
 Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
+
+= 2.9 20131113 =
+* New: Add "blogs to hide" setting.
+* New: Keep Child Status plugin is now available in the premium pack.
+* Fix: Blog names are unescaped. No more weird HTML characters in the blog list.
+* Code: broadcast array is no longer removed from the $_POST, due to copy by reference on some versions of PHP 5.4.
 
 = 2.8 20131109 =
 * New: Attachments are attributed to the original author, instead of the person doing the broadcasting.
