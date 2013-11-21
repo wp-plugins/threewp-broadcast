@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.9
+Version:		2.10
 */
 
 namespace threewp_broadcast;
@@ -21,7 +21,15 @@ use \threewp_broadcast\broadcast_data\blog;
 class ThreeWP_Broadcast
 	extends \threewp_broadcast\ThreeWP_Broadcast_Base
 {
-	private $broadcasting = false;
+	/**
+		@brief		Broadcasting stack.
+		@details
+
+		An array of broadcasting_data objects, the latest being at the end.
+
+		@since		20131120
+	**/
+	private $broadcasting = [];
 
 	/**
 		@brief	Public property used during the broadcast process.
@@ -76,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.9;
+	public $plugin_version = 2.10;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -163,7 +171,7 @@ class ThreeWP_Broadcast
 			return;
 
 		$this->enqueue_js();
-		wp_enqueue_style( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/css/css.scss.min.css'  );
+		wp_enqueue_style( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.scss.min.css'  );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -751,7 +759,7 @@ class ThreeWP_Broadcast
 				case 'user_delete_all':
 					$tabs->tab( 'user_delete_all' )
 						->heading_( 'Delete all child posts' )
-						->name_( 'Dell all children' );
+						->name_( 'Delete all children' );
 					break;
 				case 'user_find_orphans':
 					$tabs->tab( 'user_find_orphans' )
@@ -1415,15 +1423,6 @@ class ThreeWP_Broadcast
 
 		$meta_box_data->html->put( 'blogs', '' );
 
-		// Advertize the premium plugins.
-		$queue_url = add_query_arg( 'page', 'threewp_broadcast_premium_pack_info', 'admin.php' );
-		$meta_box_data->html->put( 'broadcast_queue', $this->_( '%sQueue%s not available.',
-			sprintf( '<a href="%s" title="%s">',
-				$queue_url,
-				$this->_( 'Information about the Broadcast Queue Plugin' )
-			),
-			'</a>'
-		) );
 		$js = sprintf( '<script type="">var broadcast_blogs_to_hide = %s;</script>', $this->get_site_option( 'blogs_to_hide', 5 ) );
 		$meta_box_data->html->put( 'blogs_js', $js );
 
@@ -1863,8 +1862,7 @@ class ThreeWP_Broadcast
 	**/
 	public function broadcast_post( $broadcasting_data )
 	{
-		$this->broadcasting_data = $broadcasting_data;					// Global copy.
-		$bcd = $this->broadcasting_data;								// Convenience.
+		$bcd = $broadcasting_data;
 
 		if ( $bcd->link )
 		{
@@ -1905,6 +1903,10 @@ class ThreeWP_Broadcast
 			$bcd->post_custom_fields = get_post_custom( $bcd->post->ID );
 
 			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
+
+			// Check that the thumbnail ID is > 0
+			$bcd->has_thumbnail = $bcd->has_thumbnail && ( reset( $bcd->post_custom_fields[ '_thumbnail_id' ] ) > 0 );
+
 			if ( $bcd->has_thumbnail )
 			{
 				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
@@ -1954,7 +1956,10 @@ class ThreeWP_Broadcast
 		$to_broadcasted_blog_details = []; 		// Array of blog and post IDs that we're broadcasting to. To be used for the activity monitor action.
 
 		// To prevent recursion
-		$this->broadcasting = true;
+		array_push( $this->broadcasting, $bcd );
+
+		// POST is no longer needed. Remove it so that other plugins don't use it.
+		unset( $_POST );
 
 		$action = new actions\broadcasting_started;
 		$action->broadcasting_data = $bcd;
@@ -2257,8 +2262,7 @@ class ThreeWP_Broadcast
 		$action->apply();
 
 		// Finished broadcasting.
-		$this->broadcasting = false;
-		$this->broadcasting_data = null;
+		array_pop( $this->broadcasting );
 
 		$this->load_language();
 
@@ -2370,7 +2374,7 @@ class ThreeWP_Broadcast
 	{
 		if ( isset( $this->_js_enqueued ) )
 			return;
-		wp_enqueue_script( 'threewp_broadcast', '/' . $this->paths[ 'path_from_base_directory' ] . '/js/user.min.js' );
+		wp_enqueue_script( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/user.min.js' );
 		$this->_js_enqueued = true;
 	}
 
@@ -2499,7 +2503,7 @@ class ThreeWP_Broadcast
 	*/
 	public function is_broadcasting()
 	{
-		return $this->broadcasting !== false;
+		return count( $this->broadcasting ) > 0;
 	}
 
 	/**

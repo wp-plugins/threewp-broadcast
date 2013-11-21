@@ -13,6 +13,7 @@ class check
 extends \threewp_broadcast\maintenance\checks\check
 {
 	use traits\post_bcd_caching;
+	use traits\steps\step_results_fail_duplicate_bcd;
 	use traits\steps\step_results_fail_broken_bcd;
 	use traits\steps\step_results_fail_missing_post;
 	use traits\steps\step_results_fail_missing_parents;
@@ -185,6 +186,7 @@ extends \threewp_broadcast\maintenance\checks\check
 			$o->form->post();
 
 		$o->r .= $o->form->open_tag();
+		$this->step_results_fail_duplicate_bcd( $o );
 		$this->step_results_fail_broken_bcd( $o );
 		$this->step_results_fail_missing_post( $o );
 		$this->step_results_fail_missing_parents( $o );
@@ -234,10 +236,21 @@ extends \threewp_broadcast\maintenance\checks\check
 			}
 
 			// Broadcast data is readable and unserializable.
-
-			// 2. Does the linked post exist?
 			$blog_id = $result[ 'blog_id' ];
 			$post_id = $result[ 'post_id' ];
+
+			// Have we already seen BCD for this blog_post?
+			$key = sprintf( '%s_%s', $blog_id, $post_id );
+			if ( $this->data->seen_blog_post->has( $key ) )
+			{
+				$this->data->duplicate_bcd->put( $id, $bcd );
+				continue;
+			}
+			else
+				$this->data->seen_blog_post->put( $key, true );
+
+			// 2. Does the linked post exist?
+
 			if ( ! $this->blog_and_post_exists( $blog_id, $post_id ) )
 			{
 				$this->data->missing_post->put( $id, $bcd );
