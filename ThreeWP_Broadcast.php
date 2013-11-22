@@ -1864,6 +1864,9 @@ class ThreeWP_Broadcast
 	{
 		$bcd = $broadcasting_data;
 
+		// For nested broadcasts. Just in case.
+		switch_to_blog( $bcd->parent_blog_id );
+
 		if ( $bcd->link )
 		{
 			// Prepare the broadcast data for linked children.
@@ -2252,6 +2255,9 @@ class ThreeWP_Broadcast
 
 			$child_blog->switch_from();
 		}
+
+		// For nested broadcasts. Just in case.
+		restore_current_blog();
 
 		// Save the post broadcast data.
 		if ( $bcd->link )
