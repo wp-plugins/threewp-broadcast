@@ -5,7 +5,7 @@ License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
 Tags: broadcast, multipost, duplicate, posts, sitepress, threewp, linking, posts, multiple, blogs, woocommerce, wpml
-Tested up to: 3.7.1
+Tested up to: 3.8
 
 Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
 
@@ -27,7 +27,7 @@ Broadcasted posts can be linked to their parents, which updates child posts when
 
 = SEO support =
 
-* Permalinks of child posts
+* Permalinks of child posts (also see Permalinks plugin in the Premium Pack)
 * Canonical URLs of child posts
 
 = Other features =
@@ -46,6 +46,8 @@ For a complete list of features and more information, see <a href="http://plainv
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting image field types using the ACF plugin.
 * <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
+* <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
+* <strong>Permalinks</strong> enables more precise permalink control.
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
 * <strong>User & Blog Settings</strong> can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
@@ -100,6 +102,8 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 19. Premium Pack: Advanced Custom Fields image support
 20. Premium Pack: Make the child posts have a different status from the parent (Keep Child Status plugin)
 21. Premium Pack: The WooCommerce plugin enables broadcasting of product variations as well
+22. Premium Pack: Per Blog Taxonomies allows individual setting of child post taxonomies.
+23. Premium Pack: Permalinks enables more precise permalink control.
 
 == Frequently Asked Questions ==
 
@@ -185,6 +189,14 @@ It works transparently in the background, but in case you've never really used W
 Translated categories and tags are untested as of 2013-07-17.
 
 == Changelog ==
+
+= 2.11 20131218 =
+* New: WordPress v3.8 support.
+* New: Custom post types tab shows the available post types on the current blog.
+* New: Per Blog Taxonomies plugin is now available in the premium pack.
+* New: Permalinks plugin is now available in the premium pack.
+* Fix: Nested broadcasting changes blogs to parent blog.
+* Fix: Scripts and CSS get version numbers.
 
 = 2.10 20131121 =
 * New: Duplicate broadcast data check in maintenance.

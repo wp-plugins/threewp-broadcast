@@ -13,6 +13,9 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20131211		wordpress
+	- 20131210		wordpress
+	- 20131209		tree class added.
 	- 20131112		form2
 	- 20131111		Check for mb extension before strtolower and strtoupper
 	- 20131109		form2
@@ -89,7 +92,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20131112;
+	protected $sdk_version = 20131211;
 
 	/**
 		@brief		Constructor.

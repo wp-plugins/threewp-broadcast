@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.10
+Version:		2.11
 */
 
 namespace threewp_broadcast;
@@ -84,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.10;
+	public $plugin_version = 2.11;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -96,6 +96,7 @@ class ThreeWP_Broadcast
 		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
 		'database_version' => 0,							// Version of database and settings
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
+		'obsolescence_notice_1' => false,					// Has the user replied to the obsolescence notice?
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 		'post_types' => 'post page',						// Custom post types which use broadcasting
 		'role_broadcast' => 'super_admin',					// Role required to use broadcast function
@@ -171,7 +172,7 @@ class ThreeWP_Broadcast
 			return;
 
 		$this->enqueue_js();
-		wp_enqueue_style( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.scss.min.css'  );
+		wp_enqueue_style( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.scss.min.css', '', $this->plugin_version  );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -285,9 +286,94 @@ class ThreeWP_Broadcast
 		echo $maintenance;
 	}
 
+	/**
+		@brief		Shows the obsolescence notice.
+		@since		20131122
+	**/
+	public function admin_menu_obsolescence()
+	{
+		$form = $this->form2();
+		$r = '';
+
+		$cbs_do = $form->checkboxes( 'i_do' )
+			->label( 'I do...' )
+			->option( 'Restrict drafts to certain roles', 'role_for_drafts' )
+			->option( 'Restrict scheduled posts to certain roles', 'role_for_scheduled' )
+			;
+
+		$cbs_do->input( 'i_do_role_for_drafts' )->description( 'I need a role to specifically restrict the broadcasting of drafts.' );
+		$cbs_do->input( 'i_do_role_for_scheduled' )->description( 'I need a role to specifically restrict the broadcasting of scheduled (future) posts.' );
+
+		$cbs_do_not = $form->checkboxes( 'i_do_not' )
+			->label( 'I do not...' )
+			->option( 'Broadcast custom fields', 'no_custom_fields' )
+			->option( 'Broadcast taxonomies', 'no_taxonomies' )
+			;
+
+		$cbs_do_not->input( 'i_do_not_no_custom_fields' )->description( 'I never broadcast custom fields and always leave the meta box empty when editing.' );
+		$cbs_do_not->input( 'i_do_not_no_taxonomies' )->description( 'I never broadcast tags / taxonomies and always leave the checkbox empty when editing.' );
+
+		$fs = $form->fieldset( 'fs_other' )
+			->label( 'Other notes' );
+
+		$text = $fs->textarea( 'text' )
+			->label( 'Any other comments?' )
+			->rows( 5, 40 );
+
+		$send = $form->primary_button( 'send_form' )
+			->value( 'Send form to edward@plainview.se' );
+
+		if ( $form->is_posting() )
+		{
+			$form->post()->use_post_values();
+			$mail = $this->mail();
+			$user = wp_get_current_user();
+
+			$mail->from( $user->data->user_email, $user->data->user_login );
+			$mail->to( 'edward@plainview.se', 'Edward Plainview' );
+			$mail->cc( $user->data->user_email, $user->data->user_login );
+			$mail->subject( sprintf( 'Broadcast obsolescence message for version %s', $this->plugin_version ) );
+
+			$html = sprintf( 'Hello Edward!
+
+I selected the following checkboxes: %s %s
+
+And I wrote the following message:
+%s
+
+',
+				implode( ', ', array_values( $cbs_do->get_post_value() ) ),
+				implode( ', ', array_values( $cbs_do_not->get_post_value() ) ),
+				wpautop( $text->get_post_value() )
+			);
+			$html = wpautop( $html );
+			$mail->html( $html );
+			$mail->send();
+			if ( $mail->send_ok() )
+			{
+				$r .= $this->message( 'The e-mail was sent to the author. You should receive a copy of the e-mail.' );
+				$this->update_site_option( 'obsolescence_notice', true );
+			}
+			else
+			{
+				$r .= $this->error( 'The e-mail could not be sent!' );
+			}
+		}
+
+		$r .= $this->html_css();
+		$r .= file_get_contents( __DIR__ . '/html/obsolescence_notice.html' );
+
+		$r .= $form->open_tag();
+		$r .= $form->display_form_table();
+		$r .= $form->close_tag();
+
+		echo $r;
+	}
+
 	public function admin_menu_post_types()
 	{
 		$form = $this->form2();
+		$r = '';
 
 		$post_types = $this->get_site_option( 'post_types' );
 		$post_types = str_replace( ' ', "\n", $post_types );
@@ -311,24 +397,23 @@ class ThreeWP_Broadcast
 			$this->message( 'Custom post types saved!' );
 		}
 
-		echo '
+		$r .= $this->p_( 'Custom post types must be specified using their internal Wordpress names with a space between each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).' );
 
-		<p>' . $this->_( 'Custom post types must be specified using their internal Wordpress names with a space between each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).' ) . '</p>
+		$blog_post_types = get_post_types();
+		$blog_post_types = array_keys( $blog_post_types );
+		$r .= $this->p_( 'The custom post types registered on <em>this</em> blog are: <code>%s</code>', implode( ', ', $blog_post_types ) );
 
-		'.$form->open_tag().'
-
-		' . $form->display_form_table() .'
-
-		'.$form->close_tag().'
-		';
+		$r .= $form->open_tag();
+		$r .= $form->display_form_table();
+		$r .= $form->close_tag();
+		echo $r;
 	}
 
 	public function admin_menu_premium_pack_info()
 	{
 		$r = '';
-		$r .= file_get_contents( __DIR__ . '/html/style.css' );
+		$r .= $this->html_css();
 		$contents = file_get_contents( __DIR__ . '/html/premium_pack_info.html' );
-		//$contents = wpautop( $contents );
 		$r .= $this->wrap( $contents, $this->_( 'ThreeWP Broadcast Premium Pack info' ) );
 		echo $r;
 	}
@@ -338,6 +423,7 @@ class ThreeWP_Broadcast
 		$this->enqueue_js();
 		$form = $this->form2();
 		$form->id( 'broadcast_settings' );
+		$r = '';
 		$roles = $this->roles_as_options();
 		$roles = array_flip( $roles );
 
@@ -477,7 +563,9 @@ class ThreeWP_Broadcast
 			$this->message( 'Options saved!' );
 		}
 
-		$r = $form->open_tag();
+		$r .= $this->obsolescence_notice();
+
+		$r .= $form->open_tag();
 		$r .= $form->display_form_table();
 		$r .= $form->close_tag();
 
@@ -492,6 +580,7 @@ class ThreeWP_Broadcast
 		$tabs->tab( 'settings' )		->callback_this( 'admin_menu_settings' )		->name_( 'Settings' );
 		$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );
 		$tabs->tab( 'post_types' )		->callback_this( 'admin_menu_post_types' )		->name_( 'Custom post types' );
+		$tabs->tab( 'obsolescence' )	->callback_this( 'admin_menu_obsolescence' )	->name_( 'Obsolescence notice' );
 		$tabs->tab( 'uninstall' )		->callback_this( 'admin_uninstall' )			->name_( 'Uninstall' );
 
 		echo $tabs;
@@ -1263,9 +1352,9 @@ class ThreeWP_Broadcast
 		$action->apply();
 
 		foreach( $meta_box_data->css as $key => $value )
-			wp_enqueue_style( $key, $value );
+			wp_enqueue_style( $key, $value, '', $this->plugin_version );
 		foreach( $meta_box_data->js as $key => $value )
-			wp_enqueue_script( $key, $value );
+			wp_enqueue_script( $key, $value, '', $this->plugin_version );
 
 		echo $meta_box_data->html->render();
 	}
@@ -1390,6 +1479,7 @@ class ThreeWP_Broadcast
 		$blogs = $filter->apply()->blogs;
 
 		$blogs_input = $form->checkboxes( 'blogs' )
+			->css_class( 'blogs checkboxes' )
 			->label( 'Broadcast to' )
 			->prefix( 'blogs' );
 
@@ -1406,8 +1496,10 @@ class ThreeWP_Broadcast
 		foreach( $blogs as $blog )
 		{
 			$blogs_input->option( $blog->blogname, $blog->id );
-			$option = $blogs_input->input( 'blogs_' . $blog->id );
+			$input_name = 'blogs_' . $blog->id;
+			$option = $blogs_input->input( $input_name );
 			$option->get_label()->content = $form::unfilter_text( $blog->blogname );
+			$option->css_class( 'blog ' . $blog->id );
 			if ( $blog->is_disabled() )
 				$option->disabled()->css_class( 'disabled' );
 			if ( $blog->is_linked() )
@@ -2380,11 +2472,11 @@ class ThreeWP_Broadcast
 	{
 		if ( isset( $this->_js_enqueued ) )
 			return;
-		wp_enqueue_script( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/user.min.js' );
+		wp_enqueue_script( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/user.min.js', '', $this->plugin_version );
 		$this->_js_enqueued = true;
 	}
 
-	private function get_current_blog_taxonomy_terms( $taxonomy )
+	public function get_current_blog_taxonomy_terms( $taxonomy )
 	{
 		$terms = get_terms( $taxonomy, array(
 			'hide_empty' => false,
@@ -2637,6 +2729,44 @@ class ThreeWP_Broadcast
 		// Since it doesn't exist, copy it.
 		$this->copy_attachment( $options );
 		return $options;
+	}
+
+	/**
+		@brief		Display the message to fill in the obsolescence notice
+		@since		20131122
+	**/
+	public function obsolescence_notice()
+	{
+		$r = '';
+
+		// Check the obsolescence notice
+		$shown = $this->get_site_option( 'obsolescence_notice', false );
+		if ( ! $shown )
+		{
+			$form = $this->form2();
+
+			$form->markup( 'fill_in' )
+				->p( 'Please take a moment to take a look at the <a href="admin.php?page=threewp_broadcast_admin_menu&tab=obsolescence">obsolescence notice</a>.' );
+			$form->secondary_button( 'no_thanks' )
+				->value( 'No thank you. Hide this message.' );
+
+			if ( $form->is_posting() )
+			{
+				$this->update_site_option( 'obsolescence_notice', true );
+				$shown = false;
+			}
+
+			if ( ! $shown )
+			{
+				$message = sprintf( '%s%s%s',
+					$form->open_tag(),
+					$form->display_form_table(),
+					$form->close_tag()
+				);
+				$r = $this->message( $message );
+			}
+		}
+		return $r;
 	}
 
 	private function save_last_used_settings( $user_id, $settings )
