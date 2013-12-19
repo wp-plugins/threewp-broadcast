@@ -1,6 +1,6 @@
 <?php
 
-namespace plainview\sdk\wordpress\table\bulkactions;
+namespace plainview\sdk\wordpress\table\top;
 
 use \plainview\sdk\collections\collection;
 
@@ -12,7 +12,7 @@ use \plainview\sdk\collections\collection;
 	Used to add bulk actions above the table.
 	@since		20131015
 **/
-class controller
+class bulkactions
 {
 	use \plainview\sdk\traits\method_chaining;
 
@@ -30,7 +30,7 @@ class controller
 
 	public function __toString()
 	{
-		return sprintf( '<div class="tablenav top"><div class="alignleft actions"><div class="screen-reader-text">%s</div>%s%s</div></div>',
+		return sprintf( '<div class="screen-reader-text">%s</div>%s%s',
 			$this->bulk_actions_input->display_label(),
 			$this->bulk_actions_input->display_input(),
 			$this->bulk_actions_button->display_input()

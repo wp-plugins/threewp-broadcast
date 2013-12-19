@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
 	window.broadcast =
 	{
-		$arrow : null,
+		$show_hide : null,
 		$broadcast : null,
 		$broadcast_blogs_htmls : null,
 		$blogs_html : null,
@@ -26,7 +26,7 @@ jQuery(document).ready(function($) {
 			// Container for selection change.
 			this.$selection_change_container = $( '<div />' )
 				.addClass( 'clear' )
-				.addClass( 'selection_change_container' )
+				.addClass( 'selection_change_container howto' )
 				.appendTo( this.$blogs_html );
 
 			// Append "Select all / none" text.
@@ -63,10 +63,12 @@ jQuery(document).ready(function($) {
 				.appendTo( this.$selection_change_container );
 
 			// Need to hide the blog list?
-			if ( this.$broadcast_blogs_htmls.length > 5 )
+			if ( broadcast_blogs_to_hide === undefined )
+				broadcast_blogs_to_hide = 5;
+			if ( this.$broadcast_blogs_htmls.length > broadcast_blogs_to_hide )
 			{
-				this.$arrow = $( '<div />' )
-					.addClass( 'arrow howto' )
+				this.$show_hide = $( '<div />' )
+					.addClass( 'show_hide howto' )
 					.appendTo( this.$blogs_html )
 					.click( function()
 					{
@@ -86,13 +88,13 @@ jQuery(document).ready(function($) {
 				var $this = $( this );
 				var blogs = $this.val().split(' ');
 				for ( var counter=0; counter < blogs.length; counter++)
-					$( "#plainview_form2_inputs_checkboxes_blogs_" + blogs[counter], window.broadcast.$broadcast ).prop( 'checked', true );
+					$( "#plainview_sdk_form2_inputs_checkboxes_blogs_" + blogs[counter], window.broadcast.$broadcast ).prop( 'checked', true );
 				// Select the "no value" option.
 				$this.val( '' );
 
 				// If the blog list is closed, then expand and then close again to show the newly selected blogs.
 				if ( window.broadcast.$blogs_html.hasClass( 'closed' ) )
-					window.broadcast.$arrow.click().click();
+					window.broadcast.$show_hide.click().click();
 			});
 
 		},
@@ -103,7 +105,7 @@ jQuery(document).ready(function($) {
 		hide_blogs : function()
 		{
 			window.broadcast.$blogs_html.removeClass( 'opened' ).addClass( 'closed' );
-			this.$arrow.html( broadcast_strings.show_all );
+			this.$show_hide.html( broadcast_strings.show_all );
 
 			// Hide all those blogs that aren't checked
 			this.$broadcast_blogs_htmls.each( function( index, item )
@@ -121,14 +123,14 @@ jQuery(document).ready(function($) {
 		// Ajaxify the settings page.
 		init_settings_page : function()
 		{
-			this.$settings_form = $( 'body.broadcast_page_threewp_broadcast_admin_menu form#broadcast_settings' );
+			this.$settings_form = $( 'form#broadcast_settings' );
 			if ( this.$settings_form.length < 1 )
 				return;
 
 			// Ajaxify the whitelist / blacklist
-			this.$settings_form.$broadcast_internal_fields = $( '#plainview_form2_inputs_checkbox_broadcast_internal_custom_fields', this.$settings_form );
-			this.$settings_form.$blacklist = $( '#plainview_form2_inputs_textarea_custom_field_blacklist', this.$settings_form );
-			this.$settings_form.$whitelist = $( '#plainview_form2_inputs_textarea_custom_field_whitelist', this.$settings_form );
+			this.$settings_form.$broadcast_internal_fields = $( '#plainview_sdk_form2_inputs_checkbox_broadcast_internal_custom_fields', this.$settings_form );
+			this.$settings_form.$blacklist = $( '#plainview_sdk_form2_inputs_textarea_custom_field_blacklist', this.$settings_form );
+			this.$settings_form.$whitelist = $( '#plainview_sdk_form2_inputs_textarea_custom_field_whitelist', this.$settings_form );
 
 			// Fade in the respective settings when the internal fields box is clicked.
 			this.$settings_form.$broadcast_internal_fields.change( function()
@@ -154,7 +156,7 @@ jQuery(document).ready(function($) {
 		show_blogs : function()
 		{
 			window.broadcast.$blogs_html.removeClass( 'closed' ).addClass( 'opened' );
-			this.$arrow.html( broadcast_strings.hide_all );
+			this.$show_hide.html( broadcast_strings.hide_all );
 			$.each( this.$broadcast_blogs_htmls, function( index, item )
 			{
 				var $this = $( this );
