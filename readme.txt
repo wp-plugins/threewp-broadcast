@@ -36,6 +36,7 @@ Broadcasted posts can be linked to their parents, which updates child posts when
 * Custom field blacklist and whitelist
 * Last used settings are remembered
 * User role access granularity
+* An enormous amount of extra features in the premium pack
 
 = Premium Pack =
 
@@ -104,6 +105,7 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 21. Premium Pack: The WooCommerce plugin enables broadcasting of product variations as well
 22. Premium Pack: Per Blog Taxonomies allows individual setting of child post taxonomies.
 23. Premium Pack: Permalinks enables more precise permalink control.
+23. Maintenance tab showing checks and tools.
 
 == Frequently Asked Questions ==
 
@@ -157,7 +159,7 @@ Make sure that:
 
 1. The plugin is network enabled
 2. Your user level has broadcast access (Broadcast access role)
-3. Your user has write access to more than this blog
+3. Your user has write access to more than this blog (see Admin settings > Maintenenace > View blog access). Or use the All Blogs premium plugin to access all blogs.
 4. The correct post type(s) have been selected
 5. <em>User & Blog Settings</em> is not set to hide the meta box from the user / role / blog
 
@@ -186,9 +188,16 @@ It works transparently in the background, but in case you've never really used W
 5. Link and broadcast it to the other blogs in the network.
 6. The other blogs should now have two translations of the same post and the same post overview listing.
 
-Translated categories and tags are untested as of 2013-07-17.
+This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager. 2014-01-12.
 
 == Changelog ==
+
+= 2.12 20140112 =
+* New: Maintenance: View Blog Access check added.
+* New: All Blogs plugin is now available in the premium pack.
+* Code: get_user_writable_blogs filter moved to priority 11.
+* Code: $_POST is now emptied, not removed.
+* WPML plugin will be obsoleted soon. A more functional premium plugin will be available.
 
 = 2.11 20131218 =
 * New: WordPress v3.8 support.

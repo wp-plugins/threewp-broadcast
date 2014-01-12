@@ -30,6 +30,7 @@ class tree
 	public function __construct()
 	{
 		$this->root = $this->new_node();
+		$this->root->set_tree( $this );
 		$this->nodes = new \plainview\sdk\collections\collection;
 		$this->orphans = new orphans;
 		$this->orphans->tree = $this;
@@ -51,11 +52,12 @@ class tree
 		// Does this node already exist? Update the data.
 		if ( $this->nodes->has( $id ) )
 		{
-			$this->nodes->set( $id, $data );
+			$this->nodes->get( $id )->data = $data;;
 			return $this;
 		}
 
 		$node = $this->new_node();
+		$node->set_tree( $this );
 		$node->set_id( $id );
 		$node->set_data( $data );
 

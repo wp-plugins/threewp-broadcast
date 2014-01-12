@@ -16,6 +16,7 @@ class data
 		$this->checks->maintenance_data = $this;
 		$this->checks->add_check( new checks\broadcast_data\check );
 		$this->checks->add_check( new checks\view_broadcast_data\check );
+		$this->checks->add_check( new checks\view_blog_access\check );
 	}
 
 	/**

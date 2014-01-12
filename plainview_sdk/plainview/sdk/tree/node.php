@@ -15,6 +15,12 @@ class node
 	public $parent;
 	public $subnodes;
 
+	/**
+		@brief		The tree object.
+		@since		20140106
+	**/
+	public $tree;
+
 	public function __construct( $parent = null )
 	{
 		$this->parent = $parent;
@@ -123,6 +129,16 @@ class node
 	{
 		$this->parent = $new_parent;
 		$this->depth = $this->parent->get_depth() + 1;
+		return $this;
+	}
+
+	/**
+		@brief		Set the node's tree object.
+		@since		20140106
+	**/
+	public function set_tree( $tree )
+	{
+		$this->tree = $tree;
 		return $this;
 	}
 

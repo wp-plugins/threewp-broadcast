@@ -13,6 +13,8 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140110		Fixed add() bug in tree.
+	- 20140106		collections\collection.
 	- 20131211		wordpress
 	- 20131210		wordpress
 	- 20131209		tree class added.
@@ -92,7 +94,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20131211;
+	protected $sdk_version = 20140110;
 
 	/**
 		@brief		Constructor.
