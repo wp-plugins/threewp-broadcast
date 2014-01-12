@@ -1,455 +1,575 @@
-#: ThreeWP_Broadcast.php:1166
-#, php-format
-msgid "%sQueue%s not available."
-msgstr ""
-
-#: ThreeWP_Broadcast.php:755
-#, php-format
-msgid "%sThreeWP Broadcast%s version %s is installed."
-msgstr ""
-
-#: ThreeWP_Broadcast.php:984
-msgid "A Broadcast blog group was added."
-msgstr ""
-
-#: ThreeWP_Broadcast.php:987
-msgid "A Broadcast blog group was deleted."
-msgstr ""
-
-#: ThreeWP_Broadcast.php:990
-msgid "A Broadcast blog group was modified."
-msgstr ""
-
-#: ThreeWP_Broadcast.php:284
+#: ThreeWP_Broadcast.php:299
 #, php-format
 msgid "A list of custom post types that have broadcasting enabled. The default value is %s."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:981
+#: ThreeWP_Broadcast.php:1235
 msgid "A post was broadcasted."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:993
+#: ThreeWP_Broadcast.php:1238
 msgid "A post was unlinked."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:550
+#: ThreeWP_Broadcast.php:1540
+msgid "All"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1028
 msgid "All links to child posts have been removed!"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:716
-msgid "Apply"
+#: ThreeWP_Broadcast.php:571
+msgid "All of the child posts have been deleted."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:595 ThreeWP_Broadcast.php:829
+#: ThreeWP_Broadcast.php:538 ThreeWP_Broadcast.php:576
+#: ThreeWP_Broadcast.php:842 ThreeWP_Broadcast.php:877
+#: ThreeWP_Broadcast.php:911 ThreeWP_Broadcast.php:945
 msgid "Back to post overview"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:115 ThreeWP_Broadcast.php:333
-#: ThreeWP_Broadcast.php:848
+#: ThreeWP_Broadcast.php:441
+msgid "Blogs to hide"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:350 ThreeWP_Broadcast.php:1059
+#: ThreeWP_Broadcast.php:1775
 msgid "Broadcast"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:357
+#: ThreeWP_Broadcast.php:404
+msgid "Broadcast all fields, including those beginning with underscores."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:374
 msgid "Broadcast as draft"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:345
+#: ThreeWP_Broadcast.php:362
 msgid "Broadcast custom fields"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:792
+#: ThreeWP_Broadcast.php:803
 msgid "Broadcast information"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:388
+#: ThreeWP_Broadcast.php:405
 msgid "Broadcast internal custom fields"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:80
+#: ThreeWP_Broadcast.php:112
 msgid "Broadcast requires a Wordpress network to function."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:363
+#: ThreeWP_Broadcast.php:380
 msgid "Broadcast scheduled posts"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:351
+#: ThreeWP_Broadcast.php:368
 msgid "Broadcast taxonomies"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:899
+#: ThreeWP_Broadcast.php:1110
 msgid "Broadcasted"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:377
+#: ThreeWP_Broadcast.php:394
 msgid "Canonical URL"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:909
+#: ThreeWP_Broadcast.php:393
+msgid "Child posts have their canonical URLs pointed to the URL of the parent post."
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:909
 msgid "Could not parse date"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1079
+#: ThreeWP_Broadcast.php:1352
 msgid "Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:709
+#: ThreeWP_Broadcast.php:603
 msgid "Create link"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:380
+#: ThreeWP_Broadcast.php:397
 msgid "Custom field handling"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1091
+#: ThreeWP_Broadcast.php:1364
 msgid "Custom fields"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:467
+#: ThreeWP_Broadcast.php:494
 msgid "Custom post types"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:301
+#: ThreeWP_Broadcast.php:316
 msgid "Custom post types must be specified using their internal Wordpress names with a space between each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types)."
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:396
+#: plainview_sdk/plainview/sdk/form.php:396
 msgid "DD"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:401
+#: plainview_sdk/plainview/sdk/form.php:401
 msgid "Date format"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:779 ThreeWP_Broadcast.php:1304
+#: ThreeWP_Broadcast.php:1552 ThreeWP_Broadcast.php:1609
 msgid "Delete"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:368
+#: ThreeWP_Broadcast.php:761
+msgid "Delete all child posts"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:762
+msgid "Delete all children"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:757
+msgid "Delete child"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:756
+msgid "Delete the child post"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:368
 msgid "Description"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:708
-msgid "Do nothing"
-msgstr ""
-
-#: ThreeWP_Broadcast.php:735
+#: ThreeWP_Broadcast.php:605
 msgid "Domain"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:783 ThreeWP_Broadcast.php:942
+#: ThreeWP_Broadcast.php:766 ThreeWP_Broadcast.php:767
+#: ThreeWP_Broadcast.php:1172
 msgid "Find orphans"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:942
+#: ThreeWP_Broadcast.php:1171
 msgid "Find posts on other blogs that are identical to this post"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:397
+#: plainview_sdk/plainview/sdk/form.php:397
 msgid "HH"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1169
-msgid "Information about the Broadcast Queue Plugin"
-msgstr ""
-
-#: ThreeWP_Broadcast.php:395
-msgid "Internal field blacklist"
-msgstr ""
-
-#: ThreeWP_Broadcast.php:404
-msgid "Internal field whitelist"
-msgstr ""
-
-#: plainview_sdk/plainview/form.php:916
-msgid "Invalid date"
-msgstr ""
-
-#: plainview_sdk/plainview/form.php:899
-msgid "Invalid email address"
-msgstr ""
-
-#: ThreeWP_Broadcast.php:1109
-msgid "Invert selection"
-msgstr ""
-
-#: plainview_sdk/plainview/form.php:404
-msgid "Latest valid date"
-msgstr ""
-
-#: ThreeWP_Broadcast.php:1078
-msgid "Link this post to its children"
-msgstr ""
-
-#: ThreeWP_Broadcast.php:519
-msgid "Link to child post has been removed."
-msgstr ""
-
-#: ThreeWP_Broadcast.php:339
-msgid "Link to child posts"
-msgstr ""
-
-#: plainview_sdk/plainview/form.php:395 plainview_sdk/plainview/form.php:398
-msgid "MM"
-msgstr ""
-
-#: plainview_sdk/plainview/form.php:390
-msgid "Minimum length"
+#: ThreeWP_Broadcast.php:440
+msgid "In the broadcast meta box, after how many blogs the list should be auto-hidden."
 msgstr ""
 
 #: ThreeWP_Broadcast.php:412
+msgid "Internal field blacklist"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:421
+msgid "Internal field whitelist"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:916
+msgid "Invalid date"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:899
+msgid "Invalid email address"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1382
+msgid "Invert selection"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:404
+msgid "Latest valid date"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1351
+msgid "Link this post to its children"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:997
+msgid "Link to child post has been removed."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:356
+msgid "Link to child posts"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:395
+#: plainview_sdk/plainview/sdk/form.php:398
+msgid "MM"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:493
+msgid "Maintenance"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:390
+msgid "Minimum length"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:429
 msgid "Miscellaneous"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:680
+#: ThreeWP_Broadcast.php:679
 msgid "No possible child posts were found on the other blogs you have write access to. Either there are no posts with the same title as this one, or all possible orphans have already been linked."
 msgstr ""
 
-#: plainview_sdk/plainview/form2/inputs/radios.php:59
-#: plainview_sdk/plainview/form2/inputs/traits/validation.php:182
+#: ThreeWP_Broadcast.php:1551
+msgid "Permanently all the broadcasted children"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form2/inputs/radios.php:59
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/validation.php:182
 #, php-format
 msgid "Please fill in %s."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:125
+#: ThreeWP_Broadcast.php:1746
 msgid "Premium Pack"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:124
+#: ThreeWP_Broadcast.php:1745
 msgid "Premium Pack info"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1300
+#: ThreeWP_Broadcast.php:1545
+msgid "Put all of the children in the trash"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1602
 msgid "Put this broadcasted child post in the trash"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1297
+#: ThreeWP_Broadcast.php:1605
 msgid "Remove link to this broadcasted child post"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:940
-msgid "Remove links to all the broadcasted children"
-msgstr ""
-
-#: plainview_sdk/plainview/form.php:325
+#: plainview_sdk/plainview/sdk/form.php:325
 msgid "Required field"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:328
+#: ThreeWP_Broadcast.php:1543 ThreeWP_Broadcast.php:1600
+msgid "Restore"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:777
+msgid "Restore all"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:776
+msgid "Restore all of the child posts from the trash"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1542 ThreeWP_Broadcast.php:1599
+msgid "Restore all of the children from the trash"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:772
+msgid "Restore child"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:771
+msgid "Restore the child post from the trash"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:345
 msgid "Roles"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:367
+#: ThreeWP_Broadcast.php:384
 msgid "SEO"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:399
+#: plainview_sdk/plainview/sdk/form.php:399
 msgid "SS"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:423
+#: ThreeWP_Broadcast.php:448
 msgid "Save settings"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:288
+#: ThreeWP_Broadcast.php:303
 msgid "Save the broadcastable custom post types"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1110
+#: ThreeWP_Broadcast.php:1383
 msgid "Select / deselect all"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1121
-msgid "Select blogs in group"
-msgstr ""
-
-#. Else return a manual table th.
-#: ThreeWP_Broadcast.php:734 plainview_sdk/plainview/wordpress/base.php:1147
-#: plainview_sdk/plainview/wordpress/base.php:1152
-msgid "Selected"
-msgstr ""
-
-#: ThreeWP_Broadcast.php:466
+#: ThreeWP_Broadcast.php:492
 msgid "Settings"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:899
+#: ThreeWP_Broadcast.php:1110
 msgid "Shows which blogs have posts linked to this one"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:383
+#: ThreeWP_Broadcast.php:400
 msgid "Some custom fields start with underscores. They are generally Wordpress internal fields and therefore not broadcasted. Some plugins store their information as underscored custom fields. If you wish them, or some of them, to be broadcasted, use either of the options below."
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:518
+#: plainview_sdk/plainview/sdk/wordpress/base.php:522
 msgid "Super admin"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1100
+#: ThreeWP_Broadcast.php:1373
 msgid "Taxonomies"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:590
-msgid "The broadcasted child post has been deleted."
+#: ThreeWP_Broadcast.php:349
+msgid "The broadcast access role is the user role required to use the broadcast function at all."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:824
+#: ThreeWP_Broadcast.php:906
 msgid "The broadcasted child post has been put in the trash."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:409
+#: ThreeWP_Broadcast.php:533
+msgid "The child post has been deleted."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:837
+msgid "The child post has been restored."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:940
+msgid "The child posts have been put in the trash."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:872
+msgid "The child posts have been restored."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:426
 #, php-format
 msgid "The default whitelist is: %s"
 msgstr ""
 
-#: plainview_sdk/plainview/form2/inputs/email.php:29
+#: plainview_sdk/plainview/sdk/form2/inputs/email.php:29
 #, php-format
 msgid "The e-mail address in %s is not valid!"
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:374
+#: plainview_sdk/plainview/sdk/wordpress/base.php:382
 #, php-format
 msgid "The plugin and all associated settings and database tables have been removed. Please %sfollow this link to complete the uninstallation procedure%s."
 msgstr ""
 
-#: plainview_sdk/plainview/form2/inputs/traits/maxlength.php:31
+#: ThreeWP_Broadcast.php:432
+msgid "The priority for the save_post hook. Should be after all other plugins have finished modifying the post. Default is 640."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:671
+msgid "The selected children were linked!"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/maxlength.php:31
 #, php-format
 msgid "The text in %s is too long!"
 msgstr ""
 
-#: plainview_sdk/plainview/form2/inputs/traits/minlength.php:42
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/minlength.php:42
 #, php-format
 msgid "The text in %s is too short!"
 msgstr ""
 
-#: plainview_sdk/plainview/form2/inputs/traits/max.php:34
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/max.php:34
 #, php-format
 msgid "The value in %s (%s) is larger than the allowed maximum of %s."
 msgstr ""
 
-#: plainview_sdk/plainview/form2/inputs/traits/min.php:34
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/min.php:34
 #, php-format
 msgid "The value in %s (%s) is smaller than the allowed minimum of %s."
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:384
+#: plainview_sdk/plainview/sdk/form.php:384
 msgid "The value must be larger than or equal to"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:386
+#: plainview_sdk/plainview/sdk/form.php:386
 msgid "The value must be smaller or equal to"
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:375
+#: plainview_sdk/plainview/sdk/wordpress/base.php:383
 msgid "This link will take you to the index page"
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:383
+#: plainview_sdk/plainview/sdk/wordpress/base.php:358
 msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1047
+#: ThreeWP_Broadcast.php:1320
 msgid "This post is broadcasted child post. It cannot be broadcasted further."
 msgstr ""
 
-#: ThreeWP_Broadcast.php:114
+#: ThreeWP_Broadcast.php:1774
 msgid "ThreeWP Broadcast"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:315
+#. $contents = wpautop( $contents );
+#: ThreeWP_Broadcast.php:332
 msgid "ThreeWP Broadcast Premium Pack info"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:787 ThreeWP_Broadcast.php:1301
+#: ThreeWP_Broadcast.php:1546 ThreeWP_Broadcast.php:1603
 msgid "Trash"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:468
+#: ThreeWP_Broadcast.php:786
+msgid "Trash all child posts"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:787
+msgid "Trash all children"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:782
+msgid "Trash child"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:781
+msgid "Trash the child post"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:495
 msgid "Uninstall"
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:357
+#: plainview_sdk/plainview/sdk/wordpress/base.php:365
 msgid "Uninstall plugin"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:775 ThreeWP_Broadcast.php:940
-#: ThreeWP_Broadcast.php:1298
+#: ThreeWP_Broadcast.php:1549 ThreeWP_Broadcast.php:1606
 msgid "Unlink"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1303
+#: ThreeWP_Broadcast.php:797
+msgid "Unlink all child posts"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:798
+msgid "Unlink all children"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1548
+msgid "Unlink all of the child posts"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:1608
 msgid "Unlink and delete this broadcasted child post"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:372
+#: ThreeWP_Broadcast.php:792
+msgid "Unlink child"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:791
+msgid "Unlink the child post"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:389
 msgid "Use parent permalink"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:388
+#: ThreeWP_Broadcast.php:388
+msgid "Use the parent post's permalink for the children. If checked, child posts will link back to the parent post."
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:388
 msgid "Valid values"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:706
-msgid "With the selected rows"
+#: ThreeWP_Broadcast.php:355
+msgid "When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated."
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:400
+#: ThreeWP_Broadcast.php:411
+msgid "When broadcasting internal custom fields, override and do not broadcast these fields."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:420
+msgid "When not broadcasting internal custom fields, override and broadcast these fields."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:361
+msgid "Which role is needed to allow custom field broadcasting?"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:367
+msgid "Which role is needed to allow taxonomy broadcasting? The taxonomies must have the same slug on all blogs."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:373
+msgid "Which role is needed to broadcast drafts?"
+msgstr ""
+
+#: ThreeWP_Broadcast.php:379
+msgid "Which role is needed to broadcast scheduled (future) posts?"
+msgstr ""
+
+#: plainview_sdk/plainview/sdk/form.php:400
 msgid "YYYY"
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:353
+#: plainview_sdk/plainview/sdk/wordpress/base.php:361
 msgid "Yes, I'm sure I want to remove all the plugin tables and settings."
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:365
+#: plainview_sdk/plainview/sdk/wordpress/base.php:373
 msgid "You have to check the checkbox in order to uninstall the plugin."
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:390
+#: plainview_sdk/plainview/sdk/form.php:390
 msgid "characters"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:926
+#: plainview_sdk/plainview/sdk/form.php:926
 msgid "characters long"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1108
+#: ThreeWP_Broadcast.php:1381
 msgid "hide all"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:956
+#: plainview_sdk/plainview/sdk/form.php:956
 msgid "may not be empty"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:950
+#: plainview_sdk/plainview/sdk/form.php:950
 msgid "may not be larger than"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:938
+#: plainview_sdk/plainview/sdk/form.php:938
 msgid "may not be smaller than"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:926
+#: plainview_sdk/plainview/sdk/form.php:926
 msgid "must be at least"
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:1960
+#: plainview_sdk/plainview/sdk/wordpress/base.php:1913
 msgid "no"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:416
+#: ThreeWP_Broadcast.php:433
 msgid "save_post priority"
 msgstr ""
 
-#: ThreeWP_Broadcast.php:1111
+#: ThreeWP_Broadcast.php:1384
 msgid "show all"
 msgstr ""
 
-#: plainview_sdk/plainview/form.php:388
+#: plainview_sdk/plainview/sdk/form.php:388
 msgid "to"
 msgstr ""
 
-#: plainview_sdk/plainview/wordpress/base.php:1960
+#: plainview_sdk/plainview/sdk/wordpress/base.php:1913
 msgid "yes"
 msgstr ""

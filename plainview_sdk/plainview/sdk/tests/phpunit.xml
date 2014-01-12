@@ -32,5 +32,8 @@
         <testsuite name="Plainview SDK Table">
             <directory>../table/tests</directory>
         </testsuite>
+        <testsuite name="Plainview SDK Tree">
+            <directory>../tree/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
