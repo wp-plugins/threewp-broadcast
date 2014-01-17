@@ -3,10 +3,10 @@
 Author:			edward_plainview
 Author Email:	edward@plainview.se
 Author URI:		http://www.plainview.se
-Description:	Add WPML support to ThreeWP Broadcast.
+Description:	Add simple WPML support to ThreeWP Broadcast.
 Plugin Name:	ThreeWP Broadcast WPML support
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.4
+Version:		2.14
 */
 
 namespace threewp_broadcast;
@@ -21,12 +21,13 @@ if ( ! class_exists( '\\threewp_broadcast\\ThreeWP_Broadcast_Base' ) )
 
 	@par		Changelog
 
+	- 20140111	Check that the content actually is translatable.
 	- 20130812	Intial version v1.21.
 **/
 class ThreeWP_Broadcast_WPML
 	extends \threewp_broadcast\ThreeWP_Broadcast_Base
 {
-	public $plugin_version = 2.4;
+	public $plugin_version = 2.14;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -128,6 +129,14 @@ class ThreeWP_Broadcast_WPML
 		$type = 'post_' . $bcd->post->post_type;
 		$bcd->wpml->translations = wpml_get_content_translations( $type, $id );
 
+		// Is this content translateable?
+		if ( ! is_array( $bcd->wpml->translations ) )
+		{
+			// No, then we do nothing.
+			unset( $bcd->wpml );
+			return;
+		}
+
 		// Calculate the language of this post.
 		foreach( $bcd->wpml->translations as $lang => $post_id )
 			if( $post_id == $id )
@@ -167,7 +176,7 @@ class ThreeWP_Broadcast_WPML
 			self::open_close_tag( wpml_get_current_language(), 'em' )
 		);
 
-		return \plainview\base::implode_html( $r, '<div>', '</div>' );
+		return \plainview\sdk\base::implode_html( $r, '<div>', '</div>' );
 	}
 
 	/**

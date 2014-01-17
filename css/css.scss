@@ -4,7 +4,7 @@
 	{
 		position: relative;
 
-		.arrow
+		.show_hide
 		{
 			position: absolute;
 			top: 0;
@@ -40,10 +40,14 @@
 			}
 		}
 
+		.selection_change_container
+		{
+			text-align: center;
+		}
+
 		.selection_change
 		{
 			text-align: center;
-			font-size: 80%;
 			cursor: pointer;
 		}
 

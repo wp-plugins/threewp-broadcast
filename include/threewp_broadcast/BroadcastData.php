@@ -10,10 +10,26 @@ namespace threewp_broadcast;
 
 class BroadcastData
 {
-	private $defaultData = array(
-		'version' => 1,
-	);
+	/**
+		@brief		The ID of the database row.
+		@since		20131105
+	**/
+	public $id;
+
+	/**
+		@brief		The ID of the blog this object belongs to.
+		@since		20131105
+	**/
+	public $blog_id;
+
+	/**
+		@brief		The ID of the post this object belongs to.
+		@since		20131105
+	**/
+	public $post_id;
+
 	private $dataModified = false;
+
 	private $data;
 
 	/**
@@ -21,7 +37,24 @@ class BroadcastData
 	 */
 	public function __construct( $data = [] )
 	{
-		$this->data = array_merge( $this->defaultData, $data );
+		$this->data = array_merge( self::get_default_data(), $data );
+	}
+
+	/**
+		@brief		Construct a broadcast data object from an sql result.
+		@since		20131105
+	**/
+	public static function sql( $result )
+	{
+		$result = (object) $result;
+		$data = self::unserialize_data( $result->data );
+		if ( ! $data )
+			$data = [];
+		$bcd = new BroadcastData( $data );
+		$bcd->id = $result->id;
+		$bcd->blog_id = $result->blog_id;
+		$bcd->post_id = $result->post_id;
+		return $bcd;
 	}
 
 	/**
@@ -30,6 +63,17 @@ class BroadcastData
 	public function getData()
 	{
 		return $this->data;
+	}
+
+	/**
+		@brief		Return the default data array.
+		@since		20131107
+	**/
+	public static function get_default_data()
+	{
+		return [
+			'version' => 2,
+		];
 	}
 
 	/**
@@ -95,8 +139,9 @@ class BroadcastData
 	public function remove_linked_child( $blog_id )
 	{
 		unset($this->data[ 'linked_children' ][$blog_id]);
-		if ( count($this->data[ 'linked_children' ]) < 1)
-			unset( $this->data[ 'linked_children' ] );
+		if ( isset( $this->data[ 'linked_children' ] ) )
+			if ( count($this->data[ 'linked_children' ]) < 1)
+				unset( $this->data[ 'linked_children' ] );
 
 		$this->modified();
 	}
@@ -168,5 +213,14 @@ class BroadcastData
 			( isset($this->data[ 'version' ]) )
 		);
 	}
+
+	/**
+		@brief		Try to unserialize the data from a string.
+		@return		mixed		Either an array if all went well, or false.
+		@since		20131105
+	**/
+	public static function unserialize_data( $data )
+	{
+		return @ unserialize( base64_decode( $data ) );
+	}
 }
-?>
