@@ -28,7 +28,9 @@ Broadcasted posts can be linked to their parents, which updates child posts when
 = SEO support =
 
 * Permalinks of child posts (also see Permalinks plugin in the Premium Pack)
-* Canonical URLs of child posts
+* Canonical URLs of child posts.
+
+For those who have Yoast's Wordpress SEO plugin installed, if the Broadcast's canonical URL is selected (which will point to the parent post), it will simultaneously disable Yoast's canonical link. This will prevent search engine penalties.
 
 = Other features =
 
@@ -163,6 +165,10 @@ Make sure that:
 4. The correct post type(s) have been selected
 5. <em>User & Blog Settings</em> is not set to hide the meta box from the user / role / blog
 
+= Why are the custom post type custom fields (or ACF data) not being broadcasted? =
+
+If you've created a custom post type, but cannot see the "custom fields" checkbox, check your custom post type settings.
+
 = WooCommerce =
 
 Broadcast is capable of handling WooCommerce products.
@@ -191,6 +197,15 @@ It works transparently in the background, but in case you've never really used W
 This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager. 2014-01-12.
 
 == Changelog ==
+
+= 2.14 20140117 =
+* New: Canonical URL detects and disables the canonical link from Yoast's Wordpress SEO plugin.
+* Fix: Better compatability with User Blog Settings and Keep Child Settings plugins.
+* Fix: Better support for Microsoft IIS.
+* Removed obsolescence message - all of the features are needed by at least one person.
+
+= 2.13 =
+Skipping version 13.
 
 = 2.12 20140112 =
 * New: Maintenance: View Blog Access check added.

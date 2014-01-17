@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.12
+Version:		2.14
 */
 
 namespace threewp_broadcast;
@@ -84,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.12;
+	public $plugin_version = 2.14;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -96,7 +96,6 @@ class ThreeWP_Broadcast
 		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
 		'database_version' => 0,							// Version of database and settings
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
-		'obsolescence_notice_1' => false,					// Has the user replied to the obsolescence notice?
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 		'post_types' => 'post page',						// Custom post types which use broadcasting
 		'role_broadcast' => 'super_admin',					// Role required to use broadcast function
@@ -286,90 +285,6 @@ class ThreeWP_Broadcast
 		echo $maintenance;
 	}
 
-	/**
-		@brief		Shows the obsolescence notice.
-		@since		20131122
-	**/
-	public function admin_menu_obsolescence()
-	{
-		$form = $this->form2();
-		$r = '';
-
-		$cbs_do = $form->checkboxes( 'i_do' )
-			->label( 'I do...' )
-			->option( 'Restrict drafts to certain roles', 'role_for_drafts' )
-			->option( 'Restrict scheduled posts to certain roles', 'role_for_scheduled' )
-			;
-
-		$cbs_do->input( 'i_do_role_for_drafts' )->description( 'I need a role to specifically restrict the broadcasting of drafts.' );
-		$cbs_do->input( 'i_do_role_for_scheduled' )->description( 'I need a role to specifically restrict the broadcasting of scheduled (future) posts.' );
-
-		$cbs_do_not = $form->checkboxes( 'i_do_not' )
-			->label( 'I do not...' )
-			->option( 'Broadcast custom fields', 'no_custom_fields' )
-			->option( 'Broadcast taxonomies', 'no_taxonomies' )
-			;
-
-		$cbs_do_not->input( 'i_do_not_no_custom_fields' )->description( 'I never broadcast custom fields and always leave the meta box empty when editing.' );
-		$cbs_do_not->input( 'i_do_not_no_taxonomies' )->description( 'I never broadcast tags / taxonomies and always leave the checkbox empty when editing.' );
-
-		$fs = $form->fieldset( 'fs_other' )
-			->label( 'Other notes' );
-
-		$text = $fs->textarea( 'text' )
-			->label( 'Any other comments?' )
-			->rows( 5, 40 );
-
-		$send = $form->primary_button( 'send_form' )
-			->value( 'Send form to edward@plainview.se' );
-
-		if ( $form->is_posting() )
-		{
-			$form->post()->use_post_values();
-			$mail = $this->mail();
-			$user = wp_get_current_user();
-
-			$mail->from( $user->data->user_email, $user->data->user_login );
-			$mail->to( 'edward@plainview.se', 'Edward Plainview' );
-			$mail->cc( $user->data->user_email, $user->data->user_login );
-			$mail->subject( sprintf( 'Broadcast obsolescence message for version %s', $this->plugin_version ) );
-
-			$html = sprintf( 'Hello Edward!
-
-I selected the following checkboxes: %s %s
-
-And I wrote the following message:
-%s
-
-',
-				implode( ', ', array_values( $cbs_do->get_post_value() ) ),
-				implode( ', ', array_values( $cbs_do_not->get_post_value() ) ),
-				wpautop( $text->get_post_value() )
-			);
-			$html = wpautop( $html );
-			$mail->html( $html );
-			$mail->send();
-			if ( $mail->send_ok() )
-			{
-				$r .= $this->message( 'The e-mail was sent to the author. You should receive a copy of the e-mail.' );
-				$this->update_site_option( 'obsolescence_notice', true );
-			}
-			else
-			{
-				$r .= $this->error( 'The e-mail could not be sent!' );
-			}
-		}
-
-		$r .= $this->html_css();
-		$r .= file_get_contents( __DIR__ . '/html/obsolescence_notice.html' );
-
-		$r .= $form->open_tag();
-		$r .= $form->display_form_table();
-		$r .= $form->close_tag();
-
-		echo $r;
-	}
-
 	public function admin_menu_post_types()
 	{
 		$form = $this->form2();
@@ -476,7 +391,7 @@ And I wrote the following message:
 
 		$canonical_url = $fs->checkbox( 'canonical_url' )
 			->checked( $this->get_site_option( 'canonical_url' ) )
-			->description_( 'Child posts have their canonical URLs pointed to the URL of the parent post.' )
+			->description_( "Child posts have their canonical URLs pointed to the URL of the parent post. This automatically disables the canonical URL from Yoast's Wordpress SEO plugin." )
 			->label_( 'Canonical URL' );
 
 		$fs = $form->fieldset( 'custom_field_handling' )
@@ -563,8 +478,6 @@ And I wrote the following message:
 			$this->message( 'Options saved!' );
 		}
 
-		$r .= $this->obsolescence_notice();
-
 		$r .= $form->open_tag();
 		$r .= $form->display_form_table();
 		$r .= $form->close_tag();
@@ -580,7 +493,6 @@ And I wrote the following message:
 		$tabs->tab( 'settings' )		->callback_this( 'admin_menu_settings' )		->name_( 'Settings' );
 		$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );
 		$tabs->tab( 'post_types' )		->callback_this( 'admin_menu_post_types' )		->name_( 'Custom post types' );
-		$tabs->tab( 'obsolescence' )	->callback_this( 'admin_menu_obsolescence' )	->name_( 'Obsolescence notice' );
 		$tabs->tab( 'uninstall' )		->callback_this( 'admin_uninstall' )			->name_( 'Uninstall' );
 
 		echo $tabs;
@@ -825,6 +737,18 @@ And I wrote the following message:
 		$row = $table->body()->row();
 		$row->td()->text( 'PHP maximum execution time' );
 		$text = sprintf( '%s seconds', ini_get ( 'max_execution_time' ) );
+		$row->td()->text( $text );
+
+		// PHP maximum memory limit
+		$row = $table->body()->row();
+		$row->td()->text( 'PHP memory limit' );
+		$text = ini_get( 'memory_limit' );
+		$row->td()->text( $text );
+
+		// WP maximum memory limit
+		$row = $table->body()->row();
+		$row->td()->text( 'Wordpress memory limit' );
+		$text = WP_MEMORY_LIMIT;
 		$row->td()->text( $text );
 
 		echo $table;
@@ -1296,8 +1220,11 @@ And I wrote the following message:
 		$action->apply();
 
 		// Post the form.
-		$meta_box_data->form->post();
-		$meta_box_data->form->use_post_values();
+		if ( ! $meta_box_data->form->has_posted )
+		{
+			$meta_box_data->form->post();
+			$meta_box_data->form->use_post_values();
+		}
 
 		$broadcasting_data = new broadcasting_data( [
 			'_POST' => $_POST,
@@ -1741,7 +1668,8 @@ And I wrote the following message:
 			return;
 
 		$form = $bcd->meta_box_data->form;
-		$form->post();
+		if ( $form->is_posting() && ! $form->has_posted )
+				$form->post();
 
 		// Collect the list of blogs from the meta box.
 		$blogs_input = $form->input( 'blogs' );
@@ -1919,6 +1847,20 @@ And I wrote the following message:
 
 		// Prevent Wordpress from outputting its own canonical.
 		remove_action( 'wp_head', 'rel_canonical' );
+
+		// Remove Canonical Link Added By Yoast WordPress SEO Plugin
+		$this->add_filter( 'wpseo_canonical', 'wp_head_remove_wordpress_seo_canonical' );;
+	}
+
+	/**
+		@brief		Remove Wordpress SEO canonical link so that it doesn't conflict with the parent link.
+		@since		2014-01-16 00:36:15
+	**/
+
+	public function wp_head_remove_wordpress_seo_canonical()
+	{
+		// Tip seen here: http://wordpress.org/support/topic/plugin-wordpress-seo-by-yoast-remove-canonical-tags-in-header?replies=10
+		return false;
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -2730,44 +2672,6 @@ And I wrote the following message:
 		// Since it doesn't exist, copy it.
 		$this->copy_attachment( $options );
 		return $options;
-	}
-
-	/**
-		@brief		Display the message to fill in the obsolescence notice
-		@since		20131122
-	**/
-	public function obsolescence_notice()
-	{
-		$r = '';
-
-		// Check the obsolescence notice
-		$shown = $this->get_site_option( 'obsolescence_notice', false );
-		if ( ! $shown )
-		{
-			$form = $this->form2();
-
-			$form->markup( 'fill_in' )
-				->p( 'Please take a moment to take a look at the <a href="admin.php?page=threewp_broadcast_admin_menu&tab=obsolescence">obsolescence notice</a>.' );
-			$form->secondary_button( 'no_thanks' )
-				->value( 'No thank you. Hide this message.' );
-
-			if ( $form->is_posting() )
-			{
-				$this->update_site_option( 'obsolescence_notice', true );
-				$shown = false;
-			}
-
-			if ( ! $shown )
-			{
-				$message = sprintf( '%s%s%s',
-					$form->open_tag(),
-					$form->display_form_table(),
-					$form->close_tag()
-				);
-				$r = $this->message( $message );
-			}
-		}
-		return $r;
 	}
 
 	private function save_last_used_settings( $user_id, $settings )

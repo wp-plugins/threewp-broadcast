@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140114		current_url SSL workaround for Microsoft IIS. *sigh*
 	- 20140110		Fixed add() bug in tree.
 	- 20140106		collections\collection.
 	- 20131211		wordpress
@@ -94,7 +95,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140110;
+	protected $sdk_version = 20140114;
 
 	/**
 		@brief		Constructor.
@@ -230,7 +231,15 @@ class base
 		if ( ! isset( $SERVER[ 'SERVER_PORT' ] ) )
 			return '';
 
-		$ssl = ( isset( $SERVER[ 'HTTPS' ] ) && ( $SERVER[ 'HTTPS' ] != '' ) );
+		$ssl = false;
+		if ( isset( $SERVER[ 'HTTPS' ] ) )
+		{
+			$ssl = (
+				( $SERVER[ 'HTTPS' ] != '' )
+				&&
+				( $SERVER[ 'HTTPS' ] != 'off' )
+			);
+		}
 
 		$port = $SERVER[ 'SERVER_PORT' ];
 		if ( $ssl && $port == 443 )
