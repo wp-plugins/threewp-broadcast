@@ -16,6 +16,9 @@
 
 	@par	Changelog
 
+	- 20131211				Better options handling (64 and 255 length checks).
+	- 20131210				get_option_prefix allows for shortening of option names.
+	- 20131019				table top().
 	- 20131018				display_message uses pv_message div class.
 	- 20131016				Added description_ to pot. Nicer admin_uninstall.
 	- 20131015				Removed check_column_body and check_column_head. Added roles().
@@ -658,11 +661,10 @@ class base
 	**/
 	public function delete_option( $option )
 	{
-		$option = $this->fix_option_name( $option );
 		if ( $this->is_network )
-			delete_site_option( $option );
+			$this->delete_site_option( $option );
 		else
-			delete_option( $option );
+			$this->delete_local_option( $option );
 	}
 
 	/**
@@ -673,7 +675,7 @@ class base
 	**/
 	public function delete_local_option( $option )
 	{
-		$option = $this->fix_option_name( $option );
+		$option = $this->fix_local_option_name( $option );
 		delete_option( $option );
 	}
 
@@ -685,21 +687,8 @@ class base
 	**/
 	public function delete_site_option( $option )
 	{
-		$option = $this->fix_option_name( $option );
+		$option = $this->fix_site_option_name( $option );
 		delete_site_option( $option );
-	}
-
-	/**
-		Normalizes the name of an option.
-
-		Will prepend the class name in front, to make the options easily findable in the table.
-
-		@param		$option		Option name to fix.
-		@since		20130416
-	**/
-	public function fix_option_name( $option )
-	{
-		return $this->paths['name'] . '_' . $option;
 	}
 
 	/**
@@ -714,24 +703,111 @@ class base
 
 		foreach( $this->local_options as $option=>$value )
 		{
-			$option = $this->fix_option_name( $option );
+			$option = $this->fix_local_option_name( $option );
 			delete_option( $option );
 		}
 
 		if ( $this->is_network )
 			foreach( $this->site_options as $option=>$value )
 			{
-				$option = $this->fix_option_name( $option );
+				$option = $this->fix_site_option_name( $option );
 				delete_site_option( $option );
 			}
 		else
 		{
 			foreach( $this->site_options as $option=>$value )
 			{
-				$option = $this->fix_option_name( $option );
+				$option = $this->fix_local_option_name( $option );
 				delete_option( $option, $value );
 			}
 		}
+	}
+
+	/**
+		@brief		Gets the proper option name for a local option.
+		@details	Does a 64 char length check and outputs an error in WP_DEBUG mode.
+		@since		20131211
+	**/
+	public function fix_local_option_name( $option )
+	{
+		$max = 64;
+		$name = $this->get_local_option_prefix() . '_' . $option;
+		if ( defined( 'WP_DEBUG' ) && strlen( $name ) > $max )
+		{
+			$text = sprintf( '%s<code>%s</code>',
+				substr( $text, 0, $max ),
+				substr( $text, $max )
+			);
+			echo "Option $text is longer than $max characters.\n<br />";
+		}
+		return $name;
+	}
+
+	/**
+		Normalizes the name of an option.
+
+		Will prepend the class name in front, to make the options easily findable in the table.
+
+		@param		$option		Option name to fix.
+		@since		20130416
+	**/
+	public function fix_option_name( $option )
+	{
+		if ( $this->is_network )
+			$name = $this->get_site_option_prefix() . '_' . $option;
+		else
+			$name = $this->get_local_option_prefix() . '_' . $option;
+		return $name;
+	}
+
+	/**
+		@brief		Gets the proper option name for a site option.
+		@details	Does a 255 char length check and outputs an error in WP_DEBUG mode.
+		@since		20131211
+	**/
+	public function fix_site_option_name( $option )
+	{
+		$max = 255;
+		$name = $this->get_site_option_prefix() . '_' . $option;
+		if ( defined( 'WP_DEBUG' ) && strlen( $name ) > $max )
+		{
+			$text = sprintf( '%s<code>%s</code>',
+				substr( $text, 0, $max ),
+				substr( $text, $max )
+			);
+			echo "Option $text is longer than $max characters.\n<br />";
+		}
+		return $name;
+	}
+
+	/**
+		@brief		Returns the prefix for local options.
+		@since		20131211
+	**/
+	public function get_local_option_prefix()
+	{
+		return $this->get_option_prefix();
+	}
+
+	/**
+		@brief		Returns the options prefix.
+		@details
+
+		Override this is you find that your options are a bit too long.
+		@since		20130416
+	**/
+	public function get_option_prefix()
+	{
+		return $this->paths['name'];
+	}
+
+	/**
+		@brief		Returns the prefix for site options.
+		@since		20131211
+	**/
+	public function get_site_option_prefix()
+	{
+		return $this->get_option_prefix();
 	}
 
 	/**
@@ -745,11 +821,10 @@ class base
 	**/
 	public function get_option( $option )
 	{
-		$option = $this->fix_option_name( $option );
 		if ( $this->is_network )
-			return get_site_option( $option );
+			return $this->get_site_option( $option );
 		else
-			return get_option( $option );
+			return $this->get_local_option( $option );
 	}
 
 	/**
@@ -762,7 +837,7 @@ class base
 	**/
 	public function get_local_option( $option, $default = false)
 	{
-		$option = $this->fix_option_name( $option );
+		$option = $this->fix_local_option_name( $option );
 		$value = get_option( $option );
 		if ( $value === false )
 			return $default;
@@ -780,7 +855,7 @@ class base
 	**/
 	public function get_site_option( $option, $default = false )
 	{
-		$option = $this->fix_option_name( $option );
+		$option = $this->fix_site_option_name( $option );
 		$value = get_site_option( $option );
 		if ( $value === false )
 			return $default;
@@ -796,8 +871,8 @@ class base
 	{
 		foreach( $this->local_options as $option=>$value )
 		{
-			$option = $this->fix_option_name( $option );
-			if (get_option( $option ) === false)
+			$option = $this->fix_local_option_name( $option );
+			if ( get_option( $option ) === false )
 				update_option( $option, $value );
 		}
 
@@ -805,7 +880,7 @@ class base
 		{
 			foreach( $this->site_options as $option=>$value )
 			{
-				$option = $this->fix_option_name( $option );
+				$option = $this->fix_site_option_name( $option );
 				if ( get_site_option( $option ) === false )
 					update_site_option( $option, $value );
 			}
@@ -814,7 +889,7 @@ class base
 		{
 			foreach( $this->site_options as $option=>$value )
 			{
-				$option = $this->fix_option_name( $option );
+				$option = $this->fix_local_option_name( $option );
 				if (get_option( $option ) === false)
 					update_option( $option, $value );
 			}
@@ -832,11 +907,10 @@ class base
 	**/
 	public function update_option( $option, $value )
 	{
-		$option = $this->fix_option_name( $option );
 		if ( $this->is_network )
-			update_site_option( $option, $value );
+			$this->update_site_option( $option, $value );
 		else
-			update_option( $option, $value );
+			$this->update_local_option( $option, $value );
 	}
 
 	/**
@@ -848,7 +922,7 @@ class base
 	**/
 	public function update_local_option( $option, $value )
 	{
-		$option = $this->fix_option_name( $option );
+		$option = $this->fix_local_option_name( $option );
 		update_option( $option, $value );
 	}
 
@@ -861,7 +935,7 @@ class base
 	**/
 	public function update_site_option( $option, $value )
 	{
-		$option = $this->fix_option_name( $option );
+		$option = $this->fix_site_option_name( $option );
 		update_site_option( $option, $value );
 	}
 

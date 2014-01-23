@@ -21,7 +21,7 @@ class broadcasting_data
 	public $_POST;
 
 	/**
-		@brief		IN: Array of AttachmentData objects for this post.
+		@brief		Array of AttachmentData objects for this post.
 		@var		$attachment_data
 		@since		20130603
 	**/
@@ -35,7 +35,7 @@ class broadcasting_data
 	public $blogs;
 
 	/**
-		@brief		IN: The ID of the child blog we are currently working on.
+		@brief		The ID of the child blog we are currently working on.
 		@var		$current_child_blog_id
 		@since		20130927
 	**/

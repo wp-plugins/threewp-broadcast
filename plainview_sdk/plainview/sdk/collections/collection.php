@@ -551,6 +551,15 @@ implements
 	}
 
 	/**
+		@brief		Convenience alias for sortBy.
+		@since		20140106
+	**/
+	public function sort_by( Closure $callback )
+	{
+		return $this->sortBy( $callback );
+	}
+
+	/**
 	 * Take the first or last {$limit} items.
 	 *
 	 * @param  int  $limit
@@ -574,6 +583,15 @@ implements
 	}
 
 	/**
+		@brief		Convenience method for toArray.
+		@since		20140106
+	**/
+	public function to_array()
+	{
+		return $this->toArray();
+	}
+
+	/**
 	 * Get the collection of items as JSON.
 	 *
 	 * @param  int  $options
@@ -584,6 +602,10 @@ implements
 		return json_encode( $this->toArray(), $options );
 	}
 
+	/**
+		@brief		Convenience method for toJson.
+		@since		20140106
+	**/
 	public function to_json( $options )
 	{
 		return $this->toJson( $options );
