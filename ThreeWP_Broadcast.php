@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.14
+Version:		2.15
 */
 
 namespace threewp_broadcast;
@@ -84,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.14;
+	public $plugin_version = 2.15;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -2010,7 +2010,7 @@ class ThreeWP_Broadcast
 
 			// Create new post data from the original stuff.
 			$bcd->new_post = (array) $bcd->post;
-			foreach( array( 'comment_count', 'guid', 'ID', 'menu_order', 'post_parent' ) as $key )
+			foreach( [ 'comment_count', 'guid', 'ID', 'post_parent' ] as $key )
 				unset( $bcd->new_post[ $key ] );
 
 			$action = new actions\broadcasting_after_switch_to_blog;
