@@ -7,6 +7,7 @@ namespace plainview\sdk\wordpress\table\top;
 
 	@par			Changelog
 
+	- 20140203		Does not display itself if there is nothing to display.
 	- 20131019		Initial.
 
 	@author			Edward Plainview		edward@plainview.se
@@ -28,13 +29,21 @@ class top
 		$div->css_class( 'tablenav' );
 		$div->css_class( 'top' );
 
+		$size = 0;
+
 		foreach( $this->left as $left )
 		{
 			$l = new \plainview\sdk\html\div;
 			$l->css_class( 'alignleft' );
-			$l->content = $left . '&nbsp;';
+			$string = $left->__toString();
+			$l->content = $string . '&nbsp;';
+			$size += strlen( $string );
 			$div->content .= $l;
 		}
+
+		// No real string to display? Don't display anything.
+		if ( $size < 1 )
+			return '';
 
 		return $div . '';
 	}

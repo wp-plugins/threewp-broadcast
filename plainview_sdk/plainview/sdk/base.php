@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140203		Wordpress form
 	- 20140114		current_url SSL workaround for Microsoft IIS. *sigh*
 	- 20140110		Fixed add() bug in tree.
 	- 20140106		collections\collection.
@@ -95,7 +96,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140114;
+	protected $sdk_version = 20140203;
 
 	/**
 		@brief		Constructor.

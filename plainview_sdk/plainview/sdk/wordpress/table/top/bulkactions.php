@@ -30,6 +30,10 @@ class bulkactions
 
 	public function __toString()
 	{
+		// If there aren't any options, don't bother displaying anything.
+		if ( count( $this->bulk_actions_input->options ) < 2 )
+			return '';
+
 		return sprintf( '<div class="screen-reader-text">%s</div>%s%s',
 			$this->bulk_actions_input->display_label(),
 			$this->bulk_actions_input->display_input(),

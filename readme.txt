@@ -198,6 +198,11 @@ This plugin will soon be replaced by a WPML premium plugin that enables broadcas
 
 == Changelog ==
 
+= 2.16 20140211 =
+* New: Attachment conflict handling.
+* Fix: Do not do anything about save_post if $_POST[ 'broadcast' ] is not set.
+* Fix: WPML plugin clears the WPML cache when posting.
+
 = 2.15 20140123 =
 * Fix: Menu order is now also broadcasted.
 

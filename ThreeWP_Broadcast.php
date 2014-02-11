@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.15
+Version:		2.16
 */
 
 namespace threewp_broadcast;
@@ -84,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.15;
+	public $plugin_version = 2.16;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -98,6 +98,7 @@ class ThreeWP_Broadcast
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 		'post_types' => 'post page',						// Custom post types which use broadcasting
+		'existing_attachments' => 'use',					// What to do with existing attachments: use, overwrite, randomize
 		'role_broadcast' => 'super_admin',					// Role required to use broadcast function
 		'role_link' => 'super_admin',						// Role required to use the link function
 		'role_broadcast_as_draft' => 'super_admin',			// Role required to broadcast posts as templates
@@ -445,6 +446,15 @@ class ThreeWP_Broadcast
 			->size( 3, 3 )
 			->value( $this->get_site_option( 'blogs_to_hide' ) );
 
+		$existing_attachments = $fs->select( 'existing_attachments' )
+			->description_( 'Action to take when attachments with the same filename already exist on the child blog.' )
+			->label_( 'Existing attachments' )
+			->option( 'Use the existing attachment on the child blog', 'use' )
+			->option( 'Overwrite the attachment', 'overwrite' )
+			->option( 'Create a new attachment with a randomized suffix', 'randomize' )
+			->required()
+			->value( $this->get_site_option( 'existing_attachments', 'use' ) );
+
 		$save = $form->primary_button( 'save' )
 			->value_( 'Save settings' );
 
@@ -475,6 +485,7 @@ class ThreeWP_Broadcast
 
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
+			$this->update_site_option( 'existing_attachments', $existing_attachments->get_post_value() );
 			$this->message( 'Options saved!' );
 		}
 
@@ -748,7 +759,23 @@ class ThreeWP_Broadcast
 		// WP maximum memory limit
 		$row = $table->body()->row();
 		$row->td()->text( 'Wordpress memory limit' );
+		$text = $this->p( WP_MEMORY_LIMIT . "
+
+This can be increased by adding the following to your wp-config.php:
+
+<code>define('WP_MEMORY_LIMIT', '512M');</code>
+" );
+		$row->td()->text( $text );
+
+		// Debug info
+		$row = $table->body()->row();
+		$row->td()->text( 'Debug code' );
 		$text = WP_MEMORY_LIMIT;
+		$text = $this->p( "Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:
+
+<code>ini_set('display_errors','On');</code>
+<code>define('WP_DEBUG', true);</code>
+" );
 		$row->td()->text( $text );
 
 		echo $table;
@@ -1194,12 +1221,17 @@ class ThreeWP_Broadcast
 		if ( $this->is_broadcasting() )
 			return;
 
+		// No post?
+		if ( count( $_POST ) < 1 )
+			return;
+
+		// Nothing of interest in the post?
+		if ( ! isset( $_POST[ 'broadcast' ] ) )
+			return;
+
 		// Is this post a child?
 		$broadcast_data = $this->get_post_broadcast_data( get_current_blog_id(), $post_id );
 		if ( $broadcast_data->get_linked_parent() !== false )
-			return;
-
-		if ( count( $_POST ) < 1 )
 			return;
 
 		// No permission.
@@ -2331,7 +2363,7 @@ class ThreeWP_Broadcast
 		@since		20130530
 		@version	20131003
 	*/
-	private function copy_attachment( $o )
+	public function copy_attachment( $o )
 	{
 		if ( ! file_exists( $o->attachment_data->filename_path ) )
 			return false;
@@ -2664,9 +2696,25 @@ class ThreeWP_Broadcast
 		{
 			if ( $attachment_post->post_name !== $attachment_data->post->post_name )
 				continue;
-			// The ID is the important part.
-			$options->attachment_id = $attachment_post->ID;
-			return $options;
+			// We've found an existing attachment. What to do with it...
+			switch( $this->get_site_option( 'existing_attachments', 'use' ) )
+			{
+				case 'overwrite':
+					// Delete the existing attachment
+					wp_delete_attachment( $attachment_post->ID, true );		// true = Don't go to trash
+					break;
+				case 'randomize':
+					$filename = $options->attachment_data->filename_base;
+					$filename = preg_replace( '/(.*)\./', '\1_' . rand( 1000000, 9999999 ) .'.', $filename );
+					$options->attachment_data->filename_base = $filename;
+					break;
+				case 'use':
+				default:
+					// The ID is the important part.
+					$options->attachment_id = $attachment_post->ID;
+					return $options;
+
+			}
 		}
 
 		// Since it doesn't exist, copy it.
