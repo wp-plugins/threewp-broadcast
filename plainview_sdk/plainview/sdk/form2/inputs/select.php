@@ -6,7 +6,7 @@ namespace plainview\sdk\form2\inputs;
 	@brief		Select input.
 	@author		Edward Plainview <edward@plainview.se>
 	@copyright	GPL v3
-	@version	20130910
+	@version	20131109
 **/
 class select
 	extends optionsinput
@@ -26,7 +26,9 @@ class select
 
 	public function __toString()
 	{
-		return $this->indent() . $this->display_label() . $this->display_input();
+		$div = $this->get_display_div();
+		$div->content = $this->indent() . $this->display_label() . $this->display_input();
+		return $div . '';
 	}
 
 	/**

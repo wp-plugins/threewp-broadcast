@@ -14,11 +14,10 @@ require_once( 'inputs/class.secondary_button.php' );
 	Changelog
 	---------
 
+	- 20140203		display_form_table() displays the correct label (legend) for fieldsets.
 	- 20131006		display_form_table() reacts to inputfieldsets.
 	- 20130604		display_form_table() displays asterisks for required inputs.
 	- 20130416		Initial version.
-
-	@version		20131006
 **/
 class form
 	extends \plainview\sdk\form2\form
@@ -94,6 +93,11 @@ class form
 				// Clone the options object to allow the input container to create its own table
 				$o2 = clone $o;
 				$o2->header = $input->label;
+
+				// If this is a container with a legend (fieldset) use the legend.
+				if ( isset( $input->legend ) )
+					$o2->header = $input->legend;
+
 				$o2->inputs = $input->inputs;
 				$o2->r = '';
 				$o2->table = $this->base->table()->set_attribute( 'class', 'form-table' );

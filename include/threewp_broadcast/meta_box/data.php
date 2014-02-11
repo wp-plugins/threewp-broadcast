@@ -61,6 +61,7 @@ class data
 	{
 		$this->css = new \plainview\sdk\collections\collection;
 		$this->html = new html;
+		$this->html->data = $this;
 		$this->js = new \plainview\sdk\collections\collection;
 	}
 }
