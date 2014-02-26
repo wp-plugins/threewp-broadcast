@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.16
+Version:		2.17
 */
 
 namespace threewp_broadcast;
@@ -84,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.16;
+	public $plugin_version = 2.17;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -95,6 +95,7 @@ class ThreeWP_Broadcast
 		'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
 		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
 		'database_version' => 0,							// Version of database and settings
+		'debug' => false,									// Display debug information
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 		'post_types' => 'post page',						// Custom post types which use broadcasting
@@ -128,6 +129,7 @@ class ThreeWP_Broadcast
 		$this->add_filter( 'threewp_broadcast_admin_menu', 100 );
 		$this->add_filter( 'threewp_broadcast_broadcast_post' );
 		$this->add_filter( 'threewp_broadcast_get_user_writable_blogs', 11 );		// Allow other plugins to do this first.
+		$this->add_filter( 'threewp_broadcast_get_post_types', 9 );					// Add our custom post types to the array of broadcastable post types.
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 9 );		// Just before the standard 10.
 		$this->add_action( 'threewp_broadcast_menu', 9 );
 		$this->add_action( 'threewp_broadcast_menu', 'threewp_broadcast_menu_final', 100 );
@@ -455,6 +457,11 @@ class ThreeWP_Broadcast
 			->required()
 			->value( $this->get_site_option( 'existing_attachments', 'use' ) );
 
+		$debug = $fs->checkbox( 'debug' )
+			->description_( 'Show debugging information in various places.' )
+			->label_( 'Enable debugging' )
+			->checked( $this->get_site_option( 'debug', false ) );
+
 		$save = $form->primary_button( 'save' )
 			->value_( 'Save settings' );
 
@@ -486,6 +493,9 @@ class ThreeWP_Broadcast
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
 			$this->update_site_option( 'existing_attachments', $existing_attachments->get_post_value() );
+
+			$this->update_site_option( 'debug', $debug->is_checked() );
+
 			$this->message( 'Options saved!' );
 		}
 
@@ -717,6 +727,14 @@ class ThreeWP_Broadcast
 		$row = $table->head()->row();
 		$row->th()->text( 'Key' );
 		$row->th()->text( 'Value' );
+
+		if ( $this->debugging() )
+		{
+			// Debug
+			$row = $table->body()->row();
+			$row->td()->text( 'Debugging' );
+			$row->td()->text( 'Enabled' );
+		}
 
 		// Broadcast version
 		$row = $table->body()->row();
@@ -1094,8 +1112,9 @@ This can be increased by adding the following to your wp-config.php:
 		// If it's true, then show it to all post types!
 		if ( $this->display_broadcast_meta_box === true )
 		{
-			$post_types = $this->get_site_option( 'post_types' );
-			foreach( explode( ' ', $post_types ) as $post_type )
+			$action = new actions\get_post_types;
+			$action->apply();
+			foreach( $action->post_types as $post_type )
 				add_meta_box( 'threewp_broadcast', $this->_( 'Broadcast' ), array( &$this, 'threewp_broadcast_add_meta_box' ), $post_type, 'side', 'low' );
 			return;
 		}
@@ -1108,7 +1127,11 @@ This can be increased by adding the following to your wp-config.php:
 		$filter = new filters\get_user_writable_blogs( $this->user_id() );
 		$blogs = $filter->apply()->blogs;
 		if ( count( $blogs ) <= 1 )
-			$this->display_broadcast_meta_box = false;
+		{
+			// If the user is debugging, show the box anyway.
+			if ( ! $this->debugging() )
+				$this->display_broadcast_meta_box = false;
+		}
 
 		// Convert to a bool value
 		$this->display_broadcast_meta_box = ( $this->display_broadcast_meta_box == true );
@@ -1357,10 +1380,17 @@ This can be increased by adding the following to your wp-config.php:
 	**/
 	public function threewp_broadcast_prepare_meta_box( $action )
 	{
-		if ( $action->is_applied() )
-			return;
-
 		$meta_box_data = $action->meta_box_data;	// Convenience.
+
+		if ( $this->debugging() )
+			$meta_box_data->html->put( 'debug', $this->p_( 'Broadcast is in debug mode. More information than usual will be shown.' ) );
+
+		if ( $action->is_applied() )
+		{
+			if ( $this->debugging() )
+				$meta_box_data->html->put( 'debug_applied', $this->p_( 'Broadcast is not preparing the meta box because it has already been applied.' ) );
+			return;
+		}
 
 		if ( $meta_box_data->broadcast_data->get_linked_parent() !== false)
 		{
@@ -1482,6 +1512,54 @@ This can be increased by adding the following to your wp-config.php:
 		// And some CSS
 		$meta_box_data->css->put( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.scss.min.css'  );
 
+		if ( $this->debugging() )
+		{
+			$meta_box_data->html->put( 'debug_info_1', sprintf( '
+				<h3>Debug info</h3>
+				<ul>
+				<li>High enough role to link: %s</li>
+				<li>Post supports custom fields: %s</li>
+				<li>Post supports thumbnails: %s</li>
+				<li>High enough role to broadcast custom fields: %s</li>
+				<li>High enough role to broadcast taxonomies: %s</li>
+				<li>Blogs available to user: %s</li>
+				</ul>',
+					( $this->role_at_least( $this->get_site_option( 'role_link' ) ) ? 'yes' : 'no' ),
+					( $post_type_supports_custom_fields ? 'yes' : 'no' ),
+					( $post_type_supports_thumbnails ? 'yes' : 'no' ),
+					( $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) ? 'yes' : 'no' ),
+					( $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) ? 'yes' : 'no' ),
+					count( $blogs )
+				)
+			);
+
+			// Display a list of actions that have hooked into save_post
+			global $wp_filter;
+			$filters = $wp_filter[ 'save_post' ];
+			ksort( $filters );
+			$save_post_callbacks = [];
+			//$wp_filter[$tag][$priority][$idx] = array('function' => $function_to_add, 'accepted_args' => $accepted_args);
+			foreach( $filters as $priority => $callbacks )
+			{
+				foreach( $callbacks as $callback )
+				{
+					$function = $callback[ 'function' ];
+					if ( is_array( $function ) )
+					{
+						if ( is_object( $function[ 0 ] ) )
+							$function[ 0 ] = get_class( $function[ 0 ] );
+						$function = sprintf( '%s::%s', $function[ 0 ], $function[ 1 ] );
+					}
+					$function = sprintf( '%s %s', $function, $priority );
+					$save_post_callbacks[] = $function;
+				}
+			}
+			$meta_box_data->html->put( 'debug_save_post_callbacks', sprintf( '%s%s',
+				$this->p_( 'Plugins that have hooked into save_post:' ),
+				$this->implode_html( $save_post_callbacks )
+			) );
+		}
+
 		$action->applied();
 	}
 
@@ -1530,6 +1608,18 @@ This can be increased by adding the following to your wp-config.php:
 		$filter->blogs->sort_logically();
 		$filter->applied();
 		return $filter;
+	}
+
+	/**
+		@brief		Convert the post_type site option to an array in the action.
+		@since		2014-02-22 10:33:57
+	**/
+	public function threewp_broadcast_get_post_types( $action )
+	{
+		$post_types = $this->get_site_option( 'post_types' );
+		$post_types = explode( ' ', $post_types );
+		foreach( $post_types as $post_type )
+			$action->post_types[ $post_type ] = $post_type;
 	}
 
 	/**
@@ -1931,11 +2021,16 @@ This can be increased by adding the following to your wp-config.php:
 	{
 		$bcd = $broadcasting_data;
 
+		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, var_export( $bcd->post, true ) );
+
+		$this->debug( 'The POST was <pre>%s</pre>', var_export( $bcd->_POST, true ) );
+
 		// For nested broadcasts. Just in case.
 		switch_to_blog( $bcd->parent_blog_id );
 
 		if ( $bcd->link )
 		{
+			$this->debug( 'Linking is enabled.' );
 			// Prepare the broadcast data for linked children.
 			$broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID );
 
@@ -1944,10 +2039,14 @@ This can be increased by adding the following to your wp-config.php:
 			{
 				$parent_broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->post_parent );
 			}
+			$this->debug( 'Post type is hierarchical: %s', $this->yes_no( $bcd->post_type_is_hierarchical ) );
 		}
+		else
+			$this->debug( 'Linking is disabled.' );
 
 		if ( $bcd->taxonomies )
 		{
+			$this->debug( 'Will broadcast taxonomies.' );
 			$bcd->parent_blog_taxonomies = get_object_taxonomies( [ 'object_type' => $bcd->post->post_type ], 'array' );
 			$bcd->parent_post_taxonomies = [];
 			foreach( $bcd->parent_blog_taxonomies as $parent_blog_taxonomy => $taxonomy )
@@ -1960,16 +2059,25 @@ This can be increased by adding the following to your wp-config.php:
 				$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = get_the_terms( $bcd->post->ID, $parent_blog_taxonomy );
 			}
 		}
+		else
+			$this->debug( 'Will not broadcast taxonomies.' );
 
 		$bcd->attachment_data = [];
 		$attached_files = get_children( 'post_parent='.$bcd->post->ID.'&post_type=attachment' );
 		$has_attached_files = count( $attached_files) > 0;
 		if ( $has_attached_files )
+		{
+			$this->debug( 'Has %s attachments.', $has_attached_files );
 			foreach( $attached_files as $attached_file )
+			{
 				$bcd->attachment_data[ $attached_file->ID ] = attachment_data::from_attachment_id( $attached_file, $bcd->upload_dir );
+				$this->debug( 'Attachment %s found.', $attached_file->ID );
+			}
+		}
 
 		if ( $bcd->custom_fields )
 		{
+			$this->debug( 'Will broadcast custom fields.' );
 			$bcd->post_custom_fields = get_post_custom( $bcd->post->ID );
 
 			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
@@ -1979,6 +2087,7 @@ This can be increased by adding the following to your wp-config.php:
 
 			if ( $bcd->has_thumbnail )
 			{
+				$this->debug( 'Post has a thumbnail (featured image).' );
 				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
 				$bcd->thumbnail = get_post( $bcd->thumbnail_id );
 				unset( $bcd->post_custom_fields[ '_thumbnail_id' ] ); // There is a new thumbnail id for each blog.
@@ -1986,10 +2095,14 @@ This can be increased by adding the following to your wp-config.php:
 				// Now that we know what the attachment id the thumbnail has, we must remove it from the attached files to avoid duplicates.
 				unset( $bcd->attachment_data[ $bcd->thumbnail_id ] );
 			}
+			else
+				$this->debug( 'Post does not have a thumbnail (featured image).' );
 
 			// Remove all the _internal custom fields.
 			$bcd->post_custom_fields = $this->keep_valid_custom_fields( $bcd->post_custom_fields );
 		}
+		else
+			$this->debug( 'Will not broadcast custom fields.' );
 
 		// Handle any galleries.
 		$bcd->galleries = new collection;
@@ -2004,6 +2117,7 @@ This can be increased by adding the following to your wp-config.php:
 			if ( $key !== 'gallery' )
 				continue;
 
+			$this->debug( 'Found a gallery: ', $matches[ 0 ][ $index ] );
 			// We've found a gallery!
 			$bcd->has_galleries = true;
 			$gallery = new \stdClass;
@@ -2017,6 +2131,7 @@ This can be increased by adding the following to your wp-config.php:
 			$gallery->ids_array = explode( ',', $gallery->ids_string );
 			foreach( $gallery->ids_array as $id )
 			{
+				$this->debug( 'Gallery has attachment %s.', $id );
 				$ad = attachment_data::from_attachment_id( $id, $bcd->upload_dir );
 				$bcd->attachment_data[ $id ] = $ad;
 			}
@@ -2035,10 +2150,13 @@ This can be increased by adding the following to your wp-config.php:
 		$action->broadcasting_data = $bcd;
 		$action->apply();
 
+		$this->debug( 'Beginning child broadcast loop.' );
+
 		foreach( $bcd->blogs as $child_blog )
 		{
 			$child_blog->switch_to();
 			$bcd->current_child_blog_id = $child_blog->get_id();
+			$this->debug( 'Switched to blog %s', $bcd->current_child_blog_id );
 
 			// Create new post data from the original stuff.
 			$bcd->new_post = (array) $bcd->post;
@@ -2063,6 +2181,7 @@ This can be increased by adding the following to your wp-config.php:
 				if ( $broadcast_data->has_linked_child_on_this_blog() )
 				{
 					$child_post_id = $broadcast_data->get_linked_child_on_this_blog();
+					$this->debug( 'There is already a child post on this blog: %s', $child_post_id );
 
 					// Does this child post still exist?
 					$child_post = get_post( $child_post_id );
@@ -2077,23 +2196,34 @@ This can be increased by adding the following to your wp-config.php:
 
 			if ( $need_to_insert_post )
 			{
+				$this->debug( 'Creating a new post.' );
 				$temp_post_data = $bcd->new_post;
 				unset( $temp_post_data[ 'ID' ] );
 				$result = wp_insert_post( $temp_post_data, true );
 				// Did we manage to insert the post properly?
 				if ( intval( $result ) < 1 )
+				{
+					$this->debug( 'Unable to insert the child post.' );
 					continue;
+				}
 				// Yes we did.
 				$bcd->new_post[ 'ID' ] = $result;
 
+				$this->debug( 'New child created: %s', $result );
+
 				if ( $bcd->link )
+				{
+					$this->debug( 'Adding link to child.' );
 					$broadcast_data->add_linked_child( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ] );
+				}
 			}
 
 			if ( $bcd->taxonomies )
 			{
+				$this->debug( 'Taxonomies: Starting.' );
 				foreach( $bcd->parent_post_taxonomies as $parent_post_taxonomy => $parent_post_terms )
 				{
+					$this->debug( 'Taxonomies: %s', $parent_post_taxonomy );
 					// If we're updating a linked post, remove all the taxonomies and start from the top.
 					if ( $bcd->link )
 						if ( $broadcast_data->has_linked_child_on_this_blog() )
@@ -2101,7 +2231,10 @@ This can be increased by adding the following to your wp-config.php:
 
 					// Skip this iteration if there are no terms
 					if ( ! is_array( $parent_post_terms ) )
+					{
+						$this->debug( 'Taxonomies: Skipping %s because the parent post does not have any terms set for this taxonomy.', $parent_post_taxonomy );
 						continue;
+					}
 
 					// Get a list of terms that the target blog has.
 					$target_blog_terms = $this->get_current_blog_taxonomy_terms( $parent_post_taxonomy );
@@ -2116,6 +2249,7 @@ This can be increased by adding the following to your wp-config.php:
 						{
 							if ( $target_blog_term[ 'slug' ] == $parent_slug )
 							{
+								$this->debug( 'Taxonomies: Found existing taxonomy %s.', $parent_slug );
 								$found = true;
 								$taxonomies_to_add_to[] = intval( $target_blog_term[ 'term_id' ] );
 								break;
@@ -2160,11 +2294,13 @@ This can be increased by adding the following to your wp-config.php:
 							{
 								$term_taxonomy_id = $new_taxonomy[ 'term_taxonomy_id' ];
 							}
+							$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_taxonomy_id );
 
 							$taxonomies_to_add_to []= intval( $term_taxonomy_id );
 						}
 					}
 
+					$this->debug( 'Taxonomies: Syncing terms.' );
 					$this->sync_terms( $bcd, $parent_post_taxonomy );
 
 					if ( count( $taxonomies_to_add_to) > 0 )
@@ -2175,12 +2311,16 @@ This can be increased by adding the following to your wp-config.php:
 						wp_set_object_terms( $bcd->new_post[ 'ID' ], $taxonomies_to_add_to, $parent_post_taxonomy );
 					}
 				}
+				$this->debug( 'Taxonomies: Finished.' );
 			}
 
 			// Remove the current attachments.
 			$attachments_to_remove = get_children( 'post_parent='.$bcd->new_post[ 'ID' ] . '&post_type=attachment' );
 			foreach ( $attachments_to_remove as $attachment_to_remove )
+			{
+				$this->debug( 'Deleting existing attachment: %s', $attachment_to_remove->ID );
 				wp_delete_attachment( $attachment_to_remove->ID );
+			}
 
 			// Copy the attachments
 			$bcd->copied_attachments = [];
@@ -2197,6 +2337,7 @@ This can be increased by adding the following to your wp-config.php:
 					$a->old = $attachment;
 					$a->new = get_post( $o->attachment_id );
 					$bcd->copied_attachments[] = $a;
+					$this->debug( 'Copied attachment %s to %s', $a->old->id, $o->new->id );
 				}
 			}
 
@@ -2214,7 +2355,8 @@ This can be increased by adding the following to your wp-config.php:
 					// Replace the GUID with the new one.
 					$modified_post->post_content = str_replace( $a->old->guid, $a->new->guid, $modified_post->post_content );
 					// And replace the IDs present in any image captions.
-					$modified_post->post_content = str_replace( 'id="attachment_' . $a->old->id . '"', 'id="attachment_' . $a->new->id . '"', $modified_post->post_content );
+					$modified_post->post_content = str_replace( 'id="attachment_' . $a->old->id . '"', 'id="attachment_' . $a->new->ID . '"', $modified_post->post_content );
+					$this->debug( 'Modifying attachment link from %s to %s', $a->old->id, $a->new->id );
 				}
 			}
 
@@ -2241,6 +2383,11 @@ This can be increased by adding the following to your wp-config.php:
 				$new_shortcode = str_replace( $gallery->ids_string, $new_ids_string, $gallery->old_shortcode );
 				$modified_post->post_content = str_replace( $gallery->old_shortcode, $new_shortcode, $modified_post->post_content );
 			}
+
+			$bcd->modified_post = $modified_post;
+			$action = new actions\broadcasting_modify_post;
+			$action->broadcasting_data = $bcd;
+			$action->apply();
 
 			// Maybe updating the post is not necessary.
 			if ( $unmodified_post->post_content != $modified_post->post_content )
@@ -2295,7 +2442,10 @@ This can be increased by adding the following to your wp-config.php:
 
 					$this->maybe_copy_attachment( $o );
 					if ( $o->attachment_id !== false )
+					{
+						$this->debug( 'Handling post thumbnail: %s %s', $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
 						update_post_meta( $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
+					}
 				}
 			}
 
@@ -2308,6 +2458,7 @@ This can be increased by adding the following to your wp-config.php:
 
 			if ( $bcd->link )
 			{
+				$this->debug( 'Saving broadcast data of child.' );
 				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ] );
 				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
 				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ], $new_post_broadcast_data );
@@ -2328,11 +2479,18 @@ This can be increased by adding the following to your wp-config.php:
 
 		// Save the post broadcast data.
 		if ( $bcd->link )
+		{
+			$this->debug( 'Saving broadcast data.' );
 			$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $broadcast_data );
+		}
 
 		$action = new actions\broadcasting_finished;
 		$action->broadcasting_data = $bcd;
 		$action->apply();
+
+		$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
+		if ( $this->debugging() )
+			exit;
 
 		// Finished broadcasting.
 		array_pop( $this->broadcasting );
@@ -2428,6 +2586,31 @@ This can be increased by adding the following to your wp-config.php:
 		$meta_box_data->post = $post;
 		$meta_box_data->post_id = $post->ID;
 		return $meta_box_data;
+	}
+
+	/**
+		@brief		Output a string if in debug mode.
+		@since		20140220
+	*/
+	public function debug( $string )
+	{
+		if ( ! $this->debugging() )
+			return;
+
+		$text = call_user_func_array( 'sprintf', func_get_args() );
+		if ( $text == '' )
+			$text = $string;
+		$text = sprintf( '%s %s<br/>', $this->now(), $text );
+		echo $text;
+	}
+
+	/**
+		@brief		Is Broadcast in debug mode?
+		@since		20140220
+	*/
+	public function debugging()
+	{
+		return $this->get_site_option( 'debug', false );
 	}
 
 	/**
@@ -2790,15 +2973,24 @@ This can be increased by adding the following to your wp-config.php:
 			$parent_of_target_term = $target_terms[ $target_term_id ][ 'parent' ];
 			$parent_of_equivalent_source_term = $source_terms[ $source_term_id ][ 'parent' ];
 
-			if ( $parent_of_target_term != $parent_of_equivalent_source_term &&
-				(isset( $found_sources[ $parent_of_equivalent_source_term ] ) || $parent_of_equivalent_source_term == 0 )
-			)
+			// Do the parents "match".
+			$needs_updating = ( $parent_of_target_term != $parent_of_equivalent_source_term &&
+				( isset( $found_sources[ $parent_of_equivalent_source_term ] ) || $parent_of_equivalent_source_term == 0 )
+			);
+
+			// Same name?
+			$needs_updating |= ( $source_terms[ $source_term_id ][ 'name' ] != $target_terms[ $target_term_id ][ 'name' ] );
+
+			if ( $needs_updating )
 			{
-				if ( $parent_of_equivalent_source_term != 0)
+				if ( $parent_of_equivalent_source_term != 0 )
 					$new_term_parent = $found_sources[ $parent_of_equivalent_source_term ];
 				else
 					$new_term_parent = 0;
+
+				// Update the name and the parent.
 				wp_update_term( $target_term_id, $taxonomy, array(
+					'name' => $source_terms[ $source_term_id ][ 'name' ],
 					'parent' => $new_term_parent,
 				) );
 
@@ -2807,6 +2999,15 @@ This can be increased by adding the following to your wp-config.php:
 				delete_option( 'category_children' );
 			}
 		}
+	}
+
+	/**
+		@brief		Return yes / no, depending on value.
+		@since		20140220
+	**/
+	public function yes_no( $value )
+	{
+		return $value ? 'yes' : 'no';
 	}
 
 	// --------------------------------------------------------------------------------------------

@@ -198,6 +198,14 @@ This plugin will soon be replaced by a WPML premium plugin that enables broadcas
 
 == Changelog ==
 
+= 2.17 20140226 =
+* New: Debug setting and information when broadcasting.
+* Fix: Taxonomy names are now synced.
+* Fix: Attachment captions fixed.
+* Fix: Groups ignores non-existing blogs.
+* Code: Added broadcasting_modify_post action.
+* Code: Added get_post_types action.
+
 = 2.16 20140211 =
 * New: Attachment conflict handling.
 * Fix: Do not do anything about save_post if $_POST[ 'broadcast' ] is not set.

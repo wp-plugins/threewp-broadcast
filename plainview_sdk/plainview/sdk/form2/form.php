@@ -94,6 +94,7 @@ namespace plainview\sdk\form2;
 	Changelog
 	---------
 
+	- 20140218	display of an input includes the type and tag as css classes.
 	- 20131112	unfilter_text does even more unfiltering.
 	- 20131109	select input __toString gets its own display div (with hidden support)
 	- 20131015	container trait gets inputs()
