@@ -267,8 +267,11 @@ class input
 	{
 		$r = new \plainview\sdk\html\div();
 		$r->css_class( 'form_item' )
-			->css_class( 'form_item_' . ( isset( $this->type ) ? $this->type : $this->tag ) )
 			->css_class( 'form_item_' . $this->make_id() );
+		if ( isset( $this->type ) )
+			$r->css_class( 'form_item_' . $this->type );
+		if ( isset( $this->tag ) )
+			$r->css_class( 'form_item_' . $this->tag );
 
 		// Get all the css classes for this input and add them to the div
 		$r->css_class( $this->get_attribute( 'class' ) );

@@ -94,6 +94,9 @@ namespace plainview\sdk\form2;
 	Changelog
 	---------
 
+	- 20140218	display of an input includes the type and tag as css classes.
+	- 20131112	unfilter_text does even more unfiltering.
+	- 20131109	select input __toString gets its own display div (with hidden support)
 	- 20131015	container trait gets inputs()
 	- 20131009	enctype fix. Added file input.
 	- 20131004	markup ignores post values - will no longer disappear.
@@ -139,7 +142,7 @@ class form
 		@var		$form_version
 		@since		20130805
 	**/
-	public static $form_version = 20131015;
+	public static $form_version = 20131112;
 
 	/**
 		@brief		Has the form handled the POST array?
@@ -506,6 +509,7 @@ class form
 	public static function unfilter_text( $text )
 	{
 		$text = htmlspecialchars_decode( $text );
+		$text = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5 );
 		return $text;
 	}
 }

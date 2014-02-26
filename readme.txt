@@ -4,8 +4,8 @@ Donate link: http://plainview.se/donate/
 License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
-Tags: broadcast, multipost, duplicate, posts, sitepress, threewp
-Tested up to: 3.6.1
+Tags: broadcast, multipost, duplicate, posts, sitepress, threewp, linking, posts, multiple, blogs, woocommerce, wpml
+Tested up to: 3.8
 
 Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
 
@@ -20,14 +20,17 @@ Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Br
 * Attached images
 * Featured images
 * Galleries
+* Woocommerce support (see FAQ)
 * WPML support
 
 Broadcasted posts can be linked to their parents, which updates child posts when the parent post is updated. This includes all data: title, slug, content, custom fields, attachments, etc.
 
 = SEO support =
 
-* Permalinks of child posts
-* Canonical URLs of child posts
+* Permalinks of child posts (also see Permalinks plugin in the Premium Pack)
+* Canonical URLs of child posts.
+
+For those who have Yoast's Wordpress SEO plugin installed, if the Broadcast's canonical URL is selected (which will point to the parent post), it will simultaneously disable Yoast's canonical link. This will prevent search engine penalties.
 
 = Other features =
 
@@ -35,6 +38,7 @@ Broadcasted posts can be linked to their parents, which updates child posts when
 * Custom field blacklist and whitelist
 * Last used settings are remembered
 * User role access granularity
+* An enormous amount of extra features in the premium pack
 
 = Premium Pack =
 
@@ -42,10 +46,16 @@ The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" titl
 
 For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
+* <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting image field types using the ACF plugin.
+* <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
+* <strong>Local Links</strong> automatically updates links to local posts on each child blog.
+* <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
+* <strong>Permalinks</strong> enables more precise permalink control.
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
 * <strong>User & Blog Settings</strong> can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
 * <strong>Views</strong> adds support for WP Types and Views content templates.
+* <strong>WooCommerce</strong> allows product variations to be broadcasted.
 
 = Misc =
 
@@ -85,6 +95,19 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 9. Blog group overview
 10. Editing a blog group
 11. Blog group settings
+12. Premium Pack: Queue overview (Queue plugin)
+13. Premium Pack: Send To Many button (Send To Many plugin)
+14. Premium Pack: Send To Many interface shown after the posts have been selected (Send To Many plugin)
+15. Premium Pack: All Broadcast modification options (Blog & User Settings plugin)
+16. Premium Pack: Showing how to hide Broadcast from the users (Blog & User Settings plugin)
+17. Premium Pack: Showing a modification, info and to whom the modification applies (Blog & User Settings plugin)
+18. Premium Pack: Adding one row of criteria for a modification (Blog & User Settings plugin)
+19. Premium Pack: Advanced Custom Fields image support
+20. Premium Pack: Make the child posts have a different status from the parent (Keep Child Status plugin)
+21. Premium Pack: The WooCommerce plugin enables broadcasting of product variations as well
+22. Premium Pack: Per Blog Taxonomies allows individual setting of child post taxonomies.
+23. Premium Pack: Permalinks enables more precise permalink control.
+23. Maintenance tab showing checks and tools.
 
 == Frequently Asked Questions ==
 
@@ -138,15 +161,25 @@ Make sure that:
 
 1. The plugin is network enabled
 2. Your user level has broadcast access (Broadcast access role)
-3. Your user has write access to more than this blog
+3. Your user has write access to more than this blog (see Admin settings > Maintenenace > View blog access). Or use the All Blogs premium plugin to access all blogs.
 4. The correct post type(s) have been selected
 5. <em>User & Blog Settings</em> is not set to hide the meta box from the user / role / blog
 
-= WPAlchemy =
+= Why are the custom post type custom fields (or ACF data) not being broadcasted? =
 
-If you have custom post meta boxes via WPAlchemy, you'll probably need to add the following to the custom field inclusions in the settings:
+If you've created a custom post type, but cannot see the "custom fields" checkbox, check your custom post type settings.
 
-	_bcc_
+= WooCommerce =
+
+Broadcast is capable of handling WooCommerce products.
+
+1. In the custom post type settings: Add "product"
+2. In the settings: select broadcast internal custom fields.
+3. When broadcasting, select custom fields and taxonomies.
+
+This will broadcast all normal product settings: SKU, price, etc.
+
+If your products have variations, you'll be wanting the WooCommerce plugin from the premium pack.
 
 = WPML Sitepress =
 
@@ -161,9 +194,88 @@ It works transparently in the background, but in case you've never really used W
 5. Link and broadcast it to the other blogs in the network.
 6. The other blogs should now have two translations of the same post and the same post overview listing.
 
-Translated categories and tags are untested as of 2013-07-17.
+This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager. 2014-01-12.
 
 == Changelog ==
+
+= 2.17 20140226 =
+* New: Debug setting and information when broadcasting.
+* Fix: Taxonomy names are now synced.
+* Fix: Attachment captions fixed.
+* Fix: Groups ignores non-existing blogs.
+* Code: Added broadcasting_modify_post action.
+* Code: Added get_post_types action.
+
+= 2.16 20140211 =
+* New: Attachment conflict handling.
+* Fix: Do not do anything about save_post if $_POST[ 'broadcast' ] is not set.
+* Fix: WPML plugin clears the WPML cache when posting.
+
+= 2.15 20140123 =
+* Fix: Menu order is now also broadcasted.
+
+= 2.14 20140117 =
+* New: Canonical URL detects and disables the canonical link from Yoast's Wordpress SEO plugin.
+* Fix: Better compatability with User Blog Settings and Keep Child Settings plugins.
+* Fix: Better support for Microsoft IIS.
+* Removed obsolescence message - all of the features are needed by at least one person.
+
+= 2.13 =
+Skipping version 13.
+
+= 2.12 20140112 =
+* New: Maintenance: View Blog Access check added.
+* New: All Blogs plugin is now available in the premium pack.
+* Code: get_user_writable_blogs filter moved to priority 11.
+* Code: $_POST is now emptied, not removed.
+* WPML plugin will be obsoleted soon. A more functional premium plugin will be available.
+
+= 2.11 20131218 =
+* New: WordPress v3.8 support.
+* New: Custom post types tab shows the available post types on the current blog.
+* New: Per Blog Taxonomies plugin is now available in the premium pack.
+* New: Permalinks plugin is now available in the premium pack.
+* Fix: Nested broadcasting changes blogs to parent blog.
+* Fix: Scripts and CSS get version numbers.
+
+= 2.10 20131121 =
+* New: Duplicate broadcast data check in maintenance.
+* New: WooCommerce plugin is now available in the premium pack.
+* Fix: Loading of CSS and JS from non-standard path.
+* Fix: Check that the thumbnail is an image before setting it.
+* Code: No more global broadcasting_data property.
+* Code: broadcasting_data can be used as call stack.
+
+= 2.9 20131113 =
+* New: Add "blogs to hide" setting.
+* New: Keep Child Status plugin is now available in the premium pack.
+* Fix: Blog names are unescaped. No more weird HTML characters in the blog list.
+* Code: broadcast array is no longer removed from the $_POST, due to copy by reference on some versions of PHP 5.4.
+
+= 2.8 20131109 =
+* New: Attachments are attributed to the original author, instead of the person doing the broadcasting.
+* New: Database maintenace admin tab. Experimental. Make a backup first. Has help text.
+* Code: Broadcast data table has unique row numbers.
+
+= 2.7 20131101 =
+* New: All-links in post overview.
+* New: Linked posts can be deleted, trashed, restored and unlinked.
+* Fix: Settings are ajaxified again.
+* Fix: Group selection works again.
+* Fix: No more warnings when using empty custom field blacklist / whitelists.
+* Advanced Custom Fields plugin is now available in the premium pack.
+
+= 2.6 20131028 =
+* Fix: Broadcasted featured image is attached to post if necessary.
+* Fix: List of attachments when broadcasting is not allowed to be cached anymore.
+* Fix: Neverending loop fixed when "parent permalinks" is checked.
+* Code: prepare_broadcasting_data is now an action.
+* Code: last_used_settings copied into meta_box_data.
+* Code: broadcasting_data->new_post is newly created for each child blog.
+
+= 2.5 20131024 =
+* Fix: No more fatal errors when editing child posts.
+* Fix: Finding orphans works again.
 
 = 2.4 20131018 =
 * Fix: Selected blogs are shown after selecting a group.

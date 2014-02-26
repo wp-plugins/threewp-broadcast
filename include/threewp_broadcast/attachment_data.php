@@ -51,7 +51,7 @@ class attachment_data
 		else
 		{
 			// No metadata = not an image. Guess the upload directory and what not.
-			$r->filename_path = get_attached_file( $attachment->ID );
+			$r->filename_path = get_attached_file( $r->id );
 			$r->filename_base = basename( $r->filename_path );
 		}
 
