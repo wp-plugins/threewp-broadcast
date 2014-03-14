@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.17
+Version:		2.18
 */
 
 namespace threewp_broadcast;
@@ -84,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.17;
+	public $plugin_version = 2.18;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -96,6 +96,7 @@ class ThreeWP_Broadcast
 		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
 		'database_version' => 0,							// Version of database and settings
 		'debug' => false,									// Display debug information
+		'debug_ips' => '',									// List of IP addresses that can see debug information, when enabled.
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 		'post_types' => 'post page',						// Custom post types which use broadcasting
@@ -457,10 +458,23 @@ class ThreeWP_Broadcast
 			->required()
 			->value( $this->get_site_option( 'existing_attachments', 'use' ) );
 
+		$fs = $form->fieldset( 'debug' )
+			->label_( 'Debugging' );
+
+		$fs->markup( 'debug_info' )
+			->p_( "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings.", $this->debugging() ? '' : ' <strong>not</strong>' );
+
 		$debug = $fs->checkbox( 'debug' )
 			->description_( 'Show debugging information in various places.' )
 			->label_( 'Enable debugging' )
 			->checked( $this->get_site_option( 'debug', false ) );
+
+		$debug_ips = $fs->textarea( 'debug_ips' )
+			->description_( 'Only show debugging info to specific IP addresses. Use spaces between IPs. You can also specify part of an IP address. Your address is %s', $_SERVER[ 'REMOTE_ADDR' ] )
+			->label_( 'Debug IPs' )
+			->rows( 5, 16 )
+			->trim()
+			->value( $this->get_site_option( 'debug_ips', '' ) );
 
 		$save = $form->primary_button( 'save' )
 			->value_( 'Save settings' );
@@ -495,6 +509,7 @@ class ThreeWP_Broadcast
 			$this->update_site_option( 'existing_attachments', $existing_attachments->get_post_value() );
 
 			$this->update_site_option( 'debug', $debug->is_checked() );
+			$this->update_site_option( 'debug_ips', $debug_ips->get_filtered_post_value() );
 
 			$this->message( 'Options saved!' );
 		}
@@ -2106,18 +2121,12 @@ This can be increased by adding the following to your wp-config.php:
 
 		// Handle any galleries.
 		$bcd->galleries = new collection;
-		$rx = get_shortcode_regex();
-		$matches = '';
-		preg_match_all( '/' . $rx . '/', $bcd->post->post_content, $matches );
+		$matches = $this->find_shortcodes( $bcd->post->post_content, 'gallery' );
+		$this->debug( 'Found %s gallery shortcodes. ', count( $matches[ 2 ] ) );
 
 		// [2] contains only the shortcode command / key. No options.
 		foreach( $matches[ 2 ] as $index => $key )
 		{
-			// Look for only the gallery shortcode.
-			if ( $key !== 'gallery' )
-				continue;
-
-			$this->debug( 'Found a gallery: ', $matches[ 0 ][ $index ] );
 			// We've found a gallery!
 			$bcd->has_galleries = true;
 			$gallery = new \stdClass;
@@ -2128,6 +2137,7 @@ This can be increased by adding the following to your wp-config.php:
 
 			// Extract the IDs
 			$gallery->ids_string = preg_replace( '/.*ids=\"([0-9,]*)".*/', '\1', $gallery->old_shortcode );
+			$this->debug( 'Gallery %s has IDs: %s', $gallery->old_shortcode, $gallery->ids_string );
 			$gallery->ids_array = explode( ',', $gallery->ids_string );
 			foreach( $gallery->ids_array as $id )
 			{
@@ -2336,6 +2346,7 @@ This can be increased by adding the following to your wp-config.php:
 					$a = new \stdClass();
 					$a->old = $attachment;
 					$a->new = get_post( $o->attachment_id );
+					$a->new->id = $a->new->ID;		// Lowercase is expected.
 					$bcd->copied_attachments[] = $a;
 					$this->debug( 'Copied attachment %s to %s', $a->old->id, $a->new->id );
 				}
@@ -2355,7 +2366,7 @@ This can be increased by adding the following to your wp-config.php:
 					// Replace the GUID with the new one.
 					$modified_post->post_content = str_replace( $a->old->guid, $a->new->guid, $modified_post->post_content );
 					// And replace the IDs present in any image captions.
-					$modified_post->post_content = str_replace( 'id="attachment_' . $a->old->id . '"', 'id="attachment_' . $a->new->ID . '"', $modified_post->post_content );
+					$modified_post->post_content = str_replace( 'id="attachment_' . $a->old->id . '"', 'id="attachment_' . $a->new->id . '"', $modified_post->post_content );
 					$this->debug( 'Modifying attachment link from %s to %s', $a->old->id, $a->new->id );
 				}
 			}
@@ -2375,7 +2386,7 @@ This can be increased by adding the following to your wp-config.php:
 					{
 						if ( $ca->old->id != $id )
 							continue;
-						$new_ids[] = $ca->new->ID;
+						$new_ids[] = $ca->new->id;
 					}
 				}
 				$new_ids_string = implode( ',', $new_ids );
@@ -2391,7 +2402,10 @@ This can be increased by adding the following to your wp-config.php:
 
 			// Maybe updating the post is not necessary.
 			if ( $unmodified_post->post_content != $modified_post->post_content )
+			{
+				$this->debug( 'Modifying with new post: %s', var_export( $modified_post->post_content, true ) );
 				wp_update_post( $modified_post );	// Or maybe it is.
+			}
 
 			if ( $bcd->custom_fields )
 			{
@@ -2610,7 +2624,23 @@ This can be increased by adding the following to your wp-config.php:
 	*/
 	public function debugging()
 	{
-		return $this->get_site_option( 'debug', false );
+		$debugging = $this->get_site_option( 'debug', false );
+		if ( ! $debugging )
+			return false;
+
+		// Debugging is enabled. Now check if we should show it to this user.
+		$ips = $this->get_site_option( 'debug_ips', '' );
+		// Empty = no limits.
+		if ( $ips == '' )
+			return true;
+
+		$lines = explode( "\n", $ips );
+		foreach( $lines as $line )
+			if ( strpos( $_SERVER[ 'REMOTE_ADDR' ], $line ) !== false )
+				return true;
+
+		// No match = not debugging for this user.
+		return false;
 	}
 
 	/**

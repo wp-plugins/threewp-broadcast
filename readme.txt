@@ -107,7 +107,12 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 21. Premium Pack: The WooCommerce plugin enables broadcasting of product variations as well
 22. Premium Pack: Per Blog Taxonomies allows individual setting of child post taxonomies.
 23. Premium Pack: Permalinks enables more precise permalink control.
-23. Maintenance tab showing checks and tools.
+24. Maintenance tab showing checks and tools.
+25. Premium Pack: All Blogs allows unrestricted access to all blogs for roles that have access to Broadcast.
+26. Premium Pack: Attachment Shortcodes overview.
+27. Premium Pack: Attachment Shortcode creation wizard with some example shortcodes.
+28. Premium Pack: Attachment Shortcode editing.
+29. Premium Pack: Attachment Shortcode help.
 
 == Frequently Asked Questions ==
 
@@ -197,6 +202,15 @@ It works transparently in the background, but in case you've never really used W
 This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager. 2014-01-12.
 
 == Changelog ==
+
+= 2.18 20130314 =
+* New: Premium Pack plugins: Attachment Shortcodes and Event Organiser.
+* New: Debugging can be limited to specific IP addresses.
+* Fix: Better gallery shortcode detection.
+* Fix: Incorrect debug string during attachment handling.
+* Fix: Blog Groups and WPML plugins have version numbers again in order to be upgradeable.
+* Code: Even more debugging information available.
+* Code: Added find_shortcodes method.
 
 = 2.17 20140226 =
 * New: Debug setting and information when broadcasting.
