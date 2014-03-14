@@ -47,6 +47,7 @@ The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" titl
 For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting image field types using the ACF plugin.
+* <strong>Attachment Shortcodes</strong> copies attachments specified in custom shortcodes.
 * <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
