@@ -8,37 +8,43 @@ msgstr ""
 "Project-Id-Version: ThreeWP Broadcast 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-10 07:44+0200\n"
-"PO-Revision-Date: 2012-02-17 23:56+0100\n"
-"Last-Translator: dalen <dalen@skodeg-o.com>\n"
+"PO-Revision-Date: 2014-03-21 20:03+0100\n"
+"Last-Translator: Max Guglielmino <info@maxguglielmino.com>\n"
 "Language-Team: Edward <edward@mindreantre.se>\n"
-"Language: \n"
+"Language: Italian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
+"X-Generator: Poedit 1.5.7\n"
 
 #: ThreeWP_Broadcast.php:1256
 msgid "A Broadcast blog group was added."
-msgstr "Un gruppo di blog per il Broadcast è stato creato."
+msgstr "Un gruppo di siti per la diffusione è stato creato."
 
 #: ThreeWP_Broadcast.php:1259
 msgid "A Broadcast blog group was deleted."
-msgstr "Un gruppo di blog per il Broadcast è stato eliminato."
+msgstr "Un gruppo di siti per la diffusione è stato eliminato."
 
 #: ThreeWP_Broadcast.php:1262
 msgid "A Broadcast blog group was modified."
-msgstr "Un gruppo di blog per il Broadcast è stato modificato."
+msgstr "Un gruppo di siti per la diffusione è stato modificato."
 
 #: ThreeWP_Broadcast.php:1253
 msgid "A post was broadcasted."
-msgstr "Un post è stato broadcastato."
+msgstr "Un post è stato diffuso sul network."
 
 #: ThreeWP_Broadcast.php:1265
 msgid "A post was unlinked."
-msgstr "Un post è stato scollegato."
+msgstr "Un post è stato scollegato dal network."
 
 #: ThreeWP_Broadcast.php:398
-msgid "A space-separated list of post types that have broadcasting enabled. The default value is <code>post page</code>."
-msgstr "Una lista di post (separata sa spazi) che è abilitata al broadcasting. Il valore di default è <code>post page</code>."
+msgid ""
+"A space-separated list of post types that have broadcasting enabled. The "
+"default value is <code>post page</code>."
+msgstr ""
+"Una lista di tipi di post (separata da spazi) abilitati per la diffusione "
+"sul network. Il valore di default è <code>post page</code>."
 
 #: ThreeWP_Broadcast.php:965
 msgid "All links to child posts have been removed!"
@@ -50,45 +56,47 @@ msgstr "Applica"
 
 #: ThreeWP_Broadcast.php:178
 msgid "Blacklist"
-msgstr "Blacklist"
+msgstr "Diffusione"
 
-#: ThreeWP_Broadcast.php:64
-#: ThreeWP_Broadcast.php:1763
+#: ThreeWP_Broadcast.php:64 ThreeWP_Broadcast.php:1763
 msgid "Broadcast"
-msgstr "Broadcast"
+msgstr "Diffondi"
 
 #: ThreeWP_Broadcast.php:1150
 msgid "Broadcast all the custom fields and the featured image?"
-msgstr "Broadcast tutti i  custom fields e l'immagine in evidenza?"
+msgstr "Diffondi tutti i campi personalizzati e l'immagine in evidenza?"
 
 #: ThreeWP_Broadcast.php:1016
 msgid "Broadcast categories also"
-msgstr "Broadcast delle categorie"
+msgstr "Diffondi anche le categorie"
 
-#: ThreeWP_Broadcast.php:1025
-#: ThreeWP_Broadcast.php:1151
+#: ThreeWP_Broadcast.php:1025 ThreeWP_Broadcast.php:1151
 msgid "Broadcast custom fields"
-msgstr "Broadcast dei custom fields"
+msgstr "Diffondi campi personalizzati"
 
 #: ThreeWP_Broadcast.php:1021
 msgid "Broadcast tags also"
-msgstr "Broadcast dei tag"
+msgstr "Diffusione dei tag"
 
 #: ThreeWP_Broadcast.php:1122
 msgid "Broadcast taxonomies also"
-msgstr "Broadcast delle taxonomy"
+msgstr "Diffusione delle tassonomie"
 
 #: ThreeWP_Broadcast.php:1230
 msgid "Broadcast to:"
-msgstr "Broadcast su:"
+msgstr "Diffondi su:"
 
 #: ThreeWP_Broadcast.php:1686
 msgid "Broadcasted"
-msgstr "Broadcastato"
+msgstr "Diffuso"
 
 #: ThreeWP_Broadcast.php:1106
-msgid "Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc."
-msgstr "Crea collegamento al post figlio che sarà modificato quando questo post viene modificato, cestinato quano questo post verrà cestinato ecc."
+msgid ""
+"Create a link to the children, which will be updated when this post is "
+"updated, trashed when this post is trashed, etc."
+msgstr ""
+"Crea collegamento al post figlio che sarà modificato quando questo post "
+"viene modificato, cestinato quando questo post verrà cestinato ecc."
 
 #: ThreeWP_Broadcast.php:672
 msgid "Create a new group"
@@ -100,7 +108,7 @@ msgstr "Crea collegamento"
 
 #: ThreeWP_Broadcast.php:1136
 msgid "Create taxonomies automatically"
-msgstr "Crea taxonomies automaticamente"
+msgstr "Crea tassonomie automaticamente"
 
 #: ThreeWP_Broadcast.php:654
 msgid "Create the new group"
@@ -118,8 +126,7 @@ msgstr "Non fare niente"
 msgid "Domain"
 msgstr "Dominio"
 
-#: ThreeWP_Broadcast.php:201
-#: ThreeWP_Broadcast.php:1749
+#: ThreeWP_Broadcast.php:201 ThreeWP_Broadcast.php:1749
 msgid "Find orphans"
 msgstr "Trova orfani"
 
@@ -133,11 +140,11 @@ msgstr "Gruppo"
 
 #: ThreeWP_Broadcast.php:593
 msgid "Group blogs have been saved."
-msgstr "Il gruppo di blog è stato creato."
+msgstr "Il gruppo di siti è stato creato."
 
 #: ThreeWP_Broadcast.php:1035
 msgid "Group setup"
-msgstr "Group setup"
+msgstr "Configurazione Gruppo"
 
 #: ThreeWP_Broadcast.php:1028
 msgid "Groups"
@@ -148,25 +155,34 @@ msgid "Help"
 msgstr "Aiuto"
 
 #: ThreeWP_Broadcast.php:1031
-msgid "If the site administrator allows it you may create groups to quickly select several blogs at once. To create a group, start by typing a group name in the text box and pressing the create button."
-msgstr "Se l'amministratore lo permette, puoi creare dei gruppi per selezionare dei blog più velocemente. Per creare un gruppo digita il suo nome nel text box e premi sul bottone crea."
+msgid ""
+"If the site administrator allows it you may create groups to quickly select "
+"several blogs at once. To create a group, start by typing a group name in "
+"the text box and pressing the create button."
+msgstr ""
+"Se l'amministratore lo permette, puoi creare dei gruppi per selezionare dei "
+"siti più velocemente. Per creare un gruppo digita il suo nome nel area di "
+"testo e premi sul bottone crea."
 
 #: ThreeWP_Broadcast.php:1017
-msgid "In order to be able to broadcast the taxonomies, the selected blogs must have the same taxonomy names (slugs) as this blog."
-msgstr "Per poter fare il broadcast delle taxonomies, le taxonomies del blog selezionato devono avere gli stessi nome (slug) di questo blog."
+msgid ""
+"In order to be able to broadcast the taxonomies, the selected blogs must "
+"have the same taxonomy names (slugs) as this blog."
+msgstr ""
+"Per poter diffondere le tassonomie, le tassonomie dei siti selezionati "
+"devono avere gli stessi nomi (slug) di questo sito."
 
 #: ThreeWP_Broadcast.php:1160
 msgid "Invert selection"
 msgstr "Inverti selezione"
 
-#: ThreeWP_Broadcast.php:1004
-#: ThreeWP_Broadcast.php:1107
+#: ThreeWP_Broadcast.php:1004 ThreeWP_Broadcast.php:1107
 msgid "Link this post to its children"
 msgstr "Collega questo post al suo figlio"
 
 #: ThreeWP_Broadcast.php:934
 msgid "Link to child post has been removed."
-msgstr "Il collegamento al post è stato eliminato"
+msgstr "Il collegamento al post è stato eliminato."
 
 #: ThreeWP_Broadcast.php:647
 msgid "New group name"
@@ -177,8 +193,14 @@ msgid "No group selected"
 msgstr "Nessun gruppo selezionato"
 
 #: ThreeWP_Broadcast.php:776
-msgid "No possible child posts were found on the other blogs you have write access to. Either there are no posts with the same title as this one, or all possible orphans have already been linked."
-msgstr "Nessun possibile post figlio è stato trovato negli altri blog in cui hai permessi di srittura. Potrebbero non esserci post con lo stesso titolo di questo post oppure tutti i possibili orfani sono già stati collegati."
+msgid ""
+"No possible child posts were found on the other blogs you have write access "
+"to. Either there are no posts with the same title as this one, or all "
+"possible orphans have already been linked."
+msgstr ""
+"Nessun possibile post figlio è stato trovato negli altri blog in cui hai "
+"permessi di srittura. Potrebbero non esserci post con lo stesso titolo di "
+"questo post, oppure tutti i possibili orfani sono già stati collegati."
 
 #: ThreeWP_Broadcast.php:1001
 msgid "Options"
@@ -186,35 +208,42 @@ msgstr "Opzioni"
 
 #: ThreeWP_Broadcast.php:1008
 msgid "Post overview with unlink options"
-msgstr "Post overview con opzioni di scollegamento"
+msgstr "Panoramica post con opzioni di scollegamento"
 
 #: ThreeWP_Broadcast.php:172
 msgid "Post types"
-msgstr "Post types"
+msgstr "Tipi di post (Post Types)"
 
 #: ThreeWP_Broadcast.php:417
-msgid "Post types must be specified using their internal Wordpress names with a space between each. It is not possible to automatically make a list of available post types on the whole network because of limitation within Wordpress."
-msgstr "I post types devono essere specificati con il nome usato da Wordpress, i nomi devono essere separati da uno spazio. Non è possibile creare una lista di tutti i post disponibili sul network causa una limitazione di Wordpress."
+msgid ""
+"Post types must be specified using their internal Wordpress names with a "
+"space between each. It is not possible to automatically make a list of "
+"available post types on the whole network because of limitation within "
+"Wordpress."
+msgstr ""
+"I tipi di post devono essere specificati con i nomi usati da WordPress, "
+"separati da uno spazio. Non è possibile creare una lista automatica di tutti "
+"i tipi di post disponibili sul network causa una limitazione di WordPress."
 
 #: ThreeWP_Broadcast.php:397
 msgid "Post types to broadcast"
-msgstr "Post types da broadcastare"
+msgstr "Tipi di post da diffondere"
 
 #: ThreeWP_Broadcast.php:1729
 msgid "Put this broadcasted child in the trash"
-msgstr "Sposta questo figlio broadcastato nel cestino"
+msgstr "Sposta questo figlio diffuso nel cestino nel network"
 
 #: ThreeWP_Broadcast.php:1747
 msgid "Remove links to all the broadcasted children"
-msgstr "Rimuovi collegamenti a tutti i figli broadcastati"
+msgstr "Rimuovi collegamenti a tutti i figli diffusi nel network"
 
 #: ThreeWP_Broadcast.php:1728
 msgid "Remove links to this broadcasted child"
-msgstr "Rimuovi collegamenti a questo figlio broadcastato"
+msgstr "Rimuovi collegamenti a questo figlio diffuso nel network"
 
 #: ThreeWP_Broadcast.php:175
 msgid "Required list"
-msgstr "Lista blog obbligatori"
+msgstr "Lista obbligatoria"
 
 #: ThreeWP_Broadcast.php:641
 msgid "Save groups"
@@ -226,7 +255,7 @@ msgstr "Seleziona / deseleziona tutti"
 
 #: ThreeWP_Broadcast.php:1173
 msgid "Select blogs in group"
-msgstr "Seleziona blog in gruppo"
+msgstr "Seleziona siti in gruppo"
 
 #: ThreeWP_Broadcast.php:828
 msgid "Selected"
@@ -238,15 +267,25 @@ msgstr "Impostazioni"
 
 #: ThreeWP_Broadcast.php:1686
 msgid "Shows which blogs have posts linked to this one"
-msgstr "Mostra quali blog hanno post collegati a questo blog"
+msgstr "Mostra quali siti hanno post collegati a questo sito"
 
 #: ThreeWP_Broadcast.php:1040
-msgid "Simply choose it in the dropdown box and the blogs you specified will be automatically chosen."
-msgstr "Seleziona dal menu a tendina e i blog che hai specificato saranno scelti automaticamente."
+msgid ""
+"Simply choose it in the dropdown box and the blogs you specified will be "
+"automatically chosen."
+msgstr ""
+"Selezionalo dal menu a tendina e i siti che hai specificato saranno scelti "
+"automaticamente."
 
 #: ThreeWP_Broadcast.php:994
-msgid "Some settings might be disabled by the site administrator and if you do not have write access to any blogs, other than this one, the Broadcast window might not appear."
-msgstr "Alcune impostazioni potrebbero essere disabilitate dall'amministratore o se non hai i permessi di scrittura sui blog (diversi da questo) il box Broadcast potrebbe non apparire."
+msgid ""
+"Some settings might be disabled by the site administrator and if you do not "
+"have write access to any blogs, other than this one, the Broadcast window "
+"might not appear."
+msgstr ""
+"Alcune impostazioni potrebbero essere disabilitate dall'amministratore, e se "
+"non hai i permessi di scrittura sui siti (a parte questo), il pannello "
+"Diffusione potrebbe non apparire."
 
 #: ThreeWP_Broadcast_Base.php:409
 msgid "Super admin"
@@ -254,7 +293,7 @@ msgstr "Super admin"
 
 #: ThreeWP_Broadcast.php:878
 msgid "The broadcasted child post has been put in the trash."
-msgstr "Il post figlio broadcastato è stato spostato nel cestino"
+msgstr "Il post figlio diffuso è stato spostato nel cestino"
 
 #: ThreeWP_Broadcast.php:612
 msgid "The group has been created!"
@@ -266,50 +305,74 @@ msgstr "Il nome del gruppo non può essere vuoto!"
 
 #: ThreeWP_Broadcast.php:1123
 msgid "The taxonomies must have the same name (slug) on the selected blogs."
-msgstr "Le taxonomies devono avere lo stesso nome (slug) sui blog selezionati."
+msgstr "Le tassonomie devono avere lo stesso nome (slug) sui siti selezionati."
 
 #: ThreeWP_Broadcast.php:1137
-msgid "The taxonomies will be created if they don't exist on the selected blogs."
-msgstr "Le taxonomies saranno create (se non esistono già) nei blog selezionati."
+msgid ""
+"The taxonomies will be created if they don't exist on the selected blogs."
+msgstr ""
+"Le tassonomie saranno create (se non esistono già) nei siti selezionati."
 
 #: ThreeWP_Broadcast.php:990
-msgid "The window contains several options and a list of blogs you have access to."
-msgstr "La finestra contiene parecchie opzioni e la lista dei post a cui hai accesso."
+msgid ""
+"The window contains several options and a list of blogs you have access to."
+msgstr ""
+"La finestra contiene parecchie opzioni e una lista dei post a cui hai "
+"accesso."
 
 #: ThreeWP_Broadcast.php:1039
-msgid "Then select which blogs you want to be automatically selected when you choose this group when editing a new post. Press the save button when you are done. Your new group is ready to be used!"
-msgstr "Quendi seleziona quali blog vuoi che siano automaticamente selezionati quando scegli questo gruppo quando modifichi un post. Premi il bottone salva quando hai finito. Il tuo nuovo gruppo è pronto all'uso!"
+msgid ""
+"Then select which blogs you want to be automatically selected when you "
+"choose this group when editing a new post. Press the save button when you "
+"are done. Your new group is ready to be used!"
+msgstr ""
+"Seleziona quali siti vuoi che siano automaticamente selezionati quando "
+"questo gruppo viene scelto durante la modifica di un post. Premi il bottone "
+"salva quando hai finito. Il nuovo gruppo è pronto all'uso."
 
 #: ThreeWP_Broadcast.php:1200
 msgid "This blog has already been linked."
-msgstr "Il blog è gia stato collegato"
+msgstr "Il sito è già stato collegato"
 
 #: ThreeWP_Broadcast.php:1212
 msgid "This blog is required and cannot be unselected."
-msgstr "Questo blog è obbligatorio e non può essere deselezionato."
+msgstr "Questo sito è obbligatorio e non può essere deselezionato."
 
 #: ThreeWP_Broadcast.php:415
-msgid "This page lets the admin select which post types in the network should be able to be broadcasted."
-msgstr "Questa pagina permette, all'amministratore, di selezionare quali post types del network potranno essere broadcastati."
+msgid ""
+"This page lets the admin select which post types in the network should be "
+"able to be broadcasted."
+msgstr ""
+"Questa pagina permette, all'amministratore, di selezionare quali tipi di "
+"post (post types) del network potranno essere diffusi."
 
 #: ThreeWP_Broadcast.php:1070
 msgid "This post is broadcasted child post. It cannot be broadcasted further."
-msgstr "Questo è un post figlio broadcastato. Non può essere proadcastato ancora."
+msgstr ""
+"Questo è un post figlio diffuso nel network. Non può essere ulteriormente "
+"diffuso."
 
 #: ThreeWP_Broadcast.php:220
 msgid "ThreeWP Broadcast groups"
 msgstr "Gruppi ThreeWP Broadcast"
 
 #: ThreeWP_Broadcast.php:689
-msgid "To <strong>delete</strong> a group, leave all blogs in that group unmarked and then save."
-msgstr "Per <strong>eliminare</strong> un gruppo, lascia tutti i blog di questo gruppo non marcati e quindi salva."
+msgid ""
+"To <strong>delete</strong> a group, leave all blogs in that group unmarked "
+"and then save."
+msgstr ""
+"Per <strong>eliminare</strong> un gruppo, deseleziona tutti i siti del "
+"gruppo e quindi salva."
 
 #: ThreeWP_Broadcast.php:998
-msgid "To use the Broadcast plugin, simply select which blogs you want to broadcast the post to and then publish the post normally."
-msgstr "Per usare il plugin Broadcast, seleziona su quali blog vuoi broadcastare il post e quindi pubblica il post normalmente."
+msgid ""
+"To use the Broadcast plugin, simply select which blogs you want to broadcast "
+"the post to and then publish the post normally."
+msgstr ""
+"Per usare il plugin Diffusione (Broadcast), seleziona su quali siti vuoi "
+"diffondere il post e quindi pubblica il post normalmente."
 
-#: ThreeWP_Broadcast.php:205
-#: ThreeWP_Broadcast.php:1729
+#: ThreeWP_Broadcast.php:205 ThreeWP_Broadcast.php:1729
 msgid "Trash"
 msgstr "Cestina"
 
@@ -317,27 +380,46 @@ msgstr "Cestina"
 msgid "Uninstall"
 msgstr "Disinstalla"
 
-#: ThreeWP_Broadcast.php:209
-#: ThreeWP_Broadcast.php:1728
+#: ThreeWP_Broadcast.php:209 ThreeWP_Broadcast.php:1728
 #: ThreeWP_Broadcast.php:1747
 msgid "Unlink"
 msgstr "Scollega"
 
 #: ThreeWP_Broadcast.php:982
 msgid "What is Broadcast?"
-msgstr "Cos'è Broadcast?"
+msgstr "Cos'è la Diffusione (Broadcast)?"
 
 #: ThreeWP_Broadcast.php:985
 msgid "What the Broadcast window looks like"
-msgstr "Come si presenta la finestra di Broadcast"
+msgstr "Come si presenta la finestra di Diffusione (Broadcast)"
 
 #: ThreeWP_Broadcast.php:1012
-msgid "When a post is linked to children, the children are overwritten when post is updated - all the taxonomies, tags and fields (including featured image) are also overwritten -  and when the parent is trashed or deleted the children get the same treatment. If you want to keep any children and delete only the parent, use the unlink links in the post overview. The unlink link below the post name removes all links and the unlinks to the right remove singular links."
-msgstr "Quando un post è collegato ai propri figli questi vengono sovrascritti quando il padre viene aggiornato; tutte le taxonomies, i tag e i custom fields (compresa l'immagine in evidenza) vengono sovrascritti. Quando il padre viene cestinato o eliminato i figli fanno la stessa fine. Se vuoi mantenere i figli ed eliminare solo il padre allora devi usare il link 'scollega' nella panoramica del post. Il link 'scollega' sotto il nome del post rimuove tutti i collegamenti ai figli mentre i link 'scollega' sulla destra scollegano i singoli post figli."
+msgid ""
+"When a post is linked to children, the children are overwritten when post is "
+"updated - all the taxonomies, tags and fields (including featured image) are "
+"also overwritten -  and when the parent is trashed or deleted the children "
+"get the same treatment. If you want to keep any children and delete only the "
+"parent, use the unlink links in the post overview. The unlink link below the "
+"post name removes all links and the unlinks to the right remove singular "
+"links."
+msgstr ""
+"Quando un post è collegato ai propri figli questi vengono sovrascritti "
+"quando il padre viene aggiornato; tutte le tassonomie, i tag e i campi "
+"personalizzati (compresa l'immagine in evidenza) vengono sovrascritti. "
+"Quando il padre viene cestinato o eliminato i figli fanno la stessa fine. Se "
+"vuoi mantenere i figli ed eliminare solo il padre allora devi usare il link "
+"'scollega' nella panoramica del post. Il link 'scollega' sotto il nome del "
+"post rimuove tutti i collegamenti ai figli mentre i link 'scollega' sulla "
+"destra scollegano i singoli post figli."
 
 #: ThreeWP_Broadcast.php:989
-msgid "With Broadcast you can post to several blogs at once. The broadcast window is first shown at the bottom right on the Add New post/page screen."
-msgstr "Con Broadcast puoi postare su più blog contemporaneamente. Il box per il broadcast si trova in basso a destra nella pagina di inserimento di un post/pagina."
+msgid ""
+"With Broadcast you can post to several blogs at once. The broadcast window "
+"is first shown at the bottom right on the Add New post/page screen."
+msgstr ""
+"Con Diffusione (Broadcast) puoi postare su più siti contemporaneamente. Il "
+"pannello per la diffusione si trova in basso a destra nella schermata di "
+"inserimento di un post/pagina."
 
 #: ThreeWP_Broadcast.php:800
 msgid "With the selected rows"
@@ -353,19 +435,29 @@ msgstr "I tuoi gruppi"
 
 #: ThreeWP_Broadcast.php:1021
 msgid "will also mark the broadcasted posts with the same tags."
-msgstr "assegnerà i tag ai post broadcastati."
+msgstr "assegnerà anche gli stessi tag ai post diffusi."
 
 #: ThreeWP_Broadcast.php:1016
 msgid "will also try to send the taxonomies together with the post."
-msgstr "proverò ad inviare le taxonomies assieme al post."
+msgstr "proverà anche ad inviare le tassonomie assieme al post."
 
 #: ThreeWP_Broadcast.php:1004
-msgid "will create a link from this post (the parent) to all the broadcasted posts (children). Updating the parent will result in all the children being updated. Links to the children can be removed in the page / post overview."
-msgstr "creerà un collegamento tra questo post (il padre) e tutti i post broadcastati (i figli). L'aggiornamento del padre coporterà l'aggiornamento dei figli. I collegamenti ai figli possono essere rimossi nella panoramica post/pagina."
+msgid ""
+"will create a link from this post (the parent) to all the broadcasted posts "
+"(children). Updating the parent will result in all the children being "
+"updated. Links to the children can be removed in the page / post overview."
+msgstr ""
+"creerà un collegamento tra questo post (il padre) e tutti i post diffusi (i "
+"figli). L'aggiornamento del padre comporterà l'aggiornamento dei figli. I "
+"collegamenti ai figli possono essere rimossi nella panoramica post/pagina."
 
 #: ThreeWP_Broadcast.php:1025
-msgid "will give the broadcasted posts the same custom fields as the original. Use this setting to broadcast the featured image."
-msgstr "darà, al post broadcastato, gli stessi custom fields del post originale. Utilizza quest'impostazione per broadcastare l'immagine in evidenza."
+msgid ""
+"will give the broadcasted posts the same custom fields as the original. Use "
+"this setting to broadcast the featured image."
+msgstr ""
+"darà, al post diffuso, gli stessi campi personalizzati del post originale. "
+"Utilizza quest'impostazione per diffondere l'immagine in evidenza."
 
 #~ msgid "Create categories automatically"
 #~ msgstr "Skapa kategorier automatiskt"

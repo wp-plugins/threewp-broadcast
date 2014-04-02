@@ -94,7 +94,9 @@ namespace plainview\sdk\form2;
 	Changelog
 	---------
 
+	- 20140311	datetime and datetime-local inputs now properly return a correct datetime.
 	- 20140218	display of an input includes the type and tag as css classes.
+	- 20140121      select + multiple: get_post_value when nothing is selected now returns an empty array instead of null.
 	- 20131112	unfilter_text does even more unfiltering.
 	- 20131109	select input __toString gets its own display div (with hidden support)
 	- 20131015	container trait gets inputs()

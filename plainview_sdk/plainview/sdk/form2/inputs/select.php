@@ -102,7 +102,10 @@ class select
 		$name = $this->make_name();
 		if ( $this->is_multiple() )
 			$name = substr( $name, 0, -2 );
-		return $this->form()->get_post_value( $name );
+		$r = $this->form()->get_post_value( $name );
+		if ( $this->is_multiple() && ! $r )
+			$r = [];
+		return $r;
 	}
 	/**
 		@brief		Return if the user may select multiple options.

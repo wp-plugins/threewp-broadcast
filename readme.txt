@@ -204,6 +204,13 @@ This plugin will soon be replaced by a WPML premium plugin that enables broadcas
 
 == Changelog ==
 
+= 2.19 20140402 =
+* New: Clear POST setting.
+* Fix: More tolerant custom field detection for incorrectly set up custom post types.
+* Fix: Italian translation updated.
+* Fix: Attachment checking uses "name" instead of "post_name" to search for attachments. Less memory required.
+* Code: More debugging code.
+
 = 2.18 20130314 =
 * New: Premium Pack plugins: Attachment Shortcodes and Event Organiser.
 * New: Debugging can be limited to specific IP addresses.

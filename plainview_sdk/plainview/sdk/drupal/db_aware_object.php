@@ -9,8 +9,8 @@ namespace plainview\sdk\drupal;
 **/
 trait db_aware_object
 {
-	use \plainview\sdk\db_aware_object;
-	
+	use \plainview\sdk\traits\db_aware_object;
+
 	public function __db_delete()
 	{
 		$id_key = $this->id_key();
@@ -19,18 +19,18 @@ trait db_aware_object
 		$this->switch_from_db();
 		return $this;
 	}
-	
+
 	public function __db_update()
 	{
 		$o = clone $this;
-		
+
 		// Create a clone of this object so that the serializing doesn't disturb anything.
 		$o = clone $this;
 		self::serialize_keys( $o );
-		
+
 		$fields = $o->fields();
 		$id_key = $this->id_key();
-		
+
 		$this->switch_to_db();
 		if ( $this->$id_key === null )
 		{
@@ -39,10 +39,10 @@ trait db_aware_object
 		else
 			db_update( $this->db_table() )->fields( $fields )->condition( $id_key, $this->$id_key )->execute();
 		$this->switch_from_db();
-	
+
 		return $this;
 	}
-	
+
 	/**
 		@brief		Switch back from the object's database if necessary.
 	**/
@@ -53,7 +53,7 @@ trait db_aware_object
 			return;
 		db_set_active( 'default' );
 	}
-	
+
 	/**
 		@brief		Switch to the object's database if necessary.
 	**/

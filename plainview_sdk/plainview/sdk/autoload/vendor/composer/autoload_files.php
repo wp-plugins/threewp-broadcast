@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     $baseDir . '/../traits/db_aware_object.php',
+    $baseDir . '/../drupal/db_aware_object.php',
     $baseDir . '/../traits/method_chaining.php',
     $baseDir . '/../wordpress/traits/db_aware_object.php',
 );

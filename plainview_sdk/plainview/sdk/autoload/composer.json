@@ -16,6 +16,7 @@
     	"files":
     	[
     		"../traits/db_aware_object.php",
+    		"../drupal/db_aware_object.php",
     		"../traits/method_chaining.php",
     		"../wordpress/traits/db_aware_object.php"
     	],

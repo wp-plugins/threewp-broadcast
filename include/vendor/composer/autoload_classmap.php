@@ -17,6 +17,7 @@ return array(
     'threewp_broadcast\\actions\\broadcasting_started' => $baseDir . '/threewp_broadcast/actions/broadcasting_started.php',
     'threewp_broadcast\\actions\\get_post_types' => $baseDir . '/threewp_broadcast/actions/get_post_types.php',
     'threewp_broadcast\\actions\\manage_posts_custom_column' => $baseDir . '/threewp_broadcast/actions/manage_posts_custom_column.php',
+    'threewp_broadcast\\actions\\maybe_clear_post' => $baseDir . '/threewp_broadcast/actions/maybe_clear_post.php',
     'threewp_broadcast\\actions\\menu' => $baseDir . '/threewp_broadcast/actions/menu.php',
     'threewp_broadcast\\actions\\prepare_broadcasting_data' => $baseDir . '/threewp_broadcast/actions/prepare_broadcasting_data.php',
     'threewp_broadcast\\actions\\prepare_meta_box' => $baseDir . '/threewp_broadcast/actions/prepare_meta_box.php',

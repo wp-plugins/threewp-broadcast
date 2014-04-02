@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.18
+Version:		2.19
 */
 
 namespace threewp_broadcast;
@@ -84,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.18;
+	public $plugin_version = 2.19;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -92,6 +92,7 @@ class ThreeWP_Broadcast
 		'blogs_to_hide' => 5,								// How many blogs to auto-hide
 		'broadcast_internal_custom_fields' => false,		// Broadcast internal custom fields?
 		'canonical_url' => true,							// Override the canonical URLs with the parent post's.
+		'clear_post' => true,								// Clear the post before broadcasting.
 		'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
 		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
 		'database_version' => 0,							// Version of database and settings
@@ -132,6 +133,7 @@ class ThreeWP_Broadcast
 		$this->add_filter( 'threewp_broadcast_get_user_writable_blogs', 11 );		// Allow other plugins to do this first.
 		$this->add_filter( 'threewp_broadcast_get_post_types', 9 );					// Add our custom post types to the array of broadcastable post types.
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 9 );		// Just before the standard 10.
+		$this->add_action( 'threewp_broadcast_maybe_clear_post', 11 );
 		$this->add_action( 'threewp_broadcast_menu', 9 );
 		$this->add_action( 'threewp_broadcast_menu', 'threewp_broadcast_menu_final', 100 );
 		$this->add_action( 'threewp_broadcast_prepare_broadcasting_data' );
@@ -433,6 +435,11 @@ class ThreeWP_Broadcast
 		$fs = $form->fieldset( 'misc' )
 			->label_( 'Miscellaneous' );
 
+		$clear_post = $fs->checkbox( 'clear_post' )
+			->description_( 'The POST PHP variable is data sent when updating posts. Most plugins are fine if the POST is cleared before broadcasting, while others require that the data remains intact. Uncheck this setting if you notice that child posts are not being treated the same on the child blogs as they are on the parent blog.' )
+			->label_( 'Clear POST' )
+			->checked( $this->get_site_option( 'debug', false ) );
+
 		$save_post_priority = $fs->number( 'save_post_priority' )
 			->description_( 'The priority for the save_post hook. Should be after all other plugins have finished modifying the post. Default is 640.' )
 			->label_( 'save_post priority' )
@@ -504,6 +511,7 @@ class ThreeWP_Broadcast
 			$whitelist = $this->lines_to_string( $whitelist );
 			$this->update_site_option( 'custom_field_whitelist', $whitelist );
 
+			$this->update_site_option( 'clear_post', $clear_post->is_checked() );
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
 			$this->update_site_option( 'existing_attachments', $existing_attachments->get_post_value() );
@@ -1428,8 +1436,11 @@ This can be increased by adding the following to your wp-config.php:
 		$post_type = $meta_box_data->post->post_type;
 		$post_type_object = get_post_type_object( $post_type );
 		$post_type_supports_thumbnails = post_type_supports( $post_type, 'thumbnail' );
-		$post_type_supports_custom_fields = post_type_supports( $post_type, 'custom-fields' );
 		$post_type_is_hierarchical = $post_type_object->hierarchical;
+
+		// 20140327 Because so many plugins create broken post types, assume that all post types support custom fields.
+		// $post_type_supports_custom_fields = post_type_supports( $post_type, 'custom-fields' );
+		$post_type_supports_custom_fields = true;
 
 		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
 		{
@@ -1779,6 +1790,29 @@ This can be increased by adding the following to your wp-config.php:
 	}
 
 	/**
+		@brief		Decide what to do with the POST.
+		@since		2014-03-23 23:08:31
+	**/
+	public function threewp_broadcast_maybe_clear_post( $action )
+	{
+		if ( $action->is_applied() )
+		{
+			$this->debug( 'Not maybe clearing the POST.' );
+			return;
+		}
+
+		$clear_post = $this->get_site_option( 'clear_post', true );
+		if ( $clear_post )
+		{
+
+			$this->debug( 'Clearing the POST.' );
+			$action->post = [];
+		}
+		else
+			$this->debug( 'Not clearing the POST.' );
+	}
+
+	/**
 		@brief		Fill the broadcasting_data object with information.
 
 		@details
@@ -1825,7 +1859,8 @@ This can be increased by adding the following to your wp-config.php:
 
 		$bcd->post_type_object = get_post_type_object( $bcd->post->post_type );
 		$bcd->post_type_supports_thumbnails = post_type_supports( $bcd->post->post_type, 'thumbnail' );
-		$bcd->post_type_supports_custom_fields = post_type_supports( $bcd->post->post_type, 'custom-fields' );
+		//$bcd->post_type_supports_custom_fields = post_type_supports( $bcd->post->post_type, 'custom-fields' );
+		$bcd->post_type_supports_custom_fields = true;
 		$bcd->post_type_is_hierarchical = $bcd->post_type_object->hierarchical;
 
 		$bcd->custom_fields = $form->checkbox( 'custom_fields' )->get_post_value()
@@ -2154,7 +2189,10 @@ This can be increased by adding the following to your wp-config.php:
 		array_push( $this->broadcasting, $bcd );
 
 		// POST is no longer needed. Empty it so that other plugins don't use it.
-		$_POST = [];
+		$action = new actions\maybe_clear_post;
+		$action->post = $_POST;
+		$action->apply();
+		$_POST = $action->post;
 
 		$action = new actions\broadcasting_started;
 		$action->broadcasting_data = $bcd;
@@ -2502,12 +2540,21 @@ This can be increased by adding the following to your wp-config.php:
 		$action->broadcasting_data = $bcd;
 		$action->apply();
 
-		$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
-		if ( $this->debugging() )
-			exit;
-
 		// Finished broadcasting.
 		array_pop( $this->broadcasting );
+
+		if ( $this->debugging() )
+		{
+			if ( ! $this->is_broadcasting() )
+			{
+				$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
+				exit;
+			}
+			else
+			{
+				$this->debug( 'Still broadcasting.' );
+			}
+		}
 
 		$this->load_language();
 
@@ -2924,8 +2971,8 @@ This can be increased by adding the following to your wp-config.php:
 		{
 			$attachment_posts = get_posts( [
 				'cache_results' => false,
+				'name' => $attachment_data->post->post_name,
 				'numberposts' => PHP_INT_MAX,
-				'post_name' => $attachment_data->post->post_name,			// Isn't used, though it should be. Maybe a patch is in order...
 				'post_type' => 'attachment',
 
 			] );

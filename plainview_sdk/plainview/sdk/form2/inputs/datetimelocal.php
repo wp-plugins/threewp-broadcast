@@ -9,8 +9,7 @@ namespace plainview\sdk\form2\inputs;
 	@version	20130524
 **/
 class datetimelocal
-	extends date
+	extends datetime
 {
 	public $type = 'datetime-local';
 }
-
