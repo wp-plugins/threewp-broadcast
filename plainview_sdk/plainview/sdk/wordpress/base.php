@@ -16,6 +16,7 @@
 
 	@par	Changelog
 
+	- 20140406				paths->url can handle plugins in subdirectories.
 	- 20131211				Better options handling (64 and 255 length checks).
 	- 20131210				get_option_prefix allows for shortening of option names.
 	- 20131019				table top().
@@ -260,7 +261,7 @@ class base
 			'filename_from_plugin_directory' => basename( dirname( $filename ) ) . '/' . basename( $filename ),
 			'path_from_plugin_directory' => basename( dirname( $filename ) ),
 			'path_from_base_directory' => PLUGINDIR . '/' . basename( dirname( $filename ) ),
-			'url' => WP_PLUGIN_URL . '/' . basename( dirname( $filename ) ),
+			'url' => WP_PLUGIN_URL . '' . str_replace( WP_PLUGIN_DIR, '', dirname( $filename ) ),
 		);
 
 		if ( $this->sdk_version_required > $this->sdk_version )

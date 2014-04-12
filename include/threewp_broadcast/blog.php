@@ -18,7 +18,7 @@ class blog
 		switch_to_blog( $this->id );
 		$r = get_bloginfo( 'blogname' );
 		restore_current_blog();
-		return $r;
+		return $r . '';
 	}
 
 	public function disabled( $disabled = true )

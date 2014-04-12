@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140406		wordpress
 	- 20140331		Fixed Drupal db_aware_object path.
 	- 20140218		form2
 	- 20140203		Wordpress form
@@ -98,7 +99,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140331;
+	protected $sdk_version = 20140406;
 
 	/**
 		@brief		Constructor.

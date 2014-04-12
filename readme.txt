@@ -4,8 +4,8 @@ Donate link: http://plainview.se/donate/
 License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
-Tags: broadcast, multipost, duplicate, posts, sitepress, threewp, linking, posts, multiple, blogs, woocommerce, wpml
-Tested up to: 3.8
+Tags: broadcast, multipost, duplicate, posts, sitepress, threewp, linking, posts, multiple, blogs, woocommerce, wpml, synchronize, event organiser, acf
+Tested up to: 3.8.2
 
 Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
 
@@ -48,12 +48,16 @@ For a complete list of features and more information, see <a href="http://plainv
 
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting image field types using the ACF plugin.
 * <strong>Attachment Shortcodes</strong> copies attachments specified in custom shortcodes.
+* <strong>Custom Field Attachments</strong> allows post custom field containing attachment IDs to be broadcasted correctly..
+* <strong>Event Organiser</strong> adds support for Stephen Harris&#8217; <a href="http://wordpress.org/plugins/event-organiser/">Event Organiser plugin</a>, with events and venues.
 * <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
 * <strong>Permalinks</strong> enables more precise permalink control.
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
+Sync Taxonomies
+* <strong>Sync Taxomnomies</strong> synchronize the taxonomies of target blogs with those from a source blog.
 * <strong>User & Blog Settings</strong> can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
 * <strong>Views</strong> adds support for WP Types and Views content templates.
 * <strong>WooCommerce</strong> allows product variations to be broadcasted.
@@ -90,7 +94,7 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 3. Broadcast settings tab
 4. Custom post types tab
 5. Uninstall tab
-6. Broadcast and its associated companions in the plugin list
+6. Broadcast Premium Pack plugins
 7. Broadcast menu with groups enabled
 8. Broadcast meta box with groups enabled
 9. Blog group overview
@@ -203,6 +207,12 @@ It works transparently in the background, but in case you've never really used W
 This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager. 2014-01-12.
 
 == Changelog ==
+
+= 2.20 20140412 =
+* New: Premium Pack plugins: Custom Field Attachments, Sync Taxonomies.
+* More debug information when syncing taxonomies.
+* Code: collect_post_type_taxonomies for Sync Taxonomies plugin.
+* Code: wp_insert_term and wp_update_term hooks, for Sync Taxonomies plugin.
 
 = 2.19 20140402 =
 * New: Clear POST setting.

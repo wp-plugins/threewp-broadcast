@@ -21,6 +21,8 @@ return array(
     'threewp_broadcast\\actions\\menu' => $baseDir . '/threewp_broadcast/actions/menu.php',
     'threewp_broadcast\\actions\\prepare_broadcasting_data' => $baseDir . '/threewp_broadcast/actions/prepare_broadcasting_data.php',
     'threewp_broadcast\\actions\\prepare_meta_box' => $baseDir . '/threewp_broadcast/actions/prepare_meta_box.php',
+    'threewp_broadcast\\actions\\wp_insert_term' => $baseDir . '/threewp_broadcast/actions/wp_insert_term.php',
+    'threewp_broadcast\\actions\\wp_update_term' => $baseDir . '/threewp_broadcast/actions/wp_update_term.php',
     'threewp_broadcast\\attachment_data' => $baseDir . '/threewp_broadcast/attachment_data.php',
     'threewp_broadcast\\blog_collection' => $baseDir . '/threewp_broadcast/blog_collection.php',
     'threewp_broadcast\\blog_groups\\blog_group' => $baseDir . '/threewp_broadcast/blog_groups/blog_group.php',

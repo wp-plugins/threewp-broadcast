@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.19
+Version:		2.20
 */
 
 namespace threewp_broadcast;
@@ -84,7 +84,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.19;
+	public $plugin_version = 2.20;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
@@ -139,6 +139,8 @@ class ThreeWP_Broadcast
 		$this->add_action( 'threewp_broadcast_prepare_broadcasting_data' );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 9 );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
+		$this->add_action( 'threewp_broadcast_wp_insert_term', 9 );
+		$this->add_action( 'threewp_broadcast_wp_update_term', 9 );
 
 		if ( $this->get_site_option( 'canonical_url' ) )
 			$this->add_action( 'wp_head', 1 );
@@ -1667,10 +1669,9 @@ This can be increased by adding the following to your wp-config.php:
 			$parent = $filter->broadcast_data->get_linked_parent();
 			$parent_blog_id = $parent[ 'blog_id' ];
 			switch_to_blog( $parent_blog_id );
-			$filter->html->put(
-				'linked_from',
-				$this->_(sprintf( 'Linked from %s', '<a href="' . get_bloginfo( 'url' ) . '/wp-admin/post.php?post=' .$parent[ 'post_id' ] . '&action=edit">' . get_bloginfo( 'name' ) . '</a>' ) )
-			);
+
+			$html = $this->_(sprintf( 'Linked from %s', '<a href="' . get_bloginfo( 'url' ) . '/wp-admin/post.php?post=' .$parent[ 'post_id' ] . '&action=edit">' . get_bloginfo( 'name' ) . '</a>' ) );
+			$filter->html->put( 'linked_from', $html );
 			restore_current_blog();
 		}
 		elseif ( $filter->broadcast_data->has_linked_children() )
@@ -1986,6 +1987,73 @@ This can be increased by adding the following to your wp-config.php:
 		return $this->broadcast_post( $broadcasting_data );
 	}
 
+	/**
+		@brief		Allows Broadcast plugins to update the term with their own info.
+		@since		2014-04-08 15:12:05
+	**/
+	public function threewp_broadcast_wp_insert_term( $action )
+	{
+		if ( ! isset( $action->term->parent ) )
+			$action->term->parent = 0;
+
+		$term = wp_insert_term(
+			$action->term->name,
+			$action->taxonomy,
+			[
+				'description' => $action->term->description,
+				'parent' => $action->term->parent,
+				'slug' => $action->term->slug,
+			]
+		);
+
+		// Sometimes the search didn't find the term because it's SIMILAR and not exact.
+		// WP will complain and give us the term tax id.
+		if ( is_wp_error( $action->new_term ) )
+		{
+			$wp_error = $action->new_term;
+			if ( isset( $wp_error->error_data[ 'term_exists' ] ) )
+				$term_taxonomy_id = $wp_error->error_data[ 'term_exists' ];
+		}
+		else
+			$term_taxonomy_id = $term[ 'term_taxonomy_id' ];
+
+		$this->debug( 'Created the new term %s with the term taxonomy ID of %s.', $action->term->name, $term_taxonomy_id );
+
+		$action->new_term = get_term_by( 'term_taxonomy_id', $term_taxonomy_id, $action->taxonomy, ARRAY_A );
+	}
+
+	/**
+		@brief		[Maybe] update a term.
+		@since		2014-04-10 14:26:23
+	**/
+	public function threewp_broadcast_wp_update_term( $action )
+	{
+		$update = true;
+
+		// If we are given an old term, then we have a chance of checking to see if there should be an update called at all.
+		if ( $action->has_old_term() )
+		{
+			// Assume they match.
+			$update = false;
+			foreach( [ 'name', 'description', 'parent' ] as $key )
+				if ( $action->old_term->$key != $action->new_term->$key )
+					$update = true;
+		}
+
+		if ( $update )
+		{
+			$this->debug( 'Updating the term %s.', $action->new_term->name );
+			wp_update_term( $action->new_term->term_id, $action->taxonomy, array(
+				'description' => $action->new_term->description,
+				'name' => $action->new_term->name,
+				'parent' => $action->new_term->parent,
+			) );
+			$action->updated = true;
+		}
+		else
+			$this->debug( 'Will not update the term %s.', $action->new_term->name );
+	}
+
 	public function untrash_post( $post_id)
 	{
 		$this->trash_untrash_delete_post( 'wp_untrash_post', $post_id );
@@ -2071,9 +2139,9 @@ This can be increased by adding the following to your wp-config.php:
 	{
 		$bcd = $broadcasting_data;
 
-		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, var_export( $bcd->post, true ) );
+		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, $this->code_export( $bcd->post ) );
 
-		$this->debug( 'The POST was <pre>%s</pre>', var_export( $bcd->_POST, true ) );
+		$this->debug( 'The POST was <pre>%s</pre>', $this->code_export( $bcd->_POST ) );
 
 		// For nested broadcasts. Just in case.
 		switch_to_blog( $bcd->parent_blog_id );
@@ -2097,17 +2165,7 @@ This can be increased by adding the following to your wp-config.php:
 		if ( $bcd->taxonomies )
 		{
 			$this->debug( 'Will broadcast taxonomies.' );
-			$bcd->parent_blog_taxonomies = get_object_taxonomies( [ 'object_type' => $bcd->post->post_type ], 'array' );
-			$bcd->parent_post_taxonomies = [];
-			foreach( $bcd->parent_blog_taxonomies as $parent_blog_taxonomy => $taxonomy )
-			{
-				// Parent blog taxonomy terms are used for creating missing target term ancestors
-				$bcd->parent_blog_taxonomies[ $parent_blog_taxonomy ] = [
-					'taxonomy' => $taxonomy,
-					'terms'    => $this->get_current_blog_taxonomy_terms( $parent_blog_taxonomy ),
-				];
-				$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = get_the_terms( $bcd->post->ID, $parent_blog_taxonomy );
-			}
+			$this->collect_post_type_taxonomies( $bcd );
 		}
 		else
 			$this->debug( 'Will not broadcast taxonomies.' );
@@ -2320,28 +2378,14 @@ This can be increased by adding the following to your wp-config.php:
 								);
 							}
 
-							$new_taxonomy = wp_insert_term(
-								$parent_post_term->name,
-								$parent_post_taxonomy,
-								array(
-									'slug' => $parent_post_term->slug,
-									'description' => $parent_post_term->description,
-									'parent' => $target_parent_id,
-								)
-							);
-
-							// Sometimes the search didn't find the term because it's SIMILAR and not exact.
-							// WP will complain and give us the term tax id.
-							if ( is_wp_error( $new_taxonomy ) )
-							{
-								$wp_error = $new_taxonomy;
-								if ( isset( $wp_error->error_data[ 'term_exists' ] ) )
-									$term_taxonomy_id = $wp_error->error_data[ 'term_exists' ];
-							}
-							else
-							{
-								$term_taxonomy_id = $new_taxonomy[ 'term_taxonomy_id' ];
-							}
+							$new_term = clone( $parent_post_term );
+							$new_term->parent = $target_parent_id;
+							$action = new actions\wp_insert_term;
+							$action->taxonomy = $parent_post_taxonomy;
+							$action->term = $new_term;
+							$action->apply();
+							$new_taxonomy = $action->new_term;
+							$term_taxonomy_id = $new_taxonomy[ 'term_taxonomy_id' ];
 							$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_taxonomy_id );
 
 							$taxonomies_to_add_to []= intval( $term_taxonomy_id );
@@ -2351,7 +2395,7 @@ This can be increased by adding the following to your wp-config.php:
 					$this->debug( 'Taxonomies: Syncing terms.' );
 					$this->sync_terms( $bcd, $parent_post_taxonomy );
 
-					if ( count( $taxonomies_to_add_to) > 0 )
+					if ( count( $taxonomies_to_add_to ) > 0 )
 					{
 						// This relates to the bug mentioned in the method $this->set_term_parent()
 						delete_option( $parent_post_taxonomy . '_children' );
@@ -2441,7 +2485,7 @@ This can be increased by adding the following to your wp-config.php:
 			// Maybe updating the post is not necessary.
 			if ( $unmodified_post->post_content != $modified_post->post_content )
 			{
-				$this->debug( 'Modifying with new post: %s', var_export( $modified_post->post_content, true ) );
+				$this->debug( 'Modifying with new post: %s', $this->code_export( $modified_post->post_content ) );
 				wp_update_post( $modified_post );	// Or maybe it is.
 			}
 
@@ -2568,6 +2612,38 @@ This can be increased by adding the following to your wp-config.php:
 		] );
 
 		return $bcd;
+	}
+
+	/**
+		@brief		Dump a variable with code tags.
+		@since		2014-04-06 21:49:24
+	**/
+	public function code_export( $variable )
+	{
+		return sprintf( '<pre><code>%s</code></pre>', var_export( $variable, true ) );
+	}
+
+	/**
+		@brief		Collects the post type's taxonomies into the broadcasting data object.
+		@details	Requires only that $bcd->post->post_type be filled in.
+		@since		2014-04-08 13:40:44
+	**/
+	public function collect_post_type_taxonomies( $bcd )
+	{
+		$bcd->parent_blog_taxonomies = get_object_taxonomies( [ 'object_type' => $bcd->post->post_type ], 'array' );
+		$bcd->parent_post_taxonomies = [];
+		foreach( $bcd->parent_blog_taxonomies as $parent_blog_taxonomy => $taxonomy )
+		{
+			// Parent blog taxonomy terms are used for creating missing target term ancestors
+			$bcd->parent_blog_taxonomies[ $parent_blog_taxonomy ] = [
+				'taxonomy' => $taxonomy,
+				'terms'    => $this->get_current_blog_taxonomy_terms( $parent_blog_taxonomy ),
+			];
+			if ( isset( $bcd->post->ID ) )
+				$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = get_the_terms( $bcd->post->ID, $parent_blog_taxonomy );
+			else
+				$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = get_terms( [ $parent_blog_taxonomy ] );
+		}
 	}
 
 	/**
@@ -2837,17 +2913,13 @@ This can be increased by adding the following to your wp-config.php:
 		if ( is_null( $term_id ) || 0 == $term_id )
 		{
 			// The target parent does not exist, we need to create it
-			$new_term = wp_insert_term(
-				$source_parent[ 'name' ],
-				$source_post_taxonomy,
-				array(
-					'slug'        => $source_parent[ 'slug' ],
-					'description' => $source_parent[ 'description' ],
-					'parent'      => $target_grandparent_id,
-				)
-			);
-
-			$term_id = $new_term[ 'term_id' ];
+			$new_term = (object)$source_parent;
+			$new_term->parent = $target_grandparent_id;
+			$action = new actions\wp_insert_term;
+			$action->taxonomy = $source_post_taxonomy;
+			$action->term = $new_term;
+			$action->apply();
+			$term_id = $action->new_term[ 'term_id' ];
 		}
 		elseif ( is_array( $term_id ) )
 		{
@@ -3041,24 +3113,29 @@ This can be increased by adding the following to your wp-config.php:
 
 	/**
 		@brief		Syncs the terms of a taxonomy from the parent blog in the BCD to the current blog.
-		@details
-
-		Checks the parentage of the terms.
-
+		@details	If $bcd->add_new_taxonomies is set, new taxonomies will be created, else they are ignored.
 		@param		broadcasting_data		$bcd			The broadcasting data.
 		@param		string					$taxonomy		The taxonomy to sync.
 		@since		20131004
 	**/
-	private function sync_terms( $bcd, $taxonomy )
+	public function sync_terms( $bcd, $taxonomy )
 	{
 		$source_terms = $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ];
 		$target_terms = $this->get_current_blog_taxonomy_terms( $taxonomy );
+		$this->debug( 'Source terms for taxonomy %s: %s', $taxonomy, $this->code_export( $source_terms ) );
+		$this->debug( 'Target terms for taxonomy %s: %s', $taxonomy, $this->code_export( $target_terms ) );
+
+		$refresh_cache = false;
 
 		// Keep track of which terms we've found.
 		$found_targets = [];
 		$found_sources = [];
 
+		// Also keep track of which sources we haven't found on the target blog.
+		$unfound_sources = $source_terms;
+
 		// First step: find out which of the target terms exist on the source blog
+		$this->debug( 'Find out which of the source terms exist on the target blog.' );
 		foreach( $target_terms as $target_term_id => $target_term )
 			foreach( $source_terms as $source_term_id => $source_term )
 			{
@@ -3066,45 +3143,81 @@ This can be increased by adding the following to your wp-config.php:
 					continue;
 				if ( $source_term[ 'slug' ] == $target_term[ 'slug' ] )
 				{
+					$this->debug( 'Find source term %s. Source ID: %s. Target ID: %s.', $source_term[ 'slug' ], $source_term_id, $target_term_id );
 					$found_targets[ $target_term_id ] = $source_term_id;
 					$found_sources[ $source_term_id ] = $target_term_id;
+					unset( $unfound_sources[ $source_term_id ] );
 				}
 			}
+
+		// These sources were not found. Add them.
+		if ( isset( $bcd->add_new_taxonomies ) && $bcd->add_new_taxonomies )
+		{
+			$this->debug( '%s taxonomies are missing on this blog.', count( $unfound_sources ) );
+			foreach( $unfound_sources as $unfound_source_id => $unfound_source )
+			{
+				$unfound_source = (object)$unfound_source;
+				unset( $unfound_source->parent );
+				$action = new actions\wp_insert_term;
+				$action->taxonomy = $taxonomy;
+				$action->term = $unfound_source;
+				$action->apply();
+
+				$new_taxonomy = $action->new_term;
+				$new_taxonomy_id = $new_taxonomy[ 'term_id' ];
+				$target_terms[ $new_taxonomy_id ] = (array)$new_taxonomy;
+				$found_sources[ $unfound_source_id ] = $new_taxonomy_id;
+				$found_targets[ $new_taxonomy_id ] = $unfound_source_id;
+
+				$refresh_cache = true;
+			}
+		}
 
 		// Now we know which of the terms on our target blog exist on the source blog.
 		// Next step: see if the parents are the same on the target as they are on the source.
 		// "Same" meaning pointing to the same slug.
+		$this->debug( 'About to update taxonomy terms.' );
 		foreach( $found_targets as $target_term_id => $source_term_id)
 		{
-			$parent_of_target_term = $target_terms[ $target_term_id ][ 'parent' ];
-			$parent_of_equivalent_source_term = $source_terms[ $source_term_id ][ 'parent' ];
+			$source_term = (object)$source_terms[ $source_term_id ];
+			$target_term = (object)$target_terms[ $target_term_id ];
 
-			// Do the parents "match".
-			$needs_updating = ( $parent_of_target_term != $parent_of_equivalent_source_term &&
-				( isset( $found_sources[ $parent_of_equivalent_source_term ] ) || $parent_of_equivalent_source_term == 0 )
-			);
+			$action = new actions\wp_update_term;
+			$action->taxonomy = $taxonomy;
 
-			// Same name?
-			$needs_updating |= ( $source_terms[ $source_term_id ][ 'name' ] != $target_terms[ $target_term_id ][ 'name' ] );
+			// The old term is the target term, since it contains the old values.
+			$action->old_term = (object)$target_terms[ $target_term_id ];
+			// The new term is the source term, since it has the newer data.
+			$action->new_term = (object)$source_terms[ $source_term_id ];
 
-			if ( $needs_updating )
+			// ... but the IDs have to be switched around, since the target term has the new ID.
+			$action->switch_data();
+
+			// Update the parent.
+			$parent_of_equivalent_source_term = $source_term->parent;
+			$parent_of_target_term = $target_term->parent;
+
+			$new_parent = 0;
+			// Does the source term even have a parent?
+			if ( $parent_of_equivalent_source_term > 0 )
 			{
-				if ( $parent_of_equivalent_source_term != 0 )
-					$new_term_parent = $found_sources[ $parent_of_equivalent_source_term ];
-				else
-					$new_term_parent = 0;
-
-				// Update the name and the parent.
-				wp_update_term( $target_term_id, $taxonomy, array(
-					'name' => $source_terms[ $source_term_id ][ 'name' ],
-					'parent' => $new_term_parent,
-				) );
-
-				// wp_update_category alone won't work. The "cache" needs to be cleared.
-				// see: http://wordpress.org/support/topic/category_children-how-to-recalculate?replies=4
-				delete_option( 'category_children' );
+				// Did we find the parent term?
+				if ( isset( $found_sources[ $parent_of_equivalent_source_term ] ) )
+					$new_parent = $found_sources[ $parent_of_equivalent_source_term ];
 			}
+			else
+				$new_parent = 0;
+
+			$action->new_term->parent = $new_parent;
+
+			$action->apply();
+			$refresh_cache |= $action->updated;
 		}
+
+		// wp_update_category alone won't work. The "cache" needs to be cleared.
+		// see: http://wordpress.org/support/topic/category_children-how-to-recalculate?replies=4
+		if ( $refresh_cache )
+			delete_option( 'category_children' );
 	}
 
 	/**
@@ -3230,7 +3343,6 @@ This can be increased by adding the following to your wp-config.php:
 			);
 		$this->query( $query );
 	}
-
 }
 
 $threewp_broadcast = new ThreeWP_Broadcast();
