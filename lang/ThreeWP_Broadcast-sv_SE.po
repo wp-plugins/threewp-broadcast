@@ -1,0 +1,892 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Edward Plainview <edward@plainview.se>\n"
+"Language-Team: Edward <edward@plainview.se>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ThreeWP_Broadcast.php:299
+#, php-format
+msgid ""
+"A list of custom post types that have broadcasting enabled. The default "
+"value is %s."
+msgstr ""
+"En lista över vilka posttyper ska få multipostas. Standardvärdet är %s."
+
+#: ThreeWP_Broadcast.php:1235
+msgid "A post was broadcasted."
+msgstr "Ett inlägg har multipostats."
+
+#: ThreeWP_Broadcast.php:1238
+msgid "A post was unlinked."
+msgstr "En länk till ett inlägg har tagits bort."
+
+#: ThreeWP_Broadcast.php:1540
+msgid "All"
+msgstr "Alla"
+
+#: ThreeWP_Broadcast.php:1028
+msgid "All links to child posts have been removed!"
+msgstr "Alla inläggets länkar till multipostade inlägg har tagits bort."
+
+#: ThreeWP_Broadcast.php:571
+msgid "All of the child posts have been deleted."
+msgstr "Samtliga inlägg har tagits bort."
+
+#: ThreeWP_Broadcast.php:538 ThreeWP_Broadcast.php:576
+#: ThreeWP_Broadcast.php:842 ThreeWP_Broadcast.php:877
+#: ThreeWP_Broadcast.php:911 ThreeWP_Broadcast.php:945
+msgid "Back to post overview"
+msgstr "Tillbaka till inläggsöversikten"
+
+#: ThreeWP_Broadcast.php:441
+msgid "Blogs to hide"
+msgstr "Bloggar som göms"
+
+#: ThreeWP_Broadcast.php:350 ThreeWP_Broadcast.php:1059
+#: ThreeWP_Broadcast.php:1775
+msgid "Broadcast"
+msgstr "Multiposta"
+
+#: ThreeWP_Broadcast.php:404
+msgid "Broadcast all fields, including those beginning with underscores."
+msgstr ""
+"Multiposta samtliga egna fält, inklusive de som börjar med understreck."
+
+#: ThreeWP_Broadcast.php:374
+msgid "Broadcast as draft"
+msgstr "Multiposta som utkast"
+
+#: ThreeWP_Broadcast.php:362
+msgid "Broadcast custom fields"
+msgstr "Multiposta egna fälten också"
+
+#: ThreeWP_Broadcast.php:803
+msgid "Broadcast information"
+msgstr "Multipostningsinformation"
+
+#: ThreeWP_Broadcast.php:405
+msgid "Broadcast internal custom fields"
+msgstr "Multiposta egna fälten"
+
+#: ThreeWP_Broadcast.php:112
+msgid "Broadcast requires a Wordpress network to function."
+msgstr "Multipostning kräver ett Wordpressnätverk."
+
+#: ThreeWP_Broadcast.php:380
+msgid "Broadcast scheduled posts"
+msgstr "Multiposta tidsinställda inlägg"
+
+#: ThreeWP_Broadcast.php:368
+msgid "Broadcast taxonomies"
+msgstr "Multiposta taxonomier"
+
+#: ThreeWP_Broadcast.php:1110
+msgid "Broadcasted"
+msgstr "Multipostat"
+
+#: ThreeWP_Broadcast.php:394
+msgid "Canonical URL"
+msgstr "Canonical URL"
+
+#: ThreeWP_Broadcast.php:393
+msgid ""
+"Child posts have their canonical URLs pointed to the URL of the parent post."
+msgstr ""
+"Canonical länkar till multipostade inlägg kan istället pekas till "
+"ursprungliga inlägget."
+
+#: plainview_sdk/plainview/sdk/form.php:909
+msgid "Could not parse date"
+msgstr "Kunde inte tolka datumet"
+
+#: ThreeWP_Broadcast.php:1352
+msgid ""
+"Create a link to the children, which will be updated when this post is "
+"updated, trashed when this post is trashed, etc."
+msgstr ""
+"Skapa en länk till barnen, vilka kommer att uppdateras när det här inlägget "
+"uppdateras, läggs i papperskorgen, osv."
+
+#: ThreeWP_Broadcast.php:603
+msgid "Create link"
+msgstr "Skapa länk"
+
+#: ThreeWP_Broadcast.php:397
+msgid "Custom field handling"
+msgstr "Hantering av egna fält"
+
+#: ThreeWP_Broadcast.php:1364
+msgid "Custom fields"
+msgstr "Egna fält"
+
+#: ThreeWP_Broadcast.php:494
+msgid "Custom post types"
+msgstr "Posttyper"
+
+#: ThreeWP_Broadcast.php:316
+msgid ""
+"Custom post types must be specified using their internal Wordpress names "
+"with a space between each. It is not possible to automatically make a list "
+"of available post types on the whole network because of a limitation within "
+"Wordpress (the current blog knows only of its own custom post types)."
+msgstr ""
+"Posttyperna måste anges med Wordpress interna namn för posttypen. Det är "
+"omöjligt att visa samtliga posttyper på alla bloggar på grund av en "
+"begränsning i Wordpress (nuvarande bloggen vet bara om sina egna posttyper)."
+
+#: plainview_sdk/plainview/sdk/form.php:396
+msgid "DD"
+msgstr "DD"
+
+#: plainview_sdk/plainview/sdk/form.php:401
+msgid "Date format"
+msgstr "Datumformat"
+
+#: ThreeWP_Broadcast.php:1552 ThreeWP_Broadcast.php:1609
+msgid "Delete"
+msgstr "Ta bort"
+
+#: ThreeWP_Broadcast.php:761
+msgid "Delete all child posts"
+msgstr "Ta bort samtliga inlägg"
+
+#: ThreeWP_Broadcast.php:762
+#, fuzzy
+msgid "Delete all children"
+msgstr "Ta bort samtliga inlägg"
+
+#: ThreeWP_Broadcast.php:757
+msgid "Delete child"
+msgstr "Ta bort inlägg"
+
+#: ThreeWP_Broadcast.php:756
+msgid "Delete the child post"
+msgstr "Ta bort inlägget"
+
+#: plainview_sdk/plainview/sdk/form.php:368
+msgid "Description"
+msgstr "Beskrivning"
+
+#: ThreeWP_Broadcast.php:605
+msgid "Domain"
+msgstr "Domän"
+
+#: ThreeWP_Broadcast.php:766 ThreeWP_Broadcast.php:767
+#: ThreeWP_Broadcast.php:1172
+msgid "Find orphans"
+msgstr "Hitta olänkade"
+
+#: ThreeWP_Broadcast.php:1171
+msgid "Find posts on other blogs that are identical to this post"
+msgstr ""
+"Hitta olänkade inlägg på andra bloggar som är identiska det här inlägget"
+
+#: plainview_sdk/plainview/sdk/form.php:397
+msgid "HH"
+msgstr "HH"
+
+#: ThreeWP_Broadcast.php:440
+msgid ""
+"In the broadcast meta box, after how many blogs the list should be auto-"
+"hidden."
+msgstr "Anger vid vilket antal blogglistan ska gömmas i multipostningsrutan."
+
+#: ThreeWP_Broadcast.php:412
+msgid "Internal field blacklist"
+msgstr "Svartlistade interna fält"
+
+#: ThreeWP_Broadcast.php:421
+msgid "Internal field whitelist"
+msgstr "Vitlistade interna fält"
+
+#: plainview_sdk/plainview/sdk/form.php:916
+msgid "Invalid date"
+msgstr "Ogiltigt datum"
+
+#: plainview_sdk/plainview/sdk/form.php:899
+msgid "Invalid email address"
+msgstr "Ogiltig e-postadress"
+
+#: ThreeWP_Broadcast.php:1382
+msgid "Invert selection"
+msgstr "Byt markeringar"
+
+#: plainview_sdk/plainview/sdk/form.php:404
+msgid "Latest valid date"
+msgstr "Senaste giltiga datum"
+
+#: ThreeWP_Broadcast.php:1351
+msgid "Link this post to its children"
+msgstr "Länka det här inlägg till de multipostade inläggen"
+
+#: ThreeWP_Broadcast.php:997
+msgid "Link to child post has been removed."
+msgstr "Länken till et multipostade inlägget har tagits bort."
+
+#: ThreeWP_Broadcast.php:356
+msgid "Link to child posts"
+msgstr "Länka till de multipostade inläggen"
+
+#: plainview_sdk/plainview/sdk/form.php:395
+#: plainview_sdk/plainview/sdk/form.php:398
+msgid "MM"
+msgstr "MM"
+
+#: ThreeWP_Broadcast.php:493
+msgid "Maintenance"
+msgstr "Underhåll"
+
+#: plainview_sdk/plainview/sdk/form.php:390
+msgid "Minimum length"
+msgstr "Minimumlängd"
+
+#: ThreeWP_Broadcast.php:429
+msgid "Miscellaneous"
+msgstr "Övrigt"
+
+#: ThreeWP_Broadcast.php:679
+msgid ""
+"No possible child posts were found on the other blogs you have write access "
+"to. Either there are no posts with the same title as this one, or all "
+"possible orphans have already been linked."
+msgstr ""
+"Inga möjliga olänkade inlägg hittades på de andra bloggarna du har tillgång "
+"till. Antingen finns inga inlägg med samma rubrik som detta, eller har alla "
+"möjliga inlägg redan länkats."
+
+#: ThreeWP_Broadcast.php:1551
+msgid "Permanently all the broadcasted children"
+msgstr "Ta bort samtliga inlägg"
+
+#: plainview_sdk/plainview/sdk/form2/inputs/radios.php:59
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/validation.php:182
+#, php-format
+msgid "Please fill in %s."
+msgstr "Du måste fylla i %s."
+
+#: ThreeWP_Broadcast.php:1746
+msgid "Premium Pack"
+msgstr "Premium Pack"
+
+#: ThreeWP_Broadcast.php:1745
+msgid "Premium Pack info"
+msgstr "Info om Premium Pack"
+
+#: ThreeWP_Broadcast.php:1545
+msgid "Put all of the children in the trash"
+msgstr "Lägg samtliga inlägg i papperskorgen"
+
+#: ThreeWP_Broadcast.php:1602
+msgid "Put this broadcasted child post in the trash"
+msgstr "Lägg det multipostade inlägget i papperskorgen"
+
+#: ThreeWP_Broadcast.php:1605
+msgid "Remove link to this broadcasted child post"
+msgstr "Ta bort länkningen till det här multipostade inlägget"
+
+#: plainview_sdk/plainview/sdk/form.php:325
+msgid "Required field"
+msgstr "Måste fyllas i"
+
+#: ThreeWP_Broadcast.php:1543 ThreeWP_Broadcast.php:1600
+msgid "Restore"
+msgstr "Återställ"
+
+#: ThreeWP_Broadcast.php:777
+msgid "Restore all"
+msgstr "Återställ alla"
+
+#: ThreeWP_Broadcast.php:776
+msgid "Restore all of the child posts from the trash"
+msgstr "Återställ samtliga inlägg"
+
+#: ThreeWP_Broadcast.php:1542 ThreeWP_Broadcast.php:1599
+msgid "Restore all of the children from the trash"
+msgstr "Återställ samtliga barn från papperskorgen"
+
+#: ThreeWP_Broadcast.php:772
+msgid "Restore child"
+msgstr "Återställ inlägg"
+
+#: ThreeWP_Broadcast.php:771
+msgid "Restore the child post from the trash"
+msgstr "Återställ inlägget"
+
+#: ThreeWP_Broadcast.php:345
+msgid "Roles"
+msgstr "Roller"
+
+#: ThreeWP_Broadcast.php:384
+msgid "SEO"
+msgstr "Sökmotorsoptimering"
+
+#: plainview_sdk/plainview/sdk/form.php:399
+msgid "SS"
+msgstr "SS"
+
+#: ThreeWP_Broadcast.php:448
+msgid "Save settings"
+msgstr "Spara inställningar"
+
+#: ThreeWP_Broadcast.php:303
+msgid "Save the broadcastable custom post types"
+msgstr "Spara listan över posttyperna som får multipostas"
+
+#: ThreeWP_Broadcast.php:1383
+msgid "Select / deselect all"
+msgstr "Markera / avmarkera alla"
+
+#: ThreeWP_Broadcast.php:492
+msgid "Settings"
+msgstr "Inställningar"
+
+#: ThreeWP_Broadcast.php:1110
+msgid "Shows which blogs have posts linked to this one"
+msgstr "Visar vilka bloggar har inlägg länkade till detta"
+
+#: ThreeWP_Broadcast.php:400
+msgid ""
+"Some custom fields start with underscores. They are generally Wordpress "
+"internal fields and therefore not broadcasted. Some plugins store their "
+"information as underscored custom fields. If you wish them, or some of them, "
+"to be broadcasted, use either of the options below."
+msgstr ""
+"Vissa egna fält börjar med understreck. För det mesta anses de vara "
+"Wordpress' interna fält och multipostas därför inte. Vissa tilläg sparar sin "
+"data som fält med understreck. Om du vill att fälten, eller vissa av fälten, "
+"ska multipostas ändå, använd en kombination av nedanstående inställningar."
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:522
+msgid "Super admin"
+msgstr "Nätverksadmin"
+
+#: ThreeWP_Broadcast.php:1373
+msgid "Taxonomies"
+msgstr "Taxonomier"
+
+#: ThreeWP_Broadcast.php:349
+msgid ""
+"The broadcast access role is the user role required to use the broadcast "
+"function at all."
+msgstr "Vilken användarroll behövs för att använda multipostning alls."
+
+#: ThreeWP_Broadcast.php:906
+msgid "The broadcasted child post has been put in the trash."
+msgstr "Det multipostade inlägget har lagts i papperskorgen."
+
+#: ThreeWP_Broadcast.php:533
+msgid "The child post has been deleted."
+msgstr "Inlägget har tagits bort."
+
+#: ThreeWP_Broadcast.php:837
+msgid "The child post has been restored."
+msgstr "Inlägget har återställts."
+
+#: ThreeWP_Broadcast.php:940
+msgid "The child posts have been put in the trash."
+msgstr "Inläggen har lagts i papperskorgen."
+
+#: ThreeWP_Broadcast.php:872
+msgid "The child posts have been restored."
+msgstr "Inläggen har återställts."
+
+#: ThreeWP_Broadcast.php:426
+#, php-format
+msgid "The default whitelist is: %s"
+msgstr "Standardvärdet för vitlistan är: %s"
+
+#: plainview_sdk/plainview/sdk/form2/inputs/email.php:29
+#, php-format
+msgid "The e-mail address in %s is not valid!"
+msgstr "E-postadressen i fältet %s är inte giltig!"
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:382
+#, php-format
+msgid ""
+"The plugin and all associated settings and database tables have been "
+"removed. Please %sfollow this link to complete the uninstallation procedure"
+"%s."
+msgstr ""
+"Tillägget och alla inställningar och databastabeller har tagits bort. Besök "
+"%sden här länken för att avsluta avinstallationsproceduren%s."
+
+#: ThreeWP_Broadcast.php:432
+msgid ""
+"The priority for the save_post hook. Should be after all other plugins have "
+"finished modifying the post. Default is 640."
+msgstr ""
+
+#: ThreeWP_Broadcast.php:671
+msgid "The selected children were linked!"
+msgstr "De valda inläggen har länkats."
+
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/maxlength.php:31
+#, php-format
+msgid "The text in %s is too long!"
+msgstr "Texten i %s är för lång!"
+
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/minlength.php:42
+#, php-format
+msgid "The text in %s is too short!"
+msgstr "Texten i %s är för kort!"
+
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/max.php:34
+#, php-format
+msgid "The value in %s (%s) is larger than the allowed maximum of %s."
+msgstr "Värdet i %s (%s) är större än maxvärdet %s."
+
+#: plainview_sdk/plainview/sdk/form2/inputs/traits/min.php:34
+#, php-format
+msgid "The value in %s (%s) is smaller than the allowed minimum of %s."
+msgstr "Värdet i %s (%s) är mindre än minimumvärdet %s."
+
+#: plainview_sdk/plainview/sdk/form.php:384
+msgid "The value must be larger than or equal to"
+msgstr "Värdet måste vara minst större eller lika med"
+
+#: plainview_sdk/plainview/sdk/form.php:386
+msgid "The value must be smaller or equal to"
+msgstr "Värdet måste vara mindre eller lika med"
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:383
+msgid "This link will take you to the index page"
+msgstr "Den här länken tar dig till indexsidan"
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:358
+msgid ""
+"This page will remove all the plugin tables and settings from the database "
+"and then deactivate the plugin."
+msgstr ""
+"Detta kommer att ta bort samtliga tilläggets databastabeller och "
+"inställningar, och sedan avaktivera tilläget."
+
+#: ThreeWP_Broadcast.php:1320
+msgid "This post is broadcasted child post. It cannot be broadcasted further."
+msgstr ""
+"Det här inlägget är ett multipostat inlägg. Funktionen kan inte användas."
+
+#: ThreeWP_Broadcast.php:1774
+msgid "ThreeWP Broadcast"
+msgstr "ThreeWP Multipost"
+
+#. $contents = wpautop( $contents );
+#: ThreeWP_Broadcast.php:332
+msgid "ThreeWP Broadcast Premium Pack info"
+msgstr "ThreeWP Multipost Premium Pack-information"
+
+#: ThreeWP_Broadcast.php:1546 ThreeWP_Broadcast.php:1603
+msgid "Trash"
+msgstr "Kasta i papperskorgen"
+
+#: ThreeWP_Broadcast.php:786
+msgid "Trash all child posts"
+msgstr "Lägg samtliga inlägg i papperskorgen"
+
+#: ThreeWP_Broadcast.php:787
+msgid "Trash all children"
+msgstr "Ta bort alla inlägg"
+
+#: ThreeWP_Broadcast.php:782
+msgid "Trash child"
+msgstr "Lägg inlägget i papperskorgen"
+
+#: ThreeWP_Broadcast.php:781
+msgid "Trash the child post"
+msgstr "Lägg inlägget i papperskorgen"
+
+#: ThreeWP_Broadcast.php:495
+msgid "Uninstall"
+msgstr "Avinstallera"
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:365
+msgid "Uninstall plugin"
+msgstr "Avinstallera tillägget"
+
+#: ThreeWP_Broadcast.php:1549 ThreeWP_Broadcast.php:1606
+msgid "Unlink"
+msgstr "Ta bort länk"
+
+#: ThreeWP_Broadcast.php:797
+msgid "Unlink all child posts"
+msgstr "Avlänka samtliga inlägg"
+
+#: ThreeWP_Broadcast.php:798
+msgid "Unlink all children"
+msgstr "Avlänka samtliga inlägg"
+
+#: ThreeWP_Broadcast.php:1548
+msgid "Unlink all of the child posts"
+msgstr "Avlänka samtliga inlägg"
+
+#: ThreeWP_Broadcast.php:1608
+msgid "Unlink and delete this broadcasted child post"
+msgstr "Ta bort länknen och ta bort det multipostade inlägget"
+
+#: ThreeWP_Broadcast.php:792
+msgid "Unlink child"
+msgstr "Avlänka inlägget"
+
+#: ThreeWP_Broadcast.php:791
+msgid "Unlink the child post"
+msgstr "Ta bort inlägget"
+
+#: ThreeWP_Broadcast.php:389
+msgid "Use parent permalink"
+msgstr "Använd källinläggets länk"
+
+#: ThreeWP_Broadcast.php:388
+msgid ""
+"Use the parent post's permalink for the children. If checked, child posts "
+"will link back to the parent post."
+msgstr ""
+"Använd ursprungliga inläggets permalänk istället för de multipostade "
+"inläggens vanliga permalänk."
+
+#: plainview_sdk/plainview/sdk/form.php:388
+msgid "Valid values"
+msgstr "Giltiga värden"
+
+#: ThreeWP_Broadcast.php:355
+msgid ""
+"When a post is linked with broadcasted posts, the child posts are updated / "
+"deleted when the parent is updated."
+msgstr ""
+"När ett inlägg länkas till de multipostade inläggen, uppdateras / tas de "
+"multipostade inlägg bort samtidigt med ursprungliga inlägget."
+
+#: ThreeWP_Broadcast.php:411
+msgid ""
+"When broadcasting internal custom fields, override and do not broadcast "
+"these fields."
+msgstr "När de interna egna fälten multipostas, ignorera följande fält ändå."
+
+#: ThreeWP_Broadcast.php:420
+msgid ""
+"When not broadcasting internal custom fields, override and broadcast these "
+"fields."
+msgstr ""
+"När de egna fälten inte multipostas, se till att multiposta följande egna "
+"fält ändå."
+
+#: ThreeWP_Broadcast.php:361
+msgid "Which role is needed to allow custom field broadcasting?"
+msgstr "Vilken roll behövs för att multiposta egna fält?"
+
+#: ThreeWP_Broadcast.php:367
+msgid ""
+"Which role is needed to allow taxonomy broadcasting? The taxonomies must "
+"have the same slug on all blogs."
+msgstr ""
+"Vilken användarroll behövs för att kunna multiposta taxonomier? Taxonomierna "
+"måste ha exakt samma namn på samtliga bloggar."
+
+#: ThreeWP_Broadcast.php:373
+msgid "Which role is needed to broadcast drafts?"
+msgstr "Vilken roll behövs för att multiposta utkast?"
+
+#: ThreeWP_Broadcast.php:379
+msgid "Which role is needed to broadcast scheduled (future) posts?"
+msgstr "Vilken roll behövs för att multiposta framtida inlägg?"
+
+#: plainview_sdk/plainview/sdk/form.php:400
+msgid "YYYY"
+msgstr "ÅÅÅÅ"
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:361
+msgid "Yes, I'm sure I want to remove all the plugin tables and settings."
+msgstr ""
+"Ja, jag är säker på att jag vill ta bort tillägget och samtliga "
+"inställningar."
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:373
+msgid "You have to check the checkbox in order to uninstall the plugin."
+msgstr "Du måste kryssa i rutan för att avinstallera tillägget."
+
+#: plainview_sdk/plainview/sdk/form.php:390
+msgid "characters"
+msgstr "tecken"
+
+#: plainview_sdk/plainview/sdk/form.php:926
+msgid "characters long"
+msgstr "tecken långt"
+
+#: ThreeWP_Broadcast.php:1381
+msgid "hide all"
+msgstr "göm alla"
+
+#: plainview_sdk/plainview/sdk/form.php:956
+msgid "may not be empty"
+msgstr "får inte lämnas tomt"
+
+#: plainview_sdk/plainview/sdk/form.php:950
+msgid "may not be larger than"
+msgstr "får inte vara större än"
+
+#: plainview_sdk/plainview/sdk/form.php:938
+msgid "may not be smaller than"
+msgstr "får inte vara mindre än"
+
+#: plainview_sdk/plainview/sdk/form.php:926
+msgid "must be at least"
+msgstr "måste vara minst"
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:1913
+msgid "no"
+msgstr "nej"
+
+#: ThreeWP_Broadcast.php:433
+msgid "save_post priority"
+msgstr "save_post prioritet"
+
+#: ThreeWP_Broadcast.php:1384
+msgid "show all"
+msgstr "visa alla"
+
+#: plainview_sdk/plainview/sdk/form.php:388
+msgid "to"
+msgstr "till"
+
+#: plainview_sdk/plainview/sdk/wordpress/base.php:1913
+msgid "yes"
+msgstr "ja"
+
+#~ msgid "%sQueue%s not available."
+#~ msgstr "%sKö%s inte tillgänglig."
+
+#~ msgid "%sThreeWP Broadcast%s version %s is installed."
+#~ msgstr "%sThreeWP Broadcast%s version %s är installerat."
+
+#~ msgid "A Broadcast blog group was added."
+#~ msgstr "En multipostningsgrupp har lagts till."
+
+#~ msgid "A Broadcast blog group was deleted."
+#~ msgstr "En multipostningsgrupp har tagits bort."
+
+#~ msgid "A Broadcast blog group was modified."
+#~ msgstr "En multipostningsgrupp har ändrats."
+
+#~ msgid "Apply"
+#~ msgstr "Verställ"
+
+#~ msgid "Do nothing"
+#~ msgstr "Gör inget"
+
+#~ msgid "Information about the Broadcast Queue Plugin"
+#~ msgstr "Information om Multipostningskötillägget"
+
+#~ msgid "Select blogs in group"
+#~ msgstr "Välj bloggarna i gruppen"
+
+#~ msgid "Selected"
+#~ msgstr "Vald"
+
+#~ msgid "With the selected rows"
+#~ msgstr "Med de valda raderna"
+
+#~ msgid "Blacklist"
+#~ msgstr "Svarta listan"
+
+#~ msgid "Broadcast all the custom fields and the featured image?"
+#~ msgstr "Multiposta alla egna fält samt den utvalda bilden?"
+
+#~ msgid "Broadcast categories also"
+#~ msgstr "Multiposta kategorierna också"
+
+#~ msgid "Create a new group"
+#~ msgstr "Skapa en ny grupp"
+
+#~ msgid "Create taxonomies automatically"
+#~ msgstr "Skapa taxonomier automatiskt"
+
+#~ msgid "Create the new group"
+#~ msgstr "Skapa en ny grupp"
+
+#~ msgid "Group"
+#~ msgstr "Grupp"
+
+#~ msgid "Group blogs have been saved."
+#~ msgstr "Bloggarna har sparats."
+
+#~ msgid "Group setup"
+#~ msgstr "Gruppinställningar"
+
+#~ msgid "Groups"
+#~ msgstr "Grupper"
+
+#~ msgid "Help"
+#~ msgstr "Hjälp"
+
+#~ msgid ""
+#~ "If the site administrator allows it you may create groups to quickly "
+#~ "select several blogs at once. To create a group, start by typing a group "
+#~ "name in the text box and pressing the create button."
+#~ msgstr ""
+#~ "Om administratören tillåter kan du skapa grupper för att snabbt och lätt "
+#~ "kunna välja flera bloggar samtidigt. För att skapa en grupp börja med att "
+#~ "skriv in ett beskrivande gruppnamn i textrutan och tryck sedan på skapa-"
+#~ "knappen."
+
+#~ msgid "New group name"
+#~ msgstr "Nya gruppnamnet"
+
+#~ msgid "No group selected"
+#~ msgstr "Ingen grupp vald"
+
+#~ msgid "Options"
+#~ msgstr "Inställningar"
+
+#~ msgid "Post overview with unlink options"
+#~ msgstr "Inläggsöversikten med möjlighet att ta bort länkningar"
+
+#~ msgid "Required list"
+#~ msgstr "Tvingade bloggar"
+
+#~ msgid "Save groups"
+#~ msgstr "Spara grupperna"
+
+#~ msgid ""
+#~ "Simply choose it in the dropdown box and the blogs you specified will be "
+#~ "automatically chosen."
+#~ msgstr ""
+#~ "Välj den i rullistan och bloggarna du ställt in kommer att väljas "
+#~ "automatiskt."
+
+#~ msgid ""
+#~ "Some settings might be disabled by the site administrator and if you do "
+#~ "not have write access to any blogs, other than this one, the Broadcast "
+#~ "window might not appear."
+#~ msgstr ""
+#~ "Det är möjligt att vissa inställningar har avaktiverats av "
+#~ "administratören. Har du inte skrivtillgång till fler än en blogg kommer "
+#~ "Multipostningsfönstret inte visas."
+
+#~ msgid "The group has been created!"
+#~ msgstr "Gruppen har skapats!"
+
+#~ msgid "The group name may not be empty!"
+#~ msgstr "Gruppens namn får ej vara tomt!"
+
+#~ msgid "The taxonomies must have the same name (slug) on the selected blogs."
+#~ msgstr "Taxonomierna måste ha samma namn (\"slug\") på de valda bloggarna."
+
+#~ msgid ""
+#~ "The taxonomies will be created if they don't exist on the selected blogs."
+#~ msgstr ""
+#~ "Taxonomierna kommer att skapas endast om de inte redan finns på de valda "
+#~ "bloggarna."
+
+#~ msgid ""
+#~ "The window contains several options and a list of blogs you have access "
+#~ "to."
+#~ msgstr ""
+#~ "Fönstret innehåller olika alternativ och en lista över alla bloggar du "
+#~ "har tillgång till."
+
+#~ msgid ""
+#~ "Then select which blogs you want to be automatically selected when you "
+#~ "choose this group when editing a new post. Press the save button when you "
+#~ "are done. Your new group is ready to be used!"
+#~ msgstr ""
+#~ "Välj sedan vilka bloggar du vill ska väljas automatiskt när du väljer den "
+#~ "här gruppen under inläggredigeringsprocessen. Tryck på spara-knappen när "
+#~ "du är klar. Den nya gruppen är färdig att användas!"
+
+#~ msgid "This blog has already been linked."
+#~ msgstr "Bloggen har redan länkats."
+
+#~ msgid "This blog is required and cannot be unselected."
+#~ msgstr "Den här bloggen måste bli multipostat till, enligt administratören."
+
+#~ msgid ""
+#~ "This page lets the admin select which post types in the network should be "
+#~ "able to be broadcasted."
+#~ msgstr ""
+#~ "Sidan tillåter administratören att ange vilka posttyper på nätverket får "
+#~ "multipostas."
+
+#~ msgid ""
+#~ "To <strong>delete</strong> a group, leave all blogs in that group "
+#~ "unmarked and then save."
+#~ msgstr ""
+#~ "För att <strong>ta bort</strong> gruppen, avmarkera alla bloggar i "
+#~ "gruppen och klicka på spara."
+
+#~ msgid ""
+#~ "To use the Broadcast plugin, simply select which blogs you want to "
+#~ "broadcast the post to and then publish the post normally."
+#~ msgstr ""
+#~ "För att använda tillägget, markera vilka bloggar du vill multiposta till "
+#~ "och fortsätt sedan redigera inlägget som vanligt."
+
+#~ msgid "What is Broadcast?"
+#~ msgstr "Vad är Multipostning (Broadcast)?"
+
+#~ msgid "What the Broadcast window looks like"
+#~ msgstr "Hur Multipostningsfönstret ser ut"
+
+#~ msgid ""
+#~ "When a post is linked to children, the children are overwritten when post "
+#~ "is updated - all the taxonomies, tags and fields (including featured "
+#~ "image) are also overwritten -  and when the parent is trashed or deleted "
+#~ "the children get the same treatment. If you want to keep any children and "
+#~ "delete only the parent, use the unlink links in the post overview. The "
+#~ "unlink link below the post name removes all links and the unlinks to the "
+#~ "right remove singular links."
+#~ msgstr ""
+#~ "När ett inlägg länkas till sina barn kommer barninläggen att skrivas över "
+#~ "när förälderinlägget uppdateras - alla taxonomier, etiketter och egna "
+#~ "fält (inklusive den utvalda bilden) kommer att skrivas över - och när "
+#~ "förälderinlägget läggs in papperskorgen eller tas bort kommer samma sak "
+#~ "ske med barninläggen. Om du vill behålla något av barninläggen och bara "
+#~ "ta bort föräldern, använd länkborttagningsmöjligheten i "
+#~ "inläggsöversikten. Möjligheten att ta bort länkningen som står under "
+#~ "inläggsnamnet tar bort alla länkningar och länkarna till höger tar bort "
+#~ "länkningarna en och en."
+
+#~ msgid ""
+#~ "With Broadcast you can post to several blogs at once. The broadcast "
+#~ "window is first shown at the bottom right on the Add New post/page screen."
+#~ msgstr ""
+#~ "Med Multipostning kan du posta till flera bloggar samtidigt. "
+#~ "Multipostningsfönstret visas första gången längst ner till höger när du "
+#~ "skriver ett nytt inlägg."
+
+#~ msgid "You have not created any groups yet."
+#~ msgstr "Du har inte skapat någon grupp än."
+
+#~ msgid "Your groups"
+#~ msgstr "Dina grupper"
+
+#~ msgid "will also mark the broadcasted posts with the same tags."
+#~ msgstr "kommer att multiposta etiketterna tillsammans med själva inlägget."
+
+#~ msgid "will also try to send the taxonomies together with the post."
+#~ msgstr ""
+#~ "försöker att multiposta taxonomierna tillsammans med själva inläggt."
+
+#~ msgid ""
+#~ "will create a link from this post (the parent) to all the broadcasted "
+#~ "posts (children). Updating the parent will result in all the children "
+#~ "being updated. Links to the children can be removed in the page / post "
+#~ "overview."
+#~ msgstr ""
+#~ "kommer att skapa en länk från detta inlägg (föräldern) till alla "
+#~ "multipostade inlägg (barnen). När du uppdaterar föräldern kommer alla "
+#~ "barninlägg att uppdateras. Länkningarna till barninläggen kan tas bort "
+#~ "från inläggsöversikten."
+
+#~ msgid ""
+#~ "will give the broadcasted posts the same custom fields as the original. "
+#~ "Use this setting to broadcast the featured image."
+#~ msgstr ""
+#~ "kommer att multiposta egna fälten. Använd den här inställningen att "
+#~ "multiposta den utvalda bilden."
+
+#~ msgid "Post types to broadcast"
+#~ msgstr "Posttyper att multiposta"

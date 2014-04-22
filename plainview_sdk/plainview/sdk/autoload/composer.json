@@ -1,0 +1,29 @@
+{
+    "name": "plainview/sdk",
+    "description": "Plainview SDK",
+    "license" : "GPL-3.0",
+    "authors": [
+        {
+            "name": "Edward Plainview",
+            "email": "edward@plainview.se"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload":
+    {
+    	"files":
+    	[
+    		"../traits/db_aware_object.php",
+    		"../drupal/db_aware_object.php",
+    		"../traits/method_chaining.php",
+    		"../wordpress/traits/db_aware_object.php"
+    	],
+        "psr-0":
+       {
+       	   "plainview\\sdk" : "../../../"
+        }
+    },
+    "minimum-stability": "dev"
+}

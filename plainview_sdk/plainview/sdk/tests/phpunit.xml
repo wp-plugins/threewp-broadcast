@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+>
+    <testsuites>
+        <testsuite name="Plainview SDK Base">
+            <directory>.</directory>
+        </testsuite>
+        <testsuite name="Plainview SDK Form2">
+            <directory>../form2/tests</directory>
+        </testsuite>
+        <testsuite name="Plainview SDK HTML">
+            <directory>../html/tests</directory>
+        </testsuite>
+        <testsuite name="Plainview SDK Mail">
+            <directory>../mail/tests</directory>
+        </testsuite>
+        <testsuite name="Plainview SDK Pagination">
+            <directory>../pagination/tests</directory>
+        </testsuite>
+        <testsuite name="Plainview SDK Breadcrumbs">
+            <directory>../breadcrumbs/tests</directory>
+        </testsuite>
+        <testsuite name="Plainview SDK Table">
+            <directory>../table/tests</directory>
+        </testsuite>
+        <testsuite name="Plainview SDK Tree">
+            <directory>../tree/tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

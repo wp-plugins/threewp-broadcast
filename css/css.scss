@@ -1,0 +1,74 @@
+#threewp_broadcast.postbox
+{
+	.blogs.html_section
+	{
+		position: relative;
+
+		.show_hide
+		{
+			position: absolute;
+			top: 0;
+			right: 0;
+		}
+
+		legend
+		{
+			margin-bottom: 0.5em;
+			font-style: italic;
+		}
+
+		.form_item_checkbox
+		{
+			background-position: right center;
+			background-repeat: no-repeat;
+			margin-bottom: 0.25em;
+			margin-top: 0.25em;
+
+			&.linked
+			{
+				background-image: url("../images/link-16.png");
+			}
+
+			&.disabled
+			{
+				color: #aaa;
+			}
+
+			&.required
+			{
+				background-image: url("../images/lock-16.png");
+			}
+		}
+
+		.selection_change_container
+		{
+			text-align: center;
+		}
+
+		.selection_change
+		{
+			text-align: center;
+			cursor: pointer;
+		}
+
+		// Hide the selection changers when the blog list is closed.
+		&.closed
+		{
+			.selection_change_container
+			{
+				display: none;
+			}
+		}
+	}
+
+	.html_section
+	{
+		margin-bottom: 1em;
+	}
+
+}
+
+tr.action_3broadcast_broadcasted td.activity_monitor_action
+{
+	background-image: url("../images/threewp_activity_monitor_icon.png");
+}

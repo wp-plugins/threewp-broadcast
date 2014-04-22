@@ -1,0 +1,276 @@
+#: ThreeWP_Broadcast_Blog_Groups.php:389
+msgid "Blog group saved!"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:257 ThreeWP_Broadcast_Blog_Groups.php:280
+#: ThreeWP_Broadcast_Blog_Groups.php:281
+msgid "Blog groups"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:113
+msgid "Blog groups help you to quickly add blogs to the broadcast. First create a blog group and select the blogs you want. When broadcasting the list of blog groups will appear above the blog list."
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:130 ThreeWP_Broadcast_Blog_Groups.php:356
+msgid "Blogs"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:121
+msgid "Click on the group name to edit or delete it."
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:909
+msgid "Could not parse date"
+msgstr ""
+
+#. Form to add a new blog group.
+#: ThreeWP_Broadcast_Blog_Groups.php:170
+msgid "Create a new blog group"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:90
+msgid "Create the blog group"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:396
+msgid "DD"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:401
+msgid "Date format"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:408
+msgid "Delete the group"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:401
+msgid "Delete this blog group"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:368
+msgid "Description"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:229
+msgid "Edit blog group"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:140
+msgid "Edit or delete this blog group"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:341
+msgid "General settings"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:84 ThreeWP_Broadcast_Blog_Groups.php:344
+msgid "Group name"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:397
+msgid "HH"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:404
+msgid "I want to delete this blog group"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:916
+msgid "Invalid date"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:899
+msgid "Invalid email address"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:404
+msgid "Latest valid date"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:395 plainview_sdk/plainview/form.php:398
+msgid "MM"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:390
+msgid "Minimum length"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:129
+msgid "Name"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:147
+msgid "No group has no blogs assigned."
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:258
+msgid "No group selected"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:224
+msgid "Overview"
+msgstr ""
+
+#: plainview_sdk/plainview/form2/inputs/radios.php:59
+#: plainview_sdk/plainview/form2/inputs/traits/validation.php:182
+#, php-format
+msgid "Please fill in %s."
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:325
+msgid "Required field"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:186
+msgid "Roles"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:399
+msgid "SS"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:196
+msgid "Save settings"
+msgstr ""
+
+#. Else return a manual table th.
+#: plainview_sdk/plainview/wordpress/base.php:1147
+#: plainview_sdk/plainview/wordpress/base.php:1152
+msgid "Selected"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:234
+msgid "Settings"
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:518
+msgid "Super admin"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:102
+#, php-format
+msgid "The blog group %s has been created!"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:420
+msgid "The blog group has been deleted. Please return to the overview."
+msgstr ""
+
+#: plainview_sdk/plainview/form2/inputs/email.php:29
+#, php-format
+msgid "The e-mail address in %s is not valid!"
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:374
+#, php-format
+msgid "The plugin and all associated settings and database tables have been removed. Please %sfollow this link to complete the uninstallation procedure%s."
+msgstr ""
+
+#: plainview_sdk/plainview/form2/inputs/traits/maxlength.php:31
+#, php-format
+msgid "The text in %s is too long!"
+msgstr ""
+
+#: plainview_sdk/plainview/form2/inputs/traits/minlength.php:42
+#, php-format
+msgid "The text in %s is too short!"
+msgstr ""
+
+#: plainview_sdk/plainview/form2/inputs/traits/max.php:34
+#, php-format
+msgid "The value in %s (%s) is larger than the allowed maximum of %s."
+msgstr ""
+
+#: plainview_sdk/plainview/form2/inputs/traits/min.php:34
+#, php-format
+msgid "The value in %s (%s) is smaller than the allowed minimum of %s."
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:384
+msgid "The value must be larger than or equal to"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:386
+msgid "The value must be smaller or equal to"
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:375
+msgid "This link will take you to the index page"
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:383
+msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:235
+msgid "Uninstall"
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:357
+msgid "Uninstall plugin"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:376
+msgid "Update the blog group"
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:191
+msgid "Use groups"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:388
+msgid "Valid values"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:400
+msgid "YYYY"
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:353
+msgid "Yes, I'm sure I want to remove all the plugin tables and settings."
+msgstr ""
+
+#: ThreeWP_Broadcast_Blog_Groups.php:117
+msgid "You have not created any blog groups yet."
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:365
+msgid "You have to check the checkbox in order to uninstall the plugin."
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:390
+msgid "characters"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:926
+msgid "characters long"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:956
+msgid "may not be empty"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:950
+msgid "may not be larger than"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:938
+msgid "may not be smaller than"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:926
+msgid "must be at least"
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:1960
+msgid "no"
+msgstr ""
+
+#: plainview_sdk/plainview/form.php:388
+msgid "to"
+msgstr ""
+
+#: plainview_sdk/plainview/wordpress/base.php:1960
+msgid "yes"
+msgstr ""
