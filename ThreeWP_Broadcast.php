@@ -17,6 +17,7 @@ require_once( 'include/vendor/autoload.php' );
 
 use \plainview\sdk\collections\collection;
 use \threewp_broadcast\broadcast_data\blog;
+use \plainview\sdk\html\div;
 
 class ThreeWP_Broadcast
 	extends \threewp_broadcast\ThreeWP_Broadcast_Base
@@ -262,10 +263,7 @@ class ThreeWP_Broadcast
 
 		if ( $db_ver < 5 )
 		{
-			$query = sprintf( "ALTER TABLE `%s` ADD `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ID of row' FIRST;",
-				$this->broadcast_data_table()
-			);
-			$this->query( $query );
+			$this->create_broadcast_data_id_column();
 			$db_ver = 5;
 		}
 
@@ -540,6 +538,76 @@ class ThreeWP_Broadcast
 		$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );
 		$tabs->tab( 'post_types' )		->callback_this( 'admin_menu_post_types' )		->name_( 'Custom post types' );
 		$tabs->tab( 'uninstall' )		->callback_this( 'admin_uninstall' )			->name_( 'Uninstall' );
+
+		echo $tabs;
+	}
+
+	public function broadcast_menu_tabs()
+	{
+		$this->load_language();
+
+		$tabs = $this->tabs()
+			->default_tab( 'user_broadcast_info' )
+			->get_key( 'action' );
+
+		if ( isset( $_GET[ 'action' ] ) )
+		{
+			switch( $_GET[ 'action' ] )
+			{
+				case 'user_delete':
+					$tabs->tab( 'user_delete' )
+						->heading_( 'Delete the child post' )
+						->name_( 'Delete child' );
+					break;
+				case 'user_delete_all':
+					$tabs->tab( 'user_delete_all' )
+						->heading_( 'Delete all child posts' )
+						->name_( 'Delete all children' );
+					break;
+				case 'user_find_orphans':
+					$tabs->tab( 'user_find_orphans' )
+						->heading_( 'Find orphans' )
+						->name_( 'Find orphans' );
+					break;
+				case 'user_restore':
+					$tabs->tab( 'user_restore' )
+						->heading_( 'Restore the child post from the trash' )
+						->name_( 'Restore child' );
+					break;
+				case 'user_restore_all':
+					$tabs->tab( 'user_restore_all' )
+						->heading_( 'Restore all of the child posts from the trash' )
+						->name_( 'Restore all' );
+					break;
+				case 'user_trash':
+					$tabs->tab( 'user_trash' )
+						->heading_( 'Trash the child post' )
+						->name_( 'Trash child' );
+					break;
+				case 'user_trash_all':
+					$tabs->tab( 'user_trash_all' )
+						->heading_( 'Trash all child posts' )
+						->name_( 'Trash all children' );
+					break;
+				case 'user_unlink':
+					$tabs->tab( 'user_unlink' )
+						->heading_( 'Unlink the child post' )
+						->name_( 'Unlink child' );
+					break;
+				case 'user_unlink_all':
+					$tab = $tabs->tab( 'user_unlink_all' )
+						->callback_this( 'user_unlink' )
+						->heading_( 'Unlink all child posts' )
+						->name_( 'Unlink all children' );
+					break;
+			}
+		}
+
+		$tabs->tab( 'user_broadcast_info' )->name_( 'Broadcast information' );
+
+		$action = new actions\broadcast_menu_tabs();
+		$action->tabs = $tabs;
+		$action->apply();
 
 		echo $tabs;
 	}
@@ -822,70 +890,6 @@ This can be increased by adding the following to your wp-config.php:
 		$row->td()->text( $text );
 
 		echo $table;
-	}
-
-	public function user_menu_tabs()
-	{
-		$this->load_language();
-
-		$tabs = $this->tabs()->default_tab( 'user_broadcast_info' )->get_key( 'action' );
-
-		if ( isset( $_GET[ 'action' ] ) )
-		{
-			switch( $_GET[ 'action' ] )
-			{
-				case 'user_delete':
-					$tabs->tab( 'user_delete' )
-						->heading_( 'Delete the child post' )
-						->name_( 'Delete child' );
-					break;
-				case 'user_delete_all':
-					$tabs->tab( 'user_delete_all' )
-						->heading_( 'Delete all child posts' )
-						->name_( 'Delete all children' );
-					break;
-				case 'user_find_orphans':
-					$tabs->tab( 'user_find_orphans' )
-						->heading_( 'Find orphans' )
-						->name_( 'Find orphans' );
-					break;
-				case 'user_restore':
-					$tabs->tab( 'user_restore' )
-						->heading_( 'Restore the child post from the trash' )
-						->name_( 'Restore child' );
-					break;
-				case 'user_restore_all':
-					$tabs->tab( 'user_restore_all' )
-						->heading_( 'Restore all of the child posts from the trash' )
-						->name_( 'Restore all' );
-					break;
-				case 'user_trash':
-					$tabs->tab( 'user_trash' )
-						->heading_( 'Trash the child post' )
-						->name_( 'Trash child' );
-					break;
-				case 'user_trash_all':
-					$tabs->tab( 'user_trash_all' )
-						->heading_( 'Trash all child posts' )
-						->name_( 'Trash all children' );
-					break;
-				case 'user_unlink':
-					$tabs->tab( 'user_unlink' )
-						->heading_( 'Unlink the child post' )
-						->name_( 'Unlink child' );
-					break;
-				case 'user_unlink_all':
-					$tab = $tabs->tab( 'user_unlink_all' )
-						->callback_this( 'user_unlink' )
-						->heading_( 'Unlink all child posts' )
-						->name_( 'Unlink all children' );
-					break;
-			}
-		}
-
-		$tabs->tab( 'user_broadcast_info' )->name_( 'Broadcast information' );
-
-		echo $tabs;
 	}
 
 	/**
@@ -1290,6 +1294,8 @@ This can be increased by adding the following to your wp-config.php:
 		if ( isset( $_POST[ 'broadcast' ] ) )
 			$this->save_last_used_settings( $this->user_id(), $_POST[ 'broadcast' ] );
 
+		$this->debug( 'We are currently on blog %s (%s).', get_bloginfo( 'blogname' ), get_current_blog_id() );
+
 		$post = get_post( $post_id );
 
 		$meta_box_data = $this->create_meta_box( $post );
@@ -1651,16 +1657,8 @@ This can be increased by adding the following to your wp-config.php:
 	}
 
 	/**
-		@brief		Fill the broadcasting_data object with information.
-
-		@details
-
-		The difference between the calculations in this filter and the actual broadcast_post method is that this filter
-
-		1) does access checks
-		2) tells broadcast_post() WHAT to broadcast, not how.
-
-		@since		20131004
+		@brief		Handle the display of the custom column.
+		@since		2014-04-18 08:30:19
 	**/
 	public function threewp_broadcast_manage_posts_custom_column( $filter )
 	{
@@ -1683,108 +1681,125 @@ This can be increased by adding the following to your wp-config.php:
 				// Only display if there is more than one child post
 				if ( count( $children ) > 1 )
 				{
-					$url_delete_all = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_delete_all&amp;post=%s", $filter->parent_post_id );
-					$url_delete_all = wp_nonce_url( $url_delete_all, 'broadcast_delete_all_' . $filter->parent_post_id );
+					$strings = new \threewp_broadcast\collections\strings_with_metadata;
 
-					$url_restore_all = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_restore_all&amp;post=%s", $filter->parent_post_id );
-					$url_restore_all = wp_nonce_url( $url_restore_all, 'broadcast_restore_all_' . $filter->parent_post_id );
+					$strings->set( 'div_open', '<div class="row-actions broadcasted_blog_actions">' );
+					$strings->set( 'text_all', $this->_( 'All' ) );
+					$strings->set( 'div_small_open', '<small>' );
 
-					$url_trash_all = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_trash_all&amp;post=%s", $filter->parent_post_id );
-					$url_trash_all = wp_nonce_url( $url_trash_all, 'broadcast_trash_all_' . $filter->parent_post_id );
+					$url = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_restore_all&amp;post=%s", $filter->parent_post_id );
+					$url = wp_nonce_url( $url, 'broadcast_restore_all_' . $filter->parent_post_id );
+					$strings->set( 'restore_all_separator', ' | ' );
+					$strings->set( 'restore_all', sprintf( '<a href="%s" title="%s">%s</a>',
+						$url,
+						$this->_( 'Restore all of the children from the trash' ),
+						$this->_( 'Restore' )
+					) );
+
+					$url = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_trash_all&amp;post=%s", $filter->parent_post_id );
+					$url = wp_nonce_url( $url, 'broadcast_trash_all_' . $filter->parent_post_id );
+					$strings->set( 'trash_all_separator', ' | ' );
+					$strings->set( 'trash_all', sprintf( '<a href="%s" title="%s">%s</a>',
+						$url,
+						$this->_( 'Put all of the children in the trash' ),
+						$this->_( 'Trash' )
+					) );
 
 					$url_unlink_all = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_unlink_all&amp;post=%s", $filter->parent_post_id );
 					$url_unlink_all = wp_nonce_url( $url_unlink_all, 'broadcast_unlink_all_' . $filter->parent_post_id );
-
-					$string = sprintf( '
-						<div class="row-actions broadcasted_blog_actions">
-							%s:
-							<small>
-								<a href="%s" title="%s">%s</a>
-								| <a href="%s" title="%s">%s</a>
-								| <a href="%s" title="%s">%s</a>
-								| <span class="trash"><a href="%s" title="%s">%s</a></span>
-							</small>
-						</div>
-					',
-						$this->_( 'All' ),
-						$url_restore_all,
-						$this->_( 'Restore all of the children from the trash' ),
-						$this->_( 'Restore' ),
-						$url_trash_all,
-						$this->_( 'Put all of the children in the trash' ),
-						$this->_( 'Trash' ),
-						$url_unlink_all,
+					$strings->set( 'unlink_all_separator', ' | ' );
+					$strings->set( 'unlink_all', sprintf( '<a href="%s" title="%s">%s</a>',
+						$url,
 						$this->_( 'Unlink all of the child posts' ),
-						$this->_( 'Unlink' ),
-						$url_delete_all,
-						$this->_( 'Permanently all the broadcasted children' ),
+						$this->_( 'Unlink' )
+					) );
+
+					$url = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_delete_all&amp;post=%s", $filter->parent_post_id );
+					$url = wp_nonce_url( $url, 'broadcast_delete_all_' . $filter->parent_post_id );
+					$strings->set( 'delete_all_separator', ' | ' );
+					$strings->set( 'delete_all', sprintf( '<span class="trash"><a href="%s" title="%s">%s</a></span>',
+						$url,
+						$this->_( 'Permanently delete all the broadcasted children' ),
 						$this->_( 'Delete' )
-					);
-					$filter->html->put( 'delete_all', $string );
+					) );
+
+					$strings->set( 'div_small_close', '</small>' );
+					$strings->set( 'div_close', '</div>' );
+
+					$filter->html->put( 'delete_all', $strings );
 				}
 
-				$blogs = new \plainview\sdk\collections\collection;
-				$output = [];
+				$collection = new \threewp_broadcast\collections\strings;
 
 				foreach( $children as $child_blog_id => $child_post_id )
 				{
+					$strings = new \threewp_broadcast\collections\strings_with_metadata;
+
 					$url_child = get_blog_permalink( $child_blog_id, $child_post_id );
 					// The post id is for the current blog, not the target blog.
 
-					$url_delete = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_delete&amp;post=%s&amp;child=%s", $filter->parent_post_id, $child_blog_id );
-					$url_delete = wp_nonce_url( $url_delete, 'broadcast_delete_' . $child_blog_id . '_' . $filter->parent_post_id );
-
-					$url_restore = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_restore&amp;post=%s&amp;child=%s", $filter->parent_post_id, $child_blog_id );
-					$url_restore = wp_nonce_url( $url_restore, 'broadcast_restore_' . $child_blog_id . '_' . $filter->parent_post_id );
-
-					$url_trash = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_trash&amp;post=%s&amp;child=%s", $filter->parent_post_id, $child_blog_id );
-					$url_trash = wp_nonce_url( $url_trash, 'broadcast_trash_' . $child_blog_id . '_' . $filter->parent_post_id );
-
-					$url_unlink = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_unlink&amp;post=%s&amp;child=%s", $filter->parent_post_id, $child_blog_id );
-					$url_unlink = wp_nonce_url( $url_unlink, 'broadcast_unlink_' . $child_blog_id . '_' . $filter->parent_post_id );
-
 					// For get_bloginfo.
 					switch_to_blog( $child_blog_id );
+					$blogname = get_bloginfo( 'blogname' );
+					restore_current_blog();
 
-					$string = sprintf( '
-						<div class="child_blog_name blog_%s">
-							<a class="broadcasted_child" href="%s">
-								%s
-							</a>
-							<span class="row-actions broadcasted_blog_actions">
-								<small>
-								<a href="%s" title="%s">%s</a>
-								| <span><a href="%s" title="%s">%s</a></span>
-								| <span><a href="%s" title="%s">%s</a></span>
-								| <span class="trash"><a href="%s" title="%s">%s</a></span>
-								</small>
-							</span>
-						</div>
-					',
-						$child_blog_id,
-						$url_child,
-						get_bloginfo( 'blogname' ),
-						$url_restore,
+					$strings->metadata()->set( 'child_blog_id', $child_blog_id );
+					$strings->metadata()->set( 'blogname', $blogname );
+
+					$strings->set( 'div_open', sprintf( '<div class="child_blog_name blog_%s">', $child_blog_id ) );
+					$strings->set( 'a_broadcasted_child', sprintf( '<a class="broadcasted_child" href="%s">%s </a>', $url_child, $blogname ) );
+					$strings->set( 'span_row_actions_open', '<span class="row-actions broadcasted_blog_actions">' );
+					$strings->set( 'small_open', '<small>' );
+
+					$url = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_restore&amp;post=%s&amp;child=%s", $filter->parent_post_id, $child_blog_id );
+					$url = wp_nonce_url( $url, 'broadcast_restore_' . $child_blog_id . '_' . $filter->parent_post_id );
+					$strings->set( 'restore_separator', ' | ' );
+					$strings->set( 'restore', sprintf( '<a href="%s" title="%s">%s</a>',
+						$url,
 						$this->_( 'Restore all of the children from the trash' ),
-						$this->_( 'Restore' ),
-						$url_trash,
+						$this->_( 'Restore' )
+					) );
+
+					$url = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_trash&amp;post=%s&amp;child=%s", $filter->parent_post_id, $child_blog_id );
+					$url = wp_nonce_url( $url, 'broadcast_trash_' . $child_blog_id . '_' . $filter->parent_post_id );
+					$strings->set( 'trash_separator', ' | ' );
+					$strings->set( 'trash', sprintf( '<a href="%s" title="%s">%s</a>',
+						$url,
 						$this->_( 'Put this broadcasted child post in the trash' ),
-						$this->_( 'Trash' ),
-						$url_unlink,
+						$this->_( 'Trash' )
+					) );
+
+					$url = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_unlink&amp;post=%s&amp;child=%s", $filter->parent_post_id, $child_blog_id );
+					$url = wp_nonce_url( $url, 'broadcast_unlink_' . $child_blog_id . '_' . $filter->parent_post_id );
+					$strings->set( 'unlink_separator', ' | ' );
+					$strings->set( 'unlink', sprintf( '<a href="%s" title="%s">%s</a>',
+						$url,
 						$this->_( 'Remove link to this broadcasted child post' ),
-						$this->_( 'Unlink' ),
-						$url_delete,
+						$this->_( 'Unlink' )
+					) );
+
+					$url = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_delete&amp;post=%s&amp;child=%s", $filter->parent_post_id, $child_blog_id );
+					$url = wp_nonce_url( $url, 'broadcast_delete_' . $child_blog_id . '_' . $filter->parent_post_id );
+					$strings->set( 'delete_separator', ' | ' );
+					$strings->set( 'delete', sprintf( '<span class="trash"><a href="%s" title="%s">%s</a></span>',
+						$url,
 						$this->_( 'Unlink and delete this broadcasted child post' ),
 						$this->_( 'Delete' )
-					);
+					) );
 
-					$blogs->put( $child_blog_id, $string );
-					$output[ get_bloginfo( 'blogname' ) ] = $string;
-					restore_current_blog();
+					$strings->set( 'small_close', '</small>' );
+					$strings->set( 'span_row_actions_close', '</span>' );
+					$strings->set( 'div_close', '</div>' );
+
+					$collection->set( $blogname, $strings );
 				}
-				ksort( $output );
-				$filter->html->put( 'broadcasted_to', implode( '', $output ) );
-				$filter->blogs = $blogs;
+
+				$collection->sort_by( function( $child )
+				{
+					return $child->metadata()->get( 'blogname' );
+				});
+
+				$filter->html->put( 'broadcasted_to', $collection );
 			}
 		}
 		$filter->applied();
@@ -1969,7 +1984,7 @@ This can be increased by adding the following to your wp-config.php:
 			$this->_( 'Broadcast' ),
 			'edit_posts',
 			'threewp_broadcast',
-			[ &$this, 'user_menu_tabs' ]
+			[ &$this, 'broadcast_menu_tabs' ]
 		);
 
 		$this->add_submenu_pages();
@@ -2008,14 +2023,23 @@ This can be increased by adding the following to your wp-config.php:
 
 		// Sometimes the search didn't find the term because it's SIMILAR and not exact.
 		// WP will complain and give us the term tax id.
-		if ( is_wp_error( $action->new_term ) )
+		if ( is_wp_error( $term ) )
 		{
-			$wp_error = $action->new_term;
+			$wp_error = $term;
+			$this->debug( 'Error creating the term: %s. Error was: %s', $action->term->name, serialize( $wp_error->error_data ) );
 			if ( isset( $wp_error->error_data[ 'term_exists' ] ) )
-				$term_taxonomy_id = $wp_error->error_data[ 'term_exists' ];
+			{
+				$term_id = $wp_error->error_data[ 'term_exists' ];
+				$this->debug( 'Term exists already with the term ID: %s', $term_id );
+				$term = get_term_by( 'id', $term_id, $action->taxonomy, ARRAY_A );
+			}
+			else
+			{
+				throw new Exception( 'Unable to create a new term.' );
+			}
 		}
-		else
-			$term_taxonomy_id = $term[ 'term_taxonomy_id' ];
+
+		$term_taxonomy_id = $term[ 'term_taxonomy_id' ];
 
 		$this->debug( 'Created the new term %s with the term taxonomy ID of %s.', $action->term->name, $term_taxonomy_id );
 
@@ -2215,7 +2239,7 @@ This can be increased by adding the following to your wp-config.php:
 		// Handle any galleries.
 		$bcd->galleries = new collection;
 		$matches = $this->find_shortcodes( $bcd->post->post_content, 'gallery' );
-		$this->debug( 'Found %s gallery shortcodes. ', count( $matches[ 2 ] ) );
+		$this->debug( 'Found %s gallery shortcodes.', count( $matches[ 2 ] ) );
 
 		// [2] contains only the shortcode command / key. No options.
 		foreach( $matches[ 2 ] as $index => $key )
@@ -2266,6 +2290,7 @@ This can be increased by adding the following to your wp-config.php:
 
 			// Create new post data from the original stuff.
 			$bcd->new_post = (array) $bcd->post;
+
 			foreach( [ 'comment_count', 'guid', 'ID', 'post_parent' ] as $key )
 				unset( $bcd->new_post[ $key ] );
 
@@ -2305,7 +2330,9 @@ This can be increased by adding the following to your wp-config.php:
 				$this->debug( 'Creating a new post.' );
 				$temp_post_data = $bcd->new_post;
 				unset( $temp_post_data[ 'ID' ] );
+
 				$result = wp_insert_post( $temp_post_data, true );
+
 				// Did we manage to insert the post properly?
 				if ( intval( $result ) < 1 )
 				{
@@ -2708,6 +2735,18 @@ This can be increased by adding the following to your wp-config.php:
 			// 3. Overwrite the metadata that needs to be overwritten with fresh data.
 			wp_update_attachment_metadata( $o->attachment_id,  $attach_data );
 		}
+	}
+
+	/**
+		@brief		Creates the ID column in the broadcast data table.
+		@since		2014-04-20 20:19:45
+	**/
+	public function create_broadcast_data_id_column()
+	{
+		$query = sprintf( "ALTER TABLE `%s` ADD `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ID of row' FIRST;",
+			$this->broadcast_data_table()
+		);
+		$this->query( $query );
 	}
 
 	/**

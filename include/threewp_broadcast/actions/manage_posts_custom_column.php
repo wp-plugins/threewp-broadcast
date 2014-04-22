@@ -11,14 +11,16 @@ class manage_posts_custom_column
 
 	public function _construct()
 	{
-		$this->html = new \plainview\sdk\collections\collection;
+		$this->html = new \threewp_broadcast\collections\strings_with_metadata;
 	}
 
 	public function render()
 	{
 		$r = '';
 		foreach( $this->html as $key => $html )
+		{
 			$r .= sprintf( '<div class="%s">%s</div>', $key, $html );
+		}
 		return $r;
 	}
 }

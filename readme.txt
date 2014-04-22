@@ -5,7 +5,7 @@ License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
 Tags: broadcast, multipost, duplicate, posts, sitepress, threewp, linking, posts, multiple, blogs, woocommerce, wpml, synchronize, event organiser, acf
-Tested up to: 3.8.2
+Tested up to: 3.9
 
 Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
 
@@ -54,6 +54,7 @@ For a complete list of features and more information, see <a href="http://plainv
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
 * <strong>Permalinks</strong> enables more precise permalink control.
+* <strong>Purge Children</strong> removes children and their attached files from child blogs.
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
 Sync Taxonomies
@@ -207,6 +208,12 @@ It works transparently in the background, but in case you've never really used W
 This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager. 2014-01-12.
 
 == Changelog ==
+
+= 2.21 20140422 =
+* New: Custom roles are accepted.
+* New: Broadcast Data check checks that the table has the ID column.
+* New: Premium Pack plugin: Purge Children.
+* Fix: Fatal error when syncing taxonomies. Sometimes.
 
 = 2.20 20140412 =
 * New: Premium Pack plugins: Custom Field Attachments, Sync Taxonomies.

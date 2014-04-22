@@ -185,6 +185,12 @@ extends \threewp_broadcast\maintenance\checks\check
 		if ( $o->form->is_posting() )
 			$o->form->post();
 
+		if ( isset( $this->data->id_column_missing ) )
+		{
+			$this->broadcast()->create_broadcast_data_id_column();
+			$o->r .= $this->broadcast()->p( 'The broadcast data table is missing the ID column. It should now have been created. Please rerun the test. If the test fails, then something is wrong with the database.' );
+		}
+
 		$o->r .= $o->form->open_tag();
 		$this->step_results_fail_duplicate_bcd( $o );
 		$this->step_results_fail_broken_bcd( $o );
@@ -271,6 +277,23 @@ extends \threewp_broadcast\maintenance\checks\check
 	public function step_start()
 	{
 		$this->table = $this->broadcast()->broadcast_data_table();
+
+		// Check that the table has an ID column at all.
+		$query = sprintf( 'EXPLAIN `%s`', $this->table );
+		$results = $this->broadcast()->query( $query );
+		$found = false;
+		foreach( $results as $result )
+		{
+			if ( $result[ 'Field' ] == 'id' )
+				$found = true;
+		}
+		if ( ! $found )
+		{
+			$this->data->id_column_missing = true;;
+			$r = $this->broadcast()->p_( 'The Broadcast Data table is missing the ID column.' );
+			$r .= $this->next_step( 'results' );
+			return $r;
+		}
 
 		// Count the rows in the table.
 		$query = sprintf( 'SELECT `id` FROM `%s`', $this->table );

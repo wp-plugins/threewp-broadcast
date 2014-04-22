@@ -16,6 +16,8 @@
 
 	@par	Changelog
 
+	- 20140413				roles() removed.
+	- 20140413				Flexible role handling.
 	- 20140406				paths->url can handle plugins in subdirectories.
 	- 20131211				Better options handling (64 and 255 length checks).
 	- 20131210				get_option_prefix allows for shortening of option names.
@@ -105,8 +107,6 @@
 
 	@author		Edward Plainview	edward@plainview.se
 	@copyright	GPL v3
-	@version	20131015
-
 */
 
 namespace plainview\sdk\wordpress;
@@ -173,39 +173,6 @@ class base
 		@var		$wpdb
 	**/
 	protected $wpdb;
-
-	/**
-		@brief		The list of the standard user roles in Wordpress.
-
-		First an array of role_name => array
-
-		And then each role is an array of name => role_name and current_user_can => capability.
-
-		@since		20130416
-		@var		$roles
-	**/
-	protected $roles = array(
-		'administrator' => array(
-			'name' => 'administrator',
-			'current_user_can' => 'manage_options',
-		),
-		'editor' => array(
-			'name' => 'editor',
-			'current_user_can' => 'manage_links',
-		),
-		'author' => array(
-			'name' => 'author',
-			'current_user_can' => 'publish_posts',
-		),
-		'contributor' => array(
-			'name' => 'contributor',
-			'current_user_can' => 'edit_posts',
-		),
-		'subscriber' => array(
-			'name' => 'subscriber',
-			'current_user_can' => 'read',
-		),
-	);
 
 	/**
 		@brief		Array of options => default_values that this plugin stores sitewide.
@@ -508,9 +475,41 @@ class base
 	**/
 	public function get_user_role()
 	{
-		foreach( $this->roles as $role )
-			if ( current_user_can( $role['current_user_can'] ) )
-				return $role['name'];
+		if ( function_exists( 'is_super_admin' ) && is_super_admin() )
+			return 'super_admin';
+
+		global $current_user;
+		wp_get_current_user();
+
+		if ( ! $current_user )
+			return false;
+
+		// We want the roles
+		$roles = $this->roles_as_values();
+
+		// Get the user's most powerful role.
+		$max = 0;
+		foreach( $current_user->roles as $role )
+			if ( isset( $roles[ $role ] ) )
+				$max = max( $max, $roles[ $role ] );
+
+		$roles = array_flip( $roles );
+		return $roles[ $max ];
+	}
+
+	/**
+		@brief		Return an array containing role => value.
+		@since		2014-04-13 13:08:29
+	**/
+	public function roles_as_values()
+	{
+		$roles = $this->roles_as_options();
+		// And we want them numbered with the weakest at the top.
+		$roles = array_reverse( $roles );
+		$roles = array_keys( $roles );
+		// And the key should be the name of the role
+		$roles = array_flip( $roles );
+		return $roles;
 	}
 
 	/**
@@ -520,12 +519,11 @@ class base
 	**/
 	public function roles_as_options()
 	{
-		$r = array();
+		global $wp_roles;
+		$roles = $wp_roles->get_names();
 		if ( function_exists( 'is_super_admin' ) )
-			$r['super_admin'] = $this->_( 'Super admin' );
-		foreach( $this->roles as $role )
-			$r[ $role[ 'name' ] ] = _( ucfirst( $role[ 'name' ] ) );		// See how we ask WP to translate the roles for us? See also how it doesn't. Sometimes.
-		return $r;
+			$roles = array_merge( [ 'super_admin' => $this->_( 'Super admin' ) ], $roles );
+		return $roles;
 	}
 
 	/**
@@ -536,25 +534,28 @@ class base
 	**/
 	public function role_at_least( $role )
 	{
-		global $current_user;
-		wp_get_current_user();
+		$user_role = $this->get_user_role();
+		if ( ! $user_role )
+			return false;
 
-		if ( $current_user === null )
-		    return false;
-
+		// No role? Then assume the user is capable of whatever that is.
 		if ( $role == '' )
 			return true;
 
-		if (function_exists( 'is_super_admin' ) && is_super_admin() )
+		if ( function_exists( 'is_super_admin' ) && is_super_admin() )
 			return true;
 
 		if ( $role == 'super_admin' )
 			return false;
 
-		// This was previously done by current_user_can, but for some reason it doesn't work all the time in WP3.5.
-		// So now I have to check "manually", which probably means that filters are rendered ineffective.
-		$role_cap = $this->roles[$role]['current_user_can'];
-		return isset( $current_user->allcaps[ $role_cap ] ) && $current_user->allcaps[ $role_cap ] == true;
+		$roles = $this->roles_as_values();
+		$role_value = $roles[ $role ];
+
+		// User role is
+		$user_role = $this->get_user_role();
+		$user_role_value = $roles[ $user_role ];
+
+		return $user_role_value >= $role_value;
 	}
 
 	/**
@@ -1617,39 +1618,6 @@ class base
 	public function pot_keywords()
 	{
 		return array();
-	}
-
-	/**
-		@brief		Return a roles collection.
-		@return		roles\collection		The collection of roles.
-		@since		20131015
-	**/
-	public function roles()
-	{
-		$roles = new roles\collection;
-
-		$role = new roles\subscriber;
-		$roles->put( $role::$id, $role );
-
-		$role = new roles\contributor;
-		$roles->put( $role::$id, $role );
-
-		$role = new roles\author;
-		$roles->put( $role::$id, $role );
-
-		$role = new roles\editor;
-		$roles->put( $role::$id, $role );
-
-		$role = new roles\administrator;
-		$roles->put( $role::$id, $role );
-
-		if ( function_exists( 'is_super_admin' ) )
-		{
-			$role = new roles\superadmin;
-			$roles->put( $role::$id, $role );
-		}
-
-		return $roles;
 	}
 
 	/**

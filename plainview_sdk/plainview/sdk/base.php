@@ -13,6 +13,8 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140413		wordpress - new roles handling
+	- 20140412		wordpress/db trait - fixed insert bug.
 	- 20140406		wordpress
 	- 20140331		Fixed Drupal db_aware_object path.
 	- 20140218		form2
@@ -99,7 +101,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140406;
+	protected $sdk_version = 20140413;
 
 	/**
 		@brief		Constructor.

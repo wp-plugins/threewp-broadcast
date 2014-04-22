@@ -41,6 +41,10 @@ extends \threewp_broadcast\maintenance\checks\data
 	public function is_error_free()
 	{
 		$count = 0;
+
+		if ( isset( $this->id_column_missing ) )
+			$count++;
+
 		foreach( [
 			'duplicate_bcd',
 			'broken_bcd',
