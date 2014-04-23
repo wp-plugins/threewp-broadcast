@@ -85,7 +85,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.20;
+	public $plugin_version = 2.21;
 
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
