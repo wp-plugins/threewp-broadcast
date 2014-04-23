@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140418		wordpress wp_die()
 	- 20140413		wordpress - new roles handling
 	- 20140412		wordpress/db trait - fixed insert bug.
 	- 20140406		wordpress
@@ -101,7 +102,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140413;
+	protected $sdk_version = 20140418;
 
 	/**
 		@brief		Constructor.

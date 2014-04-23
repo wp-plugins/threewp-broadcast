@@ -16,6 +16,7 @@
 
 	@par	Changelog
 
+	- 20140418				wp_die().
 	- 20140413				roles() removed.
 	- 20140413				Flexible role handling.
 	- 20140406				paths->url can handle plugins in subdirectories.
@@ -1925,6 +1926,20 @@ class base
 		if ( $wrap )
 			$diff = '<span title="'.$current.'">' . $diff . '</span>';
 		return $diff;
+	}
+
+	/**
+		@brief		Dies after sprinting the arguments.
+		@since		2014-04-18 09:16:12
+	**/
+	public function wp_die( $message )
+	{
+		$args = func_get_args();
+		$text =  call_user_func_array( 'sprintf', $args );
+		if ( $text == '' )
+			$text = $message;
+		$this->error( $text );
+		wp_die( $text );
 	}
 
 	/**
