@@ -209,6 +209,12 @@ This plugin will soon be replaced by a WPML premium plugin that enables broadcas
 
 == Changelog ==
 
+= 2.22 201405xx =
+* Fix: Attachment metadata was not copied sometimes.
+* New: Broadcast file checksum info, for debugging purposes.
+* Code: Even more debug info.
+* Code: code_export removed. Debug methods are now a trait in the SDK.
+
 = 2.21 20140422 =
 * New: Custom roles are accepted.
 * New: Broadcast Data check checks that the table has the ID column.
