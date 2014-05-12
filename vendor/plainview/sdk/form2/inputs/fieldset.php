@@ -11,11 +11,7 @@ namespace plainview\sdk\form2\inputs;
 class fieldset
 	extends input
 {
-	use traits\container
-	{
-		traits\container::get_validation_errors insteadof traits\validation;
-		traits\container::validate insteadof traits\validation;
-	}
+	use traits\container;
 
 	public $legend;
 
@@ -66,4 +62,3 @@ class fieldset
 		return $this->form()->indentation() + 1;
 	}
 }
-

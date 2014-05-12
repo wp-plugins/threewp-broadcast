@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140512		Fixed form2: clashing validation trait in some versions of PHP.
 	- 20140510		wordpress
 	- 20140508		Fixed form2 containers validation.
 				wordpress
@@ -109,7 +110,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140510;
+	protected $sdk_version = 20140512;
 
 	/**
 		@brief		Constructor.
