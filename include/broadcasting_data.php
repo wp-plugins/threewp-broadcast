@@ -176,4 +176,13 @@ class broadcasting_data
 	{
 		return count( $this->blogs ) > 0;
 	}
+
+	/**
+		@brief		Return the new post as an object.
+		@since		2014-05-20 19:00:16
+	**/
+	public function new_post()
+	{
+		return (object) $this->new_post;
+	}
 }

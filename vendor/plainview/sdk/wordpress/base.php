@@ -830,12 +830,12 @@ class base
 		@return					Value.
 		@since		20130416
 	**/
-	public function get_option( $option )
+	public function get_option( $option, $default = 'no_default_value' )
 	{
 		if ( $this->is_network )
-			return $this->get_site_option( $option );
+			return $this->get_site_option( $option, $default );
 		else
-			return $this->get_local_option( $option );
+			return $this->get_local_option( $option, $default );
 	}
 
 	/**
@@ -846,12 +846,19 @@ class base
 		@return						Value.
 		@since		20130416
 	**/
-	public function get_local_option( $option, $default = false)
+	public function get_local_option( $option, $default = 'no_default_value' )
 	{
-		$option = $this->fix_local_option_name( $option );
-		$value = get_option( $option );
-		if ( $value === false )
+		$fixed_option = $this->fix_local_option_name( $option );
+		$value = get_option( $option, 'no_default_value' );
+		if ( $value === 'no_default_value' )
+		{
+			$options = $this->local_options();
+			if ( isset( $options[ $option ] ) )
+				$default = $options[ $option ];
+			else
+				$default = false;
 			return $default;
+		}
 		else
 			return $value;
 	}
@@ -864,12 +871,21 @@ class base
 		@return					Value.
 		@since		20130416
 	**/
-	public function get_site_option( $option, $default = false )
+	public function get_site_option( $option, $default = 'no_default_value' )
 	{
-		$option = $this->fix_site_option_name( $option );
-		$value = get_site_option( $option );
-		if ( $value === false )
+		$fixed_option = $this->fix_site_option_name( $option );
+		$value = get_site_option( $fixed_option, 'no_default_value' );
+		// No value returned?
+		if ( $value === 'no_default_value' )
+		{
+			// Return the default from the options array.
+			$options = $this->site_options();
+			if ( isset( $options[ $option ] ) )
+				$default = $options[ $option ];
+			else
+				$default = false;
 			return $default;
+		}
 		else
 			return $value;
 	}
