@@ -14,6 +14,9 @@
         <testsuite name="Plainview SDK Base">
             <directory>.</directory>
         </testsuite>
+        <testsuite name="Plainview SDK Collections">
+            <directory>../collections/tests</directory>
+        </testsuite>
         <testsuite name="Plainview SDK Form2">
             <directory>../form2/tests</directory>
         </testsuite>

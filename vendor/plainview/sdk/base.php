@@ -13,6 +13,10 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140612		Wordpress: better path compatability with Windows servers.
+	- 20140611		Added human_bytes()
+	- 20140610		Added collections/sort_by_key
+	- 20140606		current_url fix for naughty webhosts that have HTTPS set to "Off".
 	- 20140518		Wordpress get_site_option default behaviour.
 	- 20140512		Fixed form2: clashing validation trait in some versions of PHP.
 	- 20140510		wordpress
@@ -111,7 +115,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140518;
+	protected $sdk_version = 20140612;
 
 	/**
 		@brief		Constructor.
@@ -250,10 +254,11 @@ class base
 		$ssl = false;
 		if ( isset( $SERVER[ 'HTTPS' ] ) )
 		{
+			$value = self::strtolower( $SERVER[ 'HTTPS' ] );
 			$ssl = (
-				( $SERVER[ 'HTTPS' ] != '' )
+				( $value != '' )
 				&&
-				( $SERVER[ 'HTTPS' ] != 'off' )
+				( $value != 'off' )
 			);
 		}
 
@@ -339,6 +344,28 @@ class base
 	public static function hash( $string, $type = 'sha512' )
 	{
 		return hash($type, $string);
+	}
+
+	/**
+		@brief		Return the human-readable byte amount.
+		@details	From http://www.php.net/manual/en/function.filesize.php#106569
+		@since		2014-06-11 14:13:28
+	**/
+	public static function human_bytes( $bytes, $decimals = 2 )
+	{
+		$prefix = [
+			'',
+			'k',
+			'M',
+			'G',
+			'T',
+			'P',
+		];
+		$factor = floor( ( strlen( $bytes ) - 1 ) / 3 );
+		return sprintf( "%.{$decimals}f %sB",
+			$bytes / pow( 1024, $factor ),
+			$prefix[ $factor ]
+		);
 	}
 
 	/**

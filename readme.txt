@@ -211,6 +211,10 @@ It works transparently in the background, but in case you've never really used W
 
 == Changelog ==
 
+= 2.24 20140615 =
+* New: Custom field protect list.
+* Fix: Better support for Windows servers.
+
 = 2.23 20140520 =
 * New: Premium Pack Plugin: Comments
 * Code: broadcasting_data->new_post()

@@ -16,8 +16,9 @@
 
 	@par	Changelog
 
+	- 20140614				Changelog now in main base.php
 	- 20140410				site_options() and local_options()
-						Added plugin_pack.
+							Added plugin_pack.
 	- 20140408				Site options, when on a single blog, return the prefix of a local option.
 	- 20140501				Added debug trait.
 	- 20140427				Added actions\action class.
@@ -227,15 +228,40 @@ class base
 
 		$this->submenu_pages = new \plainview\sdk\collections\collection;
 
-		$this->paths = array(
-			'__FILE__' => $filename,
-			'name' => get_class( $this ),
-			'filename' => basename( $filename ),
-			'filename_from_plugin_directory' => basename( dirname( $filename ) ) . '/' . basename( $filename ),
-			'path_from_plugin_directory' => basename( dirname( $filename ) ),
-			'path_from_base_directory' => PLUGINDIR . '/' . basename( dirname( $filename ) ),
-			'url' => WP_PLUGIN_URL . '' . str_replace( WP_PLUGIN_DIR, '', dirname( $filename ) ),
-		);
+		// Completely different path handling for Windows and then everything else. *sigh*
+		if ( PHP_OS == 'WINNT' )
+		{
+			$wp_plugin_dir = str_replace( '/', DIRECTORY_SEPARATOR, WP_PLUGIN_DIR );
+			$base_dir = dirname( dirname( WP_PLUGIN_DIR ) );
+
+			$path_from_plugin_directory = dirname( str_replace( $wp_plugin_dir, '', $filename ) );
+			$filename_from_plugin_directory = $path_from_plugin_directory . DIRECTORY_SEPARATOR . basename( $filename );
+
+			$url = WP_PLUGIN_URL . str_replace( DIRECTORY_SEPARATOR, '/', $path_from_plugin_directory );
+
+			$this->paths = array(
+				'__FILE__' => $filename,
+				'name' => get_class( $this ),
+				'filename' => basename( $filename ),
+				'filename_from_plugin_directory' => $filename_from_plugin_directory,
+				'path_from_plugin_directory' => $path_from_plugin_directory,
+				'path_from_base_directory' => str_replace( $base_dir, '', $wp_plugin_dir ) . $path_from_plugin_directory,
+				'url' => $url,
+			);
+		}
+		else
+		{
+			// Everything else except Windows.
+			$this->paths = array(
+				'__FILE__' => $filename,
+				'name' => get_class( $this ),
+				'filename' => basename( $filename ),
+				'filename_from_plugin_directory' => basename( dirname( $filename ) ) . '/' . basename( $filename ),
+				'path_from_plugin_directory' => basename( dirname( $filename ) ),
+				'path_from_base_directory' => PLUGINDIR . '/' . basename( dirname( $filename ) ),
+				'url' => WP_PLUGIN_URL . '' . str_replace( WP_PLUGIN_DIR, '', dirname( $filename ) ),
+			);
+		}
 
 		if ( $this->sdk_version_required > $this->sdk_version )
 			wp_die( sprintf( 'This plugin requires Plainview SDK version %s, but only %s from the plugin %s is available.',
@@ -2012,4 +2038,3 @@ class base
 		return $bool ? $this->_( 'yes' ) : $this->_( 'no' );
 	}
 }
-

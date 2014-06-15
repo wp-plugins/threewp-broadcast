@@ -53,12 +53,12 @@ extends \plainview\sdk\tests\TestCase
 		$a = $c->to_array();
 
 		reset( $a );
-		$this->assertEquals( current( $a ), 9 );
-		next( $a );
 		$this->assertEquals( current( $a ), 5 );
 		next( $a );
 		$this->assertEquals( current( $a ), 6 );
 		next( $a );
 		$this->assertEquals( current( $a ), 4 );
+		next( $a );
+		$this->assertEquals( current( $a ), 9 );
 	}
 }

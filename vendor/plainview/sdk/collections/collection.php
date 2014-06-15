@@ -562,6 +562,15 @@ implements
 	}
 
 	/**
+		@brief		Do a ksort on this collection.
+		@since		20140610
+	**/
+	public function sort_by_key()
+	{
+		ksort( $this->items );
+	}
+
+	/**
 	 * Take the first or last {$limit} items.
 	 *
 	 * @param  int  $limit

@@ -100,19 +100,23 @@ abstract class plugin_pack
 					{
 						case 'activate_plugin':
 							$new_plugin->activate();
+							$message = $this->_( 'The selected plugin(s) have been activated.' );
 							break;
 						case 'deactivate_plugin':
 							$new_plugin->deactivate();
 							$this->plugins->forget( $classname );
+							$message = $this->_( 'The selected plugin(s) have been deactivated.' );
 							break;
 						case 'uninstall_plugin':
 							$new_plugin->deactivate();
 							$new_plugin->uninstall();
 							$this->plugins->forget( $classname );
+							$message = $this->_( 'The selected plugin(s) have been uninstalled.' );
 							break;
 					}
 					$this->plugins->save();
 				}
+				$this->message( $message );
 			}
 		}
 
