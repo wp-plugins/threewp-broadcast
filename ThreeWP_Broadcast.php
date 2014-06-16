@@ -6,22 +6,27 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.21
+Version:		2.24
 */
 
 namespace threewp_broadcast;
 
 if ( ! class_exists( '\\threewp_broadcast\\base' ) )	require_once( __DIR__ . '/ThreeWP_Broadcast_Base.php' );
 
-require_once( 'include/vendor/autoload.php' );
+require_once( 'vendor/autoload.php' );
 
 use \plainview\sdk\collections\collection;
 use \threewp_broadcast\broadcast_data\blog;
 use \plainview\sdk\html\div;
+use \stdClass;
 
 class ThreeWP_Broadcast
 	extends \threewp_broadcast\ThreeWP_Broadcast_Base
 {
+	// Include in the next version or so.
+	//use \plainview\sdk\wordpress\traits\debug;
+	use debug;
+
 	/**
 		@brief		Broadcasting stack.
 		@details
@@ -85,8 +90,9 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 2.21;
+	public $plugin_version = 2.23;
 
+	// 20140501 when debug trait is moved to SDK.
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
 
 	protected $site_options = array(
@@ -96,9 +102,10 @@ class ThreeWP_Broadcast
 		'clear_post' => true,								// Clear the post before broadcasting.
 		'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
 		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
+		'custom_field_protectlist' => '',					// Internal custom fields that should not be overwritten on broadcast
 		'database_version' => 0,							// Version of database and settings
-		'debug' => false,									// Display debug information
-		'debug_ips' => '',									// List of IP addresses that can see debug information, when enabled.
+		'debug' => false,									// Display debug information?
+		'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.
 		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 		'post_types' => 'post page',						// Custom post types which use broadcasting
@@ -119,8 +126,6 @@ class ThreeWP_Broadcast
 		$this->add_action( 'add_meta_boxes' );
 		$this->add_action( 'admin_menu' );
 		$this->add_action( 'admin_print_styles' );
-
-		$this->add_filter( 'threewp_activity_monitor_list_activities' );
 
 		if ( $this->get_site_option( 'override_child_permalinks' ) )
 		{
@@ -167,11 +172,6 @@ class ThreeWP_Broadcast
 	public function admin_print_styles()
 	{
 		$load = false;
-
-		$pages = array(get_class(), 'ThreeWP_Activity_Monitor' );
-
-		if ( isset( $_GET[ 'page' ] ) )
-			$load |= in_array( $_GET[ 'page' ], $pages);
 
 		foreach(array( 'post-new.php', 'post.php' ) as $string)
 			$load |= strpos( $_SERVER[ 'SCRIPT_FILENAME' ], $string) !== false;
@@ -348,8 +348,8 @@ class ThreeWP_Broadcast
 		$roles = $this->roles_as_options();
 		$roles = array_flip( $roles );
 
-		$fs = $form->fieldset( 'roles' )
-			->label_( 'Roles' );
+		$fs = $form->fieldset( 'roles' );
+		$fs->legend->label_( 'Roles' );
 
 		$role_broadcast = $fs->select( 'role_broadcast' )
 			->value( $this->get_site_option( 'role_broadcast' ) )
@@ -387,8 +387,8 @@ class ThreeWP_Broadcast
 			->label_( 'Broadcast scheduled posts' )
 			->options( $roles );
 
-		$fs = $form->fieldset( 'seo' )
-			->label_( 'SEO' );
+		$fs = $form->fieldset( 'seo' );
+		$fs->legend->label_( 'SEO' );
 
 		$override_child_permalinks = $fs->checkbox( 'override_child_permalinks' )
 			->checked( $this->get_site_option( 'override_child_permalinks' ) )
@@ -400,8 +400,8 @@ class ThreeWP_Broadcast
 			->description_( "Child posts have their canonical URLs pointed to the URL of the parent post. This automatically disables the canonical URL from Yoast's Wordpress SEO plugin." )
 			->label_( 'Canonical URL' );
 
-		$fs = $form->fieldset( 'custom_field_handling' )
-			->label_( 'Custom field handling' );
+		$fs = $form->fieldset( 'custom_field_handling' );
+		$fs->legend->label_( 'Custom field handling' );
 
 		$fs->markup( 'internal_field_info' )
 			->p_( 'Some custom fields start with underscores. They are generally Wordpress internal fields and therefore not broadcasted. Some plugins store their information as underscored custom fields. If you wish them, or some of them, to be broadcasted, use either of the options below.' );
@@ -420,6 +420,15 @@ class ThreeWP_Broadcast
 			->trim()
 			->value( $blacklist );
 
+		$protectlist = $this->get_site_option( 'custom_field_protectlist' );
+		$protectlist = str_replace( ' ', "\n", $protectlist );
+		$custom_field_protectlist = $fs->textarea( 'custom_field_protectlist' )
+			->cols( 40, 10 )
+			->description_( 'When broadcasting internal custom fields, do not overwrite the following fields on the child blogs.' )
+			->label_( 'Internal field protectlist' )
+			->trim()
+			->value( $protectlist );
+
 		$whitelist = $this->get_site_option( 'custom_field_whitelist' );
 		$whitelist = str_replace( ' ', "\n", $whitelist );
 		$custom_field_whitelist = $fs->textarea( 'custom_field_whitelist' )
@@ -432,8 +441,8 @@ class ThreeWP_Broadcast
 		$fs->markup( 'whitelist_defaults' )
 			->p_( 'The default whitelist is: %s', "<code>\n_wp_page_template\n_wplp_\n_aioseop_</code>" );
 
-		$fs = $form->fieldset( 'misc' )
-			->label_( 'Miscellaneous' );
+		$fs = $form->fieldset( 'misc' );
+		$fs->legend->label_( 'Miscellaneous' );
 
 		$clear_post = $fs->checkbox( 'clear_post' )
 			->description_( 'The POST PHP variable is data sent when updating posts. Most plugins are fine if the POST is cleared before broadcasting, while others require that the data remains intact. Uncheck this setting if you notice that child posts are not being treated the same on the child blogs as they are on the parent blog.' )
@@ -465,23 +474,7 @@ class ThreeWP_Broadcast
 			->required()
 			->value( $this->get_site_option( 'existing_attachments', 'use' ) );
 
-		$fs = $form->fieldset( 'debug' )
-			->label_( 'Debugging' );
-
-		$fs->markup( 'debug_info' )
-			->p_( "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings.", $this->debugging() ? '' : ' <strong>not</strong>' );
-
-		$debug = $fs->checkbox( 'debug' )
-			->description_( 'Show debugging information in various places.' )
-			->label_( 'Enable debugging' )
-			->checked( $this->get_site_option( 'debug', false ) );
-
-		$debug_ips = $fs->textarea( 'debug_ips' )
-			->description_( 'Only show debugging info to specific IP addresses. Use spaces between IPs. You can also specify part of an IP address. Your address is %s', $_SERVER[ 'REMOTE_ADDR' ] )
-			->label_( 'Debug IPs' )
-			->rows( 5, 16 )
-			->trim()
-			->value( $this->get_site_option( 'debug_ips', '' ) );
+		$this->add_debug_settings_to_form( $form );
 
 		$save = $form->primary_button( 'save' )
 			->value_( 'Save settings' );
@@ -511,13 +504,16 @@ class ThreeWP_Broadcast
 			$whitelist = $this->lines_to_string( $whitelist );
 			$this->update_site_option( 'custom_field_whitelist', $whitelist );
 
+			$protectlist = $custom_field_protectlist->get_post_value();
+			$protectlist = $this->lines_to_string( $protectlist );
+			$this->update_site_option( 'custom_field_protectlist', $protectlist );
+
 			$this->update_site_option( 'clear_post', $clear_post->is_checked() );
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
 			$this->update_site_option( 'existing_attachments', $existing_attachments->get_post_value() );
 
-			$this->update_site_option( 'debug', $debug->is_checked() );
-			$this->update_site_option( 'debug_ips', $debug_ips->get_filtered_post_value() );
+			$this->save_debug_settings_from_form( $form );
 
 			$this->message( 'Options saved!' );
 		}
@@ -834,6 +830,12 @@ class ThreeWP_Broadcast
 		$row->td()->text( 'Broadcast version' );
 		$row->td()->text( $this->plugin_version );
 
+		// Broadcast file checksum
+		$row = $table->body()->row();
+		$row->td()->text( 'Broadcast file checksum' );
+		$text = md5( file_get_contents( __FILE__ ) );
+		$row->td()->text( $text );
+
 		// PHP version
 		$row = $table->body()->row();
 		$row->td()->text( 'PHP version' );
@@ -846,8 +848,12 @@ class ThreeWP_Broadcast
 			'</a>'
 		);
 		$row->td()->text( $text );
-		$object = new \ReflectionObject( new \plainview\sdk\wordpress\base );
 		$row->td()->text( $this->sdk_version );
+
+		// SDK version required
+		$row = $table->body()->row();
+		$row->td()->text( 'SDK version required' );
+		$row->td()->text( $this->sdk_version_required );
 
 		// SDK path
 		$row = $table->body()->row();
@@ -1060,24 +1066,6 @@ This can be increased by adding the following to your wp-config.php:
 		// Remove just one child?
 		if ( isset( $child_blog_id ) )
 		{
-			// Inform Activity Monitor that a post has been unlinked.
-			// Get the info about this post.
-			$post_data = get_post( $post_id );
-			$post_url = get_permalink( $post_id );
-			$post_url = '<a href="'.$post_url.'">'.$post_data->post_title.'</a>';
-
-			// And about the child blog
-			switch_to_blog( $child_blog_id );
-			$blog_url = '<a href="'.get_bloginfo( 'url' ).'">'.get_bloginfo( 'name' ).'</a>';
-			restore_current_blog();
-
-			do_action( 'threewp_activity_monitor_new_activity', array(
-				'activity_id' => '3broadcast_unlinked',
-				'activity_strings' => array(
-					'' => '%user_display_name_with_link% unlinked ' . $post_url . ' with the child post on ' . $blog_url,
-				),
-			) );
-
 			$this->delete_post_broadcast_data( $child_blog_id, $linked_children[ $child_blog_id ] );
 			$broadcast_data->remove_linked_child( $child_blog_id );
 			$this->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
@@ -1094,21 +1082,6 @@ This can be increased by adding the following to your wp-config.php:
 				restore_current_blog();
 				$this->delete_post_broadcast_data( $linked_child_blog_id, $linked_child_post_id );
 			}
-
-			// Inform Activity Monitor
-			// Get the info about this post.
-			$post_data = get_post( $post_id );
-			$post_url = get_permalink( $post_id );
-			$post_url = '<a href="'.$post_url.'">'.$post_data->post_title.'</a>';
-
-			$blogs_url = implode( ', ', $blogs_url);
-
-			do_action( 'threewp_activity_monitor_new_activity', array(
-				'activity_id' => '3broadcast_unlinked',
-				'activity_strings' => array(
-					'' => '%user_display_name_with_link% unlinked ' . $post_url . ' with the child posts on ' . $blogs_url,
-				),
-			) );
 
 			$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
 			$broadcast_data->remove_linked_children();
@@ -1269,17 +1242,35 @@ This can be increased by adding the following to your wp-config.php:
 
 	public function save_post( $post_id )
 	{
+		$this->debug( 'Running save_post hook.' );
+
+		// We must be on the source blog.
+		if ( ms_is_switched() )
+		{
+			$this->debug( 'Not on parent blog.' );
+			return;
+		}
+
 		// Loop check.
 		if ( $this->is_broadcasting() )
+		{
+			$this->debug( 'Already broadcasting.' );
 			return;
+		}
 
 		// No post?
 		if ( count( $_POST ) < 1 )
+		{
+			$this->debug( 'The POST is empty.' );
 			return;
+		}
 
 		// Nothing of interest in the post?
 		if ( ! isset( $_POST[ 'broadcast' ] ) )
+		{
+			$this->debug( 'The POST does not contain any Broadcast data.' );
 			return;
+		}
 
 		// Is this post a child?
 		$broadcast_data = $this->get_post_broadcast_data( get_current_blog_id(), $post_id );
@@ -1288,7 +1279,10 @@ This can be increased by adding the following to your wp-config.php:
 
 		// No permission.
 		if ( ! $this->role_at_least( $this->get_site_option( 'role_broadcast' ) ) )
+		{
+			$this->debug( 'User does not have permission to use Broadcast.' );
 			return;
+		}
 
 		// Save the user's last settings.
 		if ( isset( $_POST[ 'broadcast' ] ) )
@@ -1327,28 +1321,10 @@ This can be increased by adding the following to your wp-config.php:
 
 		if ( $broadcasting_data->has_blogs() )
 			$this->filters( 'threewp_broadcast_broadcast_post', $broadcasting_data );
-	}
-
-	public function threewp_activity_monitor_list_activities( $activities )
-	{
-		// First, fill in our own activities.
-		$this->activities = array(
-			'3broadcast_broadcasted' => array(
-				'name' => $this->_( 'A post was broadcasted.' ),
-			),
-			'3broadcast_unlinked' => array(
-				'name' => $this->_( 'A post was unlinked.' ),
-			),
-		);
-
-		// Insert our module name in all the values.
-		foreach( $this->activities as $index => $activity )
+		else
 		{
-			$activity[ 'plugin' ] = 'ThreeWP Broadcast';
-			$activities[ $index ] = $activity;
+			$this->debug( 'No blogs are selected. Not broadcasting anything.' );
 		}
-
-		return $activities;
 	}
 
 	/**
@@ -1568,26 +1544,7 @@ This can be increased by adding the following to your wp-config.php:
 			);
 
 			// Display a list of actions that have hooked into save_post
-			global $wp_filter;
-			$filters = $wp_filter[ 'save_post' ];
-			ksort( $filters );
-			$save_post_callbacks = [];
-			//$wp_filter[$tag][$priority][$idx] = array('function' => $function_to_add, 'accepted_args' => $accepted_args);
-			foreach( $filters as $priority => $callbacks )
-			{
-				foreach( $callbacks as $callback )
-				{
-					$function = $callback[ 'function' ];
-					if ( is_array( $function ) )
-					{
-						if ( is_object( $function[ 0 ] ) )
-							$function[ 0 ] = get_class( $function[ 0 ] );
-						$function = sprintf( '%s::%s', $function[ 0 ], $function[ 1 ] );
-					}
-					$function = sprintf( '%s %s', $function, $priority );
-					$save_post_callbacks[] = $function;
-				}
-			}
+			$save_post_callbacks = $this->get_hooks( 'save_post' );
 			$meta_box_data->html->put( 'debug_save_post_callbacks', sprintf( '%s%s',
 				$this->p_( 'Plugins that have hooked into save_post:' ),
 				$this->implode_html( $save_post_callbacks )
@@ -1881,6 +1838,8 @@ This can be increased by adding the following to your wp-config.php:
 
 		$bcd->custom_fields = $form->checkbox( 'custom_fields' )->get_post_value()
 			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) );
+		if ( $bcd->custom_fields )
+			$bcd->custom_fields = new \stdClass;
 
 		$bcd->link = $form->checkbox( 'link' )->get_post_value()
 			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) );
@@ -2163,9 +2122,9 @@ This can be increased by adding the following to your wp-config.php:
 	{
 		$bcd = $broadcasting_data;
 
-		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, $this->code_export( $bcd->post ) );
+		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, $bcd->post );
 
-		$this->debug( 'The POST was <pre>%s</pre>', $this->code_export( $bcd->_POST ) );
+		$this->debug( 'The POST was <pre>%s</pre>', $bcd->_POST );
 
 		// For nested broadcasts. Just in case.
 		switch_to_blog( $bcd->parent_blog_id );
@@ -2209,8 +2168,11 @@ This can be increased by adding the following to your wp-config.php:
 
 		if ( $bcd->custom_fields )
 		{
-			$this->debug( 'Will broadcast custom fields.' );
+			$this->debug( 'Custom fields: Will broadcast custom fields.' );
 			$bcd->post_custom_fields = get_post_custom( $bcd->post->ID );
+
+			// Save the original custom fields for future use.
+			$bcd->custom_fields->original = $bcd->post_custom_fields;
 
 			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
 
@@ -2219,7 +2181,7 @@ This can be increased by adding the following to your wp-config.php:
 
 			if ( $bcd->has_thumbnail )
 			{
-				$this->debug( 'Post has a thumbnail (featured image).' );
+				$this->debug( 'Custom fields: Post has a thumbnail (featured image).' );
 				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
 				$bcd->thumbnail = get_post( $bcd->thumbnail_id );
 				unset( $bcd->post_custom_fields[ '_thumbnail_id' ] ); // There is a new thumbnail id for each blog.
@@ -2228,10 +2190,51 @@ This can be increased by adding the following to your wp-config.php:
 				unset( $bcd->attachment_data[ $bcd->thumbnail_id ] );
 			}
 			else
-				$this->debug( 'Post does not have a thumbnail (featured image).' );
+				$this->debug( 'Custom fields: Post does not have a thumbnail (featured image).' );
 
-			// Remove all the _internal custom fields.
-			$bcd->post_custom_fields = $this->keep_valid_custom_fields( $bcd->post_custom_fields );
+			$bcd->custom_fields->blacklist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_blacklist' ) ) );
+			$bcd->custom_fields->protectlist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_protectlist' ) ) );
+			$bcd->custom_fields->whitelist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_whitelist' ) ) );
+
+			foreach( $bcd->post_custom_fields as $custom_field => $ignore )
+			{
+				// If the field does not start with an underscore, it is automatically valid.
+				if ( strpos( $custom_field, '_' ) !== 0 )
+					continue;
+
+				$keep = true;
+
+				// Has the user requested that all internal fields be broadcasted?
+				$broadcast_internal_custom_fields = $this->get_site_option( 'broadcast_internal_custom_fields' );
+				if ( $broadcast_internal_custom_fields )
+				{
+					foreach( $bcd->custom_fields->blacklist as $exception)
+						if ( strpos( $custom_field, $exception) !== false )
+						{
+							$keep = false;
+							break;
+						}
+				}
+				else
+				{
+					$keep = false;
+					foreach( $bcd->custom_fields->whitelist as $exception)
+						if ( strpos( $custom_field, $exception) !== false )
+						{
+							$keep = true;
+							break;
+						}
+
+				}
+
+				if ( ! $keep )
+				{
+					$this->debug( 'Custom fields: Deleting custom field %s', $custom_field );
+					unset( $bcd->post_custom_fields[ $custom_field ] );
+				}
+				else
+					$this->debug( 'Custom fields: Keeping custom field %s', $custom_field );
+			}
 		}
 		else
 			$this->debug( 'Will not broadcast custom fields.' );
@@ -2263,9 +2266,6 @@ This can be increased by adding the following to your wp-config.php:
 				$bcd->attachment_data[ $id ] = $ad;
 			}
 		}
-
-		$to_broadcasted_blogs = [];				// Array of blog names that we're broadcasting to. To be used for the activity monitor action.
-		$to_broadcasted_blog_details = []; 		// Array of blog and post IDs that we're broadcasting to. To be used for the activity monitor action.
 
 		// To prevent recursion
 		array_push( $this->broadcasting, $bcd );
@@ -2435,6 +2435,7 @@ This can be increased by adding the following to your wp-config.php:
 
 			// Remove the current attachments.
 			$attachments_to_remove = get_children( 'post_parent='.$bcd->new_post[ 'ID' ] . '&post_type=attachment' );
+			$this->debug( '%s attachments to remove.', count( $attachments_to_remove ) );
 			foreach ( $attachments_to_remove as $attachment_to_remove )
 			{
 				$this->debug( 'Deleting existing attachment: %s', $attachment_to_remove->ID );
@@ -2443,6 +2444,7 @@ This can be increased by adding the following to your wp-config.php:
 
 			// Copy the attachments
 			$bcd->copied_attachments = [];
+			$this->debug( 'Looking through %s attachments.', count( $bcd->attachment_data ) );
 			foreach( $bcd->attachment_data as $key => $attachment )
 			{
 				if ( $key != 'thumbnail' )
@@ -2468,6 +2470,7 @@ This can be increased by adding the following to your wp-config.php:
 			// If there were any image attachments copied...
 			if ( count( $bcd->copied_attachments ) > 0 )
 			{
+				$this->debug( '%s attachments were copied.', count( $bcd->copied_attachments ) );
 				// Update the URLs in the post to point to the new images.
 				$new_upload_dir = wp_upload_dir();
 				foreach( $bcd->copied_attachments as $a )
@@ -2479,8 +2482,11 @@ This can be increased by adding the following to your wp-config.php:
 					$this->debug( 'Modifying attachment link from %s to %s', $a->old->id, $a->new->id );
 				}
 			}
+			else
+				$this->debug( 'No attachments were copied.' );
 
 			// If there are galleries...
+			$this->debug( '%s galleries are to be handled.', count( $bcd->galleries ) );
 			foreach( $bcd->galleries as $gallery )
 			{
 				// Work on a copy.
@@ -2501,6 +2507,7 @@ This can be increased by adding the following to your wp-config.php:
 				$new_ids_string = implode( ',', $new_ids );
 				$new_shortcode = $gallery->old_shortcode;
 				$new_shortcode = str_replace( $gallery->ids_string, $new_ids_string, $gallery->old_shortcode );
+				$this->debug( 'Replacing gallery shortcode %s with %s.', $gallery->old_shortcode, $new_shortcode );
 				$modified_post->post_content = str_replace( $gallery->old_shortcode, $new_shortcode, $modified_post->post_content );
 			}
 
@@ -2512,14 +2519,19 @@ This can be increased by adding the following to your wp-config.php:
 			// Maybe updating the post is not necessary.
 			if ( $unmodified_post->post_content != $modified_post->post_content )
 			{
-				$this->debug( 'Modifying with new post: %s', $this->code_export( $modified_post->post_content ) );
+				$this->debug( 'Modifying with new post: %s', $modified_post->post_content );
 				wp_update_post( $modified_post );	// Or maybe it is.
 			}
+			else
+				$this->debug( 'No need to modify the post.' );
 
 			if ( $bcd->custom_fields )
 			{
+				$this->debug( 'Custom fields: Started.' );
 				// Remove all old custom fields.
 				$old_custom_fields = get_post_custom( $bcd->new_post[ 'ID' ] );
+
+				$protected_field = [];
 
 				foreach( $old_custom_fields as $key => $value )
 				{
@@ -2527,25 +2539,52 @@ This can be increased by adding the following to your wp-config.php:
 					if ( $key == '_thumbnail_id' )
 					{
 						$thumbnail_post = $value[0];
+						$this->debug( 'Custom fields: Deleting thumbnail %s.', $thumbnail_post );
 						wp_delete_post( $thumbnail_post );
 					}
 
-					delete_post_meta( $bcd->new_post[ 'ID' ], $key );
+					// Do we delete this custom field?
+					$delete = true;
+
+					// For the protectlist to work the custom field has to already exist on the child.
+					if ( in_array( $key, $bcd->custom_fields->protectlist ) )
+					{
+						if ( ! isset( $old_custom_fields[ $key ] ) )
+							continue;
+						if ( ! isset( $bcd->post_custom_fields[ $key ] ) )
+							continue;
+						$protected_field[ $key ] = true;
+						$delete = false;
+					}
+
+					if ( $delete )
+					{
+						$this->debug( 'Custom fields: Deleting custom field %s.', $key );
+						delete_post_meta( $bcd->new_post[ 'ID' ], $key );
+					}
+					else
+						$this->debug( 'Custom fields: Keeping custom field %s.', $key );
 				}
 
 				foreach( $bcd->post_custom_fields as $meta_key => $meta_value )
 				{
+					// Protected = ignore.
+					if ( isset( $protected_field[ $meta_key ] ) )
+						continue;
+
 					if ( is_array( $meta_value ) )
 					{
 						foreach( $meta_value as $single_meta_value )
 						{
 							$single_meta_value = maybe_unserialize( $single_meta_value );
+							$this->debug( 'Custom fields: Adding array value %s', $meta_key );
 							add_post_meta( $bcd->new_post[ 'ID' ], $meta_key, $single_meta_value );
 						}
 					}
 					else
 					{
 						$meta_value = maybe_unserialize( $meta_value );
+						$this->debug( 'Custom fields: Adding value %s', $meta_key );
 						add_post_meta( $bcd->new_post[ 'ID' ], $meta_key, $meta_value );
 					}
 				}
@@ -2553,23 +2592,30 @@ This can be increased by adding the following to your wp-config.php:
 				// Attached files are custom fields... but special custom fields.
 				if ( $bcd->has_thumbnail )
 				{
+					$this->debug( 'Custom fields: Re-adding thumbnail.' );
 					$o = clone( $bcd );
 					$o->attachment_data = $bcd->attachment_data[ 'thumbnail' ];
 
 					// Clear the attachment cache for this blog because the featured image could have been copied by the file copy.
 					if ( property_exists( $this, 'attachment_cache' ) )
+					{
+						$this->debug( 'Custom fields: Clearing attachment cache.' );
 						$this->attachment_cache->forget( $bcd->current_child_blog_id );
+					}
 
 					if ( $o->attachment_data->post->post_parent > 0 )
 						$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
 
+					$this->debug( 'Custom fields: Maybe copying attachment.' );
 					$this->maybe_copy_attachment( $o );
+					$this->debug( 'Custom fields: Maybe copied attachment.' );
 					if ( $o->attachment_id !== false )
 					{
 						$this->debug( 'Handling post thumbnail: %s %s', $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
 						update_post_meta( $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
 					}
 				}
+				$this->debug( 'Custom fields: Finished.' );
 			}
 
 			// Sticky behaviour
@@ -2586,9 +2632,6 @@ This can be increased by adding the following to your wp-config.php:
 				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
 				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ], $new_post_broadcast_data );
 			}
-
-			$to_broadcasted_blogs[] = '<a href="' . get_permalink( $bcd->new_post[ 'ID' ] ) . '">' . get_bloginfo( 'name' ) . '</a>';
-			$to_broadcasted_blog_details[] = array( 'blog_id' => $bcd->current_child_blog_id, 'post_id' => $bcd->new_post[ 'ID' ], 'inserted' => $need_to_insert_post );
 
 			$action = new actions\broadcasting_before_restore_current_blog;
 			$action->broadcasting_data = $bcd;
@@ -2618,8 +2661,15 @@ This can be increased by adding the following to your wp-config.php:
 		{
 			if ( ! $this->is_broadcasting() )
 			{
-				$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
-				exit;
+				if ( isset( $bcd->stop_after_broadcast ) && ! $bcd->stop_after_broadcast )
+				{
+					$this->debug( 'Finished broadcasting.' );
+				}
+				else
+				{
+					$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
+					exit;
+				}
 			}
 			else
 			{
@@ -2629,25 +2679,7 @@ This can be increased by adding the following to your wp-config.php:
 
 		$this->load_language();
 
-		$post_url_and_name = '<a href="' . get_permalink( $bcd->post->ID ) . '">' . $bcd->post->post_title. '</a>';
-		do_action( 'threewp_activity_monitor_new_activity', [
-			'activity_id' => '3broadcast_broadcasted',
-			'activity_strings' => array(
-				'' => '%user_display_name_with_link% has broadcasted '.$post_url_and_name.' to: ' . implode( ', ', $to_broadcasted_blogs ),
-			),
-			'activity_details' => $to_broadcasted_blog_details,
-		] );
-
 		return $bcd;
-	}
-
-	/**
-		@brief		Dump a variable with code tags.
-		@since		2014-04-06 21:49:24
-	**/
-	public function code_export( $variable )
-	{
-		return sprintf( '<pre><code>%s</code></pre>', var_export( $variable, true ) );
 	}
 
 	/**
@@ -2688,18 +2720,25 @@ This can be increased by adding the following to your wp-config.php:
 	public function copy_attachment( $o )
 	{
 		if ( ! file_exists( $o->attachment_data->filename_path ) )
+		{
+			$this->debug( 'Copy attachment: File %s does not exist!', $o->attachment_data->filename_path );
 			return false;
+		}
 
 		// Copy the file to the blog's upload directory
 		$upload_dir = wp_upload_dir();
 
-		copy( $o->attachment_data->filename_path, $upload_dir[ 'path' ] . '/' . $o->attachment_data->filename_base );
+		$source = $o->attachment_data->filename_path;
+		$target = $upload_dir[ 'path' ] . '/' . $o->attachment_data->filename_base;
+		$this->debug( 'Copy attachment: Copying from %s to %s', $source, $target );
+		copy( $source, $target );
 
 		// And now create the attachment stuff.
 		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
-		$wp_filetype = wp_check_filetype( $o->attachment_data->filename_base, null );
+		$this->debug( 'Copy attachment: Checking filetype.' );
+		$wp_filetype = wp_check_filetype( $target, null );
 		$attachment = [
-			'guid' => $upload_dir[ 'url' ] . '/' . $o->attachment_data->filename_base,
+			'guid' => $upload_dir[ 'url' ] . '/' . $target,
 			'menu_order' => $o->attachment_data->post->menu_order,
 			'post_author' => $o->attachment_data->post->post_author,
 			'post_excerpt' => $o->attachment_data->post->post_excerpt,
@@ -2708,14 +2747,19 @@ This can be increased by adding the following to your wp-config.php:
 			'post_content' => '',
 			'post_status' => 'inherit',
 		];
-		$o->attachment_id = wp_insert_attachment( $attachment, $upload_dir[ 'path' ] . '/' . $o->attachment_data->filename_base, $o->attachment_data->post->post_parent );
+		$this->debug( 'Copy attachment: Inserting attachment.' );
+		$o->attachment_id = wp_insert_attachment( $attachment, $target, $o->attachment_data->post->post_parent );
 
 		// Now to maybe handle the metadata.
 		if ( $o->attachment_data->file_metadata )
 		{
+			$this->debug( 'Copy attachment: Handling metadata.' );
 			// 1. Create new metadata for this attachment.
+			$this->debug( 'Copy attachment: Requiring image.php.' );
 			require_once( ABSPATH . "wp-admin" . '/includes/image.php' );
-			$attach_data = wp_generate_attachment_metadata( $o->attachment_id, $upload_dir[ 'path' ] . '/' . $o->attachment_data->filename_base );
+			$this->debug( 'Copy attachment: Generating metadata for %s.', $target );
+			$attach_data = wp_generate_attachment_metadata( $o->attachment_id, $target );
+			$this->debug( 'Copy attachment: Metadata is %s', $attach_data );
 
 			// 2. Write the old metadata first.
 			foreach( $o->attachment_data->post_custom as $key => $value )
@@ -2733,6 +2777,7 @@ This can be increased by adding the following to your wp-config.php:
 			}
 
 			// 3. Overwrite the metadata that needs to be overwritten with fresh data.
+			$this->debug( 'Copy attachment: Updating metadata.' );
 			wp_update_attachment_metadata( $o->attachment_id,  $attach_data );
 		}
 	}
@@ -2762,47 +2807,6 @@ This can be increased by adding the following to your wp-config.php:
 		$meta_box_data->post = $post;
 		$meta_box_data->post_id = $post->ID;
 		return $meta_box_data;
-	}
-
-	/**
-		@brief		Output a string if in debug mode.
-		@since		20140220
-	*/
-	public function debug( $string )
-	{
-		if ( ! $this->debugging() )
-			return;
-
-		$text = call_user_func_array( 'sprintf', func_get_args() );
-		if ( $text == '' )
-			$text = $string;
-		$text = sprintf( '%s %s<br/>', $this->now(), $text );
-		echo $text;
-	}
-
-	/**
-		@brief		Is Broadcast in debug mode?
-		@since		20140220
-	*/
-	public function debugging()
-	{
-		$debugging = $this->get_site_option( 'debug', false );
-		if ( ! $debugging )
-			return false;
-
-		// Debugging is enabled. Now check if we should show it to this user.
-		$ips = $this->get_site_option( 'debug_ips', '' );
-		// Empty = no limits.
-		if ( $ips == '' )
-			return true;
-
-		$lines = explode( "\n", $ips );
-		foreach( $lines as $line )
-			if ( strpos( $_SERVER[ 'REMOTE_ADDR' ], $line ) !== false )
-				return true;
-
-		// No match = not debugging for this user.
-		return false;
 	}
 
 	/**
@@ -2866,13 +2870,32 @@ This can be increased by adding the following to your wp-config.php:
 	}
 
 	/**
-		@brief		Get some standardizing CSS styles.
-		@return		string		A string containing the CSS <style> data, including the tags.
-		@since		20131031
+		@brief		Return an array of all callbacks of a hook.
+		@since		2014-04-30 00:11:30
 	**/
-	public function html_css()
+	public function get_hooks( $hook )
 	{
-		return file_get_contents( __DIR__ . '/html/style.css' );
+		global $wp_filter;
+		$filters = $wp_filter[ $hook ];
+		ksort( $filters );
+		$hook_callbacks = [];
+		//$wp_filter[$tag][$priority][$idx] = array('function' => $function_to_add, 'accepted_args' => $accepted_args);
+		foreach( $filters as $priority => $callbacks )
+		{
+			foreach( $callbacks as $callback )
+			{
+				$function = $callback[ 'function' ];
+				if ( is_array( $function ) )
+				{
+					if ( is_object( $function[ 0 ] ) )
+						$function[ 0 ] = get_class( $function[ 0 ] );
+					$function = sprintf( '%s::%s', $function[ 0 ], $function[ 1 ] );
+				}
+				$function = sprintf( '%s %s', $function, $priority );
+				$hook_callbacks[] = $function;
+			}
+		}
+		return $hook_callbacks;
 	}
 
 	/**
@@ -2886,6 +2909,16 @@ This can be increased by adding the following to your wp-config.php:
 	public function get_post_broadcast_data( $blog_id, $post_id )
 	{
 		return $this->broadcast_data_cache()->get_for( $blog_id, $post_id );
+	}
+
+	/**
+		@brief		Get some standardizing CSS styles.
+		@return		string		A string containing the CSS <style> data, including the tags.
+		@since		20131031
+	**/
+	public function html_css()
+	{
+		return file_get_contents( __DIR__ . '/html/style.css' );
 	}
 
 	public function is_blog_user_writable( $user_id, $blog )
@@ -2980,65 +3013,6 @@ This can be increased by adding the following to your wp-config.php:
 	}
 
 	/**
-		@brief		Is this custom field (1) external or (2) underscored, but excepted?
-		@details
-
-		Internal fields start with underscore and are generally not interesting to broadcast.
-
-		Some plugins store important information as internal fields and should have their fields broadcasted.
-
-		Documented 20130926.
-
-		@param		string		$custom_field		The name of the custom field to check.
-		@return		bool		True if the field is OK to broadcast.
-		@since		20130926
-	**/
-	private function is_custom_field_valid( $custom_field )
-	{
-		// If the field does not start with an underscore, it is automatically valid.
-		if ( strpos( $custom_field, '_' ) !== 0 )
-			return true;
-
-		// Has the user requested that all internal fields be broadcasted?
-		$broadcast_internal_custom_fields = $this->get_site_option( 'broadcast_internal_custom_fields' );
-		if ( $broadcast_internal_custom_fields )
-		{
-			// Prep the cache.
-			if ( ! isset( $this->custom_field_blacklist_cache ) )
-				$this->custom_field_blacklist_cache = array_filter( explode( ' ', $this->get_site_option( 'custom_field_blacklist' ) ) );
-
-			foreach( $this->custom_field_blacklist_cache as $exception)
-				if ( strpos( $custom_field, $exception) !== false )
-					return false;
-
-			// Not found in the blacklist. Broadcast the field!
-			return true;
-		}
-		else
-		{
-			// Prep the cache.
-			if ( !isset( $this->custom_field_whitelist_cache ) )
-				$this->custom_field_whitelist_cache = array_filter( explode( ' ', $this->get_site_option( 'custom_field_whitelist' ) ) );
-
-			foreach( $this->custom_field_whitelist_cache as $exception)
-				if ( strpos( $custom_field, $exception) !== false )
-					return true;
-
-			// Not found in the whitelist. Do not broadcast.
-			return false;
-		}
-	}
-
-	private function keep_valid_custom_fields( $custom_fields )
-	{
-		foreach( $custom_fields as $key => $array)
-			if ( ! $this->is_custom_field_valid( $key ) )
-				unset( $custom_fields[$key] );
-
-		return $custom_fields;
-	}
-
-	/**
 		@brief		Converts a textarea of lines to a single line of space separated words.
 		@param		string		$lines		Multiline string.
 		@return		string					All of the lines on one line, minus the empty lines.
@@ -3080,6 +3054,7 @@ This can be increased by adding the following to your wp-config.php:
 		$attachment_posts = $this->attachment_cache->get( $key, null );
 		if ( $attachment_posts === null )
 		{
+			$this->debug( 'Maybe copy attachment: Searching for attachment posts.' );
 			$attachment_posts = get_posts( [
 				'cache_results' => false,
 				'name' => $attachment_data->post->post_name,
@@ -3087,6 +3062,7 @@ This can be increased by adding the following to your wp-config.php:
 				'post_type' => 'attachment',
 
 			] );
+			$this->debug( 'Maybe copy attachment: Found %s attachment posts.', count( $attachment_posts ) );
 			$this->attachment_cache->put( $key, $attachment_posts );
 		}
 
@@ -3101,23 +3077,27 @@ This can be increased by adding the following to your wp-config.php:
 			{
 				case 'overwrite':
 					// Delete the existing attachment
+					$this->debug( 'Maybe copy attachment: Deleting current attachment %s', $attachment_post->ID );
 					wp_delete_attachment( $attachment_post->ID, true );		// true = Don't go to trash
 					break;
 				case 'randomize':
 					$filename = $options->attachment_data->filename_base;
 					$filename = preg_replace( '/(.*)\./', '\1_' . rand( 1000000, 9999999 ) .'.', $filename );
 					$options->attachment_data->filename_base = $filename;
+					$this->debug( 'Maybe copy attachment: Randomizing new attachment filename to %s.', $options->attachment_data->filename_base );
 					break;
 				case 'use':
 				default:
 					// The ID is the important part.
 					$options->attachment_id = $attachment_post->ID;
+					$this->debug( 'Maybe copy attachment: Using existing attachment %s.', $attachment_post->ID );
 					return $options;
 
 			}
 		}
 
 		// Since it doesn't exist, copy it.
+		$this->debug( 'Maybe copy attachment: Really copying attachment.' );
 		$this->copy_attachment( $options );
 		return $options;
 	}
@@ -3161,8 +3141,8 @@ This can be increased by adding the following to your wp-config.php:
 	{
 		$source_terms = $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ];
 		$target_terms = $this->get_current_blog_taxonomy_terms( $taxonomy );
-		$this->debug( 'Source terms for taxonomy %s: %s', $taxonomy, $this->code_export( $source_terms ) );
-		$this->debug( 'Target terms for taxonomy %s: %s', $taxonomy, $this->code_export( $target_terms ) );
+		$this->debug( 'Source terms for taxonomy %s: %s', $taxonomy, $source_terms );
+		$this->debug( 'Target terms for taxonomy %s: %s', $taxonomy, $target_terms );
 
 		$refresh_cache = false;
 

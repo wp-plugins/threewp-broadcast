@@ -119,6 +119,7 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 27. Premium Pack: Attachment Shortcode creation wizard with some example shortcodes.
 28. Premium Pack: Attachment Shortcode editing.
 29. Premium Pack: Attachment Shortcode help.
+30. Premium Pack: Comments plugin.
 
 == Frequently Asked Questions ==
 
@@ -205,9 +206,24 @@ It works transparently in the background, but in case you've never really used W
 5. Link and broadcast it to the other blogs in the network.
 6. The other blogs should now have two translations of the same post and the same post overview listing.
 
-This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager. 2014-01-12.
+2014-01-12 This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager.
+2014-05-20 This plugin will be removed in the future. Use the WPML plugin the Premium Pack instead.
 
 == Changelog ==
+
+= 2.24 20140615 =
+* New: Custom field protect list.
+* Fix: Better support for Windows servers.
+
+= 2.23 20140520 =
+* New: Premium Pack Plugin: Comments
+* Code: broadcasting_data->new_post()
+
+= 2.22 20140511 =
+* Fix: Attachment metadata was not copied sometimes.
+* New: Broadcast file checksum info, for debugging purposes.
+* Code: Even more debug info.
+* Code: code_export removed. Debug methods are now a trait in the SDK.
 
 = 2.21 20140422 =
 * New: Custom roles are accepted.
