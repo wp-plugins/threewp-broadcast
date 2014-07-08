@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\meta_box;
 
+use \plainview\sdk\collections\collection;
+
 /**
 	@brief		The data class that is passed around when creating the broadcast meta box.
 	@since		20130928
@@ -59,9 +61,38 @@ class data
 
 	public function __construct()
 	{
-		$this->css = new \plainview\sdk\collections\collection;
+		$this->css = new collection;
 		$this->html = new html;
 		$this->html->data = $this;
-		$this->js = new \plainview\sdk\collections\collection;
+		$this->js = new collection;
+		$this->inputs_to_convert_later = new collection;
+	}
+
+	/**
+		@brief		convert_form_input_later
+		@since		2014-07-01 10:05:10
+	**/
+	public function convert_form_input_later( $input_name )
+	{
+		$this->inputs_to_convert_later->set( $input_name, $input_name );
+	}
+
+	/**
+		@brief		Convert the form inputs to strings.
+		@since		2014-07-01 10:06:01
+	**/
+	public function convert_form_inputs_now()
+	{
+		foreach( $this->inputs_to_convert_later as $input_name )
+		{
+			// Check that the html box still wants this input converted.
+			if ( ! $this->html->has( $input_name ) )
+				continue;
+			// Check that the input exists.
+			if ( ! $this->form->input( $input_name ) )
+				continue;
+			// Convert the input to a string.
+			$this->html->set( $input_name, $this->form->input( $input_name ) . '' );
+		}
 	}
 }

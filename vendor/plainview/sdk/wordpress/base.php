@@ -1620,6 +1620,16 @@ class base
 	}
 
 	/**
+		@brief		Return the blog's time offset from GMT.
+		@since		2014-07-08 10:07:30
+	**/
+	public function gmt_offset()
+	{
+		$blog_timestamp = current_time( 'timestamp' );
+		return $blog_timestamp - time();
+	}
+
+	/**
 		@brief		An array of command line options that this subclass can handle via do_LONGOPTION().
 		@return		array		Array of long options that this subclass handles.
 		@see		do_cli()

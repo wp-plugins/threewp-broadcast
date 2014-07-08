@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\meta_box;
 
+use \plainview\sdk\collections\collection;
+
 /**
 	@brief		HTML item.
 	@since		20131027
@@ -17,6 +19,7 @@ class item
 	public function __construct( $meta_box_data )
 	{
 		$this->data = $meta_box_data;
+		$this->inputs = new collection;
 		$this->_construct();
 	}
 
@@ -27,6 +30,14 @@ class item
 	**/
 	public function _construct()
 	{
+	}
+
+	public function __toString()
+	{
+		$r = '';
+		foreach( $this->inputs as $input )
+			$r .= $input;
+		return $r;
 	}
 
 	/**

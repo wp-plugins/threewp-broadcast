@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140708		Wordpress: gmt_offset()
 	- 20140612		Wordpress: better path compatability with Windows servers.
 	- 20140611		Added human_bytes()
 	- 20140610		Added collections/sort_by_key
@@ -115,7 +116,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140612;
+	protected $sdk_version = 20140708;
 
 	/**
 		@brief		Constructor.

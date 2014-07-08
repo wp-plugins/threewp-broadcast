@@ -88,14 +88,19 @@ jQuery(document).ready(function($) {
 				var $this = $( this );
 				var blogs = $this.val().split(' ');
 				for ( var counter=0; counter < blogs.length; counter++)
-					$( "#plainview_sdk_form2_inputs_checkboxes_blogs_" + blogs[counter], window.broadcast.$broadcast ).prop( 'checked', true );
-				// Select the "no value" option.
-				$this.val( '' );
+				{
+					var $blog = $( "#plainview_sdk_form2_inputs_checkboxes_blogs_" + blogs[counter], window.broadcast.$broadcast );
+					// Switch selection.
+					if ( $blog.prop( 'checked' ) )
+						$blog.prop( 'checked', false );
+					else
+						$blog.prop( 'checked', true );
+				}
 
 				// If the blog list is closed, then expand and then close again to show the newly selected blogs.
 				if ( window.broadcast.$blogs_html.hasClass( 'closed' ) )
 					window.broadcast.$show_hide.click().click();
-			});
+			}).change();
 
 		},
 

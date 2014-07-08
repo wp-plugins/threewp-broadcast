@@ -49,6 +49,13 @@ class broadcasting_data
 	public $custom_fields = false;
 
 	/**
+		@brief		Delete the attachments of all linked child posts.
+		@details	This is normally only a problem when several posts share the exact same attachments between them.
+		@since		2014-06-20 11:58:18
+	**/
+	public $delete_attachments = true;
+
+	/**
 		@brief		IN: True if the broadcaster wants to link this post to the child blog posts,
 		@var		$link
 		@since		20130603
