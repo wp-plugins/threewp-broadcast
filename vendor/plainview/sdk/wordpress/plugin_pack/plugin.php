@@ -1,0 +1,194 @@
+<?php
+
+namespace plainview\sdk\wordpress\plugin_pack;
+
+use ReflectionClass;
+
+/**
+	@brief		A plugin pack plugin.
+	@since		2014-05-07 22:55:19
+**/
+class plugin
+	extends \plainview\sdk\collections\collection
+{
+	/**
+		@brief		Constructor.
+		@since		2014-05-08 00:27:21
+	**/
+	public function __construct( $plugins )
+	{
+		$this->set( 'plugins', $plugins );
+	}
+
+	/**
+		@brief		Activate the plugin.
+		@since		2014-04-05 21:05:12
+	**/
+	public function activate()
+	{
+		$this->plugin()->activate_internal();
+	}
+
+	/**
+		@brief		Deactivate the plugin.
+		@since		2014-04-05 21:05:12
+	**/
+	public function deactivate()
+	{
+		$this->plugin()->deactivate_internal();
+	}
+
+	/**
+		@brief		Returns the class name of the plugin we handle.
+		@since		2014-05-08 00:31:38
+	**/
+	public function get_classname()
+	{
+		return $this->get( 'classname' );
+	}
+
+	/**
+		@brief		Return the content of the plugin.
+		@since		2014-04-06 11:01:06
+	**/
+	public function get_comment()
+	{
+		if ( $this->has( 'comment' ) )
+			return $this->get( 'comment' );
+
+		$text = $this->get_file_contents();
+		$comments = array_filter( token_get_all( $text ), function( $entry )
+		{
+			return $entry[0] == T_DOC_COMMENT;
+		});
+		$comment = array_shift( $comments );
+		$comment = $comment[ 1 ];
+
+		$current_key = '';
+		$lines = explode( "\n", $comment );
+		$r = [];
+
+		// Parse the comment into its various headings.
+		foreach( $lines as $line )
+		{
+			$line = trim( $line );
+			if ( $line == '/**' )
+				continue;
+			if ( $line == '**/' )
+				continue;
+
+			if ( ( strlen( $line ) > 0 ) && ( $line[ 0 ] == '@' ) )
+			{
+				$current_key = preg_replace( '/@([a-zA-Z0-9]*).*/', '\1', $line );
+				$text = preg_replace( '/@[a-zA-Z0-9]*[\t]*+/', '', $line );
+				if ( $text == '' )
+					continue;
+			}
+			else
+				$text = $line;
+
+			if ( ! isset( $r[ $current_key ] ) )
+			{
+				if ( $text != '' )
+					$r[ $current_key ] = $text;
+			}
+			else
+				$r[ $current_key ] .= "\n" . $text;
+		}
+
+		$this->set( 'comment', (object)$r );
+		return $this->get( 'comment' );
+	}
+
+	/**
+		@brief		Return the plugin description.
+		@since		2014-04-05 20:44:58
+	**/
+	public function get_brief_description()
+	{
+		return $this->get_comment()->brief;
+	}
+
+	/**
+		@brief		Retrieves the file contents of the plugin.
+		@since		2014-05-08 16:26:36
+	**/
+	public function get_file_contents()
+	{
+		return file_get_contents( $this->get_filename() );
+	}
+
+	/**
+		@brief		Returns the filename in which this plugin is defined.
+		@since		2014-05-08 00:31:17
+	**/
+	public function get_filename()
+	{
+		$rc = new ReflectionClass( $this->get_classname() );
+		return $rc->getFileName();
+	}
+
+	/**
+		@brief		Return a 16 character hash of the classname.
+		@since		2014-05-08 16:18:02
+	**/
+	public function get_id()
+	{
+		$id = md5( $this->get( 'classname' ) );
+		$id = substr( $id, 0, 16 );
+		return $id;
+	}
+
+	/**
+		@brief		Returns the "name" of the class, after fixing it up and removing underscores and prefixes.
+		@since		2014-05-08 16:19:04
+	**/
+	public function get_name()
+	{
+		if ( $this->has( 'name' ) )
+			return $this->get( 'name' );
+		$name = $this->get( 'plugins' )->pp()->get_plugin_classname( $this->get( 'classname' ) );
+		$this->set( 'name', $name );
+		return $this->get_name();
+	}
+
+	/**
+		@brief		Is this plugin loaded?
+		@since		2014-05-08 16:15:32
+	**/
+	public function is_loaded()
+	{
+		return $this->has( 'class' );
+	}
+
+	/**
+		@brief		Loads the class into memory.
+		@since		2014-05-08 00:29:40
+	**/
+	public function load()
+	{
+		$classname = $this->get( 'classname' );
+		$class = new $classname;
+		return $this->set( 'class', $class );
+	}
+
+	/**
+		@brief		Return an instance of the plugin.
+		@since		2014-05-08 16:35:12
+	**/
+	public function plugin()
+	{
+		if ( ! $this->is_loaded() )
+			$this->load();
+		return $this->get( 'class' );
+	}
+
+	/**
+		@brief		Sets our class name.
+		@since		2014-05-08 00:28:19
+	**/
+	public function set_classname( $classname )
+	{
+		return $this->set( 'classname', $classname );
+	}
+}

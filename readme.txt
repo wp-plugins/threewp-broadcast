@@ -47,9 +47,12 @@ The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" titl
 For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting image field types using the ACF plugin.
+* <strong>All Blogs</strong> allows users to broadcast to all blogs in the network without having to be a user of the blog.
 * <strong>Attachment Shortcodes</strong> copies attachments specified in custom shortcodes.
+* <strong>Comments</strong> adds support for broadcasting of comments.
 * <strong>Custom Field Attachments</strong> allows post custom field containing attachment IDs to be broadcasted correctly..
 * <strong>Event Organiser</strong> adds support for Stephen Harris&#8217; <a href="http://wordpress.org/plugins/event-organiser/">Event Organiser plugin</a>, with events and venues.
+* <strong>Keep Child Attachments</strong> keeps the child post's attachments instead of deleting them when updating a broadcast.
 * <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
@@ -119,6 +122,8 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 27. Premium Pack: Attachment Shortcode creation wizard with some example shortcodes.
 28. Premium Pack: Attachment Shortcode editing.
 29. Premium Pack: Attachment Shortcode help.
+30. Premium Pack: Comments plugin.
+31. Premium Pack: Keep Child Attachments plugin.
 
 == Frequently Asked Questions ==
 
@@ -205,9 +210,35 @@ It works transparently in the background, but in case you've never really used W
 5. Link and broadcast it to the other blogs in the network.
 6. The other blogs should now have two translations of the same post and the same post overview listing.
 
-This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager. 2014-01-12.
+2014-01-12 This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager.
+2014-05-20 This plugin will be removed in the future.
 
 == Changelog ==
+
+= 3 20140708 =
+* New: Blog groups: after selecting a blog group the value will no longer change back to "no group selected".
+* New: Blog groups: select "no group selected" and the same blog group again to unselect the blogs from the group.
+* Fix: Featured post conflicts resolved. See 3+1 fixes below.
+* Fix: Do not automatically delete the thumbnail (it might not be attached to this post).
+* Fix: Removed attachment cache.
+* Fix: Only attach copy image to post if it was attached to the parent post.
+* New: New related premium pack plugin: Keep Child Attachments.
+* Code: Meta Box has two new methods to allow for input modifications before display: convert_form_input_later() and convert_form_inputs_now().
+* Note: Changed versioning to rapid release. No more point releases.
+
+= 2.24 20140615 =
+* New: Custom field protect list.
+* Fix: Better support for Windows servers.
+
+= 2.23 20140520 =
+* New: Premium Pack Plugin: Comments
+* Code: broadcasting_data->new_post()
+
+= 2.22 20140511 =
+* Fix: Attachment metadata was not copied sometimes.
+* New: Broadcast file checksum info, for debugging purposes.
+* Code: Even more debug info.
+* Code: code_export removed. Debug methods are now a trait in the SDK.
 
 = 2.21 20140422 =
 * New: Custom roles are accepted.
