@@ -46,8 +46,9 @@ The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" titl
 
 For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
-* <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting image field types using the ACF plugin.
+* <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting attachment field types using the ACF plugin.
 * <strong>All Blogs</strong> allows users to broadcast to all blogs in the network without having to be a user of the blog.
+* <strong>All In One Calendar</strong> adds support for <a href="http://www.wordpress.org/plugins/all-in-one-event-calendar/">Timely's All In One Calendar</a> plugin.
 * <strong>Attachment Shortcodes</strong> copies attachments specified in custom shortcodes.
 * <strong>Comments</strong> adds support for broadcasting of comments.
 * <strong>Custom Field Attachments</strong> allows post custom field containing attachment IDs to be broadcasted correctly..
@@ -57,12 +58,15 @@ For a complete list of features and more information, see <a href="http://plainv
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
 * <strong>Permalinks</strong> enables more precise permalink control.
+* <strong>Protect Child Content</strong> prevents overwriting of child post content.
 * <strong>Purge Children</strong> removes children and their attached files from child blogs.
+* <strong>Redirect All Children</strong> redirects single post views from visitors of child posts to the parent post.
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
 Sync Taxonomies
 * <strong>Sync Taxomnomies</strong> synchronize the taxonomies of target blogs with those from a source blog.
-* <strong>User & Blog Settings</strong> can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
+* <strong>User & Blog Settings</strong> (UBS) can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
+* <strong>User & Blog Settings Post</strong> uses the modifications from the UBS plugin to broadcast posts with one click.
 * <strong>Views</strong> adds support for WP Types and Views content templates.
 * <strong>WooCommerce</strong> allows product variations to be broadcasted.
 
@@ -124,6 +128,10 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 29. Premium Pack: Attachment Shortcode help.
 30. Premium Pack: Comments plugin.
 31. Premium Pack: Keep Child Attachments plugin.
+32. Premium Pack: All In One Calendar
+33. Premium Pack: Protect Child Content
+34. Premium Pack: User & Blog Settings Post 1
+35. Premium Pack: User & Blog Settings Post 2
 
 == Frequently Asked Questions ==
 
@@ -212,8 +220,18 @@ It works transparently in the background, but in case you've never really used W
 
 2014-01-12 This plugin will soon be replaced by a WPML premium plugin that enables broadcasting from the translation manager.
 2014-05-20 This plugin will be removed in the future.
+2014-08-14 Still awaiting patches to WPML to be integrated.
 
 == Changelog ==
+
+= 4 20140814 =
+* Fix: More robust duplicate attachment finding.
+* Fix: Do a post type check before broadcasting.
+* Fix: Check for invalid thumbnails before broadcasting.
+* New: Premium Pack Plugin: All In One Calendar
+* New: Premium Pack Plugin: Protect Child Content
+* New: Premium Pack Plugin: Redirect All Children
+* New: Premium Pack Plugin: User & Blog Settings Post
 
 = 3 20140708 =
 * New: Blog groups: after selecting a blog group the value will no longer change back to "no group selected".

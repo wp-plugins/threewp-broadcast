@@ -86,5 +86,28 @@ class attachment_data
 	public function menu_order( $menu_order = null )								{	return $this->getset( 'menu_order', $menu_order );							}
 	public function post_excerpt( $post_excerpt = null )							{	return $this->getset( 'post_excerpt', $post_excerpt );						}
 	public function post_title( $post_title = null )								{	return $this->getset( 'post_title', $post_title );							}
+
+	/**
+		@brief		Is this attachment attached to a parent post?
+		@since		2014-08-01 13:11:04
+	**/
+	public function is_attached_to_parent()
+	{
+		if ( ! isset( $this->attached_to_parent ) )
+			return false;
+		return $this->attached_to_parent;
+	}
+
+	/**
+		@brief		Set the "attached to parent" status.
+		@since		2014-08-01 13:09:09
+	**/
+	public function set_attached_to_parent( $post, $attached = null )
+	{
+		if ( $attached === null )
+			$attached = ( $this->post->post_parent == $post->ID );
+
+		$this->attached_to_parent = $attached;
+	}
 }
 

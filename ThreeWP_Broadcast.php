@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		3
+Version:		4
 */
 
 namespace threewp_broadcast;
@@ -447,7 +447,7 @@ class ThreeWP_Broadcast
 		$clear_post = $fs->checkbox( 'clear_post' )
 			->description_( 'The POST PHP variable is data sent when updating posts. Most plugins are fine if the POST is cleared before broadcasting, while others require that the data remains intact. Uncheck this setting if you notice that child posts are not being treated the same on the child blogs as they are on the parent blog.' )
 			->label_( 'Clear POST' )
-			->checked( $this->get_site_option( 'debug', false ) );
+			->checked( $this->get_site_option( 'clear_post' ) );
 
 		$save_post_priority = $fs->number( 'save_post_priority' )
 			->description_( 'The priority for the save_post hook. Should be after all other plugins have finished modifying the post. Default is 640.' )
@@ -1258,17 +1258,20 @@ This can be increased by adding the following to your wp-config.php:
 			return;
 		}
 
+		// We must handle this post type.
+		$post = get_post( $post_id );
+		$action = new actions\get_post_types;
+		$action->apply();
+		if ( ! in_array( $post->post_type, $action->post_types ) )
+		{
+			$this->debug( 'We do not care about the %s post type.', $post->post_type );
+			return;
+		}
+
 		// No post?
 		if ( count( $_POST ) < 1 )
 		{
 			$this->debug( 'The POST is empty.' );
-			return;
-		}
-
-		// Nothing of interest in the post?
-		if ( ! isset( $_POST[ 'broadcast' ] ) )
-		{
-			$this->debug( 'The POST does not contain any Broadcast data.' );
 			return;
 		}
 
@@ -1289,8 +1292,6 @@ This can be increased by adding the following to your wp-config.php:
 			$this->save_last_used_settings( $this->user_id(), $_POST[ 'broadcast' ] );
 
 		$this->debug( 'We are currently on blog %s (%s).', get_bloginfo( 'blogname' ), get_current_blog_id() );
-
-		$post = get_post( $post_id );
 
 		$meta_box_data = $this->create_meta_box( $post );
 
@@ -2148,10 +2149,12 @@ This can be increased by adding the following to your wp-config.php:
 		$has_attached_files = count( $attached_files) > 0;
 		if ( $has_attached_files )
 		{
-			$this->debug( 'Has %s attachments.', $has_attached_files );
+			$this->debug( 'Has %s attachments.', count( $has_attached_files ) );
 			foreach( $attached_files as $attached_file )
 			{
-				$bcd->attachment_data[ $attached_file->ID ] = attachment_data::from_attachment_id( $attached_file, $bcd->upload_dir );
+				$data = attachment_data::from_attachment_id( $attached_file, $bcd->upload_dir );
+				$data->set_attached_to_parent( $bcd->post );
+				$bcd->attachment_data[ $attached_file->ID ] = $data;
 				$this->debug( 'Attachment %s found.', $attached_file->ID );
 			}
 		}
@@ -2167,7 +2170,12 @@ This can be increased by adding the following to your wp-config.php:
 			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
 
 			// Check that the thumbnail ID is > 0
-			$bcd->has_thumbnail = $bcd->has_thumbnail && ( reset( $bcd->post_custom_fields[ '_thumbnail_id' ] ) > 0 );
+			if ( $bcd->has_thumbnail )
+			{
+				$thumbnail_id = reset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
+				$thumbnail_post = get_post( $thumbnail_id );
+				$bcd->has_thumbnail = $bcd->has_thumbnail && ( $thumbnail_post !== null );
+			}
 
 			if ( $bcd->has_thumbnail )
 			{
@@ -2175,7 +2183,9 @@ This can be increased by adding the following to your wp-config.php:
 				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
 				$bcd->thumbnail = get_post( $bcd->thumbnail_id );
 				unset( $bcd->post_custom_fields[ '_thumbnail_id' ] ); // There is a new thumbnail id for each blog.
-				$bcd->attachment_data[ 'thumbnail' ] = attachment_data::from_attachment_id( $bcd->thumbnail, $bcd->upload_dir);
+				$data = attachment_data::from_attachment_id( $bcd->thumbnail, $bcd->upload_dir);
+				$data->set_attached_to_parent( $bcd->post );
+				$bcd->attachment_data[ 'thumbnail' ] = $data;
 				// Now that we know what the attachment id the thumbnail has, we must remove it from the attached files to avoid duplicates.
 				unset( $bcd->attachment_data[ $bcd->thumbnail_id ] );
 			}
@@ -2252,8 +2262,9 @@ This can be increased by adding the following to your wp-config.php:
 			foreach( $gallery->ids_array as $id )
 			{
 				$this->debug( 'Gallery has attachment %s.', $id );
-				$ad = attachment_data::from_attachment_id( $id, $bcd->upload_dir );
-				$bcd->attachment_data[ $id ] = $ad;
+				$data = attachment_data::from_attachment_id( $id, $bcd->upload_dir );
+				$data->set_parent_attachment( $bcd->post );
+				$bcd->attachment_data[ $id ] = $data;
 			}
 		}
 
@@ -2270,13 +2281,15 @@ This can be increased by adding the following to your wp-config.php:
 		$action->broadcasting_data = $bcd;
 		$action->apply();
 
+		$this->debug( 'The attachment data is: %s', $bcd->attachment_data );
+
 		$this->debug( 'Beginning child broadcast loop.' );
 
 		foreach( $bcd->blogs as $child_blog )
 		{
 			$child_blog->switch_to();
 			$bcd->current_child_blog_id = $child_blog->get_id();
-			$this->debug( 'Switched to blog %s', $bcd->current_child_blog_id );
+			$this->debug( 'Switched to blog %s (%s)', get_bloginfo( 'name' ), $bcd->current_child_blog_id );
 
 			// Create new post data from the original stuff.
 			$bcd->new_post = (array) $bcd->post;
@@ -2442,28 +2455,29 @@ This can be increased by adding the following to your wp-config.php:
 			$this->debug( 'Looking through %s attachments.', count( $bcd->attachment_data ) );
 			foreach( $bcd->attachment_data as $key => $attachment )
 			{
-				if ( $key != 'thumbnail' )
+				if ( $key == 'thumbnail' )
+					continue;
+				$o = clone( $bcd );
+				$o->attachment_data = clone( $attachment );
+				$o->attachment_data->post = clone( $attachment->post );
+				$this->debug( "The attachment's post parent is %s.", $o->attachment_data->post->post_parent );
+				if ( $o->attachment_data->is_attached_to_parent() )
 				{
-					$o = clone( $bcd );
-					$o->attachment_data = $attachment;
-					if ( $o->attachment_data->post->post_parent == $bcd->post->ID )
-					{
-						$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post()->ID, $o->attachment_data->post->ID );
-						$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
-					}
-					else
-					{
-						$this->debug( 'Reseting post parent for attachment %s.', $o->attachment_data->post->ID );
-						$o->attachment_data->post->post_parent = 0;
-					}
-					$this->maybe_copy_attachment( $o );
-					$a = new \stdClass();
-					$a->old = $attachment;
-					$a->new = get_post( $o->attachment_id );
-					$a->new->id = $a->new->ID;		// Lowercase is expected.
-					$bcd->copied_attachments[] = $a;
-					$this->debug( 'Copied attachment %s to %s', $a->old->id, $a->new->id );
+					$this->debug( 'Assigning new post parent ID (%s) to attachment %s.', $bcd->new_post()->ID, $o->attachment_data->post->ID );
+					$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
 				}
+				else
+				{
+					$this->debug( 'Resetting post parent for attachment %s.', $o->attachment_data->post->ID );
+					$o->attachment_data->post->post_parent = 0;
+				}
+				$this->maybe_copy_attachment( $o );
+				$a = new \stdClass();
+				$a->old = $attachment;
+				$a->new = get_post( $o->attachment_id );
+				$a->new->id = $a->new->ID;		// Lowercase is expected.
+				$bcd->copied_attachments[] = $a;
+				$this->debug( 'Copied attachment %s to %s', $a->old->id, $a->new->id );
 			}
 
 			// Maybe modify the post content with new URLs to attachments and what not.
@@ -2598,14 +2612,14 @@ This can be increased by adding the following to your wp-config.php:
 					$o = clone( $bcd );
 					$o->attachment_data = $bcd->attachment_data[ 'thumbnail' ];
 
-					if ( $o->attachment_data->post->post_parent == $bcd->post->ID )
+					if ( $o->attachment_data->is_attached_to_parent() )
 					{
 						$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post()->ID, $o->attachment_data->post->ID );
 						$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
 					}
 					else
 					{
-						$this->debug( 'Reseting post parent for attachment %s.', $o->attachment_data->post->ID );
+						$this->debug( 'Resetting post parent for attachment %s.', $o->attachment_data->post->ID );
 						$o->attachment_data->post->post_parent = 0;
 					}
 
@@ -2894,7 +2908,8 @@ This can be increased by adding the following to your wp-config.php:
 						$function[ 0 ] = get_class( $function[ 0 ] );
 					$function = sprintf( '%s::%s', $function[ 0 ], $function[ 1 ] );
 				}
-				$function = sprintf( '%s %s', $function, $priority );
+				if ( is_a( $function, 'Closure' ) )
+					$function = '[Anonymous function]';
 				$hook_callbacks[] = $function;
 			}
 		}
@@ -3052,6 +3067,9 @@ This can be increased by adding the following to your wp-config.php:
 		$key = get_current_blog_id();
 
 		$this->debug( 'Maybe copy attachment: Searching for attachment posts with the name %s.', $attachment_data->post->post_name );
+
+		// Do not use get_posts because it is too stupid to find existing attachments with the same name. We have to do this with a raw query. *sigh*
+/**
 		$attachment_posts = get_posts( [
 			'cache_results' => false,
 			'name' => $attachment_data->post->post_name,
@@ -3059,6 +3077,20 @@ This can be increased by adding the following to your wp-config.php:
 			'post_parent' => null,
 			'post_type' => 'attachment',
 		] );
+**/
+		// Start by assuming no attachments.
+		$attachment_posts = [];
+
+		global $wpdb;
+		// The post_name is the important part.
+		$query = sprintf( "SELECT `ID` FROM `%s` WHERE `post_type` = 'attachment' AND `post_parent` = 0 AND `post_name` = '%s'",
+			$wpdb->posts,
+			$attachment_data->post->post_name
+		);
+		$results = $this->query( $query );
+		if ( count( $results ) > 0 )
+			foreach( $results as $result )
+				$attachment_posts[] = get_post( $result[ 'ID' ] );
 		$this->debug( 'Maybe copy attachment: Found %s attachment posts.', count( $attachment_posts ) );
 
 		// Is there an existing media file?
@@ -3070,6 +3102,7 @@ This can be increased by adding the following to your wp-config.php:
 				$this->debug( "The attachment post name is %s, and we are looking for %s. Ignoring attachment.", $attachment_post->post_name, $attachment_data->post->post_name );
 				continue;
 			}
+			$this->debug( "Found attachment %s and we are looking for %s.", $attachment_post->post_name, $attachment_data->post->post_name );
 			// We've found an existing attachment. What to do with it...
 			$existing_action = $this->get_site_option( 'existing_attachments', 'use' );
 			$this->debug( 'Maybe copy attachment: The action for existing attachments is to %s.', $existing_action );
