@@ -11,31 +11,31 @@
          syntaxCheck="false"
 >
     <testsuites>
-        <testsuite name="Plainview SDK Base">
+        <testsuite name="base">
             <directory>.</directory>
         </testsuite>
-        <testsuite name="Plainview SDK Collections">
+        <testsuite name="collections">
             <directory>../collections/tests</directory>
         </testsuite>
-        <testsuite name="Plainview SDK Form2">
+        <testsuite name="form2">
             <directory>../form2/tests</directory>
         </testsuite>
-        <testsuite name="Plainview SDK HTML">
+        <testsuite name="html">
             <directory>../html/tests</directory>
         </testsuite>
-        <testsuite name="Plainview SDK Mail">
+        <testsuite name="mail">
             <directory>../mail/tests</directory>
         </testsuite>
-        <testsuite name="Plainview SDK Pagination">
+        <testsuite name="pagination">
             <directory>../pagination/tests</directory>
         </testsuite>
-        <testsuite name="Plainview SDK Breadcrumbs">
+        <testsuite name="breadcrumbs">
             <directory>../breadcrumbs/tests</directory>
         </testsuite>
-        <testsuite name="Plainview SDK Table">
+        <testsuite name="table">
             <directory>../table/tests</directory>
         </testsuite>
-        <testsuite name="Plainview SDK Tree">
+        <testsuite name="tree">
             <directory>../tree/tests</directory>
         </testsuite>
     </testsuites>

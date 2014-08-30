@@ -1,11 +1,10 @@
 === ThreeWP Broadcast ===
 Contributors: edward_plainview
-Donate link: http://plainview.se/donate/
 License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
 Tags: broadcast, multipost, duplicate, posts, sitepress, threewp, linking, posts, multiple, blogs, woocommerce, wpml, synchronize, event organiser, acf
-Tested up to: 3.9
+Tested up to: 3.9.2
 
 Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
 
@@ -137,7 +136,7 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 
 = I need support! =
 
-The easiest way to get my attention is to <a href="mailto:edward@plainview.se">contact me via e-mail</a> and then use <a href="http://plainview.se/donate/">my donation page</a>.
+The easiest way to get my attention is to <a href="mailto:broadcast@plainview.se">contact me via e-mail</a> and ask how to donate a little something for my time.
 
 For contract work such as the following, contact me so we can make a deal:
 
@@ -223,6 +222,14 @@ It works transparently in the background, but in case you've never really used W
 2014-08-14 Still awaiting patches to WPML to be integrated.
 
 == Changelog ==
+
+= 5 20140830 =
+* Hide information from non-network admins.
+* Fix: Warning messages on lines ~2000
+* Fix: Unnecessary warning for empty blog groups.
+* Fix: Unlink all works again.
+* Code: Better post modification detection (line 2553).
+* Change: Internal fields are now broadcasted per default on NEW installations.
 
 = 4 20140814 =
 * Fix: More robust duplicate attachment finding.

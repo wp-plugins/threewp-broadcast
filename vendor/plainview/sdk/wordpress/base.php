@@ -875,7 +875,7 @@ class base
 	public function get_local_option( $option, $default = 'no_default_value' )
 	{
 		$fixed_option = $this->fix_local_option_name( $option );
-		$value = get_option( $option, 'no_default_value' );
+		$value = get_option( $fixed_option, 'no_default_value' );
 		if ( $value === 'no_default_value' )
 		{
 			$options = $this->local_options();
@@ -1601,9 +1601,6 @@ class base
 	public function form( $options = array())
 	{
 		$options = array_merge( $options, array( 'language' => preg_replace( '/_.*/', '', get_locale())) );
-
-		if ( ! class_exists( '\\plainview\\sdk\\wordpress\\form' ) )
-			require_once( 'form.php' );
 
 		return new \plainview\sdk\wordpress\form( $options );
 	}

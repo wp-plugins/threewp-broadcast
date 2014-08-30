@@ -20,13 +20,19 @@ if ( ! function_exists( 'ddd' ) )
 				$args[ $index ] = sprintf( '%s', var_export( $arg, true ) );
 		}
 
-		// Put all of the arguments into one string.
-		$text = @call_user_func_array( 'sprintf', $args );
-		if ( $text == '' )
-			$text = $args[ 0 ];
+		$text = $args[ 0 ];
+		if ( strpos( $text, '%' ) !== false )
+		{
+			// Put all of the arguments into one string.
+			$text = @call_user_func_array( 'sprintf', $args );
+			if ( $text == '' )
+				$text = $args[ 0 ];
+		}
+		else
+			$text = implode( "<br/>\n", $args );
 
 		// Date class: string
-		$text = sprintf( '%s %s%s', date( 'H:i:s' ), $text, "\n" );
+		$text = sprintf( '<pre>%s %s%s</pre>', date( 'H:i:s' ), $text, "\n" );
 		echo $text;
 		ob_flush();
 	}

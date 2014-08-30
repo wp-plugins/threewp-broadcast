@@ -168,7 +168,11 @@ class plugin
 	public function load()
 	{
 		$classname = $this->get( 'classname' );
-		$class = new $classname;
+		$parameter = null;
+		$reflection = new \ReflectionClass( $classname );
+		if ( $reflection->isSubClassOf( '\\plainview\\sdk\\wordpress\\base' ) )
+			$parameter = $reflection->getFilename();
+		$class = new $classname( $parameter );
 		return $this->set( 'class', $class );
 	}
 
@@ -190,5 +194,14 @@ class plugin
 	public function set_classname( $classname )
 	{
 		return $this->set( 'classname', $classname );
+	}
+
+	/**
+		@brief		Ask the plugin to uninstall itself.
+		@since		2014-07-16 13:31:16
+	**/
+	public function uninstall()
+	{
+		$this->plugin()->uninstall_internal();
 	}
 }

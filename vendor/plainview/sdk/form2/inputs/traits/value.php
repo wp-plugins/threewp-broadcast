@@ -103,6 +103,15 @@ trait value
 	}
 
 	/**
+		@brief		Return the raw post value, without any filtering as all.
+		@since		2014-07-11 16:53:05
+	**/
+	public function get_raw_post_value()
+	{
+		return $this->form()->get_post_value( $this->make_name() );
+	}
+
+	/**
 		@brief		Returns the current value.
 		@details	Note that the value has been filtered.
 		@return		string		The current value of the input.

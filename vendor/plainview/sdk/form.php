@@ -1,4 +1,7 @@
 <?php
+
+namespace plainview\sdk;
+
 /**
 	@brief	plainview\sdk\form is a XHTML form class that handles creation, display and validation of form elements and complete form layouts.
 	@par	Using the class
@@ -198,8 +201,6 @@
 	@version	20130501
 
 */
-
-namespace plainview;
 
 class form
 {

@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		4
+Version:		5
 */
 
 namespace threewp_broadcast;
@@ -97,7 +97,7 @@ class ThreeWP_Broadcast
 
 	protected $site_options = array(
 		'blogs_to_hide' => 5,								// How many blogs to auto-hide
-		'broadcast_internal_custom_fields' => false,		// Broadcast internal custom fields?
+		'broadcast_internal_custom_fields' => true,		// Broadcast internal custom fields?
 		'canonical_url' => true,							// Override the canonical URLs with the parent post's.
 		'clear_post' => true,								// Clear the post before broadcasting.
 		'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
@@ -318,9 +318,10 @@ class ThreeWP_Broadcast
 			$this->message( 'Custom post types saved!' );
 		}
 
-		$r .= $this->p_( 'Custom post types must be specified using their internal Wordpress names with a space between each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).' );
+		$r .= $this->p_( 'Custom post types must be specified using their internal Wordpress names on a new line each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).' );
 
 		$blog_post_types = get_post_types();
+		unset( $blog_post_types[ 'nav_menu_item' ] );
 		$blog_post_types = array_keys( $blog_post_types );
 		$r .= $this->p_( 'The custom post types registered on <em>this</em> blog are: <code>%s</code>', implode( ', ', $blog_post_types ) );
 
@@ -810,6 +811,12 @@ class ThreeWP_Broadcast
 
 	public function user_broadcast_info()
 	{
+		if ( ! is_super_admin() )
+		{
+			echo $this->p( 'No information available.' );
+			return;
+		}
+
 		$table = $this->table();
 		$table->caption()->text( 'Information' );
 
@@ -1295,10 +1302,14 @@ This can be increased by adding the following to your wp-config.php:
 
 		$meta_box_data = $this->create_meta_box( $post );
 
+		$this->debug( 'Preparing the meta box.' );
+
 		// Allow plugins to modify the meta box with their own info.
 		$action = new actions\prepare_meta_box;
 		$action->meta_box_data = $meta_box_data;
 		$action->apply();
+
+		$this->debug( 'Prepared.' );
 
 		// Post the form.
 		if ( ! $meta_box_data->form->has_posted )
@@ -1316,9 +1327,13 @@ This can be increased by adding the following to your wp-config.php:
 			'upload_dir' => wp_upload_dir(),
 		] );
 
+		$this->debug( 'Preparing the broadcasting data.' );
+
 		$action = new actions\prepare_broadcasting_data;
 		$action->broadcasting_data = $broadcasting_data;
 		$action->apply();
+
+		$this->debug( 'Prepared.' );
 
 		if ( $broadcasting_data->has_blogs() )
 			$this->filters( 'threewp_broadcast_broadcast_post', $broadcasting_data );
@@ -1653,8 +1668,8 @@ This can be increased by adding the following to your wp-config.php:
 						$this->_( 'Trash' )
 					) );
 
-					$url_unlink_all = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_unlink_all&amp;post=%s", $filter->parent_post_id );
-					$url_unlink_all = wp_nonce_url( $url_unlink_all, 'broadcast_unlink_all_' . $filter->parent_post_id );
+					$url = sprintf( "admin.php?page=threewp_broadcast&amp;action=user_unlink_all&amp;post=%s", $filter->parent_post_id );
+					$url = wp_nonce_url( $url, 'broadcast_unlink_all_' . $filter->parent_post_id );
 					$strings->set( 'unlink_all_separator', ' | ' );
 					$strings->set( 'unlink_all', sprintf( '<a href="%s" title="%s">%s</a>',
 						$url,
@@ -2161,12 +2176,14 @@ This can be increased by adding the following to your wp-config.php:
 
 		if ( $bcd->custom_fields )
 		{
+			if ( ! is_object( $bcd->custom_fields ) )
+				$bcd->custom_fields = new \stdClass;
+
 			$this->debug( 'Custom fields: Will broadcast custom fields.' );
 			$bcd->post_custom_fields = get_post_custom( $bcd->post->ID );
 
 			// Save the original custom fields for future use.
 			$bcd->custom_fields->original = $bcd->post_custom_fields;
-
 			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
 
 			// Check that the thumbnail ID is > 0
@@ -2533,8 +2550,17 @@ This can be increased by adding the following to your wp-config.php:
 			$action->broadcasting_data = $bcd;
 			$action->apply();
 
+			$this->debug( 'Checking for post modifications.' );
+			$post_modified = false;
+			foreach( (array)$unmodified_post as $key => $value )
+				if ( $unmodified_post->$key != $modified_post->$key )
+				{
+					$this->debug( 'Post has been modified because of %s.', $key );
+					$post_modified = true;
+				}
+
 			// Maybe updating the post is not necessary.
-			if ( $unmodified_post->post_content != $modified_post->post_content )
+			if ( $post_modified )
 			{
 				$this->debug( 'Modifying with new post: %s', $modified_post->post_content );
 				wp_update_post( $modified_post );	// Or maybe it is.
