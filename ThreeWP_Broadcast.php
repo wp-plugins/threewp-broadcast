@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		5
+Version:		6
 */
 
 namespace threewp_broadcast;
@@ -90,7 +90,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 3;
+	public $plugin_version = 6;
 
 	// 20140501 when debug trait is moved to SDK.
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
@@ -868,6 +868,11 @@ class ThreeWP_Broadcast
 		$object = new \ReflectionObject( new \plainview\sdk\wordpress\base );
 		$row->td()->text( $object->getFilename() );
 
+		// WP upload path
+		$row = $table->body()->row();
+		$row->td()->text( 'Wordpress upload directory array' );
+		$row->td()->text( '<pre>' . var_export( wp_upload_dir(), true ) . '</pre>' );
+
 		// PHP maximum execution time
 		$row = $table->body()->row();
 		$row->td()->text( 'PHP maximum execution time' );
@@ -1418,7 +1423,7 @@ This can be increased by adding the following to your wp-config.php:
 		if ( $meta_box_data->broadcast_data->get_linked_parent() !== false)
 		{
 			$meta_box_data->html->put( 'already_broadcasted',  sprintf( '<p>%s</p>',
-				$this->_( 'This post is broadcasted child post. It cannot be broadcasted further.' )
+				$this->_( 'This post is a broadcasted child post. It cannot be broadcasted further.' )
 			) );
 			$action->applied();
 			return;
@@ -2138,15 +2143,19 @@ This can be increased by adding the following to your wp-config.php:
 		if ( $bcd->link )
 		{
 			$this->debug( 'Linking is enabled.' );
-			// Prepare the broadcast data for linked children.
-			$broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID );
 
-			// Does this post type have parent support, so that we can link to a parent?
-			if ( $bcd->post_type_is_hierarchical && $bcd->post->post_parent > 0)
+			if ( $broadcasting_data->broadcast_data === null )
 			{
-				$parent_broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->post_parent );
+				// Prepare the broadcast data for linked children.
+				$bcd->broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID );
+
+				// Does this post type have parent support, so that we can link to a parent?
+				if ( $bcd->post_type_is_hierarchical && $bcd->post->post_parent > 0)
+				{
+					$parent_broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->post_parent );
+				}
+				$this->debug( 'Post type is hierarchical: %s', $this->yes_no( $bcd->post_type_is_hierarchical ) );
 			}
-			$this->debug( 'Post type is hierarchical: %s', $this->yes_no( $bcd->post_type_is_hierarchical ) );
 		}
 		else
 			$this->debug( 'Linking is disabled.' );
@@ -2174,7 +2183,7 @@ This can be increased by adding the following to your wp-config.php:
 			}
 		}
 
-		if ( $bcd->custom_fields )
+		if ( $bcd->custom_fields !== false )
 		{
 			if ( ! is_object( $bcd->custom_fields ) )
 				$bcd->custom_fields = new \stdClass;
@@ -2328,10 +2337,10 @@ This can be increased by adding the following to your wp-config.php:
 
 			// Insert new? Or update? Depends on whether the parent post was linked before or is newly linked?
 			$need_to_insert_post = true;
-			if ( $bcd->link )
-				if ( $broadcast_data->has_linked_child_on_this_blog() )
+			if ( $bcd->broadcast_data !== null )
+				if ( $bcd->broadcast_data->has_linked_child_on_this_blog() )
 				{
-					$child_post_id = $broadcast_data->get_linked_child_on_this_blog();
+					$child_post_id = $bcd->broadcast_data->get_linked_child_on_this_blog();
 					$this->debug( 'There is already a child post on this blog: %s', $child_post_id );
 
 					// Does this child post still exist?
@@ -2367,7 +2376,7 @@ This can be increased by adding the following to your wp-config.php:
 				if ( $bcd->link )
 				{
 					$this->debug( 'Adding link to child.' );
-					$broadcast_data->add_linked_child( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ] );
+					$bcd->broadcast_data->add_linked_child( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ] );
 				}
 			}
 
@@ -2379,7 +2388,7 @@ This can be increased by adding the following to your wp-config.php:
 					$this->debug( 'Taxonomies: %s', $parent_post_taxonomy );
 					// If we're updating a linked post, remove all the taxonomies and start from the top.
 					if ( $bcd->link )
-						if ( $broadcast_data->has_linked_child_on_this_blog() )
+						if ( $bcd->broadcast_data->has_linked_child_on_this_blog() )
 							wp_set_object_terms( $bcd->new_post[ 'ID' ], [], $parent_post_taxonomy );
 
 					// Skip this iteration if there are no terms
@@ -2690,7 +2699,7 @@ This can be increased by adding the following to your wp-config.php:
 		if ( $bcd->link )
 		{
 			$this->debug( 'Saving broadcast data.' );
-			$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $broadcast_data );
+			$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $bcd->broadcast_data );
 		}
 
 		$action = new actions\broadcasting_finished;

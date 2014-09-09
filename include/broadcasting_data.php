@@ -35,6 +35,13 @@ class broadcasting_data
 	public $blogs;
 
 	/**
+		@brief		OPTIONAL IN: Broadcast data object.
+		@details	If this is left to null, and linking is enabled, broadcast will retrieve the broadcast data automatically during broadcast_post().
+		@since		2014-08-31 18:50:10
+	**/
+	public $broadcast_data;
+
+	/**
 		@brief		The ID of the child blog we are currently working on.
 		@var		$current_child_blog_id
 		@since		20130927
