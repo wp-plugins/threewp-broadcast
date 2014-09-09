@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Allows users to create blog groups to ease blog selection when broadcasting.
 Plugin Name:	ThreeWP Broadcast Blog Groups
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		2.21
+Version:		6
 */
 
 namespace threewp_broadcast\blog_groups;
@@ -27,8 +27,6 @@ if ( ! class_exists( '\\threewp_broadcast\\ThreeWP_Broadcast_Base' ) )
 class ThreeWP_Broadcast_Blog_Groups
 	extends \threewp_broadcast\ThreeWP_Broadcast_Base
 {
-	public $plugin_version = 2.20;
-
 	protected $sdk_version_required = 20131006;		// tabs->get_is()
 
 	protected $site_options = array(
@@ -147,7 +145,7 @@ class ThreeWP_Broadcast_Blog_Groups
 
 				if ( count( $blog_group->data->blogs ) < 1 )
 				{
-					$text = $this->_( 'No group has no blogs assigned.' );
+					$text = $this->_( 'The group has no blogs assigned.' );
 				}
 				else
 				{
@@ -261,12 +259,15 @@ class ThreeWP_Broadcast_Blog_Groups
 			->option_( 'No group selected', '' );
 		foreach( $blog_groups as $blog_group )
 		{
+			if ( ! is_array( $blog_group->data->blogs ) )
+				continue;
 			$values = implode( ' ', $blog_group->data->blogs );
 			$name = $form->unfilter_text( $blog_group->data->name );
 			$input_blog_groups->option( $name, $values );
 		}
 
-		$action->meta_box_data->html->insert_before( 'blogs', 'blog_groups', $input_blog_groups . '' );
+		$action->meta_box_data->html->insert_before( 'blogs', 'blog_groups', '' );
+		$action->meta_box_data->convert_form_input_later( 'blog_groups' );
 	}
 
 	/**
@@ -426,4 +427,5 @@ class ThreeWP_Broadcast_Blog_Groups
 		echo $r;
 	}
 }
+
 $threewp_broadcast_blog_groups = new ThreeWP_Broadcast_Blog_Groups();

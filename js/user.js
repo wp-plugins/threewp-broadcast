@@ -88,14 +88,19 @@ jQuery(document).ready(function($) {
 				var $this = $( this );
 				var blogs = $this.val().split(' ');
 				for ( var counter=0; counter < blogs.length; counter++)
-					$( "#plainview_sdk_form2_inputs_checkboxes_blogs_" + blogs[counter], window.broadcast.$broadcast ).prop( 'checked', true );
-				// Select the "no value" option.
-				$this.val( '' );
+				{
+					var $blog = $( "#plainview_sdk_form2_inputs_checkboxes_blogs_" + blogs[counter], window.broadcast.$broadcast );
+					// Switch selection.
+					if ( $blog.prop( 'checked' ) )
+						$blog.prop( 'checked', false );
+					else
+						$blog.prop( 'checked', true );
+				}
 
 				// If the blog list is closed, then expand and then close again to show the newly selected blogs.
 				if ( window.broadcast.$blogs_html.hasClass( 'closed' ) )
 					window.broadcast.$show_hide.click().click();
-			});
+			}).change();
 
 		},
 
@@ -130,6 +135,7 @@ jQuery(document).ready(function($) {
 			// Ajaxify the whitelist / blacklist
 			this.$settings_form.$broadcast_internal_fields = $( '#plainview_sdk_form2_inputs_checkbox_broadcast_internal_custom_fields', this.$settings_form );
 			this.$settings_form.$blacklist = $( '#plainview_sdk_form2_inputs_textarea_custom_field_blacklist', this.$settings_form );
+			this.$settings_form.$protectlist = $( '#plainview_sdk_form2_inputs_textarea_custom_field_protectlist', this.$settings_form );
 			this.$settings_form.$whitelist = $( '#plainview_sdk_form2_inputs_textarea_custom_field_whitelist', this.$settings_form );
 
 			// Fade in the respective settings when the internal fields box is clicked.
@@ -140,11 +146,13 @@ jQuery(document).ready(function($) {
 				if ( checked )
 				{
 					window.broadcast.$settings_form.$blacklist.prop( 'readonly', ! checked ).fadeTo( 200, 1.0 );
+					window.broadcast.$settings_form.$protectlist.prop( 'readonly', ! checked ).fadeTo( 200, 1.0 );
 					window.broadcast.$settings_form.$whitelist.prop( 'readonly', checked ).fadeTo( 200, 0.5 );
 				}
 				else
 				{
 					window.broadcast.$settings_form.$blacklist.prop( 'readonly', ! checked ).fadeTo( 200, 0.5 );
+					window.broadcast.$settings_form.$protectlist.prop( 'readonly', ! checked ).fadeTo( 200, 0.5 );
 					window.broadcast.$settings_form.$whitelist.prop( 'readonly', checked ).fadeTo( 200, 1.0 );
 				}
 			}).change();
