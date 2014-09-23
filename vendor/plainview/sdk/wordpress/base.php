@@ -1753,7 +1753,7 @@ class base
 				if ( is_numeric( $filepath ) )
 					$mail->AddAttachment( $filename, '', $encoding, $mime_type );
 				else
-					$mail->AddAttachment( $attachment, $filepath, $encoding, $mime_type );
+					$mail->AddAttachment( $filepath, $filename, $encoding, $mime_type );
 			}
 
 		if ( isset( $mail_data[ 'reply_to' ] ) )

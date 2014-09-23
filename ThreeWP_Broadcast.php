@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		6
+Version:		7
 */
 
 namespace threewp_broadcast;
@@ -23,9 +23,7 @@ use \stdClass;
 class ThreeWP_Broadcast
 	extends \threewp_broadcast\ThreeWP_Broadcast_Base
 {
-	// Include in the next version or so.
-	//use \plainview\sdk\wordpress\traits\debug;
-	use debug;
+	use \plainview\sdk\wordpress\traits\debug;
 
 	/**
 		@brief		Broadcasting stack.
@@ -90,7 +88,7 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 6;
+	public $plugin_version = 7;
 
 	// 20140501 when debug trait is moved to SDK.
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
@@ -2289,7 +2287,7 @@ This can be increased by adding the following to your wp-config.php:
 			{
 				$this->debug( 'Gallery has attachment %s.', $id );
 				$data = attachment_data::from_attachment_id( $id, $bcd->upload_dir );
-				$data->set_parent_attachment( $bcd->post );
+				$data->set_attached_to_parent( $bcd->post );
 				$bcd->attachment_data[ $id ] = $data;
 			}
 		}
@@ -2380,6 +2378,9 @@ This can be increased by adding the following to your wp-config.php:
 				}
 			}
 
+			$bcd->equivalent_posts()->set( $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post()->ID );
+			$this->debug( 'Equivalent of %s/%s is %s/%s', $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post()->ID  );
+
 			if ( $bcd->taxonomies )
 			{
 				$this->debug( 'Taxonomies: Starting.' );
@@ -2441,21 +2442,23 @@ This can be increased by adding the following to your wp-config.php:
 							$action->term = $new_term;
 							$action->apply();
 							$new_taxonomy = $action->new_term;
-							$term_taxonomy_id = $new_taxonomy[ 'term_taxonomy_id' ];
-							$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_taxonomy_id );
+							$term_id = $new_taxonomy[ 'term_id' ];
+							$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_id );
 
-							$taxonomies_to_add_to []= intval( $term_taxonomy_id );
+							$taxonomies_to_add_to []= intval( $term_id );
 						}
 					}
 
 					$this->debug( 'Taxonomies: Syncing terms.' );
 					$this->sync_terms( $bcd, $parent_post_taxonomy );
+					$this->debug( 'Taxonomies: Synced terms.' );
 
 					if ( count( $taxonomies_to_add_to ) > 0 )
 					{
 						// This relates to the bug mentioned in the method $this->set_term_parent()
 						delete_option( $parent_post_taxonomy . '_children' );
 						clean_term_cache( '', $parent_post_taxonomy );
+						$this->debug( 'Setting taxonomies for %s: %s', $parent_post_taxonomy, $taxonomies_to_add_to );
 						wp_set_object_terms( $bcd->new_post[ 'ID' ], $taxonomies_to_add_to, $parent_post_taxonomy );
 					}
 				}
@@ -3209,8 +3212,6 @@ This can be increased by adding the following to your wp-config.php:
 	{
 		$source_terms = $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ];
 		$target_terms = $this->get_current_blog_taxonomy_terms( $taxonomy );
-		$this->debug( 'Source terms for taxonomy %s: %s', $taxonomy, $source_terms );
-		$this->debug( 'Target terms for taxonomy %s: %s', $taxonomy, $target_terms );
 
 		$refresh_cache = false;
 
@@ -3221,21 +3222,26 @@ This can be increased by adding the following to your wp-config.php:
 		// Also keep track of which sources we haven't found on the target blog.
 		$unfound_sources = $source_terms;
 
-		// First step: find out which of the target terms exist on the source blog
-		$this->debug( 'Find out which of the source terms exist on the target blog.' );
+		// Rekey the terms in order to find them faster.
+		$source_slugs = [];
+		foreach( $source_terms as $source_term_id => $source_term )
+			$source_slugs[ $source_term[ 'slug' ] ] = $source_term_id;
+		$target_slugs = [];
 		foreach( $target_terms as $target_term_id => $target_term )
-			foreach( $source_terms as $source_term_id => $source_term )
-			{
-				if ( isset( $found_sources[ $source_term_id ] ) )
-					continue;
-				if ( $source_term[ 'slug' ] == $target_term[ 'slug' ] )
-				{
-					$this->debug( 'Find source term %s. Source ID: %s. Target ID: %s.', $source_term[ 'slug' ], $source_term_id, $target_term_id );
-					$found_targets[ $target_term_id ] = $source_term_id;
-					$found_sources[ $source_term_id ] = $target_term_id;
-					unset( $unfound_sources[ $source_term_id ] );
-				}
-			}
+			$target_slugs[ $target_term[ 'slug' ] ] = $target_term_id;
+
+		// Step 1.
+		$this->debug( 'Find out which of the source terms exist on the target blog.' );
+		foreach( $source_slugs as $source_slug => $source_term_id )
+		{
+			if ( ! isset( $target_slugs[ $source_slug ] ) )
+				continue;
+			$target_term_id = $target_slugs[ $source_slug ];
+			$this->debug( 'Found source term %s. Source ID: %s. Target ID: %s.', $source_slug, $source_term_id, $target_term_id );
+			$found_targets[ $target_term_id ] = $source_term_id;
+			$found_sources[ $source_term_id ] = $target_term_id;
+			unset( $unfound_sources[ $source_term_id ] );
+		}
 
 		// These sources were not found. Add them.
 		if ( isset( $bcd->add_new_taxonomies ) && $bcd->add_new_taxonomies )

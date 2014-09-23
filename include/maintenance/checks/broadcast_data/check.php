@@ -19,6 +19,7 @@ extends \threewp_broadcast\maintenance\checks\check
 	use traits\steps\step_results_fail_missing_parents;
 	use traits\steps\step_results_fail_missing_children;
 	use traits\steps\step_results_fail_parent_is_unlinked;
+	use traits\steps\step_results_fail_same_parent;
 	use traits\steps\step_results_fail_child_is_unlinked;
 
 	public $table;
@@ -106,21 +107,22 @@ extends \threewp_broadcast\maintenance\checks\check
 					continue;
 				}
 
-				// The parent does have a bcd. Does it have a link to this child?
-				$found = false;
-				foreach( $parent_bcd->get_linked_children() as $child_blog_id => $child_post_id )
-				{
-					if ( $child_blog_id == $bcd->blog_id && $child_post_id == $bcd->post_id )
-					{
-						$found = true;
-						break;
-					}
-				}
-				if ( ! $found )
-				{
-					$this->data->parent_is_unlinked->set( $id, [ $blog_id => $post_id ] );
-					continue;
-				}
+				// Keep track of which parents are referenced by the children.
+				if ( ! $this->data->same_parent->has( $blog_id ) )
+					$this->data->same_parent->set( $blog_id, new collection() );
+
+				$blog = $this->data->same_parent->get( $blog_id );
+
+				if ( ! $blog->has( $post_id ) )
+					$blog->set( $post_id, new collection() );
+				$post = $blog->get( $post_id );
+
+				$o = (object)[];
+				$o->parent_bcd = $parent_bcd;
+				$o->blog_id = $bcd->blog_id;
+				$o->post_id = $bcd->post_id;
+
+				$post->set( $id, $o );
 			}
 
 			// If this is a parent:
@@ -143,13 +145,14 @@ extends \threewp_broadcast\maintenance\checks\check
 					continue;
 				}
 
-				// The child does have a bcd. Does it have a parent link?
 				$linked_parent = $child_bcd->get_linked_parent();
+				// The child does have a bcd. Does it have a parent link?
 				if ( ! $linked_parent )
 				{
 					$this->data->child_is_unlinked->set( $id, [ $blog_id => $post_id ] );
 					continue;
 				}
+
 				// Does the child's bcd link back to this blog+post?
 				if ( ( $linked_parent[ 'blog_id' ] != $bcd->blog_id ) && ( $linked_parent[ 'post_id' ] != $bcd->post_id ) )
 				{
@@ -158,6 +161,7 @@ extends \threewp_broadcast\maintenance\checks\check
 				}
 			}
 		}
+
 		$r .= $this->next_step( 'check_relations' );
 		return $r;
 	}
@@ -198,6 +202,7 @@ extends \threewp_broadcast\maintenance\checks\check
 		$this->step_results_fail_missing_parents( $o );
 		$this->step_results_fail_missing_children( $o );
 		$this->step_results_fail_child_is_unlinked( $o );
+		$this->step_results_fail_same_parent( $o );
 		$this->step_results_fail_parent_is_unlinked( $o );
 		$o->r .= $o->form->close_tag();
 

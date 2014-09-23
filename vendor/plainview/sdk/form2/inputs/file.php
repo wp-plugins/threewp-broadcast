@@ -72,6 +72,15 @@ class file
 	}
 
 	/**
+		@brief		Has no value.
+		@since		2014-09-10 17:17:24
+	**/
+	public function get_value()
+	{
+		return '';
+	}
+
+	/**
 		@brief		Do nothing.
 		@since		20131009
 	**/

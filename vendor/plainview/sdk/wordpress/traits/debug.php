@@ -8,16 +8,20 @@ namespace plainview\sdk\wordpress\traits;
 
 	The main method is debug(), with is_debugging() being queried to ascertain whether the user is in debug mode.
 
-	1. Add these rows to your site options.
+	1. Add to your class:
+
+		use \plainview\sdk\wordpress\debug;
+
+	2. Add these rows to your site options:
 
 		'debug' => false,									// Display debug information?
 		'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.
 
-	2.1	In the settings form, display the inputs.
+	3.1	In the settings form, display the inputs:
 
 		$this->add_debug_settings_to_form( $form );
 
-	2.2 In the settings form, save your settings.
+	3.2 In the settings form, save your settings.
 
 		$this->save_debug_settings_from_form( $form );
 

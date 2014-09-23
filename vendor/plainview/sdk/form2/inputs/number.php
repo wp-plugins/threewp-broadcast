@@ -35,7 +35,7 @@ class number
 	**/
 	public function value_filter_number( $value )
 	{
-		$value = preg_replace( "/[^0-9\.]/", "", $value );
+		$value = preg_replace( "/[^0-9-\.]/", "", $value );
 		// No value in the input? Then return false to signify that there wasn't anything there at all.
 		if ( $value === '' )
 			return false;

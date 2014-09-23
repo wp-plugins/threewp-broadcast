@@ -43,17 +43,10 @@ class attachment_data
 		$metadata = wp_get_attachment_metadata( $r->id );
 		// Does the file have metadata?
 		if ( $metadata )
-		{
-			$r->filename_base = basename( $metadata['file'] );
-			$r->filename_path = $upload_dir[ 'basedir' ] . '/' . $metadata[ 'file' ];
 			$r->file_metadata = $metadata;
-		}
-		else
-		{
-			// No metadata = not an image. Guess the upload directory and what not.
-			$r->filename_path = get_attached_file( $r->id );
-			$r->filename_base = basename( $r->filename_path );
-		}
+
+		$r->filename_path = get_attached_file( $r->id );
+		$r->filename_base = basename( $r->filename_path );
 
 		$r->post = get_post( $r->id );
 

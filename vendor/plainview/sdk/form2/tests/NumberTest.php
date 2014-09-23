@@ -13,6 +13,8 @@ class NumberTest extends TestCase
 		$this->assertEquals( 123, $number->get_value() );
 		$number = $this->form()->number( 'number' )->value( 12.3 );
 		$this->assertEquals( 12.3, $number->get_value() );
+		$number = $this->form()->number( 'number' )->value( -123 );
+		$this->assertEquals( -123, $number->get_value() );
 	}
 
 	public function test_min()
@@ -26,6 +28,18 @@ class NumberTest extends TestCase
 		$form = $this->form();
 		$number = $form->number( 'number' )->min( 500 );
 		$_POST[ 'number' ] = 1230;
+		$form->post();
+		$this->assertTrue( $number->validates() );
+
+		$form = $this->form();
+		$number = $form->number( 'number' )->min( -500 );
+		$_POST[ 'number' ] = '-1000';
+		$form->post();
+		$this->assertFalse( $number->validates() );
+
+		$form = $this->form();
+		$number = $form->number( 'number' )->min( -500 );
+		$_POST[ 'number' ] = '-250';
 		$form->post();
 		$this->assertTrue( $number->validates() );
 	}

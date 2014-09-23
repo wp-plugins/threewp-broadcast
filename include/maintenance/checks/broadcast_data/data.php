@@ -30,6 +30,8 @@ extends \threewp_broadcast\maintenance\checks\data
 		$this->missing_parents = new collection;	// The linked parent post does not exist = Remove the link to it.
 		$this->parent_is_unlinked = new collection;	// Parent does not link to child = Create a link for the child post.
 
+		$this->same_parent = new collection;			// Several posts on the same blog have the same parent.
+
 		$this->missing_children = new collection;	// The linked child post does not exist = Remove the link to it.
 		$this->child_is_unlinked = new collection;	// Child does not link back to parent = Create a link for the parent post.
 	}
@@ -52,6 +54,7 @@ extends \threewp_broadcast\maintenance\checks\data
 			'missing_parents',
 			'missing_children',
 			'parent_is_unlinked',
+			'same_parent',
 			'child_is_unlinked',
 		] as $type )
 			$count += count( $this->$type );

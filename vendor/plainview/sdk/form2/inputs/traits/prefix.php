@@ -23,7 +23,11 @@ trait prefix
 	public function append_prefix( $prefix )
 	{
 		foreach( func_get_args() as $arg )
-			$this->prefix[ $arg ] = $arg;
+			if ( is_array( $arg ) )
+				foreach( $arg as $prefix )
+					$this->append_prefix( $prefix );
+			else
+				$this->prefix[ $arg ] = $arg;
 		return $this;
 	}
 

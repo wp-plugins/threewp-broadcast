@@ -63,6 +63,14 @@ class broadcasting_data
 	public $delete_attachments = true;
 
 	/**
+		@brief		Storage for equivalent post IDs on various blogs.
+		@details	Used as a "seen" lookup table to prevent looping.
+		@see		equivalent_posts
+		@since		2014-09-21 12:55:22
+	**/
+	public $equivalent_posts;
+
+	/**
 		@brief		IN: True if the broadcaster wants to link this post to the child blog posts,
 		@var		$link
 		@since		20130603
@@ -156,6 +164,7 @@ class broadcasting_data
 
 	public function __construct( $options = [] )
 	{
+		$this->equivalent_posts = new equivalent_posts();
 		$this->blogs = new blog_collection;
 
 		// Import any known values from the options object.
@@ -179,6 +188,15 @@ class broadcasting_data
 			$this->blogs->put( $blog->id, $blog );
 
 		return $this;
+	}
+
+	/**
+		@brief		Return the equivalent post IDs collection.
+		@since		2014-09-21 11:36:12
+	**/
+	public function equivalent_posts()
+	{
+		return $this->equivalent_posts;
 	}
 
 	/**
