@@ -3,10 +3,10 @@ Contributors: edward_plainview
 License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
-Tags: broadcast, multipost, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, wpml, synchronize, event organiser, acf, all in one calendar
+Tags: broadcast, multipost, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar
 Tested up to: 4.0
 
-Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, attachments and WPML are supported.
+Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, and attachments are supported.
 
 == Description ==
 
@@ -20,7 +20,6 @@ Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Br
 * Featured images
 * Galleries
 * Woocommerce support (see FAQ)
-* WPML support
 
 Broadcasted posts can be linked to their parents, which updates child posts when the parent post is updated. This includes all data: title, slug, content, custom fields, attachments, etc.
 
