@@ -40,9 +40,9 @@ For those who have Yoast's Wordpress SEO plugin installed, if the Broadcast's ca
 
 = Premium Pack =
 
-The <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
+The <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
 
-For a complete list of features and more information, see <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
+For a complete list of features and more information, see <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting attachment field types using the ACF plugin.
 * <strong>All Blogs</strong> allows users to broadcast to all blogs in the network without having to be a user of the blog.
@@ -62,7 +62,6 @@ For a complete list of features and more information, see <a href="http://plainv
 * <strong>Redirect All Children</strong> redirects single post views from visitors of child posts to the parent post.
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
-Sync Taxonomies
 * <strong>Sync Taxomnomies</strong> synchronize the taxonomies of target blogs with those from a source blog.
 * <strong>User & Blog Settings</strong> (UBS) can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
 * <strong>User & Blog Settings Post</strong> uses the modifications from the UBS plugin to broadcast posts with one click.
@@ -136,7 +135,7 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 
 = I need support! =
 
-The easiest way to get my attention is to <a href="mailto:broadcast@plainview.se">contact me via e-mail</a> and ask how to donate a little something for my time.
+The easiest way to get my attention is to <a href="mailto:plugins@plainview.se">contact me via e-mail</a> and ask how to donate a little something for my time.
 
 For contract work such as the following, contact me so we can make a deal:
 
@@ -148,11 +147,11 @@ If you're not into donations, try the support forum to see if other users can he
 
 = Blacklist, whitelisting, force broadcast =
 
-Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Bulk broadcast existing pages =
 
-To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Galleries and attachments =
 
@@ -162,7 +161,7 @@ If you have a gallery shortcode in the post ( [gallery columns="2" ids="427,433,
 
 = Hide broadcast from the users =
 
-The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="http://plainview.se/wordpress/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Is php v5.4 really necessary? =
 
