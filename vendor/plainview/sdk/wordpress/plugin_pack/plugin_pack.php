@@ -15,20 +15,27 @@ abstract class plugin_pack
 	**/
 	public $plugins;
 
-	protected $site_options = array(
-		'enabled_plugins' => [],				// Array of autoloaded plugins.
-	);
-
 	/**
 		@brief		Constructor.
 		@since		2014-05-07 23:11:28
 	**/
 	public function _construct()
 	{
-		$this->plugins = new plugins( $this );
-		$this->plugins->populate( $this->get_enabled_plugins() );
-		$this->plugins->load();
-		$this->plugins->maybe_save();
+		$this->plugins();
+	}
+
+	/**
+		@brief		Activate all of the already enabled plugins.
+		@since		2014-09-27 19:09:22
+	**/
+	public function activate()
+	{
+		$this->plugins()->activate();
+	}
+
+	public function deactivate()
+	{
+		$this->plugins()->deactivate();
 	}
 
 	/**
@@ -41,7 +48,7 @@ abstract class plugin_pack
 	}
 
 	/**
-		@brief		Return an array of all plugin files.
+		@brief		Return an array of all plugin classnames.
 		@details	This method must be implemented by the subclass because plugin_pack doesn't know where you keep your plugin files.
 		@since		2014-05-08 15:53:31
 	**/
@@ -94,8 +101,8 @@ abstract class plugin_pack
 				foreach( $plugins->from_ids( $ids ) as $plugin )
 				{
 					$classname = $plugin->get_classname();
-					$this->plugins->populate( $classname );
-					$new_plugin = $this->plugins->get( $classname );
+					$this->plugins()->populate( $classname );
+					$new_plugin = $this->plugins()->get( $classname )->plugin();
 					switch( $action )
 					{
 						case 'activate_plugin':
@@ -104,17 +111,17 @@ abstract class plugin_pack
 							break;
 						case 'deactivate_plugin':
 							$new_plugin->deactivate();
-							$this->plugins->forget( $classname );
+							$this->plugins()->forget( $classname );
 							$message = $this->_( 'The selected plugin(s) have been deactivated.' );
 							break;
 						case 'uninstall_plugin':
 							$new_plugin->deactivate();
 							$new_plugin->uninstall();
-							$this->plugins->forget( $classname );
+							$this->plugins()->forget( $classname );
 							$message = $this->_( 'The selected plugin(s) have been uninstalled.' );
 							break;
 					}
-					$this->plugins->save();
+					$this->plugins()->save();
 				}
 				$this->message( $message );
 			}
@@ -129,7 +136,7 @@ abstract class plugin_pack
 			$td->text( $plugin->get_name() );
 			$td->css_class( 'plugin-title' );
 
-			if ( $this->plugins->has( $plugin->get_classname() ) )
+			if ( $this->plugins()->has( $plugin->get_classname() ) )
 				$row->css_class( 'active' );
 			else
 				$row->css_class( 'inactive' );
@@ -146,11 +153,33 @@ abstract class plugin_pack
 	}
 
 	/**
+		@brief		Return the plugins object.
+		@since		2014-09-28 14:03:06
+	**/
+	public function plugins()
+	{
+		if ( isset( $this->__plugins ) )
+			return $this->__plugins;
+		$this->__plugins = new plugins( $this );
+		$this->__plugins->populate( $this->get_enabled_plugins() );
+		$this->__plugins->load();
+		$this->__plugins->maybe_save();
+		return $this->plugins();
+	}
+
+	/**
 		@brief		Saves the list of enabled plugins.
 		@since		2014-05-09 10:37:46
 	**/
 	public function set_enabled_plugins( $enabled_plugins )
 	{
 		$this->update_site_option( 'enabled_plugins', $enabled_plugins );
+	}
+
+	public function site_options()
+	{
+		return array_merge( [
+			'enabled_plugins' => [],
+		], parent::site_options() );
 	}
 }
