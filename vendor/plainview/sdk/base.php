@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20140928		Wordpress: Plugin pack fixes. paths(). Path fixes.
 	- 20140918		Wordpress: Added EasyDigitalDownloads licensing + updater support.
 	- 20140910		Form2: file input has not value.
 	- 20140903		Form2: Number input allows negative numbers.
@@ -124,7 +125,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140918;
+	protected $sdk_version = 20140928;
 
 	/**
 		@brief		Constructor.

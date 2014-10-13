@@ -137,13 +137,6 @@ class base
 	protected $language_domain = '';
 
 	/**
-		@brief		Array of options => default_values that this plugin stores locally.
-		@since		20130416
-		@var		$local_options
-	**/
-	protected $local_options = array();
-
-	/**
 		@brief		Contains the paths to the plugin and other places of interest.
 
 		The keys in the array are:
@@ -182,24 +175,17 @@ class base
 	protected $wpdb;
 
 	/**
-		@brief		Array of options => default_values that this plugin stores sitewide.
-		@since		20130416
-		@var		$site_options
-	**/
-	protected $site_options = array();
-
-	/**
 		@brief		Construct the class.
 		@param		string		$filename		The __FILE__ special variable of the parent.
 		@since		20130416
 	**/
-	public function __construct( $filename = null )
+	public function __construct( $__FILE__ = null )
 	{
 		// If no filename was specified, try to get the parent's filename.
-		if ( $filename === null )
+		if ( $__FILE__ === null )
 		{
 			$stacktrace = @debug_backtrace( false );
-			$filename = $stacktrace[ 0 ][ 'file' ];
+			$__FILE__ = $stacktrace[ 0 ][ 'file' ];
 		}
 
 		if ( ! defined( 'ABSPATH' ) )
@@ -208,9 +194,9 @@ class base
 			if ( isset( $_SERVER[ 'argc'] ) )
 			{
 				$this->paths = array(
-					'__FILE__' => $filename,
+					'__FILE__' => $__FILE__,
 					'name' => get_class( $this ),
-					'filename' => basename( $filename ),
+					'filename' => basename( $__FILE__ ),
 				);
 				$this->do_cli();
 			}
@@ -234,16 +220,16 @@ class base
 			$wp_plugin_dir = str_replace( '/', DIRECTORY_SEPARATOR, WP_PLUGIN_DIR );
 			$base_dir = dirname( dirname( WP_PLUGIN_DIR ) );
 
-			$path_from_plugin_directory = dirname( str_replace( $wp_plugin_dir, '', $filename ) );
-			$filename_from_plugin_directory = $path_from_plugin_directory . DIRECTORY_SEPARATOR . basename( $filename );
+			$path_from_plugin_directory = dirname( str_replace( $wp_plugin_dir, '', $__FILE__ ) );
+			$__FILE___from_plugin_directory = $path_from_plugin_directory . DIRECTORY_SEPARATOR . basename( $__FILE__ );
 
 			$url = WP_PLUGIN_URL . str_replace( DIRECTORY_SEPARATOR, '/', $path_from_plugin_directory );
 
 			$this->paths = array(
-				'__FILE__' => $filename,
+				'__FILE__' => $__FILE__,
 				'name' => get_class( $this ),
-				'filename' => basename( $filename ),
-				'filename_from_plugin_directory' => $filename_from_plugin_directory,
+				'filename' => basename( $__FILE__ ),
+				'filename_from_plugin_directory' => $__FILE___from_plugin_directory,
 				'path_from_plugin_directory' => $path_from_plugin_directory,
 				'path_from_base_directory' => str_replace( $base_dir, '', $wp_plugin_dir ) . $path_from_plugin_directory,
 				'url' => $url,
@@ -253,13 +239,13 @@ class base
 		{
 			// Everything else except Windows.
 			$this->paths = array(
-				'__FILE__' => $filename,
+				'__FILE__' => $__FILE__,
 				'name' => get_class( $this ),
-				'filename' => basename( $filename ),
-				'filename_from_plugin_directory' => basename( dirname( $filename ) ) . '/' . basename( $filename ),
-				'path_from_plugin_directory' => basename( dirname( $filename ) ),
-				'path_from_base_directory' => PLUGINDIR . '/' . basename( dirname( $filename ) ),
-				'url' => WP_PLUGIN_URL . '' . str_replace( WP_PLUGIN_DIR, '', dirname( $filename ) ),
+				'filename' => basename( $__FILE__ ),
+				'filename_from_plugin_directory' => str_replace( WP_PLUGIN_DIR, '', $__FILE__ ),
+				'path_from_plugin_directory' => str_replace( WP_PLUGIN_DIR, '', dirname( $__FILE__ ) ),
+				'path_from_base_directory' => dirname( str_replace( ABSPATH, '', $__FILE__ ) ),
+				'url' => WP_PLUGIN_URL . '' . str_replace( WP_PLUGIN_DIR, '', dirname( $__FILE__ ) ),
 			);
 		}
 
@@ -270,8 +256,8 @@ class base
 				dirname( __FILE__ )
 			) );
 
-		register_activation_hook( $this->paths['filename_from_plugin_directory'],	array( $this, 'activate_internal' ) );
-		register_deactivation_hook( $this->paths['filename_from_plugin_directory'],	array( $this, 'deactivate_internal' ) );
+		register_activation_hook( $this->paths( 'filename_from_plugin_directory' ),	array( $this, 'activate_internal' ) );
+		register_deactivation_hook( $this->paths( 'filename_from_plugin_directory' ),	array( $this, 'deactivate_internal' ) );
 
 		$this->_construct();
 	}
@@ -420,7 +406,7 @@ class base
 	public function deactivate_me()
 	{
 		deactivate_plugins( [
-			$this->paths['filename_from_plugin_directory']
+			$this->paths( 'filename_from_plugin_directory' )
 		] );
 	}
 
@@ -439,8 +425,8 @@ class base
 			$this->language_domain = $domain;
 
 		if ( $this->language_domain == '' )
-			$this->language_domain = str_replace( '.php', '', $this->paths['filename'] );
-		load_plugin_textdomain( $this->language_domain, false, $this->paths[ 'path_from_plugin_directory' ] . '/lang' );
+			$this->language_domain = str_replace( '.php', '', $this->paths( 'filename' ) );
+		load_plugin_textdomain( $this->language_domain, false, $this->paths ( 'path_from_plugin_directory' ) . '/lang' );
 	}
 
 	/**
@@ -823,7 +809,7 @@ class base
 	**/
 	public function get_local_option_prefix()
 	{
-		return preg_replace( '/.*\\\\/', '', $this->paths['name'] );
+		return preg_replace( '/.*\\\\/', '', $this->paths( 'name' ) );
 	}
 
 	/**
@@ -835,7 +821,7 @@ class base
 	**/
 	public function get_option_prefix()
 	{
-		return $this->paths['name'];
+		return $this->paths( 'name' );
 	}
 
 	/**
@@ -922,7 +908,7 @@ class base
 	**/
 	public function local_options()
 	{
-		return $this->local_options;
+		return [];
 	}
 
 	/**
@@ -964,7 +950,7 @@ class base
 	**/
 	public function site_options()
 	{
-		return $this->site_options;
+		return [];
 	}
 
 	/**
@@ -1225,16 +1211,16 @@ class base
 	**/
 	public function cli_pot()
 	{
-		$basedir = dirname( $this->paths[ '__FILE__' ] ) . '/';
+		$basedir = dirname( $this->paths(  '__FILE__' ) ) . '/';
 		$files = array_merge( array(
-			basename( $this->paths[ '__FILE__' ] ),									// subclass.php
+			basename( $this->paths( '__FILE__' ) ),									// subclass.php
 			str_replace( $basedir, '', dirname( dirname( __FILE__ ) ) . '/*php' ),	// plainview/*php
 			str_replace( $basedir, '', dirname( dirname( __FILE__ ) ) . '/form2/inputs/*php' ),
 			str_replace( $basedir, '', dirname( dirname( __FILE__ ) ) . '/form2/inputs/traits/*php' ),
 			str_replace( $basedir, '', dirname( __FILE__ ) . '/*php' ),				// plainview_sdk/wordpress/*.php
 		), $this->pot_files() );
 
-		$filename = preg_replace( '/\.php/', '.pot', $this->paths[ '__FILE__' ] );
+		$filename = preg_replace( '/\.php/', '.pot', $this->paths( '__FILE__' ) );
 
 		$keywords = array_merge( array(
 			'_',
@@ -1273,7 +1259,7 @@ class base
 		$version_required = 20010101;
 		$because_of = 'undefined';
 
-		$file = $this->paths[ '__FILE__' ];
+		$file = $this->paths( '__FILE__' );
 
 		// Find all of the function of the plugin.
 		$functions = new \plainview\sdk\collections\collection;
@@ -1674,6 +1660,18 @@ class base
 	{
 		$args = func_get_args();
 		return wpautop( call_user_func_array( array( &$this, '_' ), $args ) );
+	}
+
+	/**
+		@brief		Return the paths, or a path, as an object.
+		@since		2014-09-28 00:16:17
+	**/
+	public function paths( $key = null )
+	{
+		$paths = (object)$this->paths;
+		if ( $key === null )
+			return $paths;
+		return $paths->$key;
 	}
 
 	/**
