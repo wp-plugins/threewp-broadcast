@@ -6,12 +6,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/the-plainview/sdk.git",
-            "reference": "e7ab86cf2505ea195a7353a5ddcd65097cf8faf5"
+            "reference": "1692982714b16b84680f7e63c48d62e75175da6d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/the-plainview/sdk/zipball/e7ab86cf2505ea195a7353a5ddcd65097cf8faf5",
-            "reference": "e7ab86cf2505ea195a7353a5ddcd65097cf8faf5",
+            "url": "https://api.github.com/repos/the-plainview/sdk/zipball/1692982714b16b84680f7e63c48d62e75175da6d",
+            "reference": "1692982714b16b84680f7e63c48d62e75175da6d",
             "shasum": ""
         },
         "require": {
@@ -20,7 +20,7 @@
         "require-dev": {
             "php": ">=5.4.0"
         },
-        "time": "2014-10-03 21:15:02",
+        "time": "2014-10-16 17:33:52",
         "type": "library",
         "installation-source": "source",
         "autoload": {

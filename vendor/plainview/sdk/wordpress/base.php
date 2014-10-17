@@ -223,8 +223,6 @@ class base
 			$path_from_plugin_directory = dirname( str_replace( $wp_plugin_dir, '', $__FILE__ ) );
 			$__FILE___from_plugin_directory = $path_from_plugin_directory . DIRECTORY_SEPARATOR . basename( $__FILE__ );
 
-			$url = WP_PLUGIN_URL . str_replace( DIRECTORY_SEPARATOR, '/', $path_from_plugin_directory );
-
 			$this->paths = array(
 				'__FILE__' => $__FILE__,
 				'name' => get_class( $this ),
@@ -232,7 +230,7 @@ class base
 				'filename_from_plugin_directory' => $__FILE___from_plugin_directory,
 				'path_from_plugin_directory' => $path_from_plugin_directory,
 				'path_from_base_directory' => str_replace( $base_dir, '', $wp_plugin_dir ) . $path_from_plugin_directory,
-				'url' => $url,
+				'url' => plugins_url() . str_replace( DIRECTORY_SEPARATOR, '/', $path_from_plugin_directory ),
 			);
 		}
 		else
@@ -245,7 +243,7 @@ class base
 				'filename_from_plugin_directory' => str_replace( WP_PLUGIN_DIR, '', $__FILE__ ),
 				'path_from_plugin_directory' => str_replace( WP_PLUGIN_DIR, '', dirname( $__FILE__ ) ),
 				'path_from_base_directory' => dirname( str_replace( ABSPATH, '', $__FILE__ ) ),
-				'url' => WP_PLUGIN_URL . '' . str_replace( WP_PLUGIN_DIR, '', dirname( $__FILE__ ) ),
+				'url' => plugins_url() . str_replace( WP_PLUGIN_DIR, '', dirname( $__FILE__ ) ),
 			);
 		}
 

@@ -2,6 +2,7 @@
 
 namespace plainview\sdk\wordpress\plugin_pack;
 
+use \Exception;
 use \plainview\sdk\collections\collection;
 
 /**

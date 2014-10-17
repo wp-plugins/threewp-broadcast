@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Allows users to create blog groups to ease blog selection when broadcasting.
 Plugin Name:	ThreeWP Broadcast Blog Groups
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		8
+Version:		9
 */
 
 namespace threewp_broadcast\blog_groups;
@@ -17,22 +17,11 @@ if ( ! class_exists( '\\threewp_broadcast\\ThreeWP_Broadcast_Base' ) )
 
 /**
 	@brief		Adds blog group support to Broadcast
-	@details
-
-	@par		Changelog
-
-	- 20131014	Use the meta_box_data's form object instead of creating one ourselves.
-	- 20130812	Intial version v1.21.
 **/
 class ThreeWP_Broadcast_Blog_Groups
 	extends \threewp_broadcast\ThreeWP_Broadcast_Base
 {
 	protected $sdk_version_required = 20131006;		// tabs->get_is()
-
-	protected $site_options = array(
-		'database_version' => 0,
-		'role_use_groups' => 'super_admin',					// Role required to use the groups function
-	);
 
 	public function _construct()
 	{
@@ -426,6 +415,19 @@ class ThreeWP_Broadcast_Blog_Groups
 
 		echo $r;
 	}
+
+	// --------------------------------------------------------------------------------------------
+	// ----------------------------------------- MISC
+	// --------------------------------------------------------------------------------------------
+
+	public function site_options()
+	{
+		return array_merge( [
+			'database_version' => 0,
+			'role_use_groups' => 'super_admin',					// Role required to use the groups function
+		], parent::site_options() );
+	}
+
 }
 
 $threewp_broadcast_blog_groups = new ThreeWP_Broadcast_Blog_Groups();

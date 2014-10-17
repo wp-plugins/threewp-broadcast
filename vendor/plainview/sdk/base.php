@@ -13,6 +13,9 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20141016		Wordpress: Allow force new version check.
+	- 20141016		Wordpress: Plugin pack ignores non-existent plugins better.
+	- 20141013		Wordpress: Better plugin URL http/https handling.
 	- 20140928		Wordpress: Plugin pack fixes. paths(). Path fixes.
 	- 20140918		Wordpress: Added EasyDigitalDownloads licensing + updater support.
 	- 20140910		Form2: file input has not value.
@@ -125,7 +128,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20140928;
+	protected $sdk_version = 20141016;
 
 	/**
 		@brief		Constructor.

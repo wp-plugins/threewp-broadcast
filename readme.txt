@@ -213,6 +213,12 @@ For more information, see WPML discussion here: http://wordpress.org/support/top
 
 == Changelog ==
 
+== 9 20141017 =
+* Fix JS error: blogs_to_hide empty value.
+* Fix: last_used_settings warning.
+* Fix: Settings being forgotten sometimes.
+* Fix: Maintenance not working sometimes due to non-standard temp directory.
+
 = 8 20141013 =
 * New: Premium Pack Plugin: Protect Child Status
 * Fix: Better duplicate image finding.
