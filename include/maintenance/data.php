@@ -49,7 +49,7 @@ class data
 
 	public static function get_filename( $user_id )
 	{
-		return sys_get_temp_dir() . sprintf( '/broadcast_maintenance_for_user_%s.tmp', $user_id );
+		return get_temp_dir() . sprintf( '/broadcast_maintenance_for_user_%s.tmp', $user_id );
 	}
 
 	/**

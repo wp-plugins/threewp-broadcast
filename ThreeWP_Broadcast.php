@@ -6,7 +6,7 @@ Author URI:		http://www.plainview.se
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		7
+Version:		9
 */
 
 namespace threewp_broadcast;
@@ -15,6 +15,7 @@ if ( ! class_exists( '\\threewp_broadcast\\base' ) )	require_once( __DIR__ . '/T
 
 require_once( 'vendor/autoload.php' );
 
+use \Exception;
 use \plainview\sdk\collections\collection;
 use \threewp_broadcast\broadcast_data\blog;
 use \plainview\sdk\html\div;
@@ -88,33 +89,10 @@ class ThreeWP_Broadcast
 	**/
 	public $permalink_cache;
 
-	public $plugin_version = 7;
+	public $plugin_version = 9;
 
 	// 20140501 when debug trait is moved to SDK.
 	protected $sdk_version_required = 20130505;		// add_action / add_filter
-
-	protected $site_options = array(
-		'blogs_to_hide' => 5,								// How many blogs to auto-hide
-		'broadcast_internal_custom_fields' => true,		// Broadcast internal custom fields?
-		'canonical_url' => true,							// Override the canonical URLs with the parent post's.
-		'clear_post' => true,								// Clear the post before broadcasting.
-		'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
-		'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
-		'custom_field_protectlist' => '',					// Internal custom fields that should not be overwritten on broadcast
-		'database_version' => 0,							// Version of database and settings
-		'debug' => false,									// Display debug information?
-		'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.
-		'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
-		'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
-		'post_types' => 'post page',						// Custom post types which use broadcasting
-		'existing_attachments' => 'use',					// What to do with existing attachments: use, overwrite, randomize
-		'role_broadcast' => 'super_admin',					// Role required to use broadcast function
-		'role_link' => 'super_admin',						// Role required to use the link function
-		'role_broadcast_as_draft' => 'super_admin',			// Role required to broadcast posts as templates
-		'role_broadcast_scheduled_posts' => 'super_admin',	// Role required to broadcast scheduled, future posts
-		'role_taxonomies' => 'super_admin',					// Role required to broadcast the taxonomies
-		'role_custom_fields' => 'super_admin',				// Role required to broadcast the custom fields
-	);
 
 	public function _construct()
 	{
@@ -515,6 +493,10 @@ class ThreeWP_Broadcast
 			$this->save_debug_settings_from_form( $form );
 
 			$this->message( 'Options saved!' );
+
+			$_POST = [];
+			echo $this->admin_menu_settings();
+			return;
 		}
 
 		$r .= $form->open_tag();
@@ -1537,7 +1519,7 @@ This can be increased by adding the following to your wp-config.php:
 		$meta_box_data->html->put( 'blogs', '' );
 		$meta_box_data->convert_form_input_later( 'blogs' );
 
-		$js = sprintf( '<script type="">var broadcast_blogs_to_hide = %s;</script>', $this->get_site_option( 'blogs_to_hide', 5 ) );
+		$js = sprintf( '<script type="text/javascript">var broadcast_blogs_to_hide = %s;</script>', $this->get_site_option( 'blogs_to_hide', 5 ) );
 		$meta_box_data->html->put( 'blogs_js', $js );
 
 		// We require some js.
@@ -2171,13 +2153,20 @@ This can be increased by adding the following to your wp-config.php:
 		$has_attached_files = count( $attached_files) > 0;
 		if ( $has_attached_files )
 		{
-			$this->debug( 'Has %s attachments.', count( $has_attached_files ) );
+			$this->debug( 'Has %s attachments.', count( $attached_files ) );
 			foreach( $attached_files as $attached_file )
 			{
-				$data = attachment_data::from_attachment_id( $attached_file, $bcd->upload_dir );
-				$data->set_attached_to_parent( $bcd->post );
-				$bcd->attachment_data[ $attached_file->ID ] = $data;
-				$this->debug( 'Attachment %s found.', $attached_file->ID );
+				try
+				{
+					$data = attachment_data::from_attachment_id( $attached_file, $bcd->upload_dir );
+					$data->set_attached_to_parent( $bcd->post );
+					$bcd->attachment_data[ $attached_file->ID ] = $data;
+					$this->debug( 'Attachment %s found.', $attached_file->ID );
+				}
+				catch( Exception $e )
+				{
+					$this->debug( 'Exception adding attachment: ' . $e->getMessage() );
+				}
 			}
 		}
 
@@ -2207,11 +2196,18 @@ This can be increased by adding the following to your wp-config.php:
 				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
 				$bcd->thumbnail = get_post( $bcd->thumbnail_id );
 				unset( $bcd->post_custom_fields[ '_thumbnail_id' ] ); // There is a new thumbnail id for each blog.
-				$data = attachment_data::from_attachment_id( $bcd->thumbnail, $bcd->upload_dir);
-				$data->set_attached_to_parent( $bcd->post );
-				$bcd->attachment_data[ 'thumbnail' ] = $data;
-				// Now that we know what the attachment id the thumbnail has, we must remove it from the attached files to avoid duplicates.
-				unset( $bcd->attachment_data[ $bcd->thumbnail_id ] );
+				try
+				{
+					$data = attachment_data::from_attachment_id( $bcd->thumbnail, $bcd->upload_dir);
+					$data->set_attached_to_parent( $bcd->post );
+					$bcd->attachment_data[ 'thumbnail' ] = $data;
+					// Now that we know what the attachment id the thumbnail has, we must remove it from the attached files to avoid duplicates.
+					unset( $bcd->attachment_data[ $bcd->thumbnail_id ] );
+				}
+				catch( Exception $e )
+				{
+					$this->debug( 'Exception adding attachment: ' . $e->getMessage() );
+				}
 			}
 			else
 				$this->debug( 'Custom fields: Post does not have a thumbnail (featured image).' );
@@ -2286,9 +2282,16 @@ This can be increased by adding the following to your wp-config.php:
 			foreach( $gallery->ids_array as $id )
 			{
 				$this->debug( 'Gallery has attachment %s.', $id );
-				$data = attachment_data::from_attachment_id( $id, $bcd->upload_dir );
-				$data->set_attached_to_parent( $bcd->post );
-				$bcd->attachment_data[ $id ] = $data;
+				try
+				{
+					$data = attachment_data::from_attachment_id( $id, $bcd->upload_dir );
+					$data->set_attached_to_parent( $bcd->post );
+					$bcd->attachment_data[ $id ] = $data;
+				}
+				catch( Exception $e )
+				{
+					$this->debug( 'Exception adding attachment: ' . $e->getMessage() );
+				}
 			}
 		}
 
@@ -2325,6 +2328,13 @@ This can be increased by adding the following to your wp-config.php:
 			$action->broadcasting_data = $bcd;
 			$action->apply();
 
+			if ( ! $action->broadcast_here )
+			{
+				$this->debug( 'Skipping this blog.' );
+				$child_blog->switch_from();
+				continue;
+			}
+
 			// Post parent
 			if ( $bcd->link && isset( $parent_broadcast_data) )
 				if ( $parent_broadcast_data->has_linked_child_on_this_blog() )
@@ -2347,7 +2357,8 @@ This can be increased by adding the following to your wp-config.php:
 					{
 						$temp_post_data = $bcd->new_post;
 						$temp_post_data[ 'ID' ] = $child_post_id;
-						$bcd->new_post[ 'ID' ] = wp_update_post( $temp_post_data );
+						wp_update_post( $temp_post_data );
+						$bcd->new_post[ 'ID' ] = $child_post_id;
 						$need_to_insert_post = false;
 					}
 				}
@@ -2574,7 +2585,7 @@ This can be increased by adding the following to your wp-config.php:
 			// Maybe updating the post is not necessary.
 			if ( $post_modified )
 			{
-				$this->debug( 'Modifying with new post: %s', $modified_post->post_content );
+				$this->debug( 'Modifying new post.' );
 				wp_update_post( $modified_post );	// Or maybe it is.
 			}
 			else
@@ -3084,12 +3095,22 @@ This can be increased by adding the following to your wp-config.php:
 		return implode( ' ', $r );
 	}
 
-	private function load_last_used_settings( $user_id)
+	/**
+		@brief		Load the user's last used settings from the user meta table.
+		@details	Remove the sql_user_get call in v9 or v10, giving time for people to move the settings from the table to the user meta.
+		@since		2014-10-09 06:27:32
+	**/
+	public function load_last_used_settings( $user_id )
 	{
-		$data = $this->sql_user_get( $user_id );
-		if (!isset( $data[ 'last_used_settings' ] ) )
-			$data[ 'last_used_settings' ] = [];
-		return $data[ 'last_used_settings' ];
+		$settings = get_user_meta( $user_id, 'broadcast_last_used_settings', true );
+		if ( ! $settings )
+		{
+			$settings = $this->sql_user_get( $user_id );
+			$settings = $settings[ 'last_used_settings' ];
+		}
+		if ( ! is_array( $settings ) )
+			$settings = [];
+		return $settings;
 	}
 
 	/**
@@ -3121,7 +3142,7 @@ This can be increased by adding the following to your wp-config.php:
 
 		global $wpdb;
 		// The post_name is the important part.
-		$query = sprintf( "SELECT `ID` FROM `%s` WHERE `post_type` = 'attachment' AND `post_parent` = 0 AND `post_name` = '%s'",
+		$query = sprintf( "SELECT `ID` FROM `%s` WHERE `post_type` = 'attachment' AND `post_name` = '%s'",
 			$wpdb->posts,
 			$attachment_data->post->post_name
 		);
@@ -3173,11 +3194,14 @@ This can be increased by adding the following to your wp-config.php:
 		return $options;
 	}
 
-	private function save_last_used_settings( $user_id, $settings )
+	/**
+		@brief		Save the user's last used settings.
+		@details	Since v8 the data is stored in the user's meta.
+		@since		2014-10-09 06:19:53
+	**/
+	public function save_last_used_settings( $user_id, $settings )
 	{
-		$data = $this->sql_user_get( $user_id );
-		$data[ 'last_used_settings' ] = $settings;
-		$this->sql_user_set( $user_id, $data );
+		update_user_meta( $user_id, 'broadcast_last_used_settings', $settings );
 	}
 
 	/**
@@ -3199,6 +3223,32 @@ This can be increased by adding the following to your wp-config.php:
 				$this->sql_delete_broadcast_data( $blog_id, $post_id );
 			else
 				$this->sql_update_broadcast_data( $blog_id, $post_id, $broadcast_data );
+	}
+
+	public function site_options()
+	{
+		return array_merge( [
+			'blogs_to_hide' => 5,								// How many blogs to auto-hide
+			'broadcast_internal_custom_fields' => true,		// Broadcast internal custom fields?
+			'canonical_url' => true,							// Override the canonical URLs with the parent post's.
+			'clear_post' => true,								// Clear the post before broadcasting.
+			'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
+			'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
+			'custom_field_protectlist' => '',					// Internal custom fields that should not be overwritten on broadcast
+			'database_version' => 0,							// Version of database and settings
+			'debug' => false,									// Display debug information?
+			'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.
+			'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
+			'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
+			'post_types' => 'post page',						// Custom post types which use broadcasting
+			'existing_attachments' => 'use',					// What to do with existing attachments: use, overwrite, randomize
+			'role_broadcast' => 'super_admin',					// Role required to use broadcast function
+			'role_link' => 'super_admin',						// Role required to use the link function
+			'role_broadcast_as_draft' => 'super_admin',			// Role required to broadcast posts as templates
+			'role_broadcast_scheduled_posts' => 'super_admin',	// Role required to broadcast scheduled, future posts
+			'role_taxonomies' => 'super_admin',					// Role required to broadcast the taxonomies
+			'role_custom_fields' => 'super_admin',				// Role required to broadcast the custom fields
+		], parent::site_options() );
 	}
 
 	/**

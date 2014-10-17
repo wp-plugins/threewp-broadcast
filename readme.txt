@@ -165,7 +165,7 @@ The broadcast meta box, menu and columns in the post view can be hidden from use
 
 = Is php v5.4 really necessary? =
 
-Yes, if you expect me to write neat, maintainable, legible code.
+Yes. PHP v5.3 has been officially unsupported since the 14th of August, 2014. If your web host refuses to upgrade to a supported version, go find a new host.
 
 If you use v5.3 then use the last plugin that works with that version: v1.18. The download link is on the main page.
 
@@ -201,17 +201,30 @@ Broadcast is capable of handling WooCommerce products.
 
 This will broadcast all normal product settings: SKU, price, etc.
 
-If your products have variations, you'll be wanting the WooCommerce plugin from the premium pack.
+If your products have variations, or you want the attribute taxonomies to be synced, you'll be wanting the WooCommerce plugin from the premium pack.
 
 If you have a product gallery, use the "Custom Field Attachments" premium plugin to broadcast the "_product_image_gallery" custom field.
 
 = WPML Sitepress =
 
-WPML is supported via a plugin in the premium pack.
+WPML is semi-supported via a plugin in the premium pack.
 
 For more information, see WPML discussion here: http://wordpress.org/support/topic/wmpl-integration-not-working
 
 == Changelog ==
+
+== 9 20141017 =
+* Fix JS error: blogs_to_hide empty value.
+* Fix: last_used_settings warning.
+* Fix: Settings being forgotten sometimes.
+* Fix: Maintenance not working sometimes due to non-standard temp directory.
+
+= 8 20141013 =
+* New: Premium Pack Plugin: Protect Child Status
+* Fix: Better duplicate image finding.
+* Code: broadcasting_after_switch_to_blog action has $broadcast_here property. Allows skipping blogs.
+* Code: Last used settings are now stored in the user's meta table, instead of a separate database table. The table will be removed in v9 or v10.
+* Code: Better attachment validity checking.
 
 = 7 20140923 =
 * Fix: Massive optimization of taxonomy syncing.
