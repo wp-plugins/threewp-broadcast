@@ -221,13 +221,13 @@ APC works flawlessly.
 
 == Changelog ==
 
-== 10 20141020 =
+= 10 20141020 =
 * New: Premium Pack Plugin: Menus
 * Code: Major refactoring. ThreeWP_Broadcast() function introduced to easily retrieve the Broadcast instance.
 * Code: threewp_broadcast_get_user_writable_blogs is now an action.
 * Code: Actions now use the standard Plainview Wordpress SDK actions as the base class.
 
-== 9 20141017 =
+= 9 20141017 =
 * Fix JS error: blogs_to_hide empty value.
 * Fix: last_used_settings warning.
 * Fix: Settings being forgotten sometimes.
