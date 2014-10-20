@@ -13,6 +13,7 @@ namespace plainview\sdk;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20141018		Wordpress: Fix action execute() and set_boolean.
 	- 20141016		Wordpress: Allow force new version check.
 	- 20141016		Wordpress: Plugin pack ignores non-existent plugins better.
 	- 20141013		Wordpress: Better plugin URL http/https handling.
@@ -128,7 +129,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20141016;
+	protected $sdk_version = 20141018;
 
 	/**
 		@brief		Constructor.

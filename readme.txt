@@ -3,7 +3,7 @@ Contributors: edward_plainview
 License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
-Tags: broadcast, multipost, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar
+Tags: broadcast, multipost, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar, menu, copy menu, duplicate menu
 Tested up to: 4.0
 
 Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, and attachments are supported.
@@ -55,6 +55,7 @@ For a complete list of features and more information, see <a href="http://plugin
 * <strong>Keep Child Attachments</strong> keeps the child post's attachments instead of deleting them when updating a broadcast.
 * <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
+* <strong>Menus</strong> can copy menus between blogs (overwrite / update), with support for equivalent child posts on the child blogs and equivalent taxonomies.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
 * <strong>Permalinks</strong> enables more precise permalink control.
 * <strong>Protect Child Content</strong> prevents overwriting of child post content.
@@ -130,6 +131,7 @@ Broadcast offers some actions/filters for plugin developers with which to intera
 33. Premium Pack: Protect Child Content
 34. Premium Pack: User & Blog Settings Post 1
 35. Premium Pack: User & Blog Settings Post 2
+36. Premium Pack: Menus plugin copies menus between blogs, using parent/child links.
 
 == Frequently Asked Questions ==
 
@@ -166,8 +168,6 @@ The broadcast meta box, menu and columns in the post view can be hidden from use
 = Is php v5.4 really necessary? =
 
 Yes. PHP v5.3 has been officially unsupported since the 14th of August, 2014. If your web host refuses to upgrade to a supported version, go find a new host.
-
-If you use v5.3 then use the last plugin that works with that version: v1.18. The download link is on the main page.
 
 = Orphans? =
 
@@ -211,7 +211,21 @@ WPML is semi-supported via a plugin in the premium pack.
 
 For more information, see WPML discussion here: http://wordpress.org/support/topic/wmpl-integration-not-working
 
+= XCache vs APC opcode cache =
+
+Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to enable Broadcast with Xcache v2 enabled will result in a PHP crash.
+
+Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
+
+APC works flawlessly.
+
 == Changelog ==
+
+== 10 20141020 =
+* New: Premium Pack Plugin: Menus
+* Code: Major refactoring. ThreeWP_Broadcast() function introduced to easily retrieve the Broadcast instance.
+* Code: threewp_broadcast_get_user_writable_blogs is now an action.
+* Code: Actions now use the standard Plainview Wordpress SDK actions as the base class.
 
 == 9 20141017 =
 * Fix JS error: blogs_to_hide empty value.

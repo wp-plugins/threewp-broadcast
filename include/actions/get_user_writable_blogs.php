@@ -1,11 +1,11 @@
 <?php
 
-namespace threewp_broadcast\filters;
+namespace threewp_broadcast\actions;
 
 use \threewp_broadcast\blog_collection;
 
 class get_user_writable_blogs
-	extends filter
+	extends action
 {
 	/**
 		@brief		OUTPUT: A collection of blogs the user has access to.
