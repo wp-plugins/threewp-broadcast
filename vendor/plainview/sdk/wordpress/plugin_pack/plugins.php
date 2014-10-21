@@ -2,6 +2,7 @@
 
 namespace plainview\sdk\wordpress\plugin_pack;
 
+use \Exception;
 use \plainview\sdk\collections\collection;
 
 /**
@@ -24,6 +25,28 @@ class plugins
 	public function __construct( $pp )
 	{
 		$this->__plugin_pack = $pp;
+	}
+
+	/**
+		@brief		Activate all loaded plugins.
+		@since		2014-09-28 14:01:14
+	**/
+	public function activate()
+	{
+		foreach( $this->items as $plugin )
+			if ( $plugin->is_loaded() )
+				$plugin->activate();
+	}
+
+	/**
+		@brief		Deactivate all loaded plugins.
+		@since		2014-09-28 14:01:14
+	**/
+	public function deactivate()
+	{
+		foreach( $this->items as $plugin )
+			if ( $plugin->is_loaded() )
+				$plugin->deactivate();
 	}
 
 	/**
@@ -59,6 +82,7 @@ class plugins
 			catch( Exception $e )
 			{
 				// This class no long exists or could not be loaded. Delete it.
+				$this->forget( $classname );
 				$this->need_to_save();
 			}
 		}
@@ -72,9 +96,6 @@ class plugins
 	{
 		if ( ! isset( $this->__need_to_save ) )
 			return;
-		ddd( $this->items );
-		ddd( 'we need to resave!' );
-		return;
 		$this->save();
 	}
 
