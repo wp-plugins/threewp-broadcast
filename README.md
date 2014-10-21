@@ -1,9 +1,6 @@
 threewp_broadcast
 =================
 
-ThreeWP Broadcast plugin for Wordpress
+ThreeWP Broadcast plugin for Wordpress.
 
-After cloning the repo, do this:
-
-	git submodule init
-	git submodule update
+Use `composer update` to fetch the Plainview SDK dependancy.

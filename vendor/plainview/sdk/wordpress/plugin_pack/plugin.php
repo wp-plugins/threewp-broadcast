@@ -26,7 +26,10 @@ class plugin
 	**/
 	public function activate()
 	{
-		$this->plugin()->activate_internal();
+		// TODO: convert this to paths() when the SDK is updated everywhere.
+		$filename = $this->get( 'class' )->paths[ 'filename_from_plugin_directory' ];
+		$hook = sprintf( 'activate_%s', plugin_basename( $filename ) );
+		do_action( $hook );
 	}
 
 	/**
@@ -35,7 +38,10 @@ class plugin
 	**/
 	public function deactivate()
 	{
-		$this->plugin()->deactivate_internal();
+		// TODO: convert this to paths() when the SDK is updated everywhere.
+		$filename = $this->get( 'class' )->paths[ 'filename_from_plugin_directory' ];
+		$hook = sprintf( 'deactivate_%s', plugin_basename( $filename ) );
+		do_action( $hook );
 	}
 
 	/**

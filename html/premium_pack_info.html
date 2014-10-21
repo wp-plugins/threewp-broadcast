@@ -487,6 +487,59 @@
 		</tr>
 		<tr>
 			<td class="plugin_name">
+				Menus
+			</td>
+			<td>
+
+				<p>Copy a menu, or several menus, from a source blog to one or more target blogs.</p>
+
+				<p>Generally, menu items are all converted to custom (static) URLs that will point to the source blog. There are two options to modify this behaviour: child post ID translation and taxonomy translation.</p>
+
+				<p>If a menu item on the source blog points to a broadcast post, and the post exists as a child on the target blog, then the menu item URL is modified to point to the child post.</p>
+
+				<p>The the broadcasted post has not been broadcasted to the target blog, the menu item is converted to a custom URL pointing to the source blog.</p>
+
+				<p>Similarly, if a taxonomy (category, tag, etc) on the source blog exists on the target blog, the URL is modified to point to the taxonomy on the target blog.</p>
+
+				<p>If no taxonomy with the same slug is available on the child blog, the menu item is converted to a custom URL pointing to the taxonomy on the source blog.</p>
+
+				<style type='text/css'>
+					#gallery_menus {
+						margin: auto;
+					}
+					#gallery_menus .gallery-item {
+						float: left;
+						margin-top: 10px;
+						text-align: center;
+						width: 50%;
+					}
+					#gallery_menus img {
+						border: 2px solid #cfcfcf;
+					}
+					#gallery_menus .gallery-caption {
+						margin-left: 0;
+					}
+					/* see gallery_shortcode() in wp-includes/media.php */
+				</style>
+				<div id='gallery_menus' class='gallery galleryid-1302 gallery-columns-2 gallery-size-thumbnail'><dl class='gallery-item'>
+					<dt class='gallery-icon landscape'>
+						<a href='http://plugins.plainview.se/wp-content/uploads/2014/10/menus_01.png' rel="lightbox[gallery_menus]"><img width="150" height="136" src="http://plugins.plainview.se/wp-content/uploads/2014/10/menus_01-150x136.png" class="attachment-thumbnail" alt="All the settings available when copying menus." /></a>
+					</dt>
+						<dd class='wp-caption-text gallery-caption'>
+						All the settings available when copying menus.
+						</dd></dl><dl class='gallery-item'>
+					<dt class='gallery-icon portrait'>
+						<a href='http://plugins.plainview.se/wp-content/uploads/2014/10/menus_02.png' rel="lightbox[gallery_menus]"><img width="100" height="150" src="http://plugins.plainview.se/wp-content/uploads/2014/10/menus_02-100x150.png" class="attachment-thumbnail" alt="A menu has been duplicated locally, with debug text." /></a>
+					</dt>
+						<dd class='wp-caption-text gallery-caption'>
+						A menu has been duplicated locally, with debug text.
+						</dd></dl><br style="clear: both" />
+				</div>
+
+			</td>
+		</tr>
+		<tr>
+			<td class="plugin_name">
 				Per Blog Taxonomies
 			</td>
 			<td>

@@ -49,6 +49,7 @@ trait edd
 
 		switch( $status->license )
 		{
+			case 'deactivated':
 			case 'site_inactive':
 				$table = $this->edd_get_status_table( $status );
 				$license_key = $form->hidden_input( 'license_key' )
@@ -84,6 +85,12 @@ trait edd
 		$refresh_button = $form->secondary_button( 'refresh' )
 			->value_ ( 'Refresh license status' );
 
+		$form->markup( 'clear_plugin_transient_info' )
+			->p( "Wordpress will automatically check for plugin updates every 12 hours. If you don't feel like waiting that long, use the button below to reset the timer, after which Wordpress will check for updates as soon as it can." );
+
+		$clear_plugin_transient = $form->secondary_button( 'clear_plugin_transient' )
+			->value_ ( 'Force new version check' );
+
 		if ( $form->is_posting() )
 		{
 			$form->post();
@@ -113,7 +120,10 @@ trait edd
 				{
 					$this->edd_deactivate_license();
 					if ( $this->get_site_option( 'edd_updater_license_status' ) == 'deactivated' )
+					{
+
 						$this->message( 'The license has been deactivated! Automatic plugin updates are now deactived.' );
+					}
 					else
 						$this->error( 'The license could not be deactivated. Please try again later or contact the plugin author.' );
 				}
@@ -129,6 +139,12 @@ trait edd
 				{
 					$this->edd_clear_cached_license_status();
 					$this->message( 'The license data has been refreshed!' );
+				}
+
+				if ( $clear_plugin_transient->pressed() )
+				{
+					set_site_transient( 'update_plugins', null );
+					$this->message( "Wordpress' update counter has been reset." );
 				}
 
 				$_POST = [];
@@ -322,11 +338,21 @@ trait edd
 		$table = $this->table();
 		$table->caption()->text( 'Information about your license' );
 
+		$expires = strtotime( $status->expires );
+		if ( $expires < time() )
+			$status->license = 'expired';
+
+
 		switch( $status->license )
 		{
+			case 'deactivated':
 			case 'site_inactive':
 				$inactive = true;
 				$rows[ 'Status' ] = sprintf( 'Valid but inactive. Expires %s', $status->expires );
+				break;
+			case 'expired':
+				$inactive = true;
+				$rows[ 'Status' ] = sprintf( '<strong>Expired</strong> %s', $status->expires );
 				break;
 			case 'valid':
 				$valid = true;
@@ -403,6 +429,6 @@ trait edd
 	public function edd_set_cached_license_status( $status )
 	{
 		$name = $this->edd_get_cached_license_status_transient_name();
-		set_site_transient( $name, $status, 60 * 5 );
+		set_site_transient( $name, $status, DAY_IN_SECONDS );
 	}
 }
