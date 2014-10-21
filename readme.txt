@@ -221,6 +221,9 @@ APC works flawlessly.
 
 == Changelog ==
 
+= 11 20141021 =
+* Fix: Fatal error when broadcasting attachments.
+
 = 10 20141020 =
 * New: Premium Pack Plugin: Menus
 * Code: Major refactoring. ThreeWP_Broadcast() function introduced to easily retrieve the Broadcast instance.

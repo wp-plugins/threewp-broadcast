@@ -5,6 +5,7 @@ namespace threewp_broadcast\traits;
 use \Exception;
 use \plainview\sdk\collections\collection;
 use \threewp_broadcast\actions;
+use \threewp_broadcast\attachment_data;
 use \threewp_broadcast\broadcasting_data;
 use \threewp_broadcast\broadcast_data\blog;
 
