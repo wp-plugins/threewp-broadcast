@@ -3,14 +3,14 @@ Contributors: edward_plainview
 License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
-Tags: broadcast, multipost, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar, menu, copy menu, duplicate menu
+Tags: broadcast, multipost, sharing, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar, menu, copy menu, duplicate menu
 Tested up to: 4.0
 
-Network plugin for PHP v5.4+ to broadcast posts to other blogs in the network. Custom post types, taxonomies, and attachments are supported.
+Network content sharing between blogs for PHP v5.4+.
 
 == Description ==
 
-Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Broadcast can be used to copy posts to other blogs, link posts between blogs, share content as templates, etc. Broadcastable features include:
+Network content sharing between blogs for PHP v5.4+. Broadcast can be used to copy posts to other blogs, link posts between blogs, share content as templates, etc. Broadcastable features include:
 
 * Parent post links to child posts
 * Posts, pages
@@ -19,7 +19,6 @@ Network plugin for PHP v5.4 to broadcast posts to other blogs in the network. Br
 * Attached images
 * Featured images
 * Galleries
-* Woocommerce support (see FAQ)
 
 Broadcasted posts can be linked to their parents, which updates child posts when the parent post is updated. This includes all data: title, slug, content, custom fields, attachments, etc.
 
@@ -69,14 +68,18 @@ For a complete list of features and more information, see <a href="http://plugin
 * <strong>Views</strong> adds support for WP Types and Views content templates.
 * <strong>WooCommerce</strong> allows attribute taxonomies and product variations to be broadcasted.
 
+= Documentation =
+
+Although Broadcast is relatively easy to understand by itself, for extra documentation see <a href="http://plugins.plainview.se/threewp-broadcast/">Broadcast's online documentation</a>.
+
 = Misc =
 
-Requires php v5.4 for trait support. Users of php v5.3 should remain with version 1.18. Users of php v5.3 can only use the <a href="http://plainview.se/wp-content/uploads/2013/08/threewp-broadcast_v1.18.zip">latest legacy version: v1.18</a> but don't expect any support.
+Requires php v5.4 for trait support. PHP 5.3 is no longer officially supported.
 
 Available in the following languages:
 
-* Dutch
 * English
+* Dutch
 * French - Seb giss <sgissinger@gmail.com>
 * Italian
 * French
@@ -84,10 +87,6 @@ Available in the following languages:
 * Swedish
 
 The git repository can be found at: https://github.com/the-plainview/threewp_broadcast
-
-= Actions and filters =
-
-Broadcast offers some actions/filters for plugin developers with which to interact with Broadcast. See the main broadcast file and the include/threewp_broadcast/filter and /actions directories for documentation and live examples.
 
 == Installation ==
 
@@ -146,6 +145,12 @@ For contract work such as the following, contact me so we can make a deal:
 * Broadcast doesn't work on your custom site
 
 If you're not into donations, try the support forum to see if other users can help you out.
+
+= Debug dumps =
+
+A debug dump is the long text that is displayed when broadcasting a post with debug mode on. This dump can then be read to see what Broadcast is or isn't doing.
+
+To switch on debug mode, see the admin settings. If your site is live it would be wise to input your IP in the associated textarea, so that only you see the debug dump.
 
 = Blacklist, whitelisting, force broadcast =
 
