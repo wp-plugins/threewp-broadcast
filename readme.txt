@@ -6,7 +6,7 @@ Stable tag: trunk
 Tags: broadcast, multipost, sharing, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar, menu, copy menu, duplicate menu
 Tested up to: 4.0
 
-Network content sharing between blogs for PHP v5.4+.
+Network content sharing between blogs for PHP v5.4+. Posts can be linked to each other and updated automatically.
 
 == Description ==
 
