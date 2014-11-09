@@ -4,14 +4,7 @@ namespace plainview\sdk\table;
 
 /**
 	@brief		Helper trait to expand \\html\\element with table specific calls.
-
-	@par		Changelog
-
-	- 20130506	Cleanup (removed $css_class). Doc fix. \n
-				Removed random_id. Uses \\plainview\\sdk\\base::uuid().
-
 	@since		20130430
-	@version	20130430
 **/
 trait table_element
 {
@@ -55,7 +48,8 @@ trait table_element
 	**/
 	public function colspan( $colspan )
 	{
-		return $this->attribute( 'colspan' )->set( $colspan );
+		$this->attribute( 'colspan' )->set( $colspan );
+		return $this;
 	}
 
 	/**
@@ -69,7 +63,8 @@ trait table_element
 	**/
 	public function header( $header )
 	{
-		return $this->attribute( 'header' )->set( $header );
+		$this->attribute( 'header' )->set( $header );
+		return $this;
 	}
 
 	/**
@@ -83,7 +78,8 @@ trait table_element
 	**/
 	public function rowspan( $rowspan )
 	{
-		return $this->attribute( 'rowspan' )->set( $rowspan );
+		$this->attribute( 'rowspan' )->set( $rowspan );
+		return $this;
 	}
 
 	/**

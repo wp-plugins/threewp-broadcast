@@ -32,7 +32,7 @@ class broadcasting_data
 		@var		$blogs
 		@since		20130927
 	**/
-	public $blogs;
+	public $blogs = [];
 
 	/**
 		@brief		OPTIONAL IN: Broadcast data object.
@@ -113,28 +113,28 @@ class broadcasting_data
 	public $post_type_is_hierarchical = false;
 
 	/**
-		@brief		IN: True if the parent post is marked as sticky.
+		@brief		True if the parent post is marked as sticky.
 		@var		$post_is_sticky
 		@since		20130603
 	**/
 	public $post_is_sticky = false;
 
 	/**
-		@brief		IN: The post type object retrieved from get_post_type_object().
+		@brief		The post type object retrieved from get_post_type_object().
 		@var		$post_type_object
 		@since		20130603
 	**/
 	public $post_type_object;
 
 	/**
-		@brief		IN: True if the post type supports custom fields.
+		@brief		True if the post type supports custom fields.
 		@var		$post_type_supports_custom_fields
 		@since		20130603
 	**/
 	public $post_type_supports_custom_fields = false;
 
 	/**
-		@brief		IN: True if the post type supports thumbnails.
+		@brief		True if the post type supports thumbnails.
 		@var		$post_type_supports_thumbnails
 		@since		20130603
 	**/
@@ -165,12 +165,14 @@ class broadcasting_data
 	public function __construct( $options = [] )
 	{
 		$this->equivalent_posts = new equivalent_posts();
-		$this->blogs = new blog_collection;
 
 		// Import any known values from the options object.
 		foreach( (array)$options as $key => $value )
 			if ( property_exists( $this, $key ) )
 				$this->$key = $value;
+
+		// Clear the blogs.
+		$this->blogs = new blog_collection;
 	}
 
 	/**

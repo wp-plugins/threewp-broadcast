@@ -13,7 +13,7 @@ class ThreeWP_Broadcast
 	use traits\broadcast_data;
 	use traits\broadcasting;
 	use traits\meta_boxes;
-	use traits\post_methods;
+	use traits\post_actions;
 	use traits\terms_and_taxonomies;
 
 	/**
@@ -102,17 +102,22 @@ class ThreeWP_Broadcast
 		$this->add_filter( 'threewp_broadcast_add_meta_box' );
 		$this->add_filter( 'threewp_broadcast_admin_menu', 'add_post_row_actions_and_hooks', 100 );
 		$this->add_filter( 'threewp_broadcast_broadcast_post' );
+		$this->add_action( 'threewp_broadcast_get_post_actions' );
+		$this->add_action( 'threewp_broadcast_get_post_bulk_actions' );
 		$this->add_action( 'threewp_broadcast_get_user_writable_blogs', 11 );		// Allow other plugins to do this first.
 		$this->add_filter( 'threewp_broadcast_get_post_types', 9 );					// Add our custom post types to the array of broadcastable post types.
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 9 );		// Just before the standard 10.
 		$this->add_action( 'threewp_broadcast_maybe_clear_post', 11 );
 		$this->add_action( 'threewp_broadcast_menu', 9 );
 		$this->add_action( 'threewp_broadcast_menu', 'threewp_broadcast_menu_final', 100 );
+		$this->add_action( 'threewp_broadcast_post_action' );
 		$this->add_action( 'threewp_broadcast_prepare_broadcasting_data' );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 9 );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
 		$this->add_action( 'threewp_broadcast_wp_insert_term', 9 );
 		$this->add_action( 'threewp_broadcast_wp_update_term', 9 );
+		$this->add_action( 'wp_ajax_broadcast_post_action_form' );
+		$this->add_action( 'wp_ajax_broadcast_post_bulk_action' );
 
 		if ( $this->get_site_option( 'canonical_url' ) )
 			$this->add_action( 'wp_head', 1 );
@@ -140,13 +145,6 @@ class ThreeWP_Broadcast
 			$this->delete_site_option( 'activity_monitor_broadcasts' );
 			$this->delete_site_option( 'activity_monitor_group_changes' );
 			$this->delete_site_option( 'activity_monitor_unlinks' );
-
-			$this->query("CREATE TABLE IF NOT EXISTS `".$this->wpdb->base_prefix."_3wp_broadcast` (
-			  `user_id` int(11) NOT NULL COMMENT 'User ID',
-			  `data` text NOT NULL COMMENT 'User''s data',
-			  PRIMARY KEY (`user_id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Contains the group settings for all the users';
-			");
 
 			$this->query("CREATE TABLE IF NOT EXISTS `". $this->broadcast_data_table() . "` (
 			  `blog_id` int(11) NOT NULL COMMENT 'Blog ID',
@@ -204,12 +202,17 @@ class ThreeWP_Broadcast
 			$db_ver = 5;
 		}
 
+		if ( $db_ver < 6 )
+		{
+			$this->query("DROP TABLE IF EXISTS `".$this->wpdb->base_prefix."_3wp_broadcast`");
+			$db_ver = 6;
+		}
+
 		$this->update_site_option( 'database_version', $db_ver );
 	}
 
 	public function uninstall()
 	{
-		$this->query("DROP TABLE `".$this->wpdb->base_prefix."_3wp_broadcast`");
 		$query = sprintf( "DROP TABLE `%s`", $this->broadcast_data_table() );
 		$this->query( $query );
 	}
@@ -369,6 +372,15 @@ class ThreeWP_Broadcast
 	// --------------------------------------------------------------------------------------------
 
 	/**
+		@brief		Convenience function to return a Plainview SDK Collection.
+		@since		2014-10-31 13:21:06
+	**/
+	public static function collection()
+	{
+		return new \plainview\sdk\collections\Collection();
+	}
+
+	/**
 		@brief		Creates a new attachment.
 		@details
 
@@ -384,7 +396,7 @@ class ThreeWP_Broadcast
 	{
 		if ( ! file_exists( $o->attachment_data->filename_path ) )
 		{
-			$this->debug( 'Copy attachment: File %s does not exist!', $o->attachment_data->filename_path );
+			$this->debug( 'Copy attachment: File "%s" does not exist!', $o->attachment_data->filename_path );
 			return false;
 		}
 
@@ -465,7 +477,7 @@ class ThreeWP_Broadcast
 	{
 		if ( isset( $this->_js_enqueued ) )
 			return;
-		wp_enqueue_script( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/user.min.js', '', $this->plugin_version );
+		wp_enqueue_script( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/js.js', '', $this->plugin_version );
 		$this->_js_enqueued = true;
 	}
 
@@ -570,19 +582,18 @@ class ThreeWP_Broadcast
 
 	/**
 		@brief		Load the user's last used settings from the user meta table.
-		@details	Remove the sql_user_get call in v9 or v10, giving time for people to move the settings from the table to the user meta.
 		@since		2014-10-09 06:27:32
 	**/
 	public function load_last_used_settings( $user_id )
 	{
 		$settings = get_user_meta( $user_id, 'broadcast_last_used_settings', true );
-		if ( ! $settings )
-		{
-			$settings = $this->sql_user_get( $user_id );
-			$settings = $settings[ 'last_used_settings' ];
-		}
 		if ( ! is_array( $settings ) )
-			$settings = [];
+			// Suggest some settings.
+			$settings = [
+				'custom_fields' => 'on',
+				'link' => 'on',
+				'taxonomies' => 'on',
+			];
 		return $settings;
 	}
 
@@ -671,6 +682,7 @@ class ThreeWP_Broadcast
 	{
 		return array_merge( [
 			'blogs_to_hide' => 5,								// How many blogs to auto-hide
+			'blogs_hide_overview' => 5,							// Use a summary in the overview if more than this amount of children / siblings.
 			'broadcast_internal_custom_fields' => true,		// Broadcast internal custom fields?
 			'canonical_url' => true,							// Override the canonical URLs with the parent post's.
 			'clear_post' => true,								// Clear the post before broadcasting.
@@ -700,38 +712,5 @@ class ThreeWP_Broadcast
 	public function yes_no( $value )
 	{
 		return $value ? 'yes' : 'no';
-	}
-
-	// --------------------------------------------------------------------------------------------
-	// ----------------------------------------- SQL
-	// --------------------------------------------------------------------------------------------
-
-	/**
-	 * Gets the user data.
-	 *
-	 * Returns an array of user data.
-	 */
-	public function sql_user_get( $user_id)
-	{
-		$r = $this->query("SELECT * FROM `".$this->wpdb->base_prefix."_3wp_broadcast` WHERE user_id = '$user_id'");
-		$r = @unserialize( base64_decode( $r[0][ 'data' ] ) );		// Unserialize the data column of the first row.
-		if ( $r === false)
-			$r = [];
-
-		// Merge/append any default values to the user's data.
-		return array_merge(array(
-			'groups' => [],
-		), $r);
-	}
-
-	/**
-	 * Saves the user data.
-	 */
-	public function sql_user_set( $user_id, $data)
-	{
-		$data = serialize( $data);
-		$data = base64_encode( $data);
-		$this->query("DELETE FROM `".$this->wpdb->base_prefix."_3wp_broadcast` WHERE user_id = '$user_id'");
-		$this->query("INSERT INTO `".$this->wpdb->base_prefix."_3wp_broadcast` (user_id, data) VALUES ( '$user_id', '$data' )");
 	}
 }

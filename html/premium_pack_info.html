@@ -760,7 +760,7 @@
 						float: left;
 						margin-top: 10px;
 						text-align: center;
-						width: 100%;
+						width: 50%;
 					}
 					#gallery_purge_children img {
 						border: 2px solid #cfcfcf;
@@ -770,16 +770,20 @@
 					}
 					/* see gallery_shortcode() in wp-includes/media.php */
 				</style>
-				<div id='gallery_purge_children' class='gallery galleryid-175 gallery-columns-1 gallery-size-thumbnail'><dl class='gallery-item'>
+				<div id='gallery_purge_children' class='gallery galleryid-537 gallery-columns-2 gallery-size-thumbnail'><dl class='gallery-item'>
 					<dt class='gallery-icon landscape'>
-						<a href='http://plugins.plainview.se/wp-content/uploads/2013/09/purge.png' rel="lightbox[gallery_purge_children]"><img width="150" height="150" src="http://plugins.plainview.se/wp-content/uploads/2013/09/purge-150x150.png" class="attachment-thumbnail" alt="Purge children" /></a>
+						<a href='http://plugins.plainview.se/wp-content/uploads/2014/11/purge_child.png' rel="lightbox[gallery_purge_children]"><img width="150" height="80" src="http://plugins.plainview.se/wp-content/uploads/2014/11/purge_child-150x80.png" class="attachment-thumbnail" alt="Purge child action" /></a>
 					</dt>
 						<dd class='wp-caption-text gallery-caption'>
-						Purge children
+						Purge child action
+						</dd></dl><dl class='gallery-item'>
+					<dt class='gallery-icon landscape'>
+						<a href='http://plugins.plainview.se/wp-content/uploads/2014/11/purge_children.png' rel="lightbox[gallery_purge_children]"><img width="150" height="124" src="http://plugins.plainview.se/wp-content/uploads/2014/11/purge_children-150x124.png" class="attachment-thumbnail" alt="Purge children bulk action" /></a>
+					</dt>
+						<dd class='wp-caption-text gallery-caption'>
+						Purge children bulk action
 						</dd></dl><br style="clear: both" />
-					<br style='clear: both;' />
 				</div>
-
 
 			</td>
 		</tr>
@@ -906,43 +910,82 @@
 				Send&nbsp;To&nbsp;Many
 			</td>
 			<td>
-				<p>Broadcast <strong>many posts</strong> to <strong>several blogs at once</strong>, instead of individually editing and broadcasting each post.</p>
+				<p>Broadcast many posts / pages / custom post types to several blogs at once, instead of individually editing and broadcasting each post.</p>
+				<p><em>Send To Many</em> appears a a bulk action. In order to broadcast several posts at once, tick their boxes and select the <em>Send To Many</em> bulk action.</p>
 
 				<style type='text/css'>
-					#gallery-7 {
+					#gallery_send_to_many {
 						margin: auto;
 					}
-					#gallery-7 .gallery-item {
+					#gallery_send_to_many .gallery-item {
 						float: left;
 						margin-top: 10px;
 						text-align: center;
-						width: 33%;
+						width: 50%;
 					}
-					#gallery-7 img {
+					#gallery_send_to_many img {
 						border: 2px solid #cfcfcf;
 					}
-					#gallery-7 .gallery-caption {
+					#gallery_send_to_many .gallery-caption {
 						margin-left: 0;
 					}
 					/* see gallery_shortcode() in wp-includes/media.php */
 				</style>
-				<div id='gallery-7' class='gallery galleryid-175 gallery-columns-3 gallery-size-thumbnail'><dl class='gallery-item'>
+				<div id='gallery_send_to_many' class='gallery galleryid-543 gallery-columns-2 gallery-size-thumbnail'><dl class='gallery-item'>
 					<dt class='gallery-icon landscape'>
-						<a href='http://plugins.plainview.se/wp-content/uploads/2013/09/ss-stm1.png' title='The Send To Many button above the post list' rel="lightbox[gallery-7]"><img width="150" height="150" src="http://plugins.plainview.se/wp-content/uploads/2013/09/ss-stm1-150x150.png" class="attachment-thumbnail" alt="The Send To Many button above the post list" /></a>
+						<a href='http://plugins.plainview.se/wp-content/uploads/2014/11/send_to_many_1.png' rel="lightbox[gallery_send_to_many]"><img width="150" height="101" src="http://plugins.plainview.se/wp-content/uploads/2014/11/send_to_many_1-150x101.png" class="attachment-thumbnail" alt="The Send To Many bulk action" /></a>
 					</dt>
 						<dd class='wp-caption-text gallery-caption'>
-						The Send To Many button above the post list
+						The Send To Many bulk action
 						</dd></dl><dl class='gallery-item'>
-					<dt class='gallery-icon portrait'>
-						<a href='http://plugins.plainview.se/wp-content/uploads/2013/09/ss-stm2.png' title='Send To Many options uses the same as the editor' rel="lightbox[gallery-7]"><img width="150" height="150" src="http://plugins.plainview.se/wp-content/uploads/2013/09/ss-stm2-150x150.png" class="attachment-thumbnail" alt="Send To Many options uses the same as the editor" /></a>
+					<dt class='gallery-icon landscape'>
+						<a href='http://plugins.plainview.se/wp-content/uploads/2014/11/send_to_many_2.png' rel="lightbox[gallery_send_to_many]"><img width="150" height="128" src="http://plugins.plainview.se/wp-content/uploads/2014/11/send_to_many_2-150x128.png" class="attachment-thumbnail" alt="The Send To Many javascript popup showing a normal Broadcast meta box" /></a>
 					</dt>
 						<dd class='wp-caption-text gallery-caption'>
-						Send To Many options uses the same as the editor
-						</dd></dl>
-					<br style='clear: both;' />
+						The Send To Many javascript popup showing a normal Broadcast meta box
+						</dd></dl><br style="clear: both" />
 				</div>
 
-		</td>
+				<p>If the posts you want to Broadcast have many images and galleries and related posts, things that could cause PHP to timeout, consider raising the PHP timeout or using the Queue Broadcast plugin.</p>
+
+			</td>
+		</tr>
+		<tr>
+			<td class="plugin_name">
+				The Events Calendar
+			</td>
+			<td>
+				<p>Venues and organisers from Modern Tribe&#8217;s &lt;a href=&#8221;https://wordpress.org/plugins/the-events-calendar/&#8221;&gt;The Events Calendar &lt;/a&gt; plugin can be broadcasted, together with the events themselves.</p>
+
+				<style type='text/css'>
+					#gallery_tec {
+						margin: auto;
+					}
+					#gallery_tec .gallery-item {
+						float: left;
+						margin-top: 10px;
+						text-align: center;
+						width: 100%;
+					}
+					#gallery_tec img {
+						border: 2px solid #cfcfcf;
+					}
+					#gallery_tec .gallery-caption {
+						margin-left: 0;
+					}
+					/* see gallery_shortcode() in wp-includes/media.php */
+				</style>
+				<div id='gallery_tec' class='gallery galleryid-1389 gallery-columns-1 gallery-size-thumbnail'><dl class='gallery-item'>
+					<dt class='gallery-icon landscape'>
+						<a href='http://plugins.plainview.se/wp-content/uploads/2014/10/tec01.png' rel="lightbox[gallery_tec]"><img width="150" height="134" src="http://plugins.plainview.se/wp-content/uploads/2014/10/tec01-150x134.png" class="attachment-thumbnail" alt="The Events Calendar has been found" /></a>
+					</dt>
+						<dd class='wp-caption-text gallery-caption'>
+						The Events Calendar has been found
+						</dd></dl><br style="clear: both" />
+				</div>
+
+
+			</td>
 		</tr>
 		<tr>
 			<td class="plugin_name">

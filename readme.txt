@@ -63,6 +63,7 @@ For a complete list of features and more information, see <a href="http://plugin
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
 * <strong>Sync Taxomnomies</strong> synchronize the taxonomies of target blogs with those from a source blog.
+* <strong>The Events Calendar</strong> adds support for Modern Tribe's <a href="https://wordpress.org/plugins/the-events-calendar/">The Events Calendar </a> plugin with venues and organisers.
 * <strong>User & Blog Settings</strong> (UBS) can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
 * <strong>User & Blog Settings Post</strong> uses the modifications from the UBS plugin to broadcast posts with one click.
 * <strong>Views</strong> adds support for WP Types and Views content templates.
@@ -96,41 +97,16 @@ The git repository can be found at: https://github.com/the-plainview/threewp_bro
 == Screenshots ==
 
 1. Broadcast meta box when editing posts
-2. Post overview table showing Broadcast linking features
-3. Broadcast settings tab
-4. Custom post types tab
-5. Uninstall tab
-6. Broadcast Premium Pack plugins
-7. Broadcast menu with groups enabled
-8. Broadcast meta box with groups enabled
-9. Blog group overview
-10. Editing a blog group
-11. Blog group settings
-12. Premium Pack: Queue overview (Queue plugin)
-13. Premium Pack: Send To Many button (Send To Many plugin)
-14. Premium Pack: Send To Many interface shown after the posts have been selected (Send To Many plugin)
-15. Premium Pack: All Broadcast modification options (Blog & User Settings plugin)
-16. Premium Pack: Showing how to hide Broadcast from the users (Blog & User Settings plugin)
-17. Premium Pack: Showing a modification, info and to whom the modification applies (Blog & User Settings plugin)
-18. Premium Pack: Adding one row of criteria for a modification (Blog & User Settings plugin)
-19. Premium Pack: Advanced Custom Fields image support
-20. Premium Pack: Make the child posts have a different status from the parent (Keep Child Status plugin)
-21. Premium Pack: The WooCommerce plugin enables broadcasting of product variations as well
-22. Premium Pack: Per Blog Taxonomies allows individual setting of child post taxonomies.
-23. Premium Pack: Permalinks enables more precise permalink control.
-24. Maintenance tab showing checks and tools.
-25. Premium Pack: All Blogs allows unrestricted access to all blogs for roles that have access to Broadcast.
-26. Premium Pack: Attachment Shortcodes overview.
-27. Premium Pack: Attachment Shortcode creation wizard with some example shortcodes.
-28. Premium Pack: Attachment Shortcode editing.
-29. Premium Pack: Attachment Shortcode help.
-30. Premium Pack: Comments plugin.
-31. Premium Pack: Keep Child Attachments plugin.
-32. Premium Pack: All In One Calendar
-33. Premium Pack: Protect Child Content
-34. Premium Pack: User & Blog Settings Post 1
-35. Premium Pack: User & Blog Settings Post 2
-36. Premium Pack: Menus plugin copies menus between blogs, using parent/child links.
+2. Post overview showing linked children
+3. Post overview showing linked parents
+4. Bulk actions that can be applied to several marked posts at once
+5. Post actions for parent posts
+6. Post actions for child posts
+7. The Broadcast menu
+8. Admin settings tab
+9. Custom post types tab
+10. Maintenance tab
+11. Uninstall tab
 
 == Frequently Asked Questions ==
 
@@ -138,7 +114,7 @@ The git repository can be found at: https://github.com/the-plainview/threewp_bro
 
 The easiest way to get my attention is to <a href="mailto:plugins@plainview.se">contact me via e-mail</a> and ask how to donate a little something for my time.
 
-For contract work such as the following, contact me so we can make a deal:
+For contract work such as the following, contact me so we can come to an agreement:
 
 * Broadcast is missing a feature you need
 * Broadcast isn't properly interacting with other plugins
@@ -176,11 +152,9 @@ Yes. PHP v5.3 has been officially unsupported since the 14th of August, 2014. If
 
 = Orphans? =
 
-If you have already created posts on other blogs that are supposed to be children of a specific post, you can use the "find orphans" function to find and link them.
+If you have already created posts on other blogs that are supposed to be children of a specific post, you can use the "find unlinked" bulk action to find and link them.
 
-Find the post in the post overview and use the row action "find orphans". You will then be presented with a table of possible orphans on each blog. Select the blog and then choose "link orphans" to create the links.
-
-To be considered an orphan the orphaned posts must have the exact same title (name) as the soon-to-be parent.
+To be considered an orphan the orphaned posts must have the exact same title (name) as the soon-to-be parent and be of the same post type.
 
 = Why can I not see the Broadcast meta box? =
 
@@ -191,10 +165,6 @@ Make sure that:
 3. Your user has write access to more than this blog (see Admin settings > Maintenenace > View blog access). Or use the All Blogs premium plugin to access all blogs.
 4. The correct post type(s) have been selected
 5. <em>User & Blog Settings</em> is not set to hide the meta box from the user / role / blog
-
-= Why are the custom post type custom fields (or ACF data) not being broadcasted? =
-
-If you've created a custom post type, but cannot see the "custom fields" checkbox, check your custom post type settings.
 
 = WooCommerce =
 
@@ -225,6 +195,14 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 APC works flawlessly.
 
 == Changelog ==
+
+= 12 20141109 =
+* New: Post actions have been reworked. Documented here: http://plugins.plainview.se/threewp-broadcast/documentation/post-actions/
+* New: "Find orphans" is now "Find unlinked children" and is a bulk action.
+* New: Setting to choose how many children to view in the post overview, before displaying a child count.
+* Fix: Last used settings notice removed.
+* Code: _3wp_broadcast table for last used settings has been removed.
+* New: Premium Pack Plugin: The Events Calendar
 
 = 11 20141021 =
 * Fix: Fatal error when broadcasting attachments.

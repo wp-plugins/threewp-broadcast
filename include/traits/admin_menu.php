@@ -28,16 +28,8 @@ trait admin_menu
 
 	public function admin_print_styles()
 	{
-		$load = false;
-
-		foreach(array( 'post-new.php', 'post.php' ) as $string)
-			$load |= strpos( $_SERVER[ 'SCRIPT_FILENAME' ], $string) !== false;
-
-		if ( !$load )
-			return;
-
 		$this->enqueue_js();
-		wp_enqueue_style( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.scss.min.css', '', $this->plugin_version  );
+		wp_enqueue_style( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.css', '', $this->plugin_version  );
 	}
 
 	public function admin_menu_broadcast_info()
@@ -326,6 +318,14 @@ This can be increased by adding the following to your wp-config.php:
 			->size( 3, 3 )
 			->value( $this->get_site_option( 'blogs_to_hide' ) );
 
+		$blogs_hide_overview = $fs->number( 'blogs_hide_overview' )
+			->description_( 'How many children to display in the overview before making the list into a summary.' )
+			->label_( 'Display in overview' )
+			->min( 1 )
+			->required()
+			->size( 3, 3 )
+			->value( $this->get_site_option( 'blogs_hide_overview' ) );
+
 		$existing_attachments = $fs->select( 'existing_attachments' )
 			->description_( 'Action to take when attachments with the same filename already exist on the child blog.' )
 			->label_( 'Existing attachments' )
@@ -372,6 +372,7 @@ This can be increased by adding the following to your wp-config.php:
 			$this->update_site_option( 'clear_post', $clear_post->is_checked() );
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
+			$this->update_site_option( 'blogs_hide_overview', $blogs_hide_overview->get_post_value() );
 			$this->update_site_option( 'existing_attachments', $existing_attachments->get_post_value() );
 
 			$this->save_debug_settings_from_form( $form );
@@ -396,8 +397,8 @@ This can be increased by adding the following to your wp-config.php:
 
 		$tabs = $this->tabs();
 		$tabs->tab( 'settings' )		->callback_this( 'admin_menu_settings' )		->name_( 'Settings' );
-		$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );
 		$tabs->tab( 'post_types' )		->callback_this( 'admin_menu_post_types' )		->name_( 'Custom post types' );
+		$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );
 		$tabs->tab( 'uninstall' )		->callback_this( 'admin_uninstall' )			->name_( 'Uninstall' );
 
 		echo $tabs;
@@ -520,7 +521,8 @@ This can be increased by adding the following to your wp-config.php:
 			$this->_( 'Broadcast' ),
 			'edit_posts',
 			'threewp_broadcast',
-			[ &$this, 'broadcast_menu_tabs' ]
+			[ &$this, 'broadcast_menu_tabs' ],
+			'none'
 		);
 
 		$this->add_submenu_pages();

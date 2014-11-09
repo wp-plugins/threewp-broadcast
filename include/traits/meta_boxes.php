@@ -228,9 +228,9 @@ trait meta_boxes
 		$meta_box_data->html->put( 'blogs_js', $js );
 
 		// We require some js.
-		$meta_box_data->js->put( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/user.min.js' );
+		$meta_box_data->js->put( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/js.js' );
 		// And some CSS
-		$meta_box_data->css->put( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.scss.min.css'  );
+		$meta_box_data->css->put( 'threewp_broadcast', $this->paths[ 'url' ] . '/css/css.css'  );
 
 		if ( $this->debugging() )
 		{

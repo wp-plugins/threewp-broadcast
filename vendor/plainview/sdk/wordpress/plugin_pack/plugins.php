@@ -149,6 +149,9 @@ class plugins
 		$classnames = [];
 		foreach( $this as $plugin )
 			$classnames[] = $plugin->get_classname();
+		// Make the classnames unique.
+		$classnames = array_flip( $classnames );
+		$classnames = array_flip( $classnames );
 		$this->pp()->set_enabled_plugins( $classnames );
 	}
 }

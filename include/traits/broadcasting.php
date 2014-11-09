@@ -25,6 +25,8 @@ trait broadcasting
 	{
 		$bcd = $broadcasting_data;
 
+		$this->debug( 'Broadcast version %s.', THREEWP_BROADCAST_VERSION );
+
 		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, $bcd->post );
 
 		$this->debug( 'The POST was <pre>%s</pre>', $bcd->_POST );
@@ -104,8 +106,8 @@ trait broadcasting
 
 			if ( $bcd->has_thumbnail )
 			{
-				$this->debug( 'Custom fields: Post has a thumbnail (featured image).' );
 				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
+				$this->debug( 'Custom fields: Post has a thumbnail (featured image): %s', $bcd->thumbnail_id );
 				$bcd->thumbnail = get_post( $bcd->thumbnail_id );
 				unset( $bcd->post_custom_fields[ '_thumbnail_id' ] ); // There is a new thumbnail id for each blog.
 				try
@@ -513,13 +515,6 @@ trait broadcasting
 
 				foreach( $old_custom_fields as $key => $value )
 				{
-					// This post has a featured image! Remove it from disk!
-					if ( $key == '_thumbnail_id' )
-					{
-						$thumbnail_post = $value[0];
-						$this->debug( 'Custom fields: The thumbnail ID is %s. Saved for later use.', $thumbnail_post );
-					}
-
 					// Do we delete this custom field?
 					$delete = true;
 
@@ -589,7 +584,7 @@ trait broadcasting
 					$this->debug( 'Custom fields: Maybe copied attachment.' );
 					if ( $o->attachment_id !== false )
 					{
-						$this->debug( 'Handling post thumbnail: %s %s', $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
+						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
 						update_post_meta( $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
 					}
 				}
