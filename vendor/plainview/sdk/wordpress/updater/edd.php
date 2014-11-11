@@ -16,7 +16,6 @@ if( ! class_exists( 'EDD_SL_Plugin_Updater' ) )
 	To your site options, add:
 
 		'edd_updater_license_key' => '',
-		'edd_updater_license_status' => false,
 
 	To the constructor add:
 
@@ -49,6 +48,7 @@ trait edd
 
 		switch( $status->license )
 		{
+			case 'deactivated':
 			case 'site_inactive':
 				$table = $this->edd_get_status_table( $status );
 				$license_key = $form->hidden_input( 'license_key' )
@@ -61,7 +61,10 @@ trait edd
 			case 'valid':
 				$table = $this->edd_get_status_table( $status );
 				$deactivate_button = $form->secondary_button( 'deactivate' )
-					->value_ ( 'Deactivate license' );
+					->value_ ( 'Deactivate license for this site' );
+
+				$download_button = $form->secondary_button( 'download' )
+					->value_ ( 'Get link to latest version as zip' );
 				break;
 			default:
 				$form->markup( 'status' )
@@ -84,6 +87,12 @@ trait edd
 		$refresh_button = $form->secondary_button( 'refresh' )
 			->value_ ( 'Refresh license status' );
 
+		$form->markup( 'clear_plugin_transient_info' )
+			->p( "Wordpress will automatically check for plugin updates every 12 hours. If you don't feel like waiting that long, use the button below to reset the timer, after which Wordpress will check for updates as soon as it can." );
+
+		$clear_plugin_transient = $form->secondary_button( 'clear_plugin_transient' )
+			->value_ ( 'Force new version check' );
+
 		if ( $form->is_posting() )
 		{
 			$form->post();
@@ -102,7 +111,8 @@ trait edd
 					$key = $license_key->get_filtered_post_value();
 					$this->update_site_option( 'edd_updater_license_key', $key );
 					$this->edd_activate_license();
-					if ( $this->get_site_option( 'edd_updater_license_status' ) == 'valid' )
+					$status = $this->edd_get_cached_license_status();
+					if ( $status->license == 'valid' )
 						$this->message( 'The license has been activated! Automatic plugin updates are now activated.' );
 					else
 						$this->error( 'The license could not be activated. Please try again later or contact the plugin author.' );
@@ -112,7 +122,8 @@ trait edd
 				if ( isset( $deactivate_button ) && $deactivate_button->pressed() )
 				{
 					$this->edd_deactivate_license();
-					if ( $this->get_site_option( 'edd_updater_license_status' ) == 'deactivated' )
+					$status = $this->edd_get_cached_license_status();
+					if ( $status->license == 'deactivated' )
 						$this->message( 'The license has been deactivated! Automatic plugin updates are now deactived.' );
 					else
 						$this->error( 'The license could not be deactivated. Please try again later or contact the plugin author.' );
@@ -125,10 +136,24 @@ trait edd
 					$this->message( 'The license data has been deleted.' );
 				}
 
+				if ( isset( $download_button ) && $download_button->pressed() )
+				{
+					$response = $this->edd_remote_get( [ 'edd_action' => 'get_version' ] );
+					$response = json_decode( wp_remote_retrieve_body( $response ) );
+					$this->message_( 'The latest version of the plugin can be downloaded from <a href="%s">here</a>.', $response->download_link );
+				}
+
 				if ( $refresh_button->pressed() )
 				{
 					$this->edd_clear_cached_license_status();
 					$this->message( 'The license data has been refreshed!' );
+				}
+
+				if ( $clear_plugin_transient->pressed() )
+				{
+					set_site_transient( 'update_plugins', null );
+					$this->edd_clear_cached_license_status();
+					$this->message( "Wordpress' update counter has been reset." );
 				}
 
 				$_POST = [];
@@ -158,9 +183,6 @@ trait edd
 		// decode the license data
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 
-		// $license_data->license will be either "valid" or "invalid"
-		$this->update_site_option( 'edd_updater_license_status', $license_data->license );
-
 		// Save the status in the transient.
 		$this->edd_set_cached_license_status( $license_data );
 	}
@@ -187,14 +209,6 @@ trait edd
 		// decode the license data
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 
-		if ( $license_data->license == 'deactived' )
-			$status = 'invalid';
-		else
-			$status = 'valid';
-
-		// $license_data->license will be either "valid" or "invalid"
-		$this->update_site_option( 'edd_updater_license_status', $license_data->license );
-
 		// Save the status in the transient.
 		$this->edd_set_cached_license_status( $license_data );
 	}
@@ -215,8 +229,20 @@ trait edd
 	**/
 	public function edd_init()
 	{
-		$status = $this->get_site_option( 'edd_updater_license_status', 'invalid' );
-		if ( $status != 'valid' )
+		$status = $this->edd_get_cached_license_status();
+		if ( $status->license == 'valid' )
+		{
+			// Check that the license has not expired.
+			$expires = strtotime( $status->expires );
+			if ( $expires < time() )
+			{
+				$status->license = 'expired';
+				$this->edd_clear_cached_license_status();
+				$this->edd_get_cached_license_status();
+			}
+		}
+
+		if ( $status->license != 'valid' )
 			return;
 
 		$edd_updater = new \EDD_SL_Plugin_Updater
@@ -322,11 +348,20 @@ trait edd
 		$table = $this->table();
 		$table->caption()->text( 'Information about your license' );
 
+		$expires = strtotime( $status->expires );
+		if ( $expires < time() )
+			$status->license = 'expired';
+
 		switch( $status->license )
 		{
+			case 'deactivated':
 			case 'site_inactive':
 				$inactive = true;
 				$rows[ 'Status' ] = sprintf( 'Valid but inactive. Expires %s', $status->expires );
+				break;
+			case 'expired':
+				$inactive = true;
+				$rows[ 'Status' ] = sprintf( '<strong>Expired</strong> %s', $status->expires );
 				break;
 			case 'valid':
 				$valid = true;
@@ -403,6 +438,6 @@ trait edd
 	public function edd_set_cached_license_status( $status )
 	{
 		$name = $this->edd_get_cached_license_status_transient_name();
-		set_site_transient( $name, $status, 60 * 5 );
+		set_site_transient( $name, $status, DAY_IN_SECONDS * 7 );
 	}
 }

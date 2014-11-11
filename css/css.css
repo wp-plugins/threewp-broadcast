@@ -1,6 +1,7 @@
 #threewp_broadcast.postbox .blogs.html_section {
   position: relative; }
   #threewp_broadcast.postbox .blogs.html_section .show_hide {
+    cursor: pointer;
     position: absolute;
     top: 0;
     right: 0; }
@@ -28,5 +29,14 @@
   #threewp_broadcast.postbox .html_section {
     margin-bottom: 1em; }
 
-tr.action_3broadcast_broadcasted td.activity_monitor_action {
-  background-image: url("../images/threewp_activity_monitor_icon.png"); }
+#toplevel_page_threewp_broadcast .wp-menu-image {
+  background-image: url('../assets/icon.svg');
+  background-size: contain; }
+
+.broadcast_popup {
+  background: white;
+  position: relative;
+  padding: 2em;
+  width: 40em;
+  max-width: 95%;
+  margin: auto; }

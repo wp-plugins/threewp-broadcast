@@ -2,7 +2,7 @@
 
 namespace threewp_broadcast\maintenance\checks\view_blog_access;
 
-use \threewp_broadcast\filters\get_user_writable_blogs;
+use \threewp_broadcast\actions\get_user_writable_blogs;
 
 /**
 	@brief		See which blogs the users can access.
@@ -59,7 +59,7 @@ extends \threewp_broadcast\maintenance\checks\check
 					{
 						$user = $users[ $selected_user ];
 						$filter = new get_user_writable_blogs( $selected_user );
-						$blogs = $filter->apply()->blogs;
+						$blogs = $filter->execute()->blogs;
 
 						if ( count( $blogs ) < 1 )
 							$r .= $this->broadcast()->p_( '%s does not have access to any blogs.', $user->data->user_login );

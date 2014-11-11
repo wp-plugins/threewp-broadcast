@@ -44,6 +44,7 @@ class action
 	{
 		$action_name = $this->get_name();
 		do_action( $action_name, $this );
+		return $this;
 	}
 
 	/**
@@ -52,7 +53,7 @@ class action
 	**/
 	public function finish( $finished = true )
 	{
-		return $this->set_bool( 'finished', $finished );
+		return $this->set_boolean( 'finished', $finished );
 	}
 
 	/**
