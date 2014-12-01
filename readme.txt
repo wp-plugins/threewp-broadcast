@@ -57,6 +57,7 @@ For a complete list of features and more information, see <a href="http://plugin
 * <strong>Menus</strong> can copy menus between blogs (overwrite / update), with support for equivalent child posts on the child blogs and equivalent taxonomies.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
 * <strong>Permalinks</strong> enables more precise permalink control.
+* <strong>Polylang</strong> adds support for Broadcasting posts in different languages using Frédéric Demarle&#8217;s <a href="https://wordpress.org/plugins/polylang/">Polylang</a> translation plugin.
 * <strong>Protect Child Content</strong> prevents overwriting of child post content.
 * <strong>Purge Children</strong> removes children and their attached files from child blogs.
 * <strong>Redirect All Children</strong> redirects single post views from visitors of child posts to the parent post.
@@ -85,6 +86,7 @@ Available in the following languages:
 * Italian
 * French
 * Romanian, Web Geek Sciense <a href="http://webhostinggeeks.com/">Web Hosting Geeks</a>
+* Spanish
 * Swedish
 
 The git repository can be found at: https://github.com/the-plainview/threewp_broadcast
@@ -195,6 +197,14 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 APC works flawlessly.
 
 == Changelog ==
+
+= 13 20141201 =
+* Fix: Blog groups: Group name can be changed again.
+* Debug: Custom fields are shown in the debug dump.
+* New: Premium Pack Plugin: Polylang
+* POT file and Swedish translation updated.
+* Code: Source moved from include/ to src/.
+* Code: Uses Plainview SDK with custom namespace for future-proofing and conflict avoidance.
 
 = 12 20141109 =
 * New: Post actions have been reworked. Documented here: http://plugins.plainview.se/threewp-broadcast/documentation/post-actions/

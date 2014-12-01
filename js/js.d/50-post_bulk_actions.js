@@ -66,7 +66,7 @@
 				} );
 
 				// We appendTo here because otherwise it is only put in one place.
-				$optgroup.prop( 'label', 'Broadcast' );
+				$optgroup.prop( 'label', broadcast_strings.broadcast );
 				$optgroup.appendTo( $select );
 
 				// Take over the apply buttons

@@ -133,7 +133,7 @@ broadcast_popup = function( options )
                 				}
                 			},
                 		})
-						.set_title( 'Post actions' )
+						.set_title( broadcast_strings.post_actions )
 						.open();
 
 					$this.fetch_form( {
@@ -320,7 +320,7 @@ broadcast_popup = function( options )
 					var blogs = $groups.val().split(' ');
 					for ( var counter=0; counter < blogs.length; counter++)
 					{
-						var $blog = $( "#plainview_sdk_form2_inputs_checkboxes_blogs_" + blogs[counter], $this.$blogs_container );
+						var $blog = $( "#plainview_sdk_broadcast_form2_inputs_checkboxes_blogs_" + blogs[counter], $this.$blogs_container );
 						// Switch selection.
 						if ( $blog.prop( 'checked' ) )
 							$blog.prop( 'checked', false );
@@ -405,7 +405,7 @@ broadcast_popup = function( options )
 				} );
 
 				// We appendTo here because otherwise it is only put in one place.
-				$optgroup.prop( 'label', 'Broadcast' );
+				$optgroup.prop( 'label', broadcast_strings.broadcast );
 				$optgroup.appendTo( $select );
 
 				// Take over the apply buttons
@@ -462,10 +462,10 @@ broadcast_popup = function( options )
                 var $this = $(this);
 
 				// Ajaxify the whitelist / blacklist
-				$this.$broadcast_internal_fields = $( '#plainview_sdk_form2_inputs_checkbox_broadcast_internal_custom_fields', $this );
-				$this.$blacklist = $( '#plainview_sdk_form2_inputs_textarea_custom_field_blacklist', $this );
-				$this.$protectlist = $( '#plainview_sdk_form2_inputs_textarea_custom_field_protectlist', $this );
-				$this.$whitelist = $( '#plainview_sdk_form2_inputs_textarea_custom_field_whitelist', $this );
+				$this.$broadcast_internal_fields = $( '#plainview_sdk_broadcast_form2_inputs_checkbox_broadcast_internal_custom_fields', $this );
+				$this.$blacklist = $( '#plainview_sdk_broadcast_form2_inputs_textarea_custom_field_blacklist', $this );
+				$this.$protectlist = $( '#plainview_sdk_broadcast_form2_inputs_textarea_custom_field_protectlist', $this );
+				$this.$whitelist = $( '#plainview_sdk_broadcast_form2_inputs_textarea_custom_field_whitelist', $this );
 
 				// Fade in the respective settings when the internal fields box is clicked.
 				$this.$broadcast_internal_fields.change( function()

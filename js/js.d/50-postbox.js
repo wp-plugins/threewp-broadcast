@@ -129,7 +129,7 @@
 					var blogs = $groups.val().split(' ');
 					for ( var counter=0; counter < blogs.length; counter++)
 					{
-						var $blog = $( "#plainview_sdk_form2_inputs_checkboxes_blogs_" + blogs[counter], $this.$blogs_container );
+						var $blog = $( "#plainview_sdk_broadcast_form2_inputs_checkboxes_blogs_" + blogs[counter], $this.$blogs_container );
 						// Switch selection.
 						if ( $blog.prop( 'checked' ) )
 							$blog.prop( 'checked', false );

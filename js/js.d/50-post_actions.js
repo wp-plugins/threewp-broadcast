@@ -38,7 +38,7 @@
                 				}
                 			},
                 		})
-						.set_title( 'Post actions' )
+						.set_title( broadcast_strings.post_actions )
 						.open();
 
 					$this.fetch_form( {
