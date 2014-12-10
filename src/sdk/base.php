@@ -13,7 +13,11 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
-	- 20141201		Add scripts/sdk_rename.sh
+	- 20141205		Plugin pack must call internal plugin methods.
+	- 20141204		Added scripts/sdk_restore.sh. Updated rename and update scripts.
+	- 20141203		Removed SDK versioning from Wordpress base.
+	- 20141203		Added scripts/sdk_update.sh
+	- 20141201		Added scripts/sdk_rename.sh
 	- 20141116		Form2: Fix radios input.
 	- 20141113		Wordpress: Plugin pack uses a get_plugin_classes action.
 	- 20141109		Wordpress: New EDD updater version.
@@ -138,7 +142,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20141201;
+	protected $sdk_version = 20141205;
 
 	/**
 		@brief		Constructor.

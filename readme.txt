@@ -54,6 +54,7 @@ For a complete list of features and more information, see <a href="http://plugin
 * <strong>Keep Child Attachments</strong> keeps the child post's attachments instead of deleting them when updating a broadcast.
 * <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
+* <strong>Lock Post</strong> allows users to lock editing of posts / pages to only themselves and super admins.
 * <strong>Menus</strong> can copy menus between blogs (overwrite / update), with support for equivalent child posts on the child blogs and equivalent taxonomies.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
 * <strong>Permalinks</strong> enables more precise permalink control.
@@ -197,6 +198,11 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 APC works flawlessly.
 
 == Changelog ==
+
+= 14 20141210 =
+* Fix: Display bulk actions in a different way to increase compatability with Admin Columns Pro.
+* Fix: Override canonical URL for pages also.
+* New: Premium Pack Plugin: Lock Post
 
 = 13 20141201 =
 * Fix: Blog groups: Group name can be changed again.
