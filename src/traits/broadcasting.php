@@ -96,6 +96,9 @@ trait broadcasting
 
 			// Save the original custom fields for future use.
 			$bcd->custom_fields->original = $bcd->post_custom_fields;
+
+			// Start handling the thumbnail
+			unset( $bcd->thumbnail );
 			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
 
 			// Check that the thumbnail ID is > 0
@@ -103,7 +106,7 @@ trait broadcasting
 			{
 				$thumbnail_id = reset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
 				$thumbnail_post = get_post( $thumbnail_id );
-				$bcd->has_thumbnail = $bcd->has_thumbnail && ( $thumbnail_post !== null );
+				$bcd->has_thumbnail = ( $thumbnail_id > 0 ) && ( $thumbnail_post !== null );
 			}
 
 			if ( $bcd->has_thumbnail )
@@ -586,7 +589,7 @@ trait broadcasting
 					$this->debug( 'Custom fields: Maybe copied attachment.' );
 					if ( $o->attachment_id !== false )
 					{
-						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
+						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post[ 'ID' ], $o->attachment_id );
 						update_post_meta( $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
 					}
 				}
