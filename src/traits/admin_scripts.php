@@ -34,7 +34,7 @@ trait admin_scripts
 		// Have we hooked into the print action?
 		if ( isset( $this->__admin_scripts_hooked ) )
 			return;
-		$this->add_action( 'admin_print_scripts', 'admin_scripts_print' );
+		$this->add_action( 'admin_print_footer_scripts', 'admin_scripts_print' );
 		$this->__admin_scripts_hooked = true;
 	}
 

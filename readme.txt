@@ -199,6 +199,12 @@ APC works flawlessly.
 
 == Changelog ==
 
+= 15 20141218 =
+* Code: Allow other plugins to prevent term creation.
+* New: Premium Pack Plugin: No New Terms
+* Fixed: Sticky status kept when clearing the POST.
+* Fixed: Bulk actions not appearing for some users
+
 = 14 20141210 =
 * Fix: Display bulk actions in a different way to increase compatability with Admin Columns Pro.
 * Fix: Override canonical URL for pages also.

@@ -10,10 +10,10 @@ class wp_insert_term
 	extends action
 {
 	/**
-		@brief		OUT: The newly-created term array. Or a WP_Error.
+		@brief		OUT: The newly-created term array. Or a WP_Error or false if the term was not created.
 		@since		2014-04-08 15:32:24
 	**/
-	public $new_term;
+	public $new_term = false;
 
 	/**
 		@brief		IN: The name of the taxonomy in which to create the term.
