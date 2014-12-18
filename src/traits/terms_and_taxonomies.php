@@ -99,7 +99,8 @@ trait terms_and_taxonomies
 			$action->taxonomy = $source_post_taxonomy;
 			$action->term = $new_term;
 			$action->execute();
-			$term_id = $action->new_term[ 'term_id' ];
+			if ( $action->new_term )
+				$term_id = $action->new_term[ 'term_id' ];
 		}
 		elseif ( is_array( $term_id ) )
 		{
@@ -165,13 +166,15 @@ trait terms_and_taxonomies
 				$action->term = $unfound_source;
 				$action->execute();
 
-				$new_taxonomy = $action->new_term;
-				$new_taxonomy_id = $new_taxonomy[ 'term_id' ];
-				$target_terms[ $new_taxonomy_id ] = (array)$new_taxonomy;
-				$found_sources[ $unfound_source_id ] = $new_taxonomy_id;
-				$found_targets[ $new_taxonomy_id ] = $unfound_source_id;
-
-				$refresh_cache = true;
+				if ( $action->new_term )
+				{
+					$new_taxonomy = $action->new_term;
+					$new_taxonomy_id = $new_taxonomy[ 'term_id' ];
+					$target_terms[ $new_taxonomy_id ] = (array)$new_taxonomy;
+					$found_sources[ $unfound_source_id ] = $new_taxonomy_id;
+					$found_targets[ $new_taxonomy_id ] = $unfound_source_id;
+					$refresh_cache = true;
+				}
 			}
 		}
 
@@ -228,6 +231,9 @@ trait terms_and_taxonomies
 	**/
 	public function threewp_broadcast_wp_insert_term( $action )
 	{
+		if ( $action->is_finished() )
+			return;
+
 		if ( ! isset( $action->term->parent ) )
 			$action->term->parent = 0;
 
@@ -264,6 +270,8 @@ trait terms_and_taxonomies
 		$this->debug( 'Created the new term %s with the term taxonomy ID of %s.', $action->term->name, $term_taxonomy_id );
 
 		$action->new_term = get_term_by( 'term_taxonomy_id', $term_taxonomy_id, $action->taxonomy, ARRAY_A );
+
+		$action->finish();
 	}
 
 	/**

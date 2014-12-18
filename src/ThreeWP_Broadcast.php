@@ -10,6 +10,7 @@ class ThreeWP_Broadcast
 	use \plainview\sdk_broadcast\wordpress\traits\debug;
 
 	use traits\admin_menu;
+	use traits\admin_scripts;
 	use traits\broadcast_data;
 	use traits\broadcasting;
 	use traits\meta_boxes;
@@ -326,7 +327,10 @@ class ThreeWP_Broadcast
 	public function wp_head()
 	{
 		// Only override the canonical if we're looking at a single post.
-		if ( ! is_single() )
+		$override = false;
+		$override |= is_single();
+		$override |= is_page();
+		if ( ! $override )
 			return;
 
 		global $post;
@@ -404,6 +408,7 @@ class ThreeWP_Broadcast
 		$target = $upload_dir[ 'path' ] . '/' . $o->attachment_data->filename_base;
 		$this->debug( 'Copy attachment: Copying from %s to %s', $source, $target );
 		copy( $source, $target );
+		$this->debug( 'Copy attachment: File sizes: %s %s ; %s %s', $source, filesize( $source ), $target, filesize( $target ) );
 
 		// And now create the attachment stuff.
 		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
@@ -452,6 +457,7 @@ class ThreeWP_Broadcast
 			$this->debug( 'Copy attachment: Updating metadata.' );
 			wp_update_attachment_metadata( $o->attachment_id,  $attach_data );
 		}
+		$this->debug( 'Copy attachment: File sizes again: %s %s ; %s %s', $source, filesize( $source ), $target, filesize( $target ) );
 	}
 
 	/**
