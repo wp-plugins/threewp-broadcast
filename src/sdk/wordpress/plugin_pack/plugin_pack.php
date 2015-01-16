@@ -123,7 +123,7 @@ abstract class plugin_pack
 							break;
 						case 'uninstall_plugin':
 							$new_plugin->deactivate_internal();
-							$new_plugin->uninstall();
+							$new_plugin->uninstall_internal();
 							$this->plugins()->forget( $classname );
 							$message = $this->_( 'The selected plugin(s) have been uninstalled.' );
 							break;

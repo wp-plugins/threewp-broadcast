@@ -352,11 +352,11 @@ trait broadcasting
 						$parent_slug = $parent_post_term->slug;
 						foreach( $target_blog_terms as $target_blog_term )
 						{
-							if ( $target_blog_term[ 'slug' ] == $parent_slug )
+							if ( $target_blog_term->slug == $parent_slug )
 							{
 								$this->debug( 'Taxonomies: Found existing taxonomy %s.', $parent_slug );
 								$found = true;
-								$taxonomies_to_add_to[] = intval( $target_blog_term[ 'term_id' ] );
+								$taxonomies_to_add_to[] = intval( $target_blog_term->term_id );
 								break;
 							}
 						}
@@ -370,7 +370,7 @@ trait broadcasting
 							{
 								// Recursively insert ancestors if needed, and get the target term's parent's ID
 								$target_parent_id = $this->insert_term_ancestors(
-									(array) $parent_post_term,
+									$parent_post_term,
 									$parent_post_taxonomy,
 									$target_blog_terms,
 									$bcd->parent_blog_taxonomies[ $parent_post_taxonomy ][ 'terms' ]
@@ -385,7 +385,7 @@ trait broadcasting
 							$action->execute();
 							if ( $action->new_term )
 							{
-								$term_id = intval( $action->new_term[ 'term_id' ] );
+								$term_id = intval( $action->new_term->term_id );
 								$taxonomies_to_add_to []= $term_id;
 								$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_id );
 							}

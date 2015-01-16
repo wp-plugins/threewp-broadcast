@@ -29,6 +29,9 @@ class form
 		parent::__construct();
 		$this->base = $base;
 
+		// Normally the form assumes a very nicely formatted string with correct scheme and non-standard port detection. This breaks certain non-standard setups. Easiest to just use whatever scheme we're currently using.
+		$this->set_attribute( 'action', remove_query_arg( 'non_existent_query' ) );
+
 		foreach( array(
 			'primary_button',
 			'secondary_button'
