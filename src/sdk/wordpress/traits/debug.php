@@ -90,7 +90,8 @@ trait debug
 		// Date class: string
 		$text = sprintf( '%s <em>%s</em>: %s<br/>', $this->now(), $class_name, $text, "\n" );
 		echo $text;
-		ob_flush();
+		if ( ob_get_contents() )
+			ob_flush();
 	}
 
 	/**
@@ -100,14 +101,14 @@ trait debug
 	public function debugging()
 	{
 		// We need this so that the options use the correct namespace.
-		$bc = self::instance();
+		$plugin = self::instance();
 
-		$debugging = $bc->get_site_option( 'debug', false );
+		$debugging = $plugin->get_site_option( 'debug', false );
 		if ( ! $debugging )
 			return false;
 
 		// Debugging is enabled. Now check if we should show it to this user.
-		$ips = $bc->get_site_option( 'debug_ips', '' );
+		$ips = $plugin->get_site_option( 'debug_ips', '' );
 		// Empty = no limits.
 		if ( $ips == '' )
 			return true;

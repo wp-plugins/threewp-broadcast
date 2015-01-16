@@ -4,7 +4,7 @@
 	"license" : "GPL-3.0",
 	"authors": [ {
 		"name": "Edward Plainview",
-		"email": "edward@plainview.se"
+		"email": "edward@plainviewplugins.com"
 	} ],
 	"require-dev": {
 		"php": ">=5.4.0"

@@ -52,16 +52,16 @@ trait post_actions
 	{
 		$action = new actions\get_post_bulk_actions();
 		$action->execute();
-		echo $action->get_js();
+		$this->add_admin_script( 'post_bulk_actions', $action->get_js() );
 
-		echo '
+		$this->add_admin_script( 'post_bulk_actions_broadcast_strings', '
 			<script type="text/javascript">
 				var broadcast_strings = {
 					broadcast : "' . $this->_( 'Broadcast' ) . '",
 					post_actions : "' . $this->_( 'Post actions' ) . '"
 				};
 			</script>
-		';
+		' );
 
 		// Enqueue the popup js.
 		wp_enqueue_script( 'magnific-popup', $this->paths[ 'url' ] . '/js/jquery.magnific-popup.min.js', '', $this->plugin_version );
