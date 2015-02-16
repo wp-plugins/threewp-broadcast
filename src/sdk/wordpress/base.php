@@ -2,119 +2,9 @@
 /**
 	@brief		Base class for the Plainview Wordpress SDK.
 	@details	Provides a framework with which to build Wordpress modules.
-
-	To include this file, copy the complete SDK to a subdirectory and add the following line of code to the top of your source.
-
-	@code
-		if ( ! class_exists( '\\plainview\\sdk_broadcast\\wordpress\\base' ) )	require_once( 'plainview_sdk/wordpress/base.php' );
-	@encode
-
-	Then extend this class.
-	@code
-		extends \\plainview\\sdk_broadcast\\wordpress\\base
-	@endcode
-
-	@par	Changelog
-
-	- 20140614				Changelog now in main base.php
-	- 20140410				site_options() and local_options()
-							Added plugin_pack.
-	- 20140408				Site options, when on a single blog, return the prefix of a local option.
-	- 20140501				Added debug trait.
-	- 20140427				Added actions\action class.
-	- 20140418				wp_die().
-	- 20140413				roles() removed.
-	- 20140413				Flexible role handling.
-	- 20140406				paths->url can handle plugins in subdirectories.
-	- 20131211				Better options handling (64 and 255 length checks).
-	- 20131210				get_option_prefix allows for shortening of option names.
-	- 20131019				table top().
-	- 20131018				display_message uses pv_message div class.
-	- 20131016				Added description_ to pot. Nicer admin_uninstall.
-	- 20131015				Removed check_column_body and check_column_head. Added roles().
-	- 20131007				Fixed add_submenu_pages bug.
-	- 20131004				Converted submenu_pages to collection.
-	- 20131004				cli_sdk_info(). Call using php PLUGIN.PHP --sdk_info
-	- 20130811				$plugin_version
-	- 20130810				time_to_string()
-	- 20130809				No longer needs to be constructed with the __FILE__ as a parameter. \n
-							admin_init action removed. \n
-							$this->is_multisite added.
-	- 20130723				Removed mail() method.
-	- 20130722				New: _construct()
-	- 20130605				New: yes_no()
-	- 20130604				Code: add_shortcode() has an optional callback parameter.
-	- 20130528				Fix: p() checks for sprintf problems.
-	- 2013-05-07	07:45	New: check_column_* uses a th ID.
-	- 2013-05-05	09:27	New: add_action, add_filter, add_shortcode. \n
-					15:48	New: CLI handling. cli_pot(), do_cli(), pot_files(), pot_keywords().
-	- 2013-05-04	15:53	Version moved into \\plainview\\sdk_broadcast\\base.
-	- 2013-05-03	15:38	Fix: display_form_table now calls cell->attribute() not attr() (which doesn't exist).
-	- 2013-05-01	14:17	New: SDK version requirement tells the user which plugin is the SDK source. \n
-							New: tabs() can return a \\tabs object.
-	- 2013-04-30	08:54	New: ABSPATH check on construct().
-	- 2013-04-25	08:53	New: string_to_emails() convert a string of e-mails to an array. \n
-					12:19	New: instance() to retrieve the current instance of the object. \n
-					20:14	Code: Lots of static, non-wordpress specific functions moved to \\plainview\\sdk_broadcast\\base.
-	- 2013-04-24	15:57	Code: Removed array_to_object. \n
-							Code: Lots of functions have become static.
-	- 2013-04-23	16:56	Code: mime_type() is now static.
-	- 2013-04-22	17:02	New: db_aware_object added.
-	- 2013-04-16	13:45	New: Added sdk_version and sdk_version_required.
-							New: Added sdk version check on __construct().
-							New: activate(), deactivate() and uninstall() should no longer call parent::.
-							Code cleanup.
-	- 2013-04-10	21:21	Fix: Converted to plainview\\sdk_broadcast\\wordpress SDK.
-							Fix: Removed object_to_array
-							Fix: send_mail options are far more underscored.
-							Fix: Functions better documented.
-							New: open_close_tag(), h1(), h2(), h3()
-	- 2013-04-08	20:20	New: sd_table classes.
-							New: merge_objects
-							Fix: check_column and check_column_body accept the table as a parameter.
-	- 2013-03-07	15:43	New: add_submenu_page and add_submenu_pages
-	- 2013-03-05	12:45	Fix: check_plain also stripslashes.
-	- 2013-03-01	10:25	New: check_column() and check_column_body().
-	- 2013-03-01	10:25	Fix: display_form_table inserted input names automatically (based on the array key).
-	- 2013-02-15	04:51	Fix: role_at_least optimized for super admin queries.
-	- 2012-12-14	08:47	Fix: role_at_least works again. It appears as current_user_can is broken somehow.
-	- 2012-12-13	19:55	Fix: super admin can do everything when asked role_at_least
-	- 2012-12-12	12:16	Added is_email function to check for e-mail validity.
-	- 2012-12-10	19:37	Fixed mime typing when attaching files to mails.
-	- 2012-11-07	16:36	Removed static styling from message boxes, added CSS classes.
-	- 2012-11-07	12:39	Fix: error_ returns an error, not a message.
-	- 2012-10-10	19:10	Added message()_ and error_().
-	- 2012-09-17	15:35	Fix neverending loop in array_sort_subarrays.
-	- 2012-05-25	11:20	All functions are now public. No more bickering about protected here and there.
-	- 2012-05-21	20:00	tabs now work on tab_slugs, not slugged tab names.
-	- 2012-05-18	13:54	Refactoring of tabs() variable names.
-	- 2012-05-16	19:03	_() can act as sprint.
-							Display form table now has ( $inputs, $options )
-	- 2012-05-08	13:15	Tries to get mime type of attached files when sending mail.
-	- 2012-02-10			display_form_table ignores hidden inputs.
-	- 2011-08-03			tab functions can now be arrays (class, method).
-	- 2011-08-02			array_to_object.
-	- 2011-07-28			activate, decactivate and uninstall are public.
-	- 2011-07-19			Documentation added.
-	- 2011-05-12			displayMessage now uses now() instead of date.
-	- 2011-04-30			Uses ThreeWP_Form instead of edwardForm.
-	- 2011-04-29	09:19	site options are registered even when using single Wordpress.
-	- 2011-01-25	13:14	load_language assumes filename as domain.
-	- 2011-01-25	13:14	loadLanguages -> load_language.
-	- 2011-09-19	12:43	No more need to register activation or deactivation hooks.
-	- 2011-09-22	14:29	+roles_as_options
-	- 2011-09-26	12:05	_() method made public.
-	- 2011-09-29	21:16	role_at_least checks that there is a user logged in at all.
-	- 2011-10-08	07:34	Uses SD_Form instead of ThreeWP_Form (name change).
-	- 2011-10-17	09:34	paths also includes __FILE__.
-	- 2011-10-22	19:16	get_site_option and get_local_option have default parameters.
-	- 2011-10-28	14:00	URLMake removed. tabs() now uses Wordpress' add_query_arg and remove_query_arg.
-	- 2011-11-04	09:42	now() is public
-	- 2011-11-07	16:11	new: rmdir().
-
 	@author		Edward Plainview	edward@plainview.se
 	@copyright	GPL v3
-*/
+**/
 
 namespace plainview\sdk_broadcast\wordpress;
 
@@ -159,13 +49,6 @@ class base
 		@var		$plugin_version
 	**/
 	public $plugin_version = 20000101;
-
-	/**
-		@brief		Use this property in your extended class to require that the SDK is a specific version.
-		@since		20130416
-		@var		$sdk_version_required
-	**/
-	protected $sdk_version_required = 20000101;
 
 	/**
 		@brief		Links to Wordpress' database object.
@@ -246,13 +129,6 @@ class base
 				'url' => plugins_url() . str_replace( WP_PLUGIN_DIR, '', dirname( $__FILE__ ) ),
 			);
 		}
-
-		if ( $this->sdk_version_required > $this->sdk_version )
-			wp_die( sprintf( 'This plugin requires Plainview SDK version %s, but only %s from the plugin %s is available.',
-				$this->sdk_version_required,
-				$this->sdk_version,
-				dirname( __FILE__ )
-			) );
 
 		register_activation_hook( $this->paths( 'filename_from_plugin_directory' ),	array( $this, 'activate_internal' ) );
 		register_deactivation_hook( $this->paths( 'filename_from_plugin_directory' ),	array( $this, 'deactivate_internal' ) );
@@ -1247,81 +1123,6 @@ class base
 	}
 
 	/**
-		@brief		Return the version of the SDK required by the plugin.
-		@details	Will examine the plugin file and try to figure out which version of the SDK the plugin requires.
-		@return		string		The version required by the Wordpress plugin.
-		@since		20131004
-	**/
-	public function cli_sdk_info()
-	{
-		$version_required = 20010101;
-		$because_of = 'undefined';
-
-		$file = $this->paths( '__FILE__' );
-
-		// Find all of the function of the plugin.
-		$functions = new \plainview\sdk_broadcast\collections\collection;
-		$lines = file_get_contents( $file );
-		$lines = explode( "\n", $lines );
-		$lines = array_filter( $lines );
-		foreach( $lines as $line )
-		{
-			// Find all "$this->ABC(" strings.
-			preg_match_all( '/\$this-\>[A-Z_a-z?]*\(/', $line, $matches );
-			foreach( $matches[ 0 ] as $function )
-			{
-				// Clean up the string
-				$function = preg_replace( '/.*-\>([A-Z_a-z_]*)\(/', '\1', $function );
-				// And store it.
-				$functions->put( $function, $function );
-			}
-		}
-
-		// Now read the Wordpress SDK and the base.
-		foreach( [
-			__FILE__,
-			__DIR__ . '/../base.php',
-		] as $file )
-		{
-			$contents = file_get_contents( $file );
-			$lines = explode( "\n", $contents );
-			$lines = array_reverse( $lines );
-
-			$since = null;
-			foreach( $lines as $line )
-			{
-				$line = trim( $line );
-
-				if ( $since !== null )
-				{
-					if ( strpos( $line, '@since' ) !== 0 )
-						continue;
-					$date = preg_replace( '/([^0-9])/', '', $line );
-					if ( $date > $version_required )
-					{
-						$version_required = $date;
-						$because_of = $function;
-					}
-					$since = null;
-				}
-
-				foreach( $functions as $function )
-				{
-					if ( strpos( $line, 'function ' . $function . '(' ) === false )
-						continue;
-					$since = $function;
-					// We've found this function in the SDK file. Remove it so we don't look it up later.
-					$functions->forget( $function );
-				}
-			}
-				// Are we looking for a @since?
-		}
-
-		echo sprintf( "Version %s is required because of the function %s().", $version_required, $because_of );
-		echo "\n";
-	}
-
-	/**
 		@brief		Displays an array of inputs using Wordpress table formatting.
 		@param		array		$inputs		Array of \\plainview\\sdk_broadcast\\wordpress\\form inputs.
 		@param		array		$options	Array of options.
@@ -1392,7 +1193,7 @@ class base
 	**/
 	public function do_cli()
 	{
-		$long_options = array_merge( [ 'pot', 'sdk_info' ], $this->long_options() );
+		$long_options = array_merge( [ 'pot' ], $this->long_options() );
 		$options = (object) getopt( '', $long_options );
 
 		foreach( $options as $option => $value )

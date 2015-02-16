@@ -33,6 +33,7 @@ class table
 	{
 		parent::__construct();
 		$this->base = $base;
+		$this->css_class( 'plainview_sdk_table' );
 	}
 
 	/**
@@ -47,7 +48,7 @@ class table
 
 	public function __toString()
 	{
-		$r = '';
+		$r = '<style>table.plainview_sdk_table tr:hover{ background-color: #e5e5e5; }</style>';
 		if ( isset( $this->top ) )
 			$r .= $this->top;
 		$r .= parent::__toString();
