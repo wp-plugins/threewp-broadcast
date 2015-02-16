@@ -33,12 +33,6 @@ trait terms_and_taxonomies
 					'hide_empty' => false,
 				] );
 
-			// No terms? Don't do anything.
-			if ( $taxonomy_terms === false )
-			{
-				unset( $bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] );
-				continue;
-			}
 			$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = $this->array_rekey( $taxonomy_terms, 'term_id' );
 
 			// Parent blog taxonomy terms are used for creating missing target term ancestors
@@ -311,7 +305,7 @@ trait terms_and_taxonomies
 			}
 			else
 			{
-				throw new Exception( 'Unable to create a new term.' );
+				throw new \Exception( 'Unable to create a new term.' );
 			}
 		}
 

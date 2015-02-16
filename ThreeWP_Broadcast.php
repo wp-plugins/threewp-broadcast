@@ -6,10 +6,10 @@ Author URI:		http://plainviewplugins.com
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
 Plugin URI:		http://plainviewplugins.com/threewp-broadcast/
-Version:		16
+Version:		17
 */
 
-DEFINE( 'THREEWP_BROADCAST_VERSION', 16 );
+DEFINE( 'THREEWP_BROADCAST_VERSION', 17 );
 
 require_once( __DIR__ . '/vendor/autoload.php' );
 

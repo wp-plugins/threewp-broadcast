@@ -484,6 +484,16 @@ class ThreeWP_Broadcast
 	}
 
 	/**
+		@brief		Insert hook into save post action.
+		@since		2015-02-10 20:38:22
+	**/
+	public function hook_save_post()
+	{
+		$this->debug( 'Hooking into save post.' );
+		$this->add_action( 'save_post', intval( $this->get_site_option( 'save_post_priority' ) ) );
+	}
+
+	/**
 		@brief		Get some standardizing CSS styles.
 		@return		string		A string containing the CSS <style> data, including the tags.
 		@since		20131031

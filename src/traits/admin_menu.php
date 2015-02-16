@@ -23,7 +23,7 @@ trait admin_menu
 		$action->execute();
 
 		// Hook into save_post, no matter is the meta box is displayed or not.
-		$this->add_action( 'save_post', intval( $this->get_site_option( 'save_post_priority' ) ) );
+		$this->hook_save_post();
 	}
 
 	public function admin_print_styles()

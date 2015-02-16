@@ -251,6 +251,7 @@ trait broadcasting
 
 			// Create new post data from the original stuff.
 			$bcd->new_post = (array) $bcd->post;
+			$bcd->new_child_created = false;
 
 			foreach( [ 'comment_count', 'guid', 'ID', 'post_parent' ] as $key )
 				unset( $bcd->new_post[ $key ] );
@@ -310,6 +311,8 @@ trait broadcasting
 				}
 				// Yes we did.
 				$bcd->new_post[ 'ID' ] = $result;
+
+				$bcd->new_child_created = true;
 
 				$this->debug( 'New child created: %s', $result );
 

@@ -110,6 +110,7 @@ trait post_actions
 		{
 			$a = new post_action;
 			$a->set_action( $slug );
+			$a->set_id( $slug );
 			$a->set_name( $name );
 			$action->add( $a );
 		}
@@ -134,6 +135,7 @@ trait post_actions
 			$a = new wp_ajax;
 			$a->set_ajax_action( $ajax_action );
 			$a->set_data( 'subaction', $subaction );
+			$a->set_id( 'bulk_' . $subaction );
 			$a->set_name( $name );
 			$a->set_nonce( $ajax_action . $subaction );
 			$action->add( $a );

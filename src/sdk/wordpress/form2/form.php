@@ -99,7 +99,7 @@ class form
 
 				// If this is a container with a legend (fieldset) use the legend.
 				if ( isset( $input->legend ) )
-					$o2->header = $input->legend;
+					$o2->header = $input->legend->label->content;
 
 				$o2->inputs = $input->inputs;
 				$o2->r = '';
@@ -107,7 +107,10 @@ class form
 				$this->display_form_table_inputs( $o2 );
 
 				$o->table = $this->base->table()->set_attribute( 'class', 'form-table' );
-				$o->r .= $o2->r;
+				$o->r .= sprintf( '<div class="fieldset fieldset_%s">%s</div>',
+					$input->get_name(),
+					$o2->r
+				);
 				continue;
 			}
 
