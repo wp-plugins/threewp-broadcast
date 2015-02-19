@@ -96,6 +96,9 @@ trait broadcasting
 
 			// Save the original custom fields for future use.
 			$bcd->custom_fields->original = $bcd->post_custom_fields;
+
+			// Start handling the thumbnail
+			unset( $bcd->thumbnail );
 			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
 
 			// Check that the thumbnail ID is > 0
@@ -103,7 +106,7 @@ trait broadcasting
 			{
 				$thumbnail_id = reset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
 				$thumbnail_post = get_post( $thumbnail_id );
-				$bcd->has_thumbnail = $bcd->has_thumbnail && ( $thumbnail_post !== null );
+				$bcd->has_thumbnail = ( $thumbnail_id > 0 ) && ( $thumbnail_post !== null );
 			}
 
 			if ( $bcd->has_thumbnail )
@@ -214,11 +217,23 @@ trait broadcasting
 		// To prevent recursion
 		array_push( $this->broadcasting, $bcd );
 
+		// Handle sticky.
+		$bcd->post_is_sticky = isset( $_POST[ 'sticky' ]  );
+		$this->debug( 'Post sticky status: %s', intval( $bcd->post_is_sticky ) );
+
 		// POST is no longer needed. Empty it so that other plugins don't use it.
 		$action = new actions\maybe_clear_post;
 		$action->post = $_POST;
 		$action->execute();
 		$_POST = $action->post;
+
+		// This is a stupid exception: edit_post() checks the _POST for the sticky checkbox.
+		// And edit_post() is run after save_post()... :(
+		// So if the post is sticky, we have to put the checkbox back in the post.
+		// This can be avoided by either not clearing the post or forcing the user to update twice.
+		// Neither solution is any good: not clearing the post makes _some_ plugins go crazy, updating twice is not expected behavior.
+		if ( $bcd->post_is_sticky )
+			$_POST[ 'sticky'] = 'sticky';
 
 		$action = new actions\broadcasting_started;
 		$action->broadcasting_data = $bcd;
@@ -236,6 +251,7 @@ trait broadcasting
 
 			// Create new post data from the original stuff.
 			$bcd->new_post = (array) $bcd->post;
+			$bcd->new_child_created = false;
 
 			foreach( [ 'comment_count', 'guid', 'ID', 'post_parent' ] as $key )
 				unset( $bcd->new_post[ $key ] );
@@ -296,6 +312,8 @@ trait broadcasting
 				// Yes we did.
 				$bcd->new_post[ 'ID' ] = $result;
 
+				$bcd->new_child_created = true;
+
 				$this->debug( 'New child created: %s', $result );
 
 				if ( $bcd->link )
@@ -337,16 +355,16 @@ trait broadcasting
 						$parent_slug = $parent_post_term->slug;
 						foreach( $target_blog_terms as $target_blog_term )
 						{
-							if ( $target_blog_term[ 'slug' ] == $parent_slug )
+							if ( $target_blog_term->slug == $parent_slug )
 							{
 								$this->debug( 'Taxonomies: Found existing taxonomy %s.', $parent_slug );
 								$found = true;
-								$taxonomies_to_add_to[] = intval( $target_blog_term[ 'term_id' ] );
+								$taxonomies_to_add_to[] = intval( $target_blog_term->term_id );
 								break;
 							}
 						}
 
-						// Should we create the taxonomy if it doesn't exist?
+						// Should we create the taxonomy term if it doesn't exist?
 						if ( ! $found )
 						{
 							// Does the term have a parent?
@@ -355,7 +373,7 @@ trait broadcasting
 							{
 								// Recursively insert ancestors if needed, and get the target term's parent's ID
 								$target_parent_id = $this->insert_term_ancestors(
-									(array) $parent_post_term,
+									$parent_post_term,
 									$parent_post_taxonomy,
 									$target_blog_terms,
 									$bcd->parent_blog_taxonomies[ $parent_post_taxonomy ][ 'terms' ]
@@ -368,11 +386,14 @@ trait broadcasting
 							$action->taxonomy = $parent_post_taxonomy;
 							$action->term = $new_term;
 							$action->execute();
-							$new_taxonomy = $action->new_term;
-							$term_id = $new_taxonomy[ 'term_id' ];
-							$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_id );
-
-							$taxonomies_to_add_to []= intval( $term_id );
+							if ( $action->new_term )
+							{
+								$term_id = intval( $action->new_term->term_id );
+								$taxonomies_to_add_to []= $term_id;
+								$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_id );
+							}
+							else
+								$this->debug( 'Taxonomies: Taxonomy %s was not created.', $parent_post_term->name );
 						}
 					}
 
@@ -586,7 +607,7 @@ trait broadcasting
 					$this->debug( 'Custom fields: Maybe copied attachment.' );
 					if ( $o->attachment_id !== false )
 					{
-						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
+						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post[ 'ID' ], $o->attachment_id );
 						update_post_meta( $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
 					}
 				}
@@ -595,10 +616,17 @@ trait broadcasting
 
 			// Sticky behaviour
 			$child_post_is_sticky = is_sticky( $bcd->new_post[ 'ID' ] );
+			$this->debug( 'Sticky status: %s', intval( $child_post_is_sticky ) );
 			if ( $bcd->post_is_sticky && ! $child_post_is_sticky )
+			{
+				$this->debug( 'Sticking post.' );
 				stick_post( $bcd->new_post[ 'ID' ] );
+			}
 			if ( ! $bcd->post_is_sticky && $child_post_is_sticky )
+			{
+				$this->debug( 'Unsticking post.' );
 				unstick_post( $bcd->new_post[ 'ID' ] );
+			}
 
 			if ( $bcd->link )
 			{
@@ -828,10 +856,6 @@ trait broadcasting
 
 		$bcd->taxonomies = $form->checkbox( 'taxonomies' )->get_post_value()
 			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) );
-
-		// Is this post sticky? This info is hidden in a blog option.
-		$stickies = get_option( 'sticky_posts' );
-		$bcd->post_is_sticky = in_array( $bcd->post->ID, $stickies );
 	}
 
 }

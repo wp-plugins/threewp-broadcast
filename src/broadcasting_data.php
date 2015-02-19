@@ -85,6 +85,18 @@ class broadcasting_data
 	public $meta_box_data = false;
 
 	/**
+		@brief		Was a new child created on this blog?
+		@details
+
+		This variable is reset to false upon switching child blogs.
+
+		If Broadcast created a new child on the blog, it will set this property to true.
+
+		@since		2015-01-20 14:10:09
+	**/
+	public $new_child_created = false;
+
+	/**
 		@brief		IN: The ID of the parent blog.
 		@var		$parent_blog_id
 		@since		20130927

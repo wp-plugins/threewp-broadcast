@@ -95,6 +95,18 @@ trait meta_boxes
 	{
 		$meta_box_data = $action->meta_box_data;	// Convenience.
 
+		// Add translation strings
+		$meta_box_data->html->put( 'broadcast_strings', '
+			<script type="text/javascript">
+				var broadcast_strings = {
+					hide_all : "' . $this->_( 'hide all' ) . '",
+					invert_selection : "' . $this->_( 'Invert selection' ) . '",
+					select_deselect_all : "' . $this->_( 'Select / deselect all' ) . '",
+					show_all : "' . $this->_( 'show all' ) . '"
+				};
+			</script>
+		' );
+
 		if ( $this->debugging() )
 			$meta_box_data->html->put( 'debug', $this->p_( 'Broadcast is in debug mode. More information than usual will be shown.' ) );
 
@@ -171,17 +183,6 @@ trait meta_boxes
 			$meta_box_data->html->put( 'taxonomies', '' );
 			$meta_box_data->convert_form_input_later( 'taxonomies' );
 		}
-
-		$meta_box_data->html->put( 'broadcast_strings', '
-			<script type="text/javascript">
-				var broadcast_strings = {
-					hide_all : "' . $this->_( 'hide all' ) . '",
-					invert_selection : "' . $this->_( 'Invert selection' ) . '",
-					select_deselect_all : "' . $this->_( 'Select / deselect all' ) . '",
-					show_all : "' . $this->_( 'show all' ) . '"
-				};
-			</script>
-		' );
 
 		$filter = new actions\get_user_writable_blogs( $this->user_id() );
 		$blogs = $filter->execute()->blogs;
