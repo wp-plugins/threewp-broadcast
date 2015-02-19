@@ -33,6 +33,10 @@ trait terms_and_taxonomies
 					'hide_empty' => false,
 				] );
 
+			// No terms = empty = false.
+			if ( ! $taxonomy_terms )
+				$taxonomy_terms = [];
+
 			$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = $this->array_rekey( $taxonomy_terms, 'term_id' );
 
 			// Parent blog taxonomy terms are used for creating missing target term ancestors

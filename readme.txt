@@ -217,6 +217,9 @@ APC works flawlessly.
 
 == Changelog ==
 
+= 17.1 20150219 =
+* Fix: No more warning when there are no terms in a taxonomy.
+
 = 17 20150216 =
 * Code: broadcasting_data now supplies new_child_created property.
 * Fix: Load translation javascript strings earlier. Credit Tobias.

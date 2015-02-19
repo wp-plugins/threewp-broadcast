@@ -24,17 +24,17 @@ trait attachments
 			return;
 
 		$attachment_data = $action->attachment_data;
+		$source = $attachment_data->filename_path;
 
-		if ( ! file_exists( $attachment_data->filename_path ) )
+		if ( ! file_exists( $source ) )
 		{
-			$this->debug( 'Copy attachment: File "%s" does not exist!', $attachment_data->filename_path );
+			$this->debug( 'Copy attachment: File "%s" does not exist!', $source );
 			return false;
 		}
 
 		// Copy the file to the blog's upload directory
 		$upload_dir = wp_upload_dir();
 
-		$source = $attachment_data->filename_path;
 		$target = $upload_dir[ 'path' ] . '/' . $attachment_data->filename_base;
 		$this->debug( 'Copy attachment: Copying from %s to %s', $source, $target );
 		copy( $source, $target );
