@@ -19,7 +19,7 @@ trait post_actions
 	**/
 	public function add_post_row_actions_and_hooks()
 	{
-		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
+		if ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_link' ) ) )
 		{
 			if (  $this->display_broadcast_columns )
 			{
@@ -52,16 +52,16 @@ trait post_actions
 	{
 		$action = new actions\get_post_bulk_actions();
 		$action->execute();
-		echo $action->get_js();
+		$this->add_admin_script( 'post_bulk_actions', $action->get_js() );
 
-		echo '
+		$this->add_admin_script( 'post_bulk_actions_broadcast_strings', '
 			<script type="text/javascript">
 				var broadcast_strings = {
 					broadcast : "' . $this->_( 'Broadcast' ) . '",
 					post_actions : "' . $this->_( 'Post actions' ) . '"
 				};
 			</script>
-		';
+		' );
 
 		// Enqueue the popup js.
 		wp_enqueue_script( 'magnific-popup', $this->paths[ 'url' ] . '/js/jquery.magnific-popup.min.js', '', $this->plugin_version );
@@ -110,6 +110,7 @@ trait post_actions
 		{
 			$a = new post_action;
 			$a->set_action( $slug );
+			$a->set_id( $slug );
 			$a->set_name( $name );
 			$action->add( $a );
 		}
@@ -134,6 +135,7 @@ trait post_actions
 			$a = new wp_ajax;
 			$a->set_ajax_action( $ajax_action );
 			$a->set_data( 'subaction', $subaction );
+			$a->set_id( 'bulk_' . $subaction );
 			$a->set_name( $name );
 			$a->set_nonce( $ajax_action . $subaction );
 			$action->add( $a );

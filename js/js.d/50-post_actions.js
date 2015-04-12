@@ -24,7 +24,7 @@
                 $this.click( function()
                 {
                 	// Get the post ID.
-                	$tr = $this.parentsUntil( 'tr.level-0' ).parent();
+                	$tr = $this.parentsUntil( 'tbody#the-list' ).last();
                 	var id = $tr.prop( 'id' ).replace( 'post-', '' );
 
                 	$this.$popup = broadcast_popup({

@@ -1,17 +1,17 @@
 <?php
 /*
 Author:			edward_plainview
-Author Email:	edward@plainview.se
-Author URI:		http://www.plainview.se
+Author Email:	edward@plainviewplugins.com
+Author URI:		http://plainviewplugins.com
 Description:	Broadcast / multipost a post, with attachments, custom fields, tags and other taxonomies to other blogs in the network.
 Plugin Name:	ThreeWP Broadcast
-Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		13
+Plugin URI:		http://plainviewplugins.com/threewp-broadcast/
+Version:		18
 */
 
-DEFINE( 'THREEWP_BROADCAST_VERSION', 13 );
+DEFINE( 'THREEWP_BROADCAST_VERSION', 18 );
 
-require_once( 'vendor/autoload.php' );
+require_once( __DIR__ . '/vendor/autoload.php' );
 
 /**
 	@brief		Return the instance of ThreeWP Broadcast.
