@@ -89,6 +89,7 @@ Available in the following languages:
 * Italian
 * French
 * Romanian, Web Geek Sciense <a href="http://webhostinggeeks.com/">Web Hosting Geeks</a>
+* Serbian, Borisa Djuraskovic at <a href="http://www.webhostinghub.com">www.webhostinghub.com</a>
 * Spanish
 * Swedish
 
@@ -216,6 +217,20 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 APC works flawlessly.
 
 == Changelog ==
+
+= 18 20150412 =
+* New: Multiple roles can now be selected. Check that your role settings are correct after upgrading.
+* Serbian translation. Credit Borisa Djuraskovic at www.webhostinghub.com.
+* Fix: Recreate child posts that have been deleted but not unlinked. This is a workaround for a rare condition.
+* Fix: Broadcast data can be looked up up via blog+post ID, in addition to the row in the database. See the maintenance tab.
+* Fix: Do not show archived, deleted and spammed blogs in the meta box.
+* Fix: Better temp-directory handling when running maintenance checks.
+* Fix: Workaround for Yoast SEO data not being saved.
+* Fix: Removed mysqli warnings when creating UBS modifications and queue objects.
+* Code: Equivalent terms are saved during term syncing.
+* Premium Pack Plugin: Added "Blog Groups 2".
+* Premium Pack Plugin: Added "Protect Child Author".
+
 
 = 17.1 20150219 =
 * Fix: No more warning when there are no terms in a taxonomy.
@@ -656,6 +671,10 @@ Skipping version 13.
 * Initial public release
 
 == Upgrade Notice ==
+
+= 18 =
+
+* Check that your role settings are correct.
 
 = 2.2 =
 

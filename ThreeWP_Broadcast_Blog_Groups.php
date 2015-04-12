@@ -6,7 +6,7 @@ Author URI:		http://plainviewplugins.com
 Description:	Allows users to create blog groups to ease blog selection when broadcasting.
 Plugin Name:	ThreeWP Broadcast Blog Groups
 Plugin URI:		http://plainviewplugins.com/threewp-broadcast/
-Version:		17.1
+Version:		18
 */
 
 require_once( __DIR__ . '/vendor/autoload.php' );

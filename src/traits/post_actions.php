@@ -19,7 +19,7 @@ trait post_actions
 	**/
 	public function add_post_row_actions_and_hooks()
 	{
-		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
+		if ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_link' ) ) )
 		{
 			if (  $this->display_broadcast_columns )
 			{

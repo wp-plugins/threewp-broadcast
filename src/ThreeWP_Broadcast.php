@@ -208,6 +208,26 @@ class ThreeWP_Broadcast
 			$db_ver = 6;
 		}
 
+		if ( $db_ver < 7 )
+		{
+			foreach( [
+				'role_broadcast',
+				'role_link',
+				'role_broadcast_as_draft',
+				'role_broadcast_scheduled_posts',
+				'role_taxonomies',
+				'role_custom_fields',
+			] as $old_role_option )
+			{
+				$old_value = $this->get_site_option( $old_role_option );
+				if ( is_array( $old_value ) )
+					continue;
+				$new_value = static::convert_old_role( $old_value );
+				$this->update_site_option( $old_role_option, $new_value );
+			}
+			$db_ver = 7;
+		}
+
 		$this->update_site_option( 'database_version', $db_ver );
 	}
 
@@ -274,7 +294,7 @@ class ThreeWP_Broadcast
 		if ( $action->is_finished() )
 			return;
 
-		$blogs = get_blogs_of_user( $action->user_id, true );
+		$blogs = get_blogs_of_user( $action->user_id );
 		foreach( $blogs as $blog)
 		{
 			$blog = blog::make( $blog );
@@ -384,6 +404,25 @@ class ThreeWP_Broadcast
 	}
 
 	/**
+		@brief		Convert old role to array of roles.
+		@details	Used to convert 'editor' to [ 'editor', 'author', 'contribuor', 'subscriber' ], for example.
+		@since		2015-03-17 18:09:27
+	**/
+	public static function convert_old_role( $role )
+	{
+		$old_roles = [ 'super_admin', 'administrator', 'editor', 'author', 'contributor', 'subscriber' ];
+		foreach( $old_roles as $index => $old_role )
+		{
+			if ( $old_role != $role )
+				continue;
+			// The new roles are the rest of the array.
+			return array_slice( $old_roles, $index );
+		}
+		// Didn't find anything? Return the same role, but in an array.
+		return [ $role ];
+	}
+
+	/**
 		@brief		Creates the ID column in the broadcast data table.
 		@since		2014-04-20 20:19:45
 	**/
@@ -484,12 +523,27 @@ class ThreeWP_Broadcast
 	}
 
 	/**
+		@brief		Return the user's capabilities on this blog as an array.
+		@since		2015-03-17 18:56:30
+	**/
+	public static function get_user_capabilities()
+	{
+		global $wpdb;
+		$key = sprintf( '%scapabilities', $wpdb->prefix );
+		$r = get_user_meta( get_current_user_id(), $key, true );
+
+		if ( is_super_admin() )
+			$r[ 'super_admin' ] = true;
+
+		return $r;
+	}
+
+	/**
 		@brief		Insert hook into save post action.
 		@since		2015-02-10 20:38:22
 	**/
 	public function hook_save_post()
 	{
-		$this->debug( 'Hooking into save post.' );
 		$this->add_action( 'save_post', intval( $this->get_site_option( 'save_post_priority' ) ) );
 	}
 
@@ -578,13 +632,27 @@ class ThreeWP_Broadcast
 			'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 			'post_types' => 'post page',						// Custom post types which use broadcasting
 			'existing_attachments' => 'use',					// What to do with existing attachments: use, overwrite, randomize
-			'role_broadcast' => 'super_admin',					// Role required to use broadcast function
-			'role_link' => 'super_admin',						// Role required to use the link function
-			'role_broadcast_as_draft' => 'super_admin',			// Role required to broadcast posts as templates
-			'role_broadcast_scheduled_posts' => 'super_admin',	// Role required to broadcast scheduled, future posts
-			'role_taxonomies' => 'super_admin',					// Role required to broadcast the taxonomies
-			'role_custom_fields' => 'super_admin',				// Role required to broadcast the custom fields
+			'role_broadcast' => [ 'super_admin' ],					// Role required to use broadcast function
+			'role_link' => [ 'super_admin' ],						// Role required to use the link function
+			'role_broadcast_as_draft' => [ 'super_admin' ],			// Role required to broadcast posts as templates
+			'role_broadcast_scheduled_posts' => [ 'super_admin' ],	// Role required to broadcast scheduled, future posts
+			'role_taxonomies' => [ 'super_admin' ],					// Role required to broadcast the taxonomies
+			'role_custom_fields' => [ 'super_admin' ],				// Role required to broadcast the custom fields
 		], parent::site_options() );
+	}
+
+	/**
+		@brief		Does the user have any of these roles?
+		@since		2015-03-17 18:57:33
+	**/
+	public static function user_has_roles( $roles )
+	{
+		if ( ! is_array( $roles ) )
+			$roles = [ $roles ];
+		$user_roles = static::get_user_capabilities();
+		$user_roles = array_keys ( $user_roles );
+		$intersect = array_intersect( $user_roles, $roles );
+		return count( $intersect ) > 0;
 	}
 
 	/**

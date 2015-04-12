@@ -32,7 +32,7 @@ trait meta_boxes
 
 		// No decision yet. Decide.
 		$this->display_broadcast_meta_box |= is_super_admin();
-		$this->display_broadcast_meta_box |= $this->role_at_least( $this->get_site_option( 'role_broadcast' ) );
+		$this->display_broadcast_meta_box |= static::user_has_roles( $this->get_site_option( 'role_broadcast' ) );
 
 		// No access to any other blogs = no point in displaying it.
 		$filter = new actions\get_user_writable_blogs( $this->user_id() );
@@ -144,12 +144,12 @@ trait meta_boxes
 		// $post_type_supports_custom_fields = post_type_supports( $post_type, 'custom-fields' );
 		$post_type_supports_custom_fields = true;
 
-		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
+		if ( is_super_admin() OR static::user_has_roles( $this->get_site_option( 'role_link' ) ) )
 		{
-			// Check the link box is the post has been published and has children OR it isn't published yet.
+			// Check the link box if the post has been published and has children OR it isn't published yet.
 			$linked = (
-				( $published && $meta_box_data->broadcast_data->has_linked_children() )
-				||
+				( $published AND $meta_box_data->broadcast_data->has_linked_children() )
+				OR
 				! $published
 			);
 			$link_input = $form->checkbox( 'link' )
@@ -161,9 +161,9 @@ trait meta_boxes
 		}
 
 		if (
-			( $post_type_supports_custom_fields || $post_type_supports_thumbnails )
-			&&
-			( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) )
+			( $post_type_supports_custom_fields OR $post_type_supports_thumbnails )
+			AND
+			( is_super_admin() OR static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) )
 		)
 		{
 			$custom_fields_input = $form->checkbox( 'custom_fields' )
@@ -174,7 +174,7 @@ trait meta_boxes
 			$meta_box_data->convert_form_input_later( 'custom_fields' );
 		}
 
-		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) )
+		if ( is_super_admin() OR static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) )
 		{
 			$taxonomies_input = $form->checkbox( 'taxonomies' )
 				->checked( isset( $meta_box_data->last_used_settings[ 'taxonomies' ] ) )
@@ -245,11 +245,11 @@ trait meta_boxes
 				<li>High enough role to broadcast taxonomies: %s</li>
 				<li>Blogs available to user: %s</li>
 				</ul>',
-					( $this->role_at_least( $this->get_site_option( 'role_link' ) ) ? 'yes' : 'no' ),
+					( static::user_has_roles( $this->get_site_option( 'role_link' ) ) ? 'yes' : 'no' ),
 					( $post_type_supports_custom_fields ? 'yes' : 'no' ),
 					( $post_type_supports_thumbnails ? 'yes' : 'no' ),
-					( $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) ? 'yes' : 'no' ),
-					( $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) ? 'yes' : 'no' ),
+					( static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) ? 'yes' : 'no' ),
+					( static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) ? 'yes' : 'no' ),
 					count( $blogs )
 				)
 			);

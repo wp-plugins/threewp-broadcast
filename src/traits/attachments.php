@@ -11,7 +11,7 @@ trait attachments
 		@details
 
 		The $o object is an extension of Broadcasting_Data and must contain:
-		- @i attachment_data An attachment_data object containing the attachmend info.
+		- @i attachment_data An attachment_data object containing the attachment info.
 
 		@param		object		$o		Options.
 		@return		@i int The attachment's new post ID.

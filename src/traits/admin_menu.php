@@ -176,40 +176,49 @@ This can be increased by adding the following to your wp-config.php:
 		$fs = $form->fieldset( 'roles' );
 		$fs->legend->label_( 'Roles' );
 
+		$fs->markup( 'm_roles' )
+			->p( 'Multiple roles may be selected. Note that only the roles on this blog can be shown.' );
+
 		$role_broadcast = $fs->select( 'role_broadcast' )
 			->value( $this->get_site_option( 'role_broadcast' ) )
 			->description_( 'The broadcast access role is the user role required to use the broadcast function at all.' )
 			->label_( 'Broadcast' )
+			->multiple()
 			->options( $roles );
 
 		$role_link = $fs->select( 'role_link' )
 			->value( $this->get_site_option( 'role_link' ) )
 			->description_( 'When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated.' )
 			->label_( 'Link to child posts' )
+			->multiple()
 			->options( $roles );
 
 		$role_custom_fields = $fs->select( 'role_custom_fields' )
 			->value( $this->get_site_option( 'role_custom_fields' ) )
 			->description_( 'Which role is needed to allow custom field broadcasting?' )
 			->label_( 'Broadcast custom fields' )
+			->multiple()
 			->options( $roles );
 
 		$role_taxonomies = $fs->select( 'role_taxonomies' )
 			->value( $this->get_site_option( 'role_taxonomies' ) )
 			->description_( 'Which role is needed to allow taxonomy broadcasting? The taxonomies must have the same slug on all blogs.' )
 			->label_( 'Broadcast taxonomies' )
+			->multiple()
 			->options( $roles );
 
 		$role_broadcast_as_draft = $fs->select( 'role_broadcast_as_draft' )
 			->value( $this->get_site_option( 'role_broadcast_as_draft' ) )
 			->description_( 'Which role is needed to broadcast drafts?' )
 			->label_( 'Broadcast as draft' )
+			->multiple()
 			->options( $roles );
 
 		$role_broadcast_scheduled_posts = $fs->select( 'role_broadcast_scheduled_posts' )
 			->value( $this->get_site_option( 'role_broadcast_scheduled_posts' ) )
 			->description_( 'Which role is needed to broadcast scheduled (future) posts?' )
 			->label_( 'Broadcast scheduled posts' )
+			->multiple()
 			->options( $roles );
 
 		$fs = $form->fieldset( 'seo' );

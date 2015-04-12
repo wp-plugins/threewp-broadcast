@@ -155,6 +155,10 @@ trait terms_and_taxonomies
 	/**
 		@brief		Syncs the terms of a taxonomy from the parent blog in the BCD to the current blog.
 		@details	If $bcd->add_new_taxonomies is set, new taxonomies will be created, else they are ignored.
+
+		Upon syncing, the broadcasting data will contain an array of the equivalent source terms <-> child terms in:
+		$bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ][ $blog_id ]
+
 		@param		broadcasting_data		$bcd			The broadcasting data.
 		@param		string					$taxonomy		The taxonomy to sync.
 		@since		20131004
@@ -162,6 +166,9 @@ trait terms_and_taxonomies
 	public function sync_terms( $bcd, $taxonomy )
 	{
 		$source_terms = $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ];
+
+		if ( ! isset( $bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ] ) )
+			$bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ] = [];
 
 		// Select only those terms that exist in the blog. We select them by slugs.
 		$needed_slugs = [];
@@ -266,6 +273,10 @@ trait terms_and_taxonomies
 			$action->execute();
 			$refresh_cache |= $action->updated;
 		}
+
+		// Save the equivalent sources for later use.
+		$blog_id = get_current_blog_id();
+		$bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ][ $blog_id ] = $found_sources;
 
 		// wp_update_category alone won't work. The "cache" needs to be cleared.
 		// see: http://wordpress.org/support/topic/category_children-how-to-recalculate?replies=4

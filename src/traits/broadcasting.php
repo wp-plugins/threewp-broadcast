@@ -90,6 +90,13 @@ trait broadcasting
 				$bcd->custom_fields = (object)[];
 
 			$this->debug( 'Custom fields: Will broadcast custom fields.' );
+
+			if ( isset( $GLOBALS[ 'wpseo_metabox' ] ) )
+			{
+				$this->debug( 'Yoast SEO detected. Activating workaround. Asking metabox to save its settings.' );
+				$GLOBALS[ 'wpseo_metabox' ]->save_postdata( $bcd->post->ID );
+			}
+
 			$bcd->post_custom_fields = get_post_custom( $bcd->post->ID );
 
 			$this->debug( 'The custom fields are <pre>%s</pre>', $bcd->post_custom_fields );
@@ -292,6 +299,11 @@ trait broadcasting
 						wp_update_post( $temp_post_data );
 						$bcd->new_post[ 'ID' ] = $child_post_id;
 						$need_to_insert_post = false;
+					}
+					else
+					{
+						$this->debug( 'Warning: The child post has disappeared. Recreating.' );
+						$need_to_insert_post = true;
 					}
 				}
 
@@ -728,7 +740,7 @@ trait broadcasting
 			return;
 
 		// No permission.
-		if ( ! $this->role_at_least( $this->get_site_option( 'role_broadcast' ) ) )
+		if ( ! static::user_has_roles( $this->get_site_option( 'role_broadcast' ) ) )
 		{
 			$this->debug( 'User does not have permission to use Broadcast.' );
 			return;
@@ -812,10 +824,10 @@ trait broadcasting
 		$bcd = $action->broadcasting_data;
 		$allowed_post_status = [ 'pending', 'private', 'publish' ];
 
-		if ( $bcd->post->post_status == 'draft' && $this->role_at_least( $this->get_site_option( 'role_broadcast_as_draft' ) ) )
+		if ( $bcd->post->post_status == 'draft' && static::user_has_roles( $this->get_site_option( 'role_broadcast_as_draft' ) ) )
 			$allowed_post_status[] = 'draft';
 
-		if ( $bcd->post->post_status == 'future' && $this->role_at_least( $this->get_site_option( 'role_broadcast_scheduled_posts' ) ) )
+		if ( $bcd->post->post_status == 'future' && static::user_has_roles( $this->get_site_option( 'role_broadcast_scheduled_posts' ) ) )
 			$allowed_post_status[] = 'future';
 
 		if ( ! in_array( $bcd->post->post_status, $allowed_post_status ) )
@@ -847,15 +859,15 @@ trait broadcasting
 		$bcd->post_type_is_hierarchical = $bcd->post_type_object->hierarchical;
 
 		$bcd->custom_fields = $form->checkbox( 'custom_fields' )->get_post_value()
-			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) );
+			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) );
 		if ( $bcd->custom_fields )
 			$bcd->custom_fields = (object)[];
 
 		$bcd->link = $form->checkbox( 'link' )->get_post_value()
-			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) );
+			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_link' ) ) );
 
 		$bcd->taxonomies = $form->checkbox( 'taxonomies' )->get_post_value()
-			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) );
+			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) );
 	}
 
 }

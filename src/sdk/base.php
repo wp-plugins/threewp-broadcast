@@ -13,6 +13,7 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20150409		Do not clone the Wordpress wpdb upon insert. Let's hope that bug is fixed...
 	- 20150209		Collection->collection() added.
 	- 20150208		Wordpress udpater: Don't freeze if the server cannot be reached.
 	- 20150204		Wordpress widefat table has hover effect on rows.
@@ -151,7 +152,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20150209;
+	protected $sdk_version = 20150409;
 
 	/**
 		@brief		Constructor.
