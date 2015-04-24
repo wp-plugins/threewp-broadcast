@@ -13,6 +13,7 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20150419		Added textarea_to_array function.
 	- 20150409		Do not clone the Wordpress wpdb upon insert. Let's hope that bug is fixed...
 	- 20150209		Collection->collection() added.
 	- 20150208		Wordpress udpater: Don't freeze if the server cannot be reached.
@@ -152,7 +153,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20150409;
+	protected $sdk_version = 20150419;
 
 	/**
 		@brief		Constructor.
@@ -801,6 +802,19 @@ class base
 			$temp_dir = sys_get_temp_dir();
 
 		return tempnam( $temp_dir, $prefix );
+	}
+
+	/**
+		@brief		Explode a text area to an array, cleaning the
+		@details	Used to clean and filter textareas.
+		@since		2015-04-15 22:29:14
+	**/
+	public static function textarea_to_array( $string )
+	{
+		$s = str_replace( "\r", '', $string );
+		$lines = explode( "\n", $s );
+		$lines = array_filter( $lines );
+		return $lines;
 	}
 
 	/**

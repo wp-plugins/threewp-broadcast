@@ -647,6 +647,9 @@ class ThreeWP_Broadcast
 	**/
 	public static function user_has_roles( $roles )
 	{
+		if ( is_super_admin() )
+			return true;
+
 		if ( ! is_array( $roles ) )
 			$roles = [ $roles ];
 		$user_roles = static::get_user_capabilities();

@@ -177,7 +177,7 @@ This can be increased by adding the following to your wp-config.php:
 		$fs->legend->label_( 'Roles' );
 
 		$fs->markup( 'm_roles' )
-			->p( 'Multiple roles may be selected. Note that only the roles on this blog can be shown.' );
+			->p( 'Multiple roles may be selected. Each role must be individually selected, since there is no automatic hierarchy where, for example, authors automatically include the editor role. Note that only the roles on this blog can be shown.' );
 
 		$role_broadcast = $fs->select( 'role_broadcast' )
 			->value( $this->get_site_option( 'role_broadcast' ) )

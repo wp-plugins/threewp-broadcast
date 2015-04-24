@@ -3,8 +3,8 @@ Contributors: edward_plainview
 License: GPLv3
 Requires at least: 3.3.1
 Stable tag: trunk
-Tags: broadcast, multipost, sharing, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar, menu, copy menu, duplicate menu
-Tested up to: 4.1
+Tags: broadcast, multipost, sharing, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar, menu, copy menu, duplicate menu, transmit, post, transmission, multisite, queue, parent, children
+Tested up to: 4.2
 
 Network content sharing by multiposting between blogs for PHP v5.4+. Posts can be linked to each other and updated automatically.
 
@@ -217,6 +217,10 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 APC works flawlessly.
 
 == Changelog ==
+
+= 18.1 20150424 =
+* Fix: Network admin can do anything network admin wants.
+* Bump Wordpress version to 4.2
 
 = 18 20150412 =
 * New: Multiple roles can now be selected. Check that your role settings are correct after upgrading.
