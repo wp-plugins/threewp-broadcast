@@ -13,7 +13,22 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
-	- 20141201		Add scripts/sdk_rename.sh
+	- 20150419		Added textarea_to_array function.
+	- 20150409		Do not clone the Wordpress wpdb upon insert. Let's hope that bug is fixed...
+	- 20150209		Collection->collection() added.
+	- 20150208		Wordpress udpater: Don't freeze if the server cannot be reached.
+	- 20150204		Wordpress widefat table has hover effect on rows.
+	- 20150202		Wrap the Wordpress input table fieldsets in a div.
+	- 20150202		Wordpress form table fieldset legends are displayed as plain h3.
+	- 20150116		array_rekey works with objects as values.
+	- 20150113		Wordpress forms should use the current scheme.
+	- 20150112		Wordpress debug flushes contents only if available. Thanks Flynsarmy.
+	- 20141228		Return false if no instance is available.
+	- 20141205		Plugin pack must call internal plugin methods.
+	- 20141204		Added scripts/sdk_restore.sh. Updated rename and update scripts.
+	- 20141203		Removed SDK versioning from Wordpress base.
+	- 20141203		Added scripts/sdk_update.sh
+	- 20141201		Added scripts/sdk_rename.sh
 	- 20141116		Form2: Fix radios input.
 	- 20141113		Wordpress: Plugin pack uses a get_plugin_classes action.
 	- 20141109		Wordpress: New EDD updater version.
@@ -138,7 +153,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20141201;
+	protected $sdk_version = 20150419;
 
 	/**
 		@brief		Constructor.
@@ -227,20 +242,19 @@ class base
 	}
 
 	/**
-		@brief		Make a value a key.
-		@details	Given an array of arrays, take the key from the subarray and makes it the key of the main array.
-		@param		$array		Array to rearrange.
-		@param		$key		Which if the subarray keys to make the key in the main array.
+		@brief		Rekey an array with the specified key/property of the array object.
+		@param		$array		Array to rekey.
+		@param		$key		Object key or array property to use as the new key.
 		@return		array		Rearranged array.
 		@since		20130416
 	**/
 	public static function array_rekey( $array, $key )
 	{
-		$r = array();
+		$r = [];
 		foreach( $array as $value )
 		{
-			$value = (array) $value;
-			$r[ $value[ $key ] ] = $value;
+			$object = (object)$value;
+			$r[ $object->$key ] = $value;
 		}
 		return $r;
 	}
@@ -485,6 +499,8 @@ class base
 	public static function instance()
 	{
 		$classname = get_called_class();
+		if ( ! isset( self::$instance[ $classname ] ) )
+			return false;
 		return self::$instance[ $classname ];
 	}
 
@@ -786,6 +802,19 @@ class base
 			$temp_dir = sys_get_temp_dir();
 
 		return tempnam( $temp_dir, $prefix );
+	}
+
+	/**
+		@brief		Explode a text area to an array, cleaning the
+		@details	Used to clean and filter textareas.
+		@since		2015-04-15 22:29:14
+	**/
+	public static function textarea_to_array( $string )
+	{
+		$s = str_replace( "\r", '', $string );
+		$lines = explode( "\n", $s );
+		$lines = array_filter( $lines );
+		return $lines;
 	}
 
 	/**
