@@ -257,11 +257,11 @@ trait broadcasting
 			$this->debug( 'Switched to blog %s (%s)', get_bloginfo( 'name' ), $bcd->current_child_blog_id );
 
 			// Create new post data from the original stuff.
-			$bcd->new_post = (array) $bcd->post;
+			$bcd->new_post = clone( $bcd->post );
 			$bcd->new_child_created = false;
 
 			foreach( [ 'comment_count', 'guid', 'ID', 'post_parent' ] as $key )
-				unset( $bcd->new_post[ $key ] );
+				unset( $bcd->new_post->$key );
 
 			$action = new actions\broadcasting_after_switch_to_blog;
 			$action->broadcasting_data = $bcd;
@@ -279,7 +279,7 @@ trait broadcasting
 				if ( $parent_broadcast_data->has_linked_child_on_this_blog() )
 				{
 					$linked_parent = $parent_broadcast_data->get_linked_child_on_this_blog();
-					$bcd->new_post[ 'post_parent' ] = $linked_parent;
+					$bcd->new_post->post_parent = $linked_parent;
 				}
 
 			// Insert new? Or update? Depends on whether the parent post was linked before or is newly linked?
@@ -295,9 +295,9 @@ trait broadcasting
 					if ( $child_post !== null )
 					{
 						$temp_post_data = $bcd->new_post;
-						$temp_post_data[ 'ID' ] = $child_post_id;
+						$temp_post_data->ID = $child_post_id;
 						wp_update_post( $temp_post_data );
-						$bcd->new_post[ 'ID' ] = $child_post_id;
+						$bcd->new_post->ID = $child_post_id;
 						$need_to_insert_post = false;
 					}
 					else
@@ -310,8 +310,8 @@ trait broadcasting
 			if ( $need_to_insert_post )
 			{
 				$this->debug( 'Creating a new post.' );
-				$temp_post_data = $bcd->new_post;
-				unset( $temp_post_data[ 'ID' ] );
+				$temp_post_data = clone( $bcd->new_post );
+				unset( $temp_post_data->ID );
 
 				$result = wp_insert_post( $temp_post_data, true );
 
@@ -322,7 +322,7 @@ trait broadcasting
 					continue;
 				}
 				// Yes we did.
-				$bcd->new_post[ 'ID' ] = $result;
+				$bcd->new_post->ID = $result;
 
 				$bcd->new_child_created = true;
 
@@ -331,12 +331,12 @@ trait broadcasting
 				if ( $bcd->link )
 				{
 					$this->debug( 'Adding link to child.' );
-					$bcd->broadcast_data->add_linked_child( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ] );
+					$bcd->broadcast_data->add_linked_child( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
 				}
 			}
 
-			$bcd->equivalent_posts()->set( $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post()->ID );
-			$this->debug( 'Equivalent of %s/%s is %s/%s', $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post()->ID  );
+			$bcd->equivalent_posts()->set( $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
+			$this->debug( 'Equivalent of %s/%s is %s/%s', $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post( 'ID' )  );
 
 			if ( $bcd->taxonomies )
 			{
@@ -347,7 +347,7 @@ trait broadcasting
 					// If we're updating a linked post, remove all the taxonomies and start from the top.
 					if ( $bcd->link )
 						if ( $bcd->broadcast_data->has_linked_child_on_this_blog() )
-							wp_set_object_terms( $bcd->new_post[ 'ID' ], [], $parent_post_taxonomy );
+							wp_set_object_terms( $bcd->new_post( 'ID' ), [], $parent_post_taxonomy );
 
 					// Skip this iteration if there are no terms
 					if ( ! is_array( $parent_post_terms ) )
@@ -419,7 +419,7 @@ trait broadcasting
 						delete_option( $parent_post_taxonomy . '_children' );
 						clean_term_cache( '', $parent_post_taxonomy );
 						$this->debug( 'Setting taxonomies for %s: %s', $parent_post_taxonomy, $taxonomies_to_add_to );
-						wp_set_object_terms( $bcd->new_post[ 'ID' ], $taxonomies_to_add_to, $parent_post_taxonomy );
+						wp_set_object_terms( $bcd->new_post( 'ID' ), $taxonomies_to_add_to, $parent_post_taxonomy );
 					}
 				}
 				$this->debug( 'Taxonomies: Finished.' );
@@ -428,7 +428,7 @@ trait broadcasting
 			// Maybe remove the current attachments.
 			if ( $bcd->delete_attachments )
 			{
-				$attachments_to_remove = get_children( 'post_parent='.$bcd->new_post[ 'ID' ] . '&post_type=attachment' );
+				$attachments_to_remove = get_children( 'post_parent='.$bcd->new_post( 'ID' ) . '&post_type=attachment' );
 				$this->debug( '%s attachments to remove.', count( $attachments_to_remove ) );
 				foreach ( $attachments_to_remove as $attachment_to_remove )
 				{
@@ -452,8 +452,8 @@ trait broadcasting
 				$this->debug( "The attachment's post parent is %s.", $o->attachment_data->post->post_parent );
 				if ( $o->attachment_data->is_attached_to_parent() )
 				{
-					$this->debug( 'Assigning new post parent ID (%s) to attachment %s.', $bcd->new_post()->ID, $o->attachment_data->post->ID );
-					$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
+					$this->debug( 'Assigning new post parent ID (%s) to attachment %s.', $bcd->new_post( 'ID' ), $o->attachment_data->post->ID );
+					$o->attachment_data->post->post_parent = $bcd->new_post( 'ID' );
 				}
 				else
 				{
@@ -544,11 +544,11 @@ trait broadcasting
 			{
 				$this->debug( 'Custom fields: Started.' );
 				// Remove all old custom fields.
-				$old_custom_fields = get_post_custom( $bcd->new_post[ 'ID' ] );
+				$bcd->new_post_old_custom_fields = get_post_custom( $bcd->new_post( 'ID' ) );
 
 				$protected_field = [];
 
-				foreach( $old_custom_fields as $key => $value )
+				foreach( $bcd->new_post_old_custom_fields as $key => $value )
 				{
 					// Do we delete this custom field?
 					$delete = true;
@@ -556,7 +556,7 @@ trait broadcasting
 					// For the protectlist to work the custom field has to already exist on the child.
 					if ( in_array( $key, $bcd->custom_fields->protectlist ) )
 					{
-						if ( ! isset( $old_custom_fields[ $key ] ) )
+						if ( ! isset( $bcd->new_post_old_custom_fields[ $key ] ) )
 							continue;
 						if ( ! isset( $bcd->post_custom_fields[ $key ] ) )
 							continue;
@@ -567,7 +567,7 @@ trait broadcasting
 					if ( $delete )
 					{
 						$this->debug( 'Custom fields: Deleting custom field %s.', $key );
-						delete_post_meta( $bcd->new_post[ 'ID' ], $key );
+						delete_post_meta( $bcd->new_post( 'ID' ), $key );
 					}
 					else
 						$this->debug( 'Custom fields: Keeping custom field %s.', $key );
@@ -585,14 +585,14 @@ trait broadcasting
 						{
 							$single_meta_value = maybe_unserialize( $single_meta_value );
 							$this->debug( 'Custom fields: Adding array value %s', $meta_key );
-							add_post_meta( $bcd->new_post[ 'ID' ], $meta_key, $single_meta_value );
+							add_post_meta( $bcd->new_post( 'ID' ), $meta_key, $single_meta_value );
 						}
 					}
 					else
 					{
 						$meta_value = maybe_unserialize( $meta_value );
 						$this->debug( 'Custom fields: Adding value %s', $meta_key );
-						add_post_meta( $bcd->new_post[ 'ID' ], $meta_key, $meta_value );
+						add_post_meta( $bcd->new_post( 'ID' ), $meta_key, $meta_value );
 					}
 				}
 
@@ -605,8 +605,8 @@ trait broadcasting
 
 					if ( $o->attachment_data->is_attached_to_parent() )
 					{
-						$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post()->ID, $o->attachment_data->post->ID );
-						$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
+						$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post( 'ID' ), $o->attachment_data->post->ID );
+						$o->attachment_data->post->post_parent = $bcd->new_post( 'ID' );
 					}
 					else
 					{
@@ -619,33 +619,33 @@ trait broadcasting
 					$this->debug( 'Custom fields: Maybe copied attachment.' );
 					if ( $o->attachment_id !== false )
 					{
-						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post[ 'ID' ], $o->attachment_id );
-						update_post_meta( $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
+						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post( 'ID' ), $o->attachment_id );
+						update_post_meta( $bcd->new_post( 'ID' ), '_thumbnail_id', $o->attachment_id );
 					}
 				}
 				$this->debug( 'Custom fields: Finished.' );
 			}
 
 			// Sticky behaviour
-			$child_post_is_sticky = is_sticky( $bcd->new_post[ 'ID' ] );
+			$child_post_is_sticky = is_sticky( $bcd->new_post( 'ID' ) );
 			$this->debug( 'Sticky status: %s', intval( $child_post_is_sticky ) );
 			if ( $bcd->post_is_sticky && ! $child_post_is_sticky )
 			{
 				$this->debug( 'Sticking post.' );
-				stick_post( $bcd->new_post[ 'ID' ] );
+				stick_post( $bcd->new_post( 'ID' ) );
 			}
 			if ( ! $bcd->post_is_sticky && $child_post_is_sticky )
 			{
 				$this->debug( 'Unsticking post.' );
-				unstick_post( $bcd->new_post[ 'ID' ] );
+				unstick_post( $bcd->new_post( 'ID' ) );
 			}
 
 			if ( $bcd->link )
 			{
 				$this->debug( 'Saving broadcast data of child.' );
-				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ] );
+				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
 				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
-				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ], $new_post_broadcast_data );
+				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ), $new_post_broadcast_data );
 			}
 
 			$action = new actions\broadcasting_before_restore_current_blog;

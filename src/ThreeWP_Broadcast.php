@@ -102,6 +102,7 @@ class ThreeWP_Broadcast
 		$this->add_filter( 'threewp_broadcast_admin_menu', 'add_post_row_actions_and_hooks', 100 );
 		$this->add_filter( 'threewp_broadcast_broadcast_post' );
 		$this->add_action( 'threewp_broadcast_copy_attachment', 100 );
+		$this->add_action( 'threewp_broadcast_each_linked_post' );
 		$this->add_action( 'threewp_broadcast_get_post_actions' );
 		$this->add_action( 'threewp_broadcast_get_post_bulk_actions' );
 		$this->add_action( 'threewp_broadcast_get_user_writable_blogs', 11 );		// Allow other plugins to do this first.
@@ -283,6 +284,68 @@ class ThreeWP_Broadcast
 
 		unset( $this->_is_getting_permalink );
 		return $permalink;
+	}
+
+	/**
+		@brief		Execute callbacks on all posts linked to this specific post.
+		@since		2015-05-02 21:33:55
+	**/
+	public function threewp_broadcast_each_linked_post( $action )
+	{
+		$prefix = 'Each Linked Post: ';
+
+		// First, we need the broadcast data of the post.
+		if ( $action->blog_id === null )
+			$action->blog_id = get_current_blog_id();
+
+		$this->debug( $prefix . 'Loading broadcast data of post %s on blog %s.', $action->post_id, $action->blog_id );
+
+		$broadcast_data = $this->get_post_broadcast_data( $action->blog_id, $action->post_id );
+
+		// Does this post have a parent?
+		$parent = $broadcast_data->get_linked_parent();
+		if ( $parent !== false )
+		{
+			if ( $action->on_parent )
+			{
+				$this->debug( $prefix . 'Executing callbacks on parent post %s on blog %s.', $parent[ 'post_id' ], $parent[ 'blog_id' ] );
+				switch_to_blog( $parent[ 'blog_id' ] );
+				$o = (object)[];
+				$o->post_id = $parent[ 'post_id' ];
+				$o->post = get_post( $o->post_id );
+				$this->debug( $prefix . '' );
+				foreach( $action->callbacks as $callback )
+					$callback( $o );
+				restore_current_blog();
+			}
+			else
+				$this->debug( $prefix . 'Not executing on parent.' );
+			$broadcast_data = $this->get_post_broadcast_data( $parent[ 'blog_id' ], $parent[ 'post_id' ] );
+		}
+		else
+			$this->debug( $prefix . 'No linked parent.' );
+
+		if ( $action->on_children )
+		{
+			$this->debug( $prefix . 'Executing on children.' );
+			foreach( $broadcast_data->get_linked_children() as $blog_id => $post_id )
+			{
+				// Do not bother eaching this child if we started here.
+				if ( $blog_id == $action->blog_id )
+					continue;
+				switch_to_blog( $blog_id );
+				$o = (object)[];
+				$o->post_id = $post_id;
+				$o->post = get_post( $post_id );
+				$this->debug( $prefix . 'Executing callbacks on child post %s on blog %s.', $post_id, $blog_id );
+				foreach( $action->callbacks as $callback )
+					$callback( $o );
+				restore_current_blog();
+			}
+		}
+		else
+			$this->debug( $prefix . 'Not executing on children.' );
+		$this->debug( $prefix . 'Finished.' );
 	}
 
 	/**

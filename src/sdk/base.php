@@ -13,6 +13,7 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20150424		Form2: container->input() returns container inputs also.
 	- 20150419		Added textarea_to_array function.
 	- 20150409		Do not clone the Wordpress wpdb upon insert. Let's hope that bug is fixed...
 	- 20150209		Collection->collection() added.
@@ -153,7 +154,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20150419;
+	protected $sdk_version = 20150424;
 
 	/**
 		@brief		Constructor.
