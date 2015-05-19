@@ -38,6 +38,21 @@ class ThreeWP_Broadcast_Blog_Groups
 			$db_ver = 1;
 		}
 
+		if ( $db_ver < 2 )
+		{
+			foreach( [
+				'role_use_groups'
+			] as $old_role_option )
+			{
+				$old_value = $this->get_site_option( $old_role_option );
+				if ( is_array( $old_value ) )
+					continue;
+				$new_value = ThreeWP_Broadcast()->convert_old_role( $old_value );
+				$this->update_site_option( $old_role_option, $new_value );
+			}
+			$db_ver = 2;
+		}
+
 		$this->update_site_option( 'database_version', $db_ver );
 	}
 
@@ -166,6 +181,7 @@ class ThreeWP_Broadcast_Blog_Groups
 			->value( $this->get_site_option( 'role_use_groups' ) )
 			->description_( 'Role needed to use the group function.' )
 			->label_( 'Use groups' )
+			->multiple()
 			->options( $roles );
 
 
@@ -221,7 +237,7 @@ class ThreeWP_Broadcast_Blog_Groups
 
 	public function threewp_broadcast_prepare_meta_box( $action )
 	{
-		if ( ! $this->role_at_least( $this->get_site_option( 'role_use_groups' ) ) )
+		if ( ! ThreeWP_Broadcast()->user_has_roles( $this->get_site_option( 'role_use_groups' ) ) )
 			return;
 
 		// Are there any groups to display?
@@ -252,7 +268,7 @@ class ThreeWP_Broadcast_Blog_Groups
 	**/
 	public function threewp_broadcast_menu( $action )
 	{
-		if ( ! $this->role_at_least( $this->get_site_option( 'role_use_groups' ) ) )
+		if ( ! is_super_admin() AND ! ThreeWP_Broadcast()->user_has_roles( $this->get_site_option( 'role_use_groups' ) ) )
 			return;
 
 		$action->broadcast->add_submenu_page(
@@ -412,7 +428,7 @@ class ThreeWP_Broadcast_Blog_Groups
 	{
 		return array_merge( [
 			'database_version' => 0,
-			'role_use_groups' => 'super_admin',					// Role required to use the groups function
+			'role_use_groups' => [ 'super_admin' ],					// Role required to use the groups function
 		], parent::site_options() );
 	}
 }

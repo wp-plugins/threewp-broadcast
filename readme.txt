@@ -1,10 +1,10 @@
 === ThreeWP Broadcast ===
 Contributors: edward_plainview
 License: GPLv3
-Requires at least: 3.3.1
+Requires at least: 3.9
 Stable tag: trunk
-Tags: broadcast, multipost, sharing, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar, menu, copy menu, duplicate menu
-Tested up to: 4.0
+Tags: broadcast, multipost, sharing, share content, duplicate, posts, marketing, threewp, linking, posts, multiple, blogs, sitepress, woocommerce, synchronize, event organiser, acf, all in one calendar, menu, copy menu, duplicate menu, transmit, post, transmission, multisite, queue, parent, children
+Tested up to: 4.2.2
 
 Network content sharing by multiposting between blogs for PHP v5.4+. Posts can be linked to each other and updated automatically.
 
@@ -39,22 +39,25 @@ For those who have Yoast's Wordpress SEO plugin installed, if the Broadcast's ca
 
 = Premium Pack =
 
-The <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
+The <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
 
-For a complete list of features and more information, see <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
+For a complete list of features and more information, see <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting attachment field types using the ACF plugin.
 * <strong>All Blogs</strong> allows users to broadcast to all blogs in the network without having to be a user of the blog.
 * <strong>All In One Calendar</strong> adds support for <a href="http://www.wordpress.org/plugins/all-in-one-event-calendar/">Timely's All In One Calendar</a> plugin.
 * <strong>Back To Parent</strong> updates the parent post with the new child content.
 * <strong>Attachment Shortcodes</strong> copies attachments specified in custom shortcodes.
-* <strong>Comments</strong> adds support for broadcasting of comments.
-* <strong>Custom Field Attachments</strong> allows post custom field containing attachment IDs to be broadcasted correctly..
+* <strong>Comments</strong> broadcasts and sync comments between linked posts.
+* <strong>Custom Field Attachments</strong> allows post custom field containing attachment IDs to be broadcasted correctly.
+* <strong>Duplicate Attachments</strong> duplicates the attachments from the parent post tp the child posts, instead of regenerating them. Speeds up broadcasting and keeps any manual thumbnail modifications.
 * <strong>Event Organiser</strong> adds support for Stephen Harris&#8217; <a href="http://wordpress.org/plugins/event-organiser/">Event Organiser plugin</a>, with events and venues.
 * <strong>Keep Child Attachments</strong> keeps the child post's attachments instead of deleting them when updating a broadcast.
 * <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
+* <strong>Lock Post</strong> allows users to lock editing of posts / pages to only themselves and super admins.
 * <strong>Menus</strong> can copy menus between blogs (overwrite / update), with support for equivalent child posts on the child blogs and equivalent taxonomies.
+* <strong>No New Terms</strong> prevents taxonomy terms from being created on child blogs.
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
 * <strong>Permalinks</strong> enables more precise permalink control.
 * <strong>Polylang</strong> adds support for Broadcasting posts in different languages using Frédéric Demarle&#8217;s <a href="https://wordpress.org/plugins/polylang/">Polylang</a> translation plugin.
@@ -72,11 +75,11 @@ For a complete list of features and more information, see <a href="http://plugin
 
 = Documentation =
 
-Although Broadcast is relatively easy to understand by itself, for extra documentation see <a href="http://plugins.plainview.se/threewp-broadcast/">Broadcast's online documentation</a>.
+Although Broadcast is relatively easy to understand by itself, for extra documentation see <a href="http://plainviewplugins.com/threewp-broadcast/">Broadcast's online documentation</a>.
 
 = Misc =
 
-Requires php v5.4 for trait support. PHP 5.3 is no longer officially supported.
+Requires PHP v5.4, since 5.3 is no longer officially supported.
 
 Available in the following languages:
 
@@ -86,6 +89,7 @@ Available in the following languages:
 * Italian
 * French
 * Romanian, Web Geek Sciense <a href="http://webhostinggeeks.com/">Web Hosting Geeks</a>
+* Serbian, Borisa Djuraskovic at <a href="http://www.webhostinghub.com">www.webhostinghub.com</a>
 * Spanish
 * Swedish
 
@@ -114,15 +118,9 @@ The git repository can be found at: https://github.com/the-plainview/threewp_bro
 
 = I need support! =
 
-The easiest way to get my attention is to <a href="mailto:plugins@plainview.se">contact me via e-mail</a> and ask how to donate a little something for my time.
+Broadcast is sporadically supported in my spare time on the Wordpress support forum.
 
-For contract work such as the following, contact me so we can come to an agreement:
-
-* Broadcast is missing a feature you need
-* Broadcast isn't properly interacting with other plugins
-* Broadcast doesn't work on your custom site
-
-If you're not into donations, try the support forum to see if other users can help you out.
+For users of the plugin pack, support is available via e-mail.
 
 = Debug dumps =
 
@@ -132,11 +130,11 @@ To switch on debug mode, see the admin settings. If your site is live it would b
 
 = Blacklist, whitelisting, force broadcast =
 
-Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Bulk broadcast existing pages =
 
-To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Galleries and attachments =
 
@@ -144,9 +142,11 @@ Attachments are force-broadcasted: the child posts have all their attachments de
 
 If you have a gallery shortcode in the post ( [gallery columns="2" ids="427,433,430,429,428"] ) then Broadcast will first check that the image does not already exist on the child blog. It does this by searching for the post name (the filename minus the extension). If no image is found, it is copied.
 
+If you have manually modified the thumbnails on the parent blog, you might want to use the <em>Duplicate Attachments</em> plugin in the plugin pack, otherwise Wordpress will generate new thumbnails on each child blog.
+
 = Hide broadcast from the users =
 
-The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="http://plugins.plainview.se/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Is php v5.4 really necessary? =
 
@@ -157,6 +157,20 @@ Yes. PHP v5.3 has been officially unsupported since the 14th of August, 2014. If
 If you have already created posts on other blogs that are supposed to be children of a specific post, you can use the "find unlinked" bulk action to find and link them.
 
 To be considered an orphan the orphaned posts must have the exact same title (name) as the soon-to-be parent and be of the same post type.
+
+You can also use the <em>Delete Before Broadcast</em> plugin from the pack to delete any similar posts on the child blog before broadcasting.
+
+= Timeout problems =
+
+If you have many attachments in your post, and are broadcasting the post to many blogs, you might encounter a PHP timeout. This means that broadcasting exceeded the PHP time limit and had to be aborted.
+
+There are several solutions to this problem:
+
+1. Increase the PHP timeout in your PHP.ini settings. This will not speed up broadcasting, only increase your chances of completely broadcasting the post.
+2. Use the <em>Duplicate Attachments</em> plugin in the pack. This will duplicate any attachments + thumbnails instead of regenerating them on each child blog.
+3. Use the <em>Queue</em> plugin to put each child broadcast into a queue that is emptied by javascript.
+
+You will not need solution #1 if you use solutions #2 and #3. :)
 
 = Why can I not see the Broadcast meta box? =
 
@@ -182,21 +196,84 @@ If your products have variations, or you want the attribute taxonomies to be syn
 
 If you have a product gallery, use the "Custom Field Attachments" premium plugin to broadcast the "_product_image_gallery" custom field.
 
+Need your stock or PDF vouchers synced upon each purchase? See the WooCommerce extras in the Plugin Pack.
+
 = WPML Sitepress =
 
-WPML is semi-supported via a plugin in the premium pack.
+WPML is semi-supported via a plugin in the premium pack. For more information, see WPML discussion here: http://wordpress.org/support/topic/wmpl-integration-not-working
 
-For more information, see WPML discussion here: http://wordpress.org/support/topic/wmpl-integration-not-working
+The author suggests using PolyLang instead due to far superior support.
 
 = XCache vs APC opcode cache =
+
+APC works flawlessly.
 
 Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to enable Broadcast with Xcache v2 enabled will result in a PHP crash.
 
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
-APC works flawlessly.
-
 == Changelog ==
+
+= 19 20150519 =
+* Code: New action: each_linked_post, used to modify all linked posts via a PHP callback.
+* Code: new_post_old_custom_fields in broadcasting_data object.
+* Code: broadcasting_data->new_post is now a post object. Retrieve using ->new_post() method. Retrieve keys using ->new_post( 'ID' ).
+* Bump Wordpress version to 4.2.2
+* New Plugin Pack Plugins: Delete Before Broadcast, Protect Child Properties.
+* New Plugin Pack Extras: All Blogs cache clear, WooCommerce stock sync, Woocommerce PDF voucher sync
+
+= 18.1 20150424 =
+* Fix: Network admin can do anything network admin wants.
+* Bump Wordpress version to 4.2
+
+= 18 20150412 =
+* New: Multiple roles can now be selected. Check that your role settings are correct after upgrading.
+* Serbian translation. Credit Borisa Djuraskovic at www.webhostinghub.com.
+* Fix: Recreate child posts that have been deleted but not unlinked. This is a workaround for a rare condition.
+* Fix: Broadcast data can be looked up up via blog+post ID, in addition to the row in the database. See the maintenance tab.
+* Fix: Do not show archived, deleted and spammed blogs in the meta box.
+* Fix: Better temp-directory handling when running maintenance checks.
+* Fix: Workaround for Yoast SEO data not being saved.
+* Fix: Removed mysqli warnings when creating UBS modifications and queue objects.
+* Code: Equivalent terms are saved during term syncing.
+* Premium Pack Plugin: Added "Blog Groups 2".
+* Premium Pack Plugin: Added "Protect Child Author".
+
+
+= 17.1 20150219 =
+* Fix: No more warning when there are no terms in a taxonomy.
+
+= 17 20150216 =
+* Code: broadcasting_data now supplies new_child_created property.
+* Fix: Load translation javascript strings earlier. Credit Tobias.
+* Fix: Added JS check for unreferenced broadcast_blogs_to_hide variable.
+* Fix: Corrected Exception class in terms_and_taxonomies trait.
+* Fix: Javascript error on clicking child's "broadcasted by" link (for unlinking popup). Credit jaapbaardaap. See https://github.com/the-plainview/threewp_broadcast/issues/28
+* Fix: No taxonomy terms on the parent will clear the taxonomy on the child also.
+* Premium Pack Plugin: Added "Social Networks Auto Poster" forces SNAP to use the unique social settings on each blog
+* Premium Pack Plugin: Added "Find Some Unlinked Children" selectively find unlinked children to link.
+* Premium Pack Plugin: User & Blog Settings: Able to hide post bulk actions from users.
+
+= 16 20150116 =
+* Fix: Fixed autoloading error for specific web hosts.
+* Fix: Form actions were incorrect for some non-standard installations, causing forms to timeout.
+* Optimization: Term syncing only syncs terms that are used. This should solve any out-of-memory errors that those with 39000+ terms were having.
+* Premium Pack Plugin: Added "Duplicate Attachments" drastically speeds up broadcasting when using attachments. Also retains any manual modifications to the attachment thumbnails.
+* Premium Pack Plugin: Comments: Can now keep comments automatically synced between linked posts.
+* Premium Pack Plugin: User & Blog Settings: "On" for checkboxes no longer forces the checkbox to be ticked.
+* Premium Pack Plugin: User & Blog Settings: Automatically clean up orphaned criteria.
+* Premium Pack Plugin: User & Blog Settings: More robust detection of post types.
+
+= 15 20141218 =
+* Code: Allow other plugins to prevent term creation.
+* New: Premium Pack Plugin: No New Terms
+* Fixed: Sticky status kept when clearing the POST.
+* Fixed: Bulk actions not appearing for some users
+
+= 14 20141210 =
+* Fix: Display bulk actions in a different way to increase compatability with Admin Columns Pro.
+* Fix: Override canonical URL for pages also.
+* New: Premium Pack Plugin: Lock Post
 
 = 13 20141201 =
 * Fix: Blog groups: Group name can be changed again.
@@ -207,7 +284,7 @@ APC works flawlessly.
 * Code: Uses Plainview SDK with custom namespace for future-proofing and conflict avoidance.
 
 = 12 20141109 =
-* New: Post actions have been reworked. Documented here: http://plugins.plainview.se/threewp-broadcast/documentation/post-actions/
+* New: Post actions have been reworked. Documented here: http://plainviewplugins.com/threewp-broadcast/documentation/post-actions/
 * New: "Find orphans" is now "Find unlinked children" and is a bulk action.
 * New: Setting to choose how many children to view in the post overview, before displaying a child count.
 * Fix: Last used settings notice removed.
@@ -602,6 +679,10 @@ Skipping version 13.
 * Initial public release
 
 == Upgrade Notice ==
+
+= 18 =
+
+* Check that your role settings are correct.
 
 = 2.2 =
 

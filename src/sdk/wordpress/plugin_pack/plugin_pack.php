@@ -113,17 +113,17 @@ abstract class plugin_pack
 					switch( $action )
 					{
 						case 'activate_plugin':
-							$new_plugin->activate();
+							$new_plugin->activate_internal();
 							$message = $this->_( 'The selected plugin(s) have been activated.' );
 							break;
 						case 'deactivate_plugin':
-							$new_plugin->deactivate();
+							$new_plugin->deactivate_internal();
 							$this->plugins()->forget( $classname );
 							$message = $this->_( 'The selected plugin(s) have been deactivated.' );
 							break;
 						case 'uninstall_plugin':
-							$new_plugin->deactivate();
-							$new_plugin->uninstall();
+							$new_plugin->deactivate_internal();
+							$new_plugin->uninstall_internal();
 							$this->plugins()->forget( $classname );
 							$message = $this->_( 'The selected plugin(s) have been uninstalled.' );
 							break;
