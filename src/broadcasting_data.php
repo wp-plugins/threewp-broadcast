@@ -85,6 +85,30 @@ class broadcasting_data
 	public $meta_box_data = false;
 
 	/**
+		@brief		Was a new child created on this blog?
+		@details
+
+		This variable is reset to false upon switching child blogs.
+
+		If Broadcast created a new child on the blog, it will set this property to true.
+
+		@since		2015-01-20 14:10:09
+	**/
+	public $new_child_created = false;
+
+	/**
+		@brief		The child post object during each blog loop.
+		@since		2015-05-06 17:28:29
+	**/
+	public $new_post;
+
+	/**
+		@brief		An array of the custom fields of each child before deletion.
+		@since		2015-05-06 17:29:25
+	**/
+	public $new_post_old_custom_fields;
+
+	/**
 		@brief		IN: The ID of the parent blog.
 		@var		$parent_blog_id
 		@since		20130927
@@ -99,7 +123,7 @@ class broadcasting_data
 	public $parent_post_id;
 
 	/**
-		@brief		IN: The post WP_Post object.
+		@brief		IN: The parent post WP_Post object.
 		@var		$post
 		@since		20130603
 	**/
@@ -212,11 +236,14 @@ class broadcasting_data
 	}
 
 	/**
-		@brief		Return the new post as an object.
+		@brief		Return the new post, or a key thereof, as an object.
 		@since		2014-05-20 19:00:16
 	**/
-	public function new_post()
+	public function new_post( $key = null )
 	{
-		return (object) $this->new_post;
+		if ( $key === null )
+			return $this->new_post;
+		else
+			return $this->new_post->$key;
 	}
 }

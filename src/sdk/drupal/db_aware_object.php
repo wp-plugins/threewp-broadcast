@@ -20,6 +20,20 @@ trait db_aware_object
 		return $this;
 	}
 
+	public static function __db_load( $id )
+	{
+		$id_key = static::id_key();
+		$result = db_select( static::db_table(), 't' )
+			->fields( 't' )
+			->condition( $id_key, $id )
+			->execute()
+			->fetchAllAssoc( $id_key );
+		if ( count( $result ) != 1 )
+			return false;
+		$result = reset( $result );
+		return self::sql( $result );
+	}
+
 	public function __db_update()
 	{
 		$o = clone $this;
@@ -65,4 +79,3 @@ trait db_aware_object
 		db_set_active( self::db() );
 	}
 }
-

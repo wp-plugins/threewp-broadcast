@@ -45,11 +45,9 @@ trait db_aware_object
 		if ( $fields === null )
 			$fields = $this->get_field_data();
 
-		// For some reason a clone of wpdb is necessary. Else get_post sometimes doesn't work after x amount of calls. Weird.
 		global $wpdb;
-		$db = clone( $wpdb );
-		$db->insert( self::db_table(), $fields );
-		$this->$id_key = $db->insert_id;
+		$wpdb->insert( self::db_table(), $fields );
+		$this->$id_key = $wpdb->insert_id;
 	}
 
 	public static function __db_load( $id )
