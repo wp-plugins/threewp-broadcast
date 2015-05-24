@@ -48,7 +48,7 @@ For a complete list of features and more information, see <a href="http://plainv
 * <strong>All In One Calendar</strong> adds support for <a href="http://www.wordpress.org/plugins/all-in-one-event-calendar/">Timely's All In One Calendar</a> plugin.
 * <strong>Attachment Shortcodes</strong> copies attachments specified in custom shortcodes.
 * <strong>Back To Parent</strong> updates the parent post with the new child content.
-* <strong>Bblog Groups 2</strong> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
+* <strong>Blog Groups 2</strong> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
 * <strong>Comments</strong> broadcasts and sync comments between linked posts.
 * <strong>Custom Field Attachments</strong> allows post custom field containing attachment IDs to be broadcasted correctly.
 * <strong>Delete Before Broadcast</strong> deletes duplicate and similar child posts on each blog before broadcasting.
