@@ -259,12 +259,17 @@ trait post_actions
 					if ( count( $posts ) == 1 )
 					{
 						$unlinked = reset( $posts );
-						$broadcast_data->add_linked_child( $blog->id, $unlinked->ID );
 
-						// Add link info for the new child.
 						$child_broadcast_data = $this->get_post_broadcast_data( $blog->id, $unlinked->ID );
-						$child_broadcast_data->set_linked_parent( $blog_id, $post_id );
-						$this->set_post_broadcast_data( $blog->id, $unlinked->ID, $child_broadcast_data );
+						if ( $child_broadcast_data->get_linked_parent() === false )
+							if ( ! $child_broadcast_data->has_linked_children() )
+							{
+								$broadcast_data->add_linked_child( $blog->id, $unlinked->ID );
+
+								// Add link info for the new child.
+								$child_broadcast_data->set_linked_parent( $blog_id, $post_id );
+								$this->set_post_broadcast_data( $blog->id, $unlinked->ID, $child_broadcast_data );
+							}
 					}
 
 					$blog->switch_from();

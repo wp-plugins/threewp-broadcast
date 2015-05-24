@@ -13,7 +13,11 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
-	- 20150424		Form2: container->input() returns container inputs also.
+	- 20150519		Mail: add sprintf support to the html, subject and text methods.
+	- 20150518		Table: Add titlef convenience method.
+	- 20150511		Fix harmless warning in Wordpress plugin pack.
+	- 20150507		Added drupal db_load() method.
+	- 20150424		Form2: container->input() returns container inputs also. Including test.
 	- 20150419		Added textarea_to_array function.
 	- 20150409		Do not clone the Wordpress wpdb upon insert. Let's hope that bug is fixed...
 	- 20150209		Collection->collection() added.
@@ -60,7 +64,6 @@ namespace plainview\sdk_broadcast;
 	- 20140512		Fixed form2: clashing validation trait in some versions of PHP.
 	- 20140510		wordpress
 	- 20140508		Fixed form2 containers validation.
-				wordpress
 	- 20140504		collections\html added.
 	- 20140502		wordpress
 	- 20140501		wordpress\traits\debug
@@ -154,7 +157,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20150424;
+	protected $sdk_version = 20150519;
 
 	/**
 		@brief		Constructor.

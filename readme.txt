@@ -44,15 +44,17 @@ The <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title=
 For a complete list of features and more information, see <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting attachment field types using the ACF plugin.
-* <strong>All Blogs</strong> allows users to broadcast to all blogs in the network without having to be a user of the blog.
+* <strong>All Blogs</strong> allows admins or users to broadcast to all blogs in the network without having to be a user of the blog.
 * <strong>All In One Calendar</strong> adds support for <a href="http://www.wordpress.org/plugins/all-in-one-event-calendar/">Timely's All In One Calendar</a> plugin.
-* <strong>Back To Parent</strong> updates the parent post with the new child content.
 * <strong>Attachment Shortcodes</strong> copies attachments specified in custom shortcodes.
+* <strong>Back To Parent</strong> updates the parent post with the new child content.
+* <strong>Bblog Groups 2</strong> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
 * <strong>Comments</strong> broadcasts and sync comments between linked posts.
 * <strong>Custom Field Attachments</strong> allows post custom field containing attachment IDs to be broadcasted correctly.
+* <strong>Delete Before Broadcast</strong> deletes duplicate and similar child posts on each blog before broadcasting.
 * <strong>Duplicate Attachments</strong> duplicates the attachments from the parent post tp the child posts, instead of regenerating them. Speeds up broadcasting and keeps any manual thumbnail modifications.
 * <strong>Event Organiser</strong> adds support for Stephen Harris&#8217; <a href="http://wordpress.org/plugins/event-organiser/">Event Organiser plugin</a>, with events and venues.
-* <strong>Keep Child Attachments</strong> keeps the child post's attachments instead of deleting them when updating a broadcast.
+* <strong>Find Some Unlinked Children</strong> can selectively link orphans / unlinked posts to parents, instead of automatically linking all found children.
 * <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
 * <strong>Local Links</strong> automatically updates links to local posts on each child blog.
 * <strong>Lock Post</strong> allows users to lock editing of posts / pages to only themselves and super admins.
@@ -61,17 +63,19 @@ For a complete list of features and more information, see <a href="http://plainv
 * <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
 * <strong>Permalinks</strong> enables more precise permalink control.
 * <strong>Polylang</strong> adds support for Broadcasting posts in different languages using Frédéric Demarle&#8217;s <a href="https://wordpress.org/plugins/polylang/">Polylang</a> translation plugin.
-* <strong>Protect Child Content</strong> prevents overwriting of child post content.
+* <strong>Protect Child Properties</strong> prevent various properties of child posts from being overwritten.
 * <strong>Purge Children</strong> removes children and their attached files from child blogs.
 * <strong>Redirect All Children</strong> redirects single post views from visitors of child posts to the parent post.
 * <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
 * <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
+* <strong>Social Networks Auto Poster</strong> tells NextScripts’ Social Networks Auto Poster (SNAP) to use the different social settings on each blog.
 * <strong>Sync Taxomnomies</strong> synchronize the taxonomies of target blogs with those from a source blog.
 * <strong>The Events Calendar</strong> adds support for Modern Tribe's <a href="https://wordpress.org/plugins/the-events-calendar/">The Events Calendar </a> plugin with venues and organisers.
 * <strong>User & Blog Settings</strong> (UBS) can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
 * <strong>User & Blog Settings Post</strong> uses the modifications from the UBS plugin to broadcast posts with one click.
 * <strong>Views</strong> adds support for WP Types and Views content templates.
 * <strong>WooCommerce</strong> allows attribute taxonomies and product variations to be broadcasted.
+* <strong>WPML</strong> adds support for ICanLocalize’s WPML translation plugin. Please see the FAQ.
 
 = Documentation =
 
@@ -213,6 +217,9 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 19.1 20150524 =
+* Fix: Find Unlinked Children will not add children that already have parents or are parents themselves.
 
 = 19 20150519 =
 * Code: New action: each_linked_post, used to modify all linked posts via a PHP callback.

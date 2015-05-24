@@ -103,8 +103,8 @@ abstract class plugin_pack
 			if ( $table->bulk_actions()->pressed() )
 			{
 				$ids = $table->bulk_actions()->get_rows();
-
 				$action = $table->bulk_actions()->get_action();
+				$message = $this->_( 'No action selected.' );
 				foreach( $plugins->from_ids( $ids ) as $plugin )
 				{
 					$classname = $plugin->get_classname();
