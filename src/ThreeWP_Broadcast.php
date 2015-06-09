@@ -150,7 +150,7 @@ class ThreeWP_Broadcast
 			$this->query("CREATE TABLE IF NOT EXISTS `". $this->broadcast_data_table() . "` (
 			  `blog_id` int(11) NOT NULL COMMENT 'Blog ID',
 			  `post_id` int(11) NOT NULL COMMENT 'Post ID',
-			  `data` text NOT NULL COMMENT 'Serialized BroadcastData',
+			  `data` longtext NOT NULL COMMENT 'Serialized BroadcastData',
 			  KEY `blog_id` (`blog_id`,`post_id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 			");
@@ -229,11 +229,29 @@ class ThreeWP_Broadcast
 			$db_ver = 7;
 		}
 
+		if ( $db_ver < 8 )
+		{
+			// Make the table a longtext for those posts with many links.
+			$this->query("ALTER TABLE `". $this->broadcast_data_table() . "` CHANGE `data` `data` LONGTEXT");
+
+			// We have deleted the extra internal custom field setting. If the user does NOT want the fields broadcasted, add them to the blacklist.
+			$internal_fields = $this->get_site_option( 'broadcast_internal_custom_fields', true );
+			if ( $internal_fields == false )
+			{
+				$blacklist = $this->get_site_option( 'custom_field_blacklist' );
+				$blacklist .= ' _*';
+				$blacklist = trim( $blacklist );
+				$this->update_site_option( 'custom_field_blacklist', $blacklist );
+			}
+			$db_ver = 8;
+		}
+
 		$this->update_site_option( 'database_version', $db_ver );
 	}
 
 	public function uninstall()
 	{
+		$this->delete_site_option( 'broadcast_internal_custom_fields' );
 		$query = sprintf( "DROP TABLE `%s`", $this->broadcast_data_table() );
 		$this->query( $query );
 	}
@@ -682,12 +700,11 @@ class ThreeWP_Broadcast
 		return array_merge( [
 			'blogs_to_hide' => 5,								// How many blogs to auto-hide
 			'blogs_hide_overview' => 5,							// Use a summary in the overview if more than this amount of children / siblings.
-			'broadcast_internal_custom_fields' => true,		// Broadcast internal custom fields?
 			'canonical_url' => true,							// Override the canonical URLs with the parent post's.
 			'clear_post' => true,								// Clear the post before broadcasting.
-			'custom_field_whitelist' => '_wp_page_template _wplp_ _aioseop_',				// Internal custom fields that should be broadcasted.
 			'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
 			'custom_field_protectlist' => '',					// Internal custom fields that should not be overwritten on broadcast
+			'custom_field_whitelist' => '',						// Internal custom fields that should be broadcasted in spite of being blacklisted.
 			'database_version' => 0,							// Version of database and settings
 			'debug' => false,									// Display debug information?
 			'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.

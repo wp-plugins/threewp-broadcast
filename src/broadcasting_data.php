@@ -50,6 +50,7 @@ class broadcasting_data
 
 	/**
 		@brief		IN: True if custom fields are to be broadcasted.
+		@details	If true then the broadcasting trait will convert it to an object that contains info about the various custom field options.
 		@var		$custom_fields
 		@since		20130603
 	**/
@@ -214,6 +215,15 @@ class broadcasting_data
 			$this->blogs->put( $blog->id, $blog );
 
 		return $this;
+	}
+
+	/**
+		@brief		Return the custom fields helper.
+		@since		2015-06-06 09:03:08
+	**/
+	public function custom_fields()
+	{
+		return new \threewp_broadcast\broadcasting_data\Custom_Fields( $this );
 	}
 
 	/**

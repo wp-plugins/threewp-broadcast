@@ -3,45 +3,40 @@ Contributors: edward_plainview
 License: GPLv3
 Requires at least: 3.9
 Stable tag: trunk
-Tags: broadcast, multipost, sharing, share content, duplicate, posts, syndicate, syndication, marketing, threewp, linking, multiple, blogs, woocommerce, synchronize, acf, menu, copy menu, duplicate menu
+Tags: broadcast, multipost, sharing, share content, duplicate, posts, syndicate, syndication, marketing, threewp, linking, woocommerce, acf, syndicator, aggregator, aggregation, autoblogging, news, content hub, push, pull, publishing
 Tested up to: 4.2.2
 
-Network content sharing by multiposting between blogs for PHP v5.4+. Posts can be linked to each other and updated automatically.
+Network Content Syndication Made Easy! Automatically share content by multiposting between multisite blogs.
 
 == Description ==
 
-Network content sharing by multiposting between blogs for PHP v5.4+. Broadcast can be used to copy posts to other blogs, link posts between blogs, share content as templates, etc. Broadcastable features include:
+= Network Content Syndication Made Easy! =
 
-* Parent post links to child posts
-* Posts, pages
+Automatically share content by multiposting between multisite blogs. Syndicate posts to other blogs, update posts between blogs, share content templates, etc. Broadcasted posts can be linked to their parents, which updates child posts when the parent post is updated. This includes all data: title, slug, content, custom fields, attachments, etc.
+
+Requires PHP version 5.4 or higher.
+
+= Broadcast =
+* Posts, pages, custom post types
 * Taxonomies (categories, tags, etc)
 * Custom fields
 * Attached images
 * Featured images
 * Galleries
-
-Broadcasted posts can be linked to their parents, which updates child posts when the parent post is updated. This includes all data: title, slug, content, custom fields, attachments, etc.
+* Custom field blacklist, whitelist, and protect list.
+* User role access granularity
+* Many extra features in the premium pack
 
 = SEO support =
-
-* Permalinks of child posts (also see Permalinks plugin in the Premium Pack)
 * Canonical URLs of child posts.
-
-For those who have Yoast's Wordpress SEO plugin installed, if the Broadcast's canonical URL is selected (which will point to the parent post), it will simultaneously disable Yoast's canonical link. This will prevent search engine penalties.
-
-= Other features =
-
-* Groups plugin enables blog grouping for easy selection
-* Custom field blacklist, whitelist and protect list.
-* Last used settings are remembered
-* User role access granularity
-* An enormous amount of extra features in the premium pack
+* Permalinks of child posts (also see Permalinks plugin in the Premium Pack)
+* Yoast's Wordpress SEO plugin integration and support
 
 = Premium Pack =
 
-The <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
+The <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
 
-For a complete list of features and more information, see <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
+For a complete list of features and more information, see <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
 
 * <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting attachment field types using the ACF plugin.
 * <strong>All Blogs</strong> allows admins or users to broadcast to all blogs in the network without having to be a user of the blog.
@@ -79,7 +74,7 @@ For a complete list of features and more information, see <a href="http://plainv
 
 = Documentation =
 
-Although Broadcast is relatively easy to understand by itself, for extra documentation see <a href="http://plainviewplugins.com/threewp-broadcast/">Broadcast's online documentation</a>.
+Although Broadcast is relatively easy to understand by itself, for extra documentation see <a href="https://plainviewplugins.com/threewp-broadcast/">Broadcast's online documentation</a>.
 
 = Misc =
 
@@ -87,6 +82,7 @@ Requires PHP v5.4, since 5.3 is no longer officially supported.
 
 Available in the following languages:
 
+* Czech - <a href="https://profiles.wordpress.org/melangercz/">Melanger.cz</a>
 * English
 * Dutch
 * French - Seb giss <sgissinger@gmail.com>
@@ -134,11 +130,11 @@ To switch on debug mode, see the admin settings. If your site is live it would b
 
 = Blacklist, whitelisting, force broadcast =
 
-Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Bulk broadcast existing pages =
 
-To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Galleries and attachments =
 
@@ -150,7 +146,7 @@ If you have manually modified the thumbnails on the parent blog, you might want 
 
 = Hide broadcast from the users =
 
-The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="http://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
 = Is php v5.4 really necessary? =
 
@@ -191,8 +187,7 @@ Make sure that:
 Broadcast is capable of handling WooCommerce products.
 
 1. In the custom post type settings: Add "product"
-2. In the settings: select broadcast internal custom fields.
-3. When broadcasting, select custom fields and taxonomies.
+2. When broadcasting, select custom fields and taxonomies.
 
 This will broadcast all normal product settings: SKU, price, etc.
 
@@ -217,6 +212,24 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 20 20150609 =
+* New: Custom field handling has been simplified. The "broadcast internal field" setting has been removed and the blacklist, whitelist and protect list now apply to all fields.
+
+The custom field settings can now handle wildcards.
+
+If you do not wish the internal custom fields (the ones that start with an underscore) to be broadcasted, check that you now have _* in the blacklist.
+
+Custom fields are now handled in this order: first check the blacklist, if blacklisted checked the whitelist.
+
+The protect list is applied to the surviving custom fields specified to be protected.
+
+* Fix: Reload broadcast data upon switching blogs during broadcasting. This is probably the cause of half-linked children when broadcasting is interrupted or queued.
+* Fix: Posts can have several thousand child posts now. The database column was set too small (text instead of longtext) to allow for all too many child links.
+* Code: More debug info. Custom field lists are dumped.
+* Code: Fix saving of broadcast data so that it can be resaved during the same broadcast.
+* Code: Debug dump now shows HTML tags.
+* Updated .pot file for translations.
 
 = 19.1 20150524 =
 * Fix: Find Unlinked Children will not add children that already have parents or are parents themselves.
@@ -245,7 +258,6 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 * Code: Equivalent terms are saved during term syncing.
 * Premium Pack Plugin: Added "Blog Groups 2".
 * Premium Pack Plugin: Added "Protect Child Author".
-
 
 = 17.1 20150219 =
 * Fix: No more warning when there are no terms in a taxonomy.
@@ -291,7 +303,7 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 * Code: Uses Plainview SDK with custom namespace for future-proofing and conflict avoidance.
 
 = 12 20141109 =
-* New: Post actions have been reworked. Documented here: http://plainviewplugins.com/threewp-broadcast/documentation/post-actions/
+* New: Post actions have been reworked. Documented here: https://plainviewplugins.com/threewp-broadcast/documentation/post-actions/
 * New: "Find orphans" is now "Find unlinked children" and is a bulk action.
 * New: Setting to choose how many children to view in the post overview, before displaying a child count.
 * Fix: Last used settings notice removed.

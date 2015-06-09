@@ -133,14 +133,19 @@ trait broadcast_data
 				$data,
 				$bcd->id
 			);
+			$this->query( $query );
 		}
 		else
+		{
 			$query = sprintf( "INSERT INTO `%s` (blog_id, post_id, data) VALUES ( '%s', '%s', '%s' )",
 				$this->broadcast_data_table(),
 				$blog_id,
 				$post_id,
 				$data
 			);
-		$this->query( $query );
+			$bcd->blog_id = $blog_id;
+			$bcd->post_id = $post_id;
+			$bcd->id = $this->query_insert_id( $query );
+		}
 	}
 }

@@ -36,72 +36,66 @@ trait admin_menu
 	{
 		if ( ! is_super_admin() )
 		{
-			echo $this->p( 'No information available.' );
+			// Not displaying the blog / PHP information table since the user is not a super admin.
+			echo $this->p_( 'No information available.' );
 			return;
 		}
 
 		$table = $this->table();
-		$table->caption()->text( 'Information' );
+		// Caption for the blog / PHP information table
+		$table->caption()->text_( 'Information' );
 
 		$row = $table->head()->row();
-		$row->th()->text( 'Key' );
-		$row->th()->text( 'Value' );
+		$row->th()->text_( 'Key' );
+		$row->th()->text_( 'Value' );
 
 		if ( $this->debugging() )
 		{
-			// Debug
 			$row = $table->body()->row();
-			$row->td()->text( 'Debugging' );
-			$row->td()->text( 'Enabled' );
+			$row->td()->text_( 'Debugging' );
+			$row->td()->text_( 'Enabled' );
 		}
 
-		// Broadcast version
 		$row = $table->body()->row();
-		$row->td()->text( 'Broadcast version' );
+		$row->td()->text_( 'Broadcast version' );
 		$row->td()->text( $this->plugin_version );
 
-		// PHP version
 		$row = $table->body()->row();
-		$row->td()->text( 'PHP version' );
+		$row->td()->text_( 'PHP version' );
 		$row->td()->text( phpversion() );
 
-		// WP upload path
 		$row = $table->body()->row();
-		$row->td()->text( 'Wordpress upload directory array' );
+		$row->td()->text_( 'Wordpress upload directory array' );
 		$row->td()->text( '<pre>' . var_export( wp_upload_dir(), true ) . '</pre>' );
 
-		// PHP maximum execution time
 		$row = $table->body()->row();
-		$row->td()->text( 'PHP maximum execution time' );
-		$text = sprintf( '%s seconds', ini_get ( 'max_execution_time' ) );
+		$row->td()->text_( 'PHP maximum execution time' );
+		$text = $this->p_( '%s seconds', ini_get ( 'max_execution_time' ) );
 		$row->td()->text( $text );
 
-		// PHP maximum memory limit
 		$row = $table->body()->row();
-		$row->td()->text( 'PHP memory limit' );
+		$row->td()->text_( 'PHP memory limit' );
 		$text = ini_get( 'memory_limit' );
 		$row->td()->text( $text );
 
-		// WP maximum memory limit
 		$row = $table->body()->row();
-		$row->td()->text( 'Wordpress memory limit' );
-		$text = $this->p( WP_MEMORY_LIMIT . "
+		$row->td()->text_( 'Wordpress memory limit' );
+		$text = wpautop( sprintf( WP_MEMORY_LIMIT . "
 
-This can be increased by adding the following to your wp-config.php:
+%s
 
 <code>define('WP_MEMORY_LIMIT', '512M');</code>
-" );
+",		$this->_( 'This can be increased by adding the following to your wp-config.php:' ) ) );
 		$row->td()->text( $text );
 
-		// Debug info
 		$row = $table->body()->row();
-		$row->td()->text( 'Debug code' );
+		$row->td()->text_( 'Debug code' );
 		$text = WP_MEMORY_LIMIT;
-		$text = $this->p( "Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:
+		$text = wpautop( sprintf( "%s
 
 <code>ini_set('display_errors','On');</code>
 <code>define('WP_DEBUG', true);</code>
-" );
+",		$this->p_( 'Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:' ) ) );
 		$row->td()->text( $text );
 
 		echo $table;
@@ -177,7 +171,7 @@ This can be increased by adding the following to your wp-config.php:
 		$fs->legend->label_( 'Roles' );
 
 		$fs->markup( 'm_roles' )
-			->p( 'Multiple roles may be selected. Each role must be individually selected, since there is no automatic hierarchy where, for example, authors automatically include the editor role. Note that only the roles on this blog can be shown.' );
+			->p_( 'Multiple roles may be selected. Each role must be individually selected, since there is no automatic hierarchy where, for example, authors automatically include the editor role. Note that only the roles on this blog can be shown.' );
 
 		$role_broadcast = $fs->select( 'role_broadcast' )
 			->value( $this->get_site_option( 'role_broadcast' ) )
@@ -237,43 +231,38 @@ This can be increased by adding the following to your wp-config.php:
 		$fs = $form->fieldset( 'custom_field_handling' );
 		$fs->legend->label_( 'Custom field handling' );
 
-		$fs->markup( 'internal_field_info' )
-			->p_( 'Some custom fields start with underscores. They are generally Wordpress internal fields and therefore not broadcasted. Some plugins store their information as underscored custom fields. If you wish them, or some of them, to be broadcasted, use either of the options below.' );
+		$fs->markup( 'custom_field_listing' )
+			->p_( 'All custom fields are passed through the blacklist and then the whitelist. If the field exists in the blacklist, it will not be broadcast - unless it is specified in the whitelist.' );
 
-		$broadcast_internal_custom_fields = $fs->checkbox( 'broadcast_internal_custom_fields' )
-			->checked( $this->get_site_option( 'broadcast_internal_custom_fields' ) )
-			->description_( 'Broadcast all fields, including those beginning with underscores.' )
-			->label_( 'Broadcast internal custom fields' );
+		$fs->markup( 'custom_field_wildcards' )
+			->p_( 'You can use wildcards: <code>field_*123</code> will match all fields that start with <code>field_</code> and end with <code>123</code>. If you wish to match all fields except a few, use <code>*</code> in the blacklist and then the exceptions in the whitelist.' );
 
 		$blacklist = $this->get_site_option( 'custom_field_blacklist' );
 		$blacklist = str_replace( ' ', "\n", $blacklist );
 		$custom_field_blacklist = $fs->textarea( 'custom_field_blacklist' )
 			->cols( 40, 10 )
-			->description_( 'When broadcasting internal custom fields, override and do not broadcast these fields.' )
-			->label_( 'Internal field blacklist' )
+			->description_( 'Do not broadcast these custom fields.' )
+			->label_( 'Custom field blacklist' )
 			->trim()
 			->value( $blacklist );
-
-		$protectlist = $this->get_site_option( 'custom_field_protectlist' );
-		$protectlist = str_replace( ' ', "\n", $protectlist );
-		$custom_field_protectlist = $fs->textarea( 'custom_field_protectlist' )
-			->cols( 40, 10 )
-			->description_( 'When broadcasting internal custom fields, do not overwrite the following fields on the child blogs.' )
-			->label_( 'Internal field protectlist' )
-			->trim()
-			->value( $protectlist );
 
 		$whitelist = $this->get_site_option( 'custom_field_whitelist' );
 		$whitelist = str_replace( ' ', "\n", $whitelist );
 		$custom_field_whitelist = $fs->textarea( 'custom_field_whitelist' )
 			->cols( 40, 10 )
-			->description_( 'When not broadcasting internal custom fields, override and broadcast these fields.' )
-			->label_( 'Internal field whitelist' )
+			->description_( 'Exceptions to the blacklist.' )
+			->label_( 'Custom field whitelist' )
 			->trim()
 			->value( $whitelist );
 
-		$fs->markup( 'whitelist_defaults' )
-			->p_( 'The default whitelist is: %s', "<code>\n_wp_page_template\n_wplp_\n_aioseop_</code>" );
+		$protectlist = $this->get_site_option( 'custom_field_protectlist' );
+		$protectlist = str_replace( ' ', "\n", $protectlist );
+		$custom_field_protectlist = $fs->textarea( 'custom_field_protectlist' )
+			->cols( 40, 10 )
+			->description_( 'Do not overwrite the following fields on the child blogs if they exist.' )
+			->label_( 'Custom field protectlist' )
+			->trim()
+			->value( $protectlist );
 
 		$fs = $form->fieldset( 'misc' );
 		$fs->legend->label_( 'Miscellaneous' );
@@ -310,9 +299,9 @@ This can be increased by adding the following to your wp-config.php:
 		$existing_attachments = $fs->select( 'existing_attachments' )
 			->description_( 'Action to take when attachments with the same filename already exist on the child blog.' )
 			->label_( 'Existing attachments' )
-			->option( 'Use the existing attachment on the child blog', 'use' )
-			->option( 'Overwrite the attachment', 'overwrite' )
-			->option( 'Create a new attachment with a randomized suffix', 'randomize' )
+			->option_( 'Use the existing attachment on the child blog', 'use' )
+			->option_( 'Overwrite the attachment', 'overwrite' )
+			->option_( 'Create a new attachment with a randomized suffix', 'randomize' )
 			->required()
 			->value( $this->get_site_option( 'existing_attachments', 'use' ) );
 
@@ -335,8 +324,6 @@ This can be increased by adding the following to your wp-config.php:
 
 			$this->update_site_option( 'override_child_permalinks', $override_child_permalinks->is_checked() );
 			$this->update_site_option( 'canonical_url', $canonical_url->is_checked() );
-
-			$this->update_site_option( 'broadcast_internal_custom_fields', $broadcast_internal_custom_fields->is_checked() );
 
 			$blacklist = $custom_field_blacklist->get_post_value();
 			$blacklist = $this->lines_to_string( $blacklist );

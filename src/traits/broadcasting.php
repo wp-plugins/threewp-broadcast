@@ -139,39 +139,23 @@ trait broadcasting
 				$this->debug( 'Custom fields: Post does not have a thumbnail (featured image).' );
 
 			$bcd->custom_fields->blacklist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_blacklist' ) ) );
+			$this->debug( 'The custom field blacklist is: %s', $bcd->custom_fields->blacklist );
 			$bcd->custom_fields->protectlist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_protectlist' ) ) );
+			$this->debug( 'The custom field protectlist is: %s', $bcd->custom_fields->protectlist );
 			$bcd->custom_fields->whitelist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_whitelist' ) ) );
+			$this->debug( 'The custom field whitelist is: %s', $bcd->custom_fields->whitelist );
 
 			foreach( $bcd->post_custom_fields as $custom_field => $ignore )
 			{
-				// If the field does not start with an underscore, it is automatically valid.
-				if ( strpos( $custom_field, '_' ) !== 0 )
-					continue;
-
 				$keep = true;
 
-				// Has the user requested that all internal fields be broadcasted?
-				$broadcast_internal_custom_fields = $this->get_site_option( 'broadcast_internal_custom_fields' );
-				if ( $broadcast_internal_custom_fields )
-				{
-					foreach( $bcd->custom_fields->blacklist as $exception)
-						if ( strpos( $custom_field, $exception) !== false )
-						{
-							$keep = false;
-							break;
-						}
-				}
-				else
-				{
+				// Skip the exceptions.
+				if ( $bcd->custom_fields()->blacklist_has( $custom_field ) )
 					$keep = false;
-					foreach( $bcd->custom_fields->whitelist as $exception)
-						if ( strpos( $custom_field, $exception) !== false )
-						{
-							$keep = true;
-							break;
-						}
 
-				}
+				// If we do not broadcast them, then check the whitelist.
+				if ( ! $keep AND $bcd->custom_fields()->whitelist_has( $custom_field ) )
+					$keep = true;
 
 				if ( ! $keep )
 				{
@@ -273,6 +257,9 @@ trait broadcasting
 				$child_blog->switch_from();
 				continue;
 			}
+
+			// Force a reload the broadcast data.
+			$bcd->broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID );
 
 			// Post parent
 			if ( $bcd->link && isset( $parent_broadcast_data) )
@@ -554,7 +541,7 @@ trait broadcasting
 					$delete = true;
 
 					// For the protectlist to work the custom field has to already exist on the child.
-					if ( in_array( $key, $bcd->custom_fields->protectlist ) )
+					if ( $bcd->custom_fields()->protectlist_has( $key ) )
 					{
 						if ( ! isset( $bcd->new_post_old_custom_fields[ $key ] ) )
 							continue;
@@ -646,6 +633,10 @@ trait broadcasting
 				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
 				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
 				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ), $new_post_broadcast_data );
+
+				// Save the parent also.
+				$this->debug( 'Saving parent broadcast data.' );
+				$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $bcd->broadcast_data );
 			}
 
 			$action = new actions\broadcasting_before_restore_current_blog;
@@ -657,13 +648,6 @@ trait broadcasting
 
 		// For nested broadcasts. Just in case.
 		restore_current_blog();
-
-		// Save the post broadcast data.
-		if ( $bcd->link )
-		{
-			$this->debug( 'Saving broadcast data.' );
-			$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $bcd->broadcast_data );
-		}
 
 		$action = new actions\broadcasting_finished;
 		$action->broadcasting_data = $bcd;
@@ -711,7 +695,10 @@ trait broadcasting
 	{
 		// We must be on the source blog.
 		if ( ms_is_switched() )
+		{
+			$this->debug( 'Blog is switched. Not broadcasting.' );
 			return;
+		}
 
 		// Loop check.
 		if ( $this->is_broadcasting() )

@@ -41,8 +41,11 @@ trait debug
 		$fs = $form->fieldset( 'fs_debug' );
 		$fs->legend->label_( 'Debugging' );
 
+		// You are currently NOT in debug mode.
+		$not = $this->_( 'not' );
+
 		$fs->markup( 'debug_info' )
-			->p_( "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings.", $this->debugging() ? '' : ' <strong>not</strong>' );
+			->p_( "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings.", $this->debugging() ? '' : " <strong>$not</strong>" );
 
 		$debug = $fs->checkbox( 'debug' )
 			->description_( 'Show debugging information in various places.' )
@@ -74,7 +77,7 @@ trait debug
 			$export |= is_array( $arg );
 			$export |= is_object( $arg );
 			if ( $export )
-				$args[ $index ] = sprintf( '<pre><code>%s</code></pre>', var_export( $arg, true ) );
+				$args[ $index ] = sprintf( '<pre><code>%s</code></pre>', htmlspecialchars( var_export( $arg, true ) ) );
 		}
 
 		// Put all of the arguments into one string.
