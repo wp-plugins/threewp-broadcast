@@ -5,6 +5,8 @@ namespace plainview\sdk_broadcast\wordpress\updater;
 if( ! class_exists( 'EDD_SL_Plugin_Updater' ) )
 	require_once( dirname( __FILE__ ) . '/EDD_SL_Plugin_Updater.php' );
 
+use \Exception;
+
 /**
 	@brief		Easy Digital Downloads updater support.
 	@details
@@ -110,12 +112,19 @@ trait edd
 				{
 					$key = $license_key->get_filtered_post_value();
 					$this->update_site_option( 'edd_updater_license_key', $key );
-					$this->edd_activate_license();
-					$status = $this->edd_get_cached_license_status();
-					if ( $status->license == 'valid' )
-						$this->message( 'The license has been activated! Automatic plugin updates are now activated.' );
-					else
-						$this->error( 'The license could not be activated. Please try again later or contact the plugin author.' );
+					try
+					{
+						$this->edd_activate_license();
+						$status = $this->edd_get_cached_license_status();
+						if ( $status->license == 'valid' )
+							$this->message( 'The license has been activated! Automatic plugin updates are now activated.' );
+						else
+							$this->error( 'The license could not be activated. Please try again later or contact the plugin author.' );
+					}
+					catch( Exception $e )
+					{
+						$this->error( $e->getMessage() );
+					}
 				}
 
 				// Try to deactivate the license.
@@ -230,6 +239,7 @@ trait edd
 	public function edd_init()
 	{
 		$status = $this->edd_get_cached_license_status();
+
 		if ( $status->license == 'valid' )
 		{
 			// Check that the license has not expired.
@@ -277,7 +287,16 @@ trait edd
 		$status = get_site_transient( $name );
 		if ( $status === false )
 		{
-			$status = $this->edd_get_license_status();
+			try
+			{
+				$status = $this->edd_get_license_status();
+			}
+			catch( Exception $e )
+			{
+				$status = (object)[
+					'license' => 'no connection',
+				];
+			}
 			$this->edd_set_cached_license_status( $status );
 		}
 		return $status;
@@ -302,7 +321,7 @@ trait edd
 	**/
 	public function edd_get_item_name()
 	{
-		throw new \Exception( 'Override edd_get_item_name' );
+		throw new Exception( 'Override edd_get_item_name' );
 	}
 
 	/**
@@ -399,7 +418,7 @@ trait edd
 	**/
 	public function edd_get_url()
 	{
-		throw new \Exception( 'Override edd_get_url' );
+		throw new Exception( 'Override edd_get_url' );
 	}
 
 	/**
@@ -426,7 +445,7 @@ trait edd
 		$response = wp_remote_get( $url, [ 'timeout' => 15, 'sslverify' => false ] );
 
 		if ( is_wp_error( $response ) )
-			throw new \Exception( 'Invalid response from the updater service.' );
+			throw new Exception( 'Invalid response from the updater service.' );
 
 		return $response;
 	}

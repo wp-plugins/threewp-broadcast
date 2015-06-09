@@ -61,6 +61,11 @@
 					return;
 
 				$this.$blogs_container = $( '.blogs.html_section', $this );
+
+				// If there is no blogs selector, then there is nothing to do here.
+				if ( $this.$blogs_container.length < 1 )
+					return;
+
 				$this.$blog_inputs = $( 'input.checkbox', $this.$blogs_container );
 
 				// Container for selection change.
@@ -102,8 +107,15 @@
 					.appendTo( $this.$selection_change_container );
 
 				// Need to hide the blog list?
-				if ( broadcast_blogs_to_hide === undefined )
+				try
+				{
+					if ( broadcast_blogs_to_hide )
+						true;
+				}
+				catch( e )
+				{
 					broadcast_blogs_to_hide = 5;
+				}
 
 				if ( $this.$blog_inputs.length > broadcast_blogs_to_hide )
 				{

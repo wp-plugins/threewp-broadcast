@@ -22,6 +22,30 @@ class InputContainerTest extends TestCase
 	}
 
 	/**
+		@brief		Test the inputs() return count.
+		@since		2015-04-24 20:09:13
+	**/
+	public function test_count()
+	{
+		$form = $this->form();
+		$this->assertEquals( count( $form->inputs() ), 0 );
+
+		$fieldset = $form->fieldset( 'fieldsettest' );
+		// The form should now contain the fieldset.
+		$this->assertEquals( count( $form->inputs() ), 1 );
+
+		$fieldset->text( 'text1' )->value( 'text 1' );
+		// Form contains fieldset + text 1
+		$this->assertEquals( count( $form->inputs() ), 2 );
+		$fieldset->text( 'text2' )->value( 'text 2' );
+		// Form contains fieldset + text 1 + text 2
+		$this->assertEquals( count( $form->inputs() ), 3 );
+
+		// But the fieldset only contains text1 and text2.
+		$this->assertEquals( count( $fieldset->inputs() ), 2 );
+	}
+
+	/**
 		@brief		hidden() for containers is the same as hidden() for inputs.
 	**/
 	public function test_hidden()

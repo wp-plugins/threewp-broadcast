@@ -39,6 +39,24 @@ class plugins
 	}
 
 	/**
+		@brief		Return an array of groups containing the grouped plugins.
+		@since		2015-06-08 21:58:38
+	**/
+	public function by_groups()
+	{
+		$r = [];
+		foreach( $this->items as $plugin )
+		{
+			$group = $plugin->get_comment( 'group' );
+			if ( ! isset( $r[ $group ] ) )
+				$r[ $group ] = [];
+			$r[ $group ] []= $plugin;
+		}
+		ksort( $r );
+		return $r;
+	}
+
+	/**
 		@brief		Deactivate all loaded plugins.
 		@since		2014-09-28 14:01:14
 	**/

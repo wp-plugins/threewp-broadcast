@@ -119,7 +119,7 @@ broadcast_popup = function( options )
                 $this.click( function()
                 {
                 	// Get the post ID.
-                	$tr = $this.parentsUntil( 'tr.level-0' ).parent();
+                	$tr = $this.parentsUntil( 'tbody#the-list' ).last();
                 	var id = $tr.prop( 'id' ).replace( 'post-', '' );
 
                 	$this.$popup = broadcast_popup({
@@ -252,6 +252,11 @@ broadcast_popup = function( options )
 					return;
 
 				$this.$blogs_container = $( '.blogs.html_section', $this );
+
+				// If there is no blogs selector, then there is nothing to do here.
+				if ( $this.$blogs_container.length < 1 )
+					return;
+
 				$this.$blog_inputs = $( 'input.checkbox', $this.$blogs_container );
 
 				// Container for selection change.
@@ -293,8 +298,15 @@ broadcast_popup = function( options )
 					.appendTo( $this.$selection_change_container );
 
 				// Need to hide the blog list?
-				if ( broadcast_blogs_to_hide === undefined )
+				try
+				{
+					if ( broadcast_blogs_to_hide )
+						true;
+				}
+				catch( e )
+				{
 					broadcast_blogs_to_hide = 5;
+				}
 
 				if ( $this.$blog_inputs.length > broadcast_blogs_to_hide )
 				{
@@ -447,52 +459,8 @@ broadcast_popup = function( options )
     }); // $.fn.extend({
 } )( jQuery );
 ;
-/**
-	@brief		Ajaxify the settings page.
-	@since		2014-11-02 09:47:46
-**/
-;(function( $ )
-{
-    $.fn.extend(
-    {
-        broadcast_settings: function()
-        {
-            return this.each( function()
-            {
-                var $this = $(this);
-
-				// Ajaxify the whitelist / blacklist
-				$this.$broadcast_internal_fields = $( '#plainview_sdk_broadcast_form2_inputs_checkbox_broadcast_internal_custom_fields', $this );
-				$this.$blacklist = $( '#plainview_sdk_broadcast_form2_inputs_textarea_custom_field_blacklist', $this );
-				$this.$protectlist = $( '#plainview_sdk_broadcast_form2_inputs_textarea_custom_field_protectlist', $this );
-				$this.$whitelist = $( '#plainview_sdk_broadcast_form2_inputs_textarea_custom_field_whitelist', $this );
-
-				// Fade in the respective settings when the internal fields box is clicked.
-				$this.$broadcast_internal_fields.change( function()
-				{
-					var checked = $( this ).prop( 'checked' );
-
-					if ( checked )
-					{
-						$this.$blacklist.prop( 'readonly', ! checked ).fadeTo( 200, 1.0 );
-						$this.$protectlist.prop( 'readonly', ! checked ).fadeTo( 200, 1.0 );
-						$this.$whitelist.prop( 'readonly', checked ).fadeTo( 200, 0.5 );
-					}
-					else
-					{
-						$this.$blacklist.prop( 'readonly', ! checked ).fadeTo( 200, 0.5 );
-						$this.$protectlist.prop( 'readonly', ! checked ).fadeTo( 200, 0.5 );
-						$this.$whitelist.prop( 'readonly', checked ).fadeTo( 200, 1.0 );
-					}
-				} ).change();
-            } ); // return this.each( function()
-        } // plugin: function()
-    } ); // $.fn.extend({
-} )( jQuery );
-;
 jQuery(document).ready( function( $ )
 {
-	$( 'form#broadcast_settings' ).broadcast_settings();
 	$( '#threewp_broadcast.postbox' ).broadcast_postbox();
 	$( '#posts-filter' ).broadcast_post_bulk_actions();
 	$( '#posts-filter td.3wp_broadcast a.broadcast.post' ).broadcast_post_actions();
