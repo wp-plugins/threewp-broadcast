@@ -17,7 +17,7 @@ class action
 	public $child_blog_id = 0;
 
 	/**
-		@brief		IN: The action slub.
+		@brief		IN: The action slug.
 		@details	For example: delete, trash, restore, etc.
 		@since		2014-11-02 21:37:35
 	**/

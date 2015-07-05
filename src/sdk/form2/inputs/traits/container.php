@@ -216,13 +216,12 @@ trait container
 		$r = new \plainview\sdk_broadcast\collections\collection;
 		foreach( $this->inputs as $input )
 		{
+			$r->append( $input );
 			if ( method_exists( $input, 'inputs' ) )
 			{
 				foreach( $input->inputs() as $contained_input )
 					$r->append( $contained_input );
 			}
-			else
-				$r->append( $input );
 		}
 		return $r;
 	}
