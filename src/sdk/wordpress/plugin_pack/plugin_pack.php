@@ -72,7 +72,13 @@ abstract class plugin_pack
 	public function get_plugins_table()
 	{
 		$form = $this->form2();
-		$r = '';
+		$r = '<style>
+			table.plugin_pack th.plugin_group
+			{
+				background-color: #ddd;
+				font-weight: bold;
+			}
+		</style>';
 		$table = $this->table();
 
 		$plugins = new plugins( $this );
@@ -138,7 +144,7 @@ abstract class plugin_pack
 		foreach( $plugins->by_groups() as $group => $plugins )
 			foreach( $plugins as $plugin )
 			{
-				$group = $plugin->get_comment( 'group' );
+				$group = $plugin->get_comment( 'plugin_group' );
 
 				if ( $old_group != $group )
 				{

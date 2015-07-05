@@ -50,6 +50,7 @@ trait attachments
 			'post_author' => $attachment_data->post->post_author,
 			'post_excerpt' => $attachment_data->post->post_excerpt,
 			'post_mime_type' => $wp_filetype[ 'type' ],
+            'post_name' => $attachment_data->post->post_name,
 			'post_title' => $attachment_data->post->post_title,
 			'post_content' => '',
 			'post_status' => 'inherit',

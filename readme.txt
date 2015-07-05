@@ -74,7 +74,18 @@ For a complete list of features and more information, see <a href="https://plain
 
 = Documentation =
 
-Although Broadcast is relatively easy to understand by itself, for extra documentation see <a href="https://plainviewplugins.com/threewp-broadcast/">Broadcast's online documentation</a>.
+Although Broadcast is relatively easy to understand by itself, for extra documentation see <a href="https://plainviewplugins.com/threewp-broadcast/">Broadcast's online documentation</a>, which covers:
+
+* <a href="https://plainviewplugins.com/threewp-broadcast/documentation/attachments-images-and-media/">Attachments, images and media</a>
+* <a href="https://plainviewplugins.com/threewp-broadcast/documentation/custom-fields/">Custom fields</a>
+* <a href="https://plainviewplugins.com/threewp-broadcast/documentation/linking/">Linking</a>
+* <a href="https://plainviewplugins.com/threewp-broadcast/documentation/post-actions/">Post actions and the bulk action dropdown</a>
+
+For developers: the code should be well-commented and easily legible for the most part. Extra developer documentation covers:
+
+* <a href="https://plainviewplugins.com/threewp-broadcast/documentation/developer-api/">API</a>
+* <a href="https://plainviewplugins.com/threewp-broadcast/documentation/developer-actions/">Actions</a>
+* <a href="https://plainviewplugins.com/threewp-broadcast/documentation/developer-post-actions/">Post actions</a>
 
 = Misc =
 
@@ -212,6 +223,19 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 21 20150705 =
+* New: Broadcast now hooks into the network admin menu.
+* Fix: Attachments that are also the featured image will no longer be deleted. This fixes broken links to the two images, which are actually the same.
+* Fix: Copied attachments are given the names from the original attachment. See https://github.com/the-plainview/threewp_broadcast/pull/31
+* Fix: Display the blog domain in the meta box if the blog name is empty.
+* Code: API release. See src/api.php
+* Code: threewp_broadcast_get_user_writable_blogs, threewp_broadcast_maybe_clear_post hook priority changed from 11 to 100.
+* Code: threewp_broadcast_get_post_types, threewp_broadcast_menu, threewp_broadcast_prepare_meta_box, threewp_broadcast_wp_insert_term, threewp_broadcast_wp_update_term, threewp_broadcast_manage_posts_custom_column priority change from 9 to 5.
+* Code: New attachment_data/copied_attachments helper.
+* Code: broadcasting_data->broadcast_to() can now take a simple blog ID integer.
+* Code: broadcasting_data handles more setup itself, instead of relying on others.
+* Code: broadcasting_data now defaults to true for custom fields, linking and taxonomies.
 
 = 20 20150609 =
 * New: Custom field handling has been simplified. The "broadcast internal field" setting has been removed and the blacklist, whitelist and protect list now apply to all fields.

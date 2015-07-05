@@ -47,7 +47,7 @@ class plugins
 		$r = [];
 		foreach( $this->items as $plugin )
 		{
-			$group = $plugin->get_comment( 'group' );
+			$group = $plugin->get_comment( 'plugin_group' );
 			if ( ! isset( $r[ $group ] ) )
 				$r[ $group ] = [];
 			$r[ $group ] []= $plugin;

@@ -11,6 +11,25 @@ use \threewp_broadcast\broadcast_data\blog;
 
 /**
 	@brief		Methods related to actual broadcasting of a post.
+	@details
+
+	Before you try to broadcast anything, check if Broadcast is installed.
+
+	<code>
+	if ( ! function_exists( 'ThreeWP_Broadcast' ) )
+		return false;
+	</code>
+
+	Now you are sure that the broadcasting_data object exists.
+
+	<code>
+	// Broadcast the post 12345, from this blog, to blogs 123, 456 and 789.
+	$bcd = \threewp_broadcast\broadcasting_data::make( 12345, [ 123, 456, 789 ] );
+
+	// Call on Broadcast to send it all away.
+	do_action( 'threewp_broadcast_broadcast_post', $bcd );
+	</code>
+
 	@since		2014-10-19 15:44:39
 **/
 trait broadcasting
@@ -468,11 +487,15 @@ trait broadcasting
 				$new_upload_dir = wp_upload_dir();
 				foreach( $bcd->copied_attachments as $a )
 				{
+					$count = 0;
 					// Replace the GUID with the new one.
-					$modified_post->post_content = str_replace( $a->old->guid, $a->new->guid, $modified_post->post_content );
+					$modified_post->post_content = str_replace( $a->old->guid, $a->new->guid, $modified_post->post_content, $count );
+					if ( $count > 0 )
+						$this->debug( 'Modified attachment guid from %s to %s: %s times', $a->old->guid, $a->new->guid, $count );
 					// And replace the IDs present in any image captions.
-					$modified_post->post_content = str_replace( 'id="attachment_' . $a->old->id . '"', 'id="attachment_' . $a->new->id . '"', $modified_post->post_content );
-					$this->debug( 'Modifying attachment link from %s to %s', $a->old->id, $a->new->id );
+					$modified_post->post_content = str_replace( 'id="attachment_' . $a->old->id . '"', 'id="attachment_' . $a->new->id . '"', $modified_post->post_content, $count );
+					if ( $count > 0 )
+						$this->debug( 'Modified attachment link from %s to %s: %s times', $a->old->id, $a->new->id, $count );
 				}
 			}
 			else
@@ -586,24 +609,33 @@ trait broadcasting
 				// Attached files are custom fields... but special custom fields.
 				if ( $bcd->has_thumbnail )
 				{
-					$this->debug( 'Custom fields: Re-adding thumbnail.' );
 					$o = clone( $bcd );
 					$o->attachment_data = $bcd->attachment_data[ 'thumbnail' ];
+					$o->attachment_id = $bcd->copied_attachments()->get( $o->attachment_data->post->ID );
 
-					if ( $o->attachment_data->is_attached_to_parent() )
+					if ( $o->attachment_id > 0 )
 					{
-						$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post( 'ID' ), $o->attachment_data->post->ID );
-						$o->attachment_data->post->post_parent = $bcd->new_post( 'ID' );
+						$this->debug( 'Custom fields: Thumbnail already exists as another attachment. Using that.' );
 					}
 					else
 					{
-						$this->debug( 'Resetting post parent for attachment %s.', $o->attachment_data->post->ID );
-						$o->attachment_data->post->post_parent = 0;
+						$this->debug( 'Custom fields: Re-adding thumbnail.' );
+						if ( $o->attachment_data->is_attached_to_parent() )
+						{
+							$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post( 'ID' ), $o->attachment_data->post->ID );
+							$o->attachment_data->post->post_parent = $bcd->new_post( 'ID' );
+						}
+						else
+						{
+							$this->debug( 'Resetting post parent for attachment %s.', $o->attachment_data->post->ID );
+							$o->attachment_data->post->post_parent = 0;
+						}
+
+						$this->debug( 'Custom fields: Maybe copying attachment.' );
+						$this->maybe_copy_attachment( $o );
+						$this->debug( 'Custom fields: Maybe copied attachment.' );
 					}
 
-					$this->debug( 'Custom fields: Maybe copying attachment.' );
-					$this->maybe_copy_attachment( $o );
-					$this->debug( 'Custom fields: Maybe copied attachment.' );
 					if ( $o->attachment_id !== false )
 					{
 						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post( 'ID' ), $o->attachment_id );
@@ -629,13 +661,13 @@ trait broadcasting
 
 			if ( $bcd->link )
 			{
-				$this->debug( 'Saving broadcast data of child.' );
 				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
 				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
+				$this->debug( 'Saving broadcast data of child: %s', $new_post_broadcast_data );
 				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ), $new_post_broadcast_data );
 
 				// Save the parent also.
-				$this->debug( 'Saving parent broadcast data.' );
+				$this->debug( 'Saving parent broadcast data: %s', $bcd->broadcast_data );
 				$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $bcd->broadcast_data );
 			}
 
@@ -739,35 +771,13 @@ trait broadcasting
 
 		$this->debug( 'We are currently on blog %s (%s).', get_bloginfo( 'blogname' ), get_current_blog_id() );
 
-		$meta_box_data = $this->create_meta_box( $post );
-
-		$this->debug( 'Preparing the meta box.' );
-
-		// Allow plugins to modify the meta box with their own info.
-		$action = new actions\prepare_meta_box;
-		$action->meta_box_data = $meta_box_data;
-		$action->execute();
-
-		$this->debug( 'Prepared.' );
-
-		// Post the form.
-		if ( ! $meta_box_data->form->has_posted )
-		{
-			$meta_box_data->form->post();
-			$meta_box_data->form->use_post_values();
-		}
-
 		$broadcasting_data = new broadcasting_data( [
-			'_POST' => $_POST,
-			'meta_box_data' => $meta_box_data,
-			'parent_blog_id' => get_current_blog_id(),
 			'parent_post_id' => $post_id,
-			'post' => $post,
-			'upload_dir' => wp_upload_dir(),
 		] );
 
 		$this->debug( 'Preparing the broadcasting data.' );
 
+		// This is to fetch the selected blogs from the meta box.
 		$action = new actions\prepare_broadcasting_data;
 		$action->broadcasting_data = $broadcasting_data;
 		$action->execute();
@@ -789,21 +799,14 @@ trait broadcasting
 	**/
 	public function threewp_broadcast_broadcast_post( $broadcasting_data )
 	{
-		if ( ! is_a( $broadcasting_data, get_class( new broadcasting_data ) ) )
+		if ( ! is_a( $broadcasting_data, '\\threewp_broadcast\\broadcasting_data' ) )
 			return $broadcasting_data;
 		return $this->broadcast_post( $broadcasting_data );
 	}
 
 	/**
-		@brief		Fill the broadcasting_data object with information.
-
-		@details
-
-		The difference between the calculations in this filter and the actual broadcast_post method is that this filter
-
-		1) does access checks
-		2) tells broadcast_post() WHAT to broadcast, not how.
-
+		@brief		Modifies the broadcasting_data according to the users's input in the meta box (blogs) and the user's roles.
+		@details	Only does any real good when parsing user input from a meta box, for example during normal editing or using Send To Many or UBS Post.
 		@since		20131004
 	**/
 	public function threewp_broadcast_prepare_broadcasting_data( $action )
@@ -821,8 +824,6 @@ trait broadcasting
 			return;
 
 		$form = $bcd->meta_box_data->form;
-		if ( $form->is_posting() && ! $form->has_posted )
-				$form->post();
 
 		// Collect the list of blogs from the meta box.
 		$blogs_input = $form->input( 'blogs' );
@@ -831,19 +832,11 @@ trait broadcasting
 			{
 				$blog_id = $blog_input->get_name();
 				$blog_id = str_replace( 'blogs_', '', $blog_id );
-				$blog = new blog;
-				$blog->id = $blog_id;
-				$bcd->broadcast_to( $blog );
+				$bcd->broadcast_to( $blog_id );
 			}
 
-		// Remove the current blog
+		// Remove the parent blog
 		$bcd->blogs->forget( $bcd->parent_blog_id );
-
-		$bcd->post_type_object = get_post_type_object( $bcd->post->post_type );
-		$bcd->post_type_supports_thumbnails = post_type_supports( $bcd->post->post_type, 'thumbnail' );
-		//$bcd->post_type_supports_custom_fields = post_type_supports( $bcd->post->post_type, 'custom-fields' );
-		$bcd->post_type_supports_custom_fields = true;
-		$bcd->post_type_is_hierarchical = $bcd->post_type_object->hierarchical;
 
 		$bcd->custom_fields = $form->checkbox( 'custom_fields' )->get_post_value()
 			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) );

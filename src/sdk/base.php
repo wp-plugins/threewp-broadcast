@@ -13,6 +13,7 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20150624		Update Wordpress updater to 1.6
 	- 20150608		Wordpress plugin pack: allow plugin grouping by specifying @group in comment.
 	- 20150604		Wordpress debug trait now escapes the variables.
 	- 20150519		Mail: add sprintf support to the html, subject and text methods.
@@ -159,7 +160,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20150608;
+	protected $sdk_version = 20150624;
 
 	/**
 		@brief		Constructor.

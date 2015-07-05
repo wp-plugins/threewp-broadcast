@@ -98,25 +98,31 @@ class ThreeWP_Broadcast
 			$this->add_filter( 'post_type_link', 'post_link', 10, 3 );
 		}
 
+		$this->add_action( 'network_admin_menu', 'admin_menu' );
+
 		$this->add_filter( 'threewp_broadcast_add_meta_box' );
 		$this->add_filter( 'threewp_broadcast_admin_menu', 'add_post_row_actions_and_hooks', 100 );
-		$this->add_filter( 'threewp_broadcast_broadcast_post' );
+
+		// This is a normal broadcast action, not a special action object. This is a holdover from the good old days from when Broadcast used normal actions.
+		// Don't want to break anyone's plugins.
+		$this->add_action( 'threewp_broadcast_broadcast_post' );
+
 		$this->add_action( 'threewp_broadcast_copy_attachment', 100 );
 		$this->add_action( 'threewp_broadcast_each_linked_post' );
 		$this->add_action( 'threewp_broadcast_get_post_actions' );
 		$this->add_action( 'threewp_broadcast_get_post_bulk_actions' );
-		$this->add_action( 'threewp_broadcast_get_user_writable_blogs', 11 );		// Allow other plugins to do this first.
-		$this->add_filter( 'threewp_broadcast_get_post_types', 9 );					// Add our custom post types to the array of broadcastable post types.
-		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 9 );		// Just before the standard 10.
-		$this->add_action( 'threewp_broadcast_maybe_clear_post', 11 );
-		$this->add_action( 'threewp_broadcast_menu', 9 );
+		$this->add_action( 'threewp_broadcast_get_user_writable_blogs', 100 );		// Allow other plugins to do this first.
+		$this->add_filter( 'threewp_broadcast_get_post_types', 5 );					// Add our custom post types to the array of broadcastable post types.
+		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 5 );
+		$this->add_action( 'threewp_broadcast_maybe_clear_post', 100 );
+		$this->add_action( 'threewp_broadcast_menu', 5 );
 		$this->add_action( 'threewp_broadcast_menu', 'threewp_broadcast_menu_final', 100 );
 		$this->add_action( 'threewp_broadcast_post_action' );
 		$this->add_action( 'threewp_broadcast_prepare_broadcasting_data' );
-		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 9 );
+		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 5 );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
-		$this->add_action( 'threewp_broadcast_wp_insert_term', 9 );
-		$this->add_action( 'threewp_broadcast_wp_update_term', 9 );
+		$this->add_action( 'threewp_broadcast_wp_insert_term', 5 );
+		$this->add_action( 'threewp_broadcast_wp_update_term', 5 );
 		$this->add_action( 'wp_ajax_broadcast_post_action_form' );
 		$this->add_action( 'wp_ajax_broadcast_post_bulk_action' );
 
@@ -474,6 +480,15 @@ class ThreeWP_Broadcast
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Misc functions
 	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Return the API class.
+		@since		2015-06-16 22:21:22
+	**/
+	public function api()
+	{
+		return new api();
+	}
 
 	/**
 		@brief		Convenience function to return a Plainview SDK Collection.

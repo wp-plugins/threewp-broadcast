@@ -92,8 +92,8 @@ class plugin
 
 			if ( ( strlen( $line ) > 0 ) && ( $line[ 0 ] == '@' ) )
 			{
-				$current_key = preg_replace( '/@([a-zA-Z0-9]*).*/', '\1', $line );
-				$text = preg_replace( '/@[a-zA-Z0-9]*[\t]*+/', '', $line );
+				$current_key = preg_replace( '/@([a-zA-Z_0-9]*).*/', '\1', $line );
+				$text = preg_replace( '/@[a-zA-Z_0-9]*[\t]*+/', '', $line );
 				if ( $text == '' )
 					continue;
 			}
