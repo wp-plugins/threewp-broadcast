@@ -7,9 +7,18 @@ broadcast_popup = function( options )
 	$ = jQuery;
 
 	this.$popup = undefined;
-	this.html = '';
-	this.title = '';
+	this.$content = $( '<div>' );
+	this.$title = $( '<h1>' );
 	this.options = options;
+
+	/**
+		@brief		Clear the content.
+		@since		2015-07-07 21:33:35
+	**/
+	this.clear_content = function()
+	{
+		this.$content.empty();
+	}
 
 	/**
 		@brief		Close the popup.
@@ -31,6 +40,8 @@ broadcast_popup = function( options )
 		this.$popup = $( '<div>' )
 			.addClass( 'mfp-hide broadcast_popup' )
 			.appendTo( $( 'body' ) );
+		this.$title.appendTo( this.$popup );
+		this.$content.appendTo( this.$popup );
 		return this;
 	}
 
@@ -40,8 +51,6 @@ broadcast_popup = function( options )
 	**/
 	this.open = function()
 	{
-		this.update();
-
 		options = $.extend( this.options,
 		{
 			'items' :
@@ -58,15 +67,25 @@ broadcast_popup = function( options )
 	}
 
 	/**
-		@brief		Convenience function to set the popup's HTML.
+		@brief		Convenience function to set the popup's HTML content.
 		@since		2014-11-02 11:10:15
+	**/
+	this.set_content = function( html )
+	{
+		this.$content.html( html );
+		return this;
+	}
+
+	/**
+		@brief		Obsolete: Sets the popup's HTML content.
+		@since		2015-07-09 14:33:40
 	**/
 	this.set_html = function( html )
 	{
-		this.html = html;
-		this.update();
+		this.$content.html( html );
 		return this;
 	}
+
 
 	/**
 		@brief		Set a header 1 for the popup.
@@ -74,18 +93,7 @@ broadcast_popup = function( options )
 	**/
 	this.set_title = function( title )
 	{
-		this.title = title;
-		this.update();
-		return this;
-	}
-
-	/**
-		@brief		Update the contents of the popup.
-		@since		2014-11-02 15:35:09
-	**/
-	this.update = function()
-	{
-		this.$popup.html( '<h1>' + this.title + '</h1>' + this.html );
+		this.$title.html( title );
 		return this;
 	}
 

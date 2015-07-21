@@ -12,7 +12,12 @@ trait terms_and_taxonomies
 {
 	/**
 		@brief		Collects the post type's taxonomies into the broadcasting data object.
-		@details	Requires only that $bcd->post->post_type be filled in.
+		@details
+
+		The taxonomies are places in $bcd->parent_blog_taxonomies.
+		Requires only that $bcd->post->post_type be filled in.
+		If $bcd->post->ID exists, only the terms used in the post will be collected, else all the terms will be inserted into $bcd->parent_post_taxonomies[ taxonomy ].
+
 		@since		2014-04-08 13:40:44
 	**/
 	public function collect_post_type_taxonomies( $bcd )
@@ -21,15 +26,30 @@ trait terms_and_taxonomies
 		$bcd->parent_post_taxonomies = [];
 		foreach( $bcd->parent_blog_taxonomies as $parent_blog_taxonomy => $taxonomy )
 		{
-			// Parent blog taxonomy terms are used for creating missing target term ancestors
-			$bcd->parent_blog_taxonomies[ $parent_blog_taxonomy ] = [
-				'taxonomy' => $taxonomy,
-				'terms'    => $this->get_current_blog_taxonomy_terms( $parent_blog_taxonomy ),
-			];
 			if ( isset( $bcd->post->ID ) )
-				$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = get_the_terms( $bcd->post->ID, $parent_blog_taxonomy );
+				$taxonomy_terms = get_the_terms( $bcd->post->ID, $parent_blog_taxonomy );
 			else
-				$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = get_terms( [ $parent_blog_taxonomy ] );
+				$taxonomy_terms = get_terms( [ $parent_blog_taxonomy ], [
+					'hide_empty' => false,
+				] );
+
+			// No terms = empty = false.
+			if ( ! $taxonomy_terms )
+				$taxonomy_terms = [];
+
+			$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = $this->array_rekey( $taxonomy_terms, 'term_id' );
+
+			// Parent blog taxonomy terms are used for creating missing target term ancestors
+			$o = (object)[];
+			$o->taxonomy = $taxonomy;
+			$o->terms = $bcd->parent_post_taxonomies[ $parent_blog_taxonomy ];
+			$this->get_parent_terms( $o );
+
+			$bcd->parent_blog_taxonomies[ $parent_blog_taxonomy ] =
+			[
+				'taxonomy' => $taxonomy,
+				'terms'    => $o->terms,
+			];
 		}
 	}
 
@@ -41,6 +61,40 @@ trait terms_and_taxonomies
 		$terms = (array) $terms;
 		$terms = $this->array_rekey( $terms, 'term_id' );
 		return $terms;
+	}
+
+	/**
+		@brief		Return all of the terms and their parents.
+		@param		object	$taxonomy		The taxonomy object.
+		@param		array	$terms			The terms array.
+		@since		2015-01-14 22:18:39
+	**/
+	public function get_parent_terms( $o )
+	{
+		// Wanted terms = those which are referenced as parents which we don't know about.
+		$wanted_terms = [];
+		foreach( $o->terms as $term_id => $term )
+		{
+			$term = (object)$term;
+			$parent_term_id = $term->parent;
+			if ( $parent_term_id < 1 )
+				continue;
+			if ( ! isset( $o->terms[ $parent_term_id ] ) )
+				$wanted_terms[ $parent_term_id ] = true;
+		}
+
+		if ( count( $wanted_terms ) < 1 )
+			return;
+
+		// Fetch them and then try to find their parents.
+		$new_terms = get_terms( $o->taxonomy->name, [
+			'include' => array_keys( $wanted_terms ),
+		] );
+		foreach( $new_terms as $new_term )
+			$o->terms[ $new_term->term_id ] = $new_term;
+
+		// And since we have added new terms, they might have parents themselves.
+		$this->get_parent_terms( $o );
 	}
 
 	/**
@@ -57,55 +111,43 @@ trait terms_and_taxonomies
 	{
 		// Fetch the parent of the current term among the source terms
 		foreach ( $parent_blog_taxonomy_terms as $term )
-		{
-			if ( $term[ 'term_id' ] == $source_post_term[ 'parent' ] )
-			{
+			if ( $term->term_id == $source_post_term->parent )
 				$source_parent = $term;
-			}
-		}
 
 		if ( ! isset( $source_parent ) )
-		{
-			return 0; // Sanity check, the source term's parent doesn't exist! Orphan!
-		}
+			// Sanity check, the source term's parent doesn't exist! Orphan!
+			return 0;
 
 		// Check if the parent already exists at the target
 		foreach ( $target_blog_terms as $term )
-		{
-			if ( $term[ 'slug' ] === $source_parent[ 'slug' ] )
-			{
+			if ( $term->slug === $source_parent->slug )
 				// The parent already exists, return its ID
-				return $term[ 'term_id' ];
-			}
-		}
+				return $term->term_id;
 
 		// Does the parent also have a parent, and if so, should we create the parent?
 		$target_grandparent_id = 0;
-		if ( 0 != $source_parent[ 'parent' ] )
-		{
+		if ( 0 != $source_parent->parent )
 			// Recursively insert ancestors, and get the newly inserted parent's ID
 			$target_grandparent_id = $this->insert_term_ancestors( $source_parent, $source_post_taxonomy, $target_blog_terms, $parent_blog_taxonomy_terms );
-		}
 
 		// Check if the parent exists at the target grandparent
-		$term_id = term_exists( $source_parent[ 'name' ], $source_post_taxonomy, $target_grandparent_id );
+		$term_id = term_exists( $source_parent->name, $source_post_taxonomy, $target_grandparent_id );
 
-		if ( is_null( $term_id ) || 0 == $term_id )
+		if ( is_null( $term_id ) || $term_id == 0 )
 		{
 			// The target parent does not exist, we need to create it
-			$new_term = (object)$source_parent;
+			$new_term = $source_parent;
 			$new_term->parent = $target_grandparent_id;
 			$action = new actions\wp_insert_term;
 			$action->taxonomy = $source_post_taxonomy;
 			$action->term = $new_term;
 			$action->execute();
-			$term_id = $action->new_term[ 'term_id' ];
+			if ( $action->new_term )
+				$term_id = $action->new_term->term_id;
 		}
 		elseif ( is_array( $term_id ) )
-		{
 			// The target parent exists and we got an array as response, extract parent id
 			$term_id = $term_id[ 'term_id' ];
-		}
 
 		return $term_id;
 	}
@@ -113,6 +155,10 @@ trait terms_and_taxonomies
 	/**
 		@brief		Syncs the terms of a taxonomy from the parent blog in the BCD to the current blog.
 		@details	If $bcd->add_new_taxonomies is set, new taxonomies will be created, else they are ignored.
+
+		Upon syncing, the broadcasting data will contain an array of the equivalent source terms <-> child terms in:
+		$bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ][ $blog_id ]
+
 		@param		broadcasting_data		$bcd			The broadcasting data.
 		@param		string					$taxonomy		The taxonomy to sync.
 		@since		20131004
@@ -120,7 +166,19 @@ trait terms_and_taxonomies
 	public function sync_terms( $bcd, $taxonomy )
 	{
 		$source_terms = $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ];
-		$target_terms = $this->get_current_blog_taxonomy_terms( $taxonomy );
+
+		if ( ! isset( $bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ] ) )
+			$bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ] = [];
+
+		// Select only those terms that exist in the blog. We select them by slugs.
+		$needed_slugs = [];
+		foreach( $source_terms as $source_term )
+			$needed_slugs[ $source_term->slug ] = true;
+		$target_terms = get_terms( $taxonomy, [
+			'slug' => array_keys( $needed_slugs ),
+			'hide_empty' => false,
+		] );
+		$target_terms = $this->array_rekey( $target_terms, 'term_id' );
 
 		$refresh_cache = false;
 
@@ -134,10 +192,10 @@ trait terms_and_taxonomies
 		// Rekey the terms in order to find them faster.
 		$source_slugs = [];
 		foreach( $source_terms as $source_term_id => $source_term )
-			$source_slugs[ $source_term[ 'slug' ] ] = $source_term_id;
+			$source_slugs[ $source_term->slug ] = $source_term_id;
 		$target_slugs = [];
-		foreach( $target_terms as $target_term_id => $target_term )
-			$target_slugs[ $target_term[ 'slug' ] ] = $target_term_id;
+		foreach( $target_terms as $target_term )
+			$target_slugs[ $target_term->slug ] = $target_term->term_id;
 
 		// Step 1.
 		$this->debug( 'Find out which of the source terms exist on the target blog.' );
@@ -158,26 +216,30 @@ trait terms_and_taxonomies
 			$this->debug( '%s taxonomies are missing on this blog.', count( $unfound_sources ) );
 			foreach( $unfound_sources as $unfound_source_id => $unfound_source )
 			{
-				$unfound_source = (object)$unfound_source;
+				// We need to clone to unset the parent.
+				$unfound_source = clone( $unfound_source );
 				unset( $unfound_source->parent );
 				$action = new actions\wp_insert_term;
 				$action->taxonomy = $taxonomy;
 				$action->term = $unfound_source;
 				$action->execute();
 
-				$new_taxonomy = $action->new_term;
-				$new_taxonomy_id = $new_taxonomy[ 'term_id' ];
-				$target_terms[ $new_taxonomy_id ] = (array)$new_taxonomy;
-				$found_sources[ $unfound_source_id ] = $new_taxonomy_id;
-				$found_targets[ $new_taxonomy_id ] = $unfound_source_id;
-
-				$refresh_cache = true;
+				if ( $action->new_term )
+				{
+					$new_term = $action->new_term;
+					$new_term_id = $new_term->term_id;
+					$target_terms[ $new_term_id ] = $new_term;
+					$found_sources[ $unfound_source_id ] = $new_term_id;
+					$found_targets[ $new_term_id ] = $unfound_source_id;
+					$refresh_cache = true;
+				}
 			}
 		}
 
 		// Now we know which of the terms on our target blog exist on the source blog.
 		// Next step: see if the parents are the same on the target as they are on the source.
 		// "Same" meaning pointing to the same slug.
+
 		$this->debug( 'About to update taxonomy terms.' );
 		foreach( $found_targets as $target_term_id => $source_term_id)
 		{
@@ -188,22 +250,18 @@ trait terms_and_taxonomies
 			$action->taxonomy = $taxonomy;
 
 			// The old term is the target term, since it contains the old values.
-			$action->old_term = (object)$target_terms[ $target_term_id ];
+			$action->set_old_term( $target_term );
 			// The new term is the source term, since it has the newer data.
-			$action->new_term = (object)$source_terms[ $source_term_id ];
+			$action->set_new_term( $source_term );
 
 			// ... but the IDs have to be switched around, since the target term has the new ID.
 			$action->switch_data();
 
-			// Update the parent.
-			$parent_of_equivalent_source_term = $source_term->parent;
-			$parent_of_target_term = $target_term->parent;
-
-			$new_parent = 0;
 			// Does the source term even have a parent?
-			if ( $parent_of_equivalent_source_term > 0 )
+			if ( $source_term->parent > 0 )
 			{
-				// Did we find the parent term?
+				$parent_of_equivalent_source_term = $source_term->parent;
+				// Does the parent of the source have an equivalent target?
 				if ( isset( $found_sources[ $parent_of_equivalent_source_term ] ) )
 					$new_parent = $found_sources[ $parent_of_equivalent_source_term ];
 			}
@@ -216,10 +274,33 @@ trait terms_and_taxonomies
 			$refresh_cache |= $action->updated;
 		}
 
+		// Save the equivalent sources for later use.
+		$blog_id = get_current_blog_id();
+		$bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ][ $blog_id ] = $found_sources;
+
 		// wp_update_category alone won't work. The "cache" needs to be cleared.
 		// see: http://wordpress.org/support/topic/category_children-how-to-recalculate?replies=4
 		if ( $refresh_cache )
 			delete_option( 'category_children' );
+	}
+
+	/**
+		@brief		Convert all terms of a taxonomy into a tree.
+		@since		2015-07-11 22:22:04
+	**/
+	public function taxonomy_terms_to_tree( $taxonomy )
+	{
+		$terms = get_terms( $taxonomy, [
+			'hide_empty' => false,
+		] );
+		$tree = new \plainview\sdk_broadcast\tree\tree();
+		// Add root node 0, so that the terms can attach themselves to it.
+		foreach( $terms as $term )
+		{
+			$parent = ( $term->parent > 0 ? absint( $term->parent ) : null );
+			$tree->add( intval( $term->term_id ), $term, $parent );
+		}
+		return $tree;
 	}
 
 	/**
@@ -228,6 +309,9 @@ trait terms_and_taxonomies
 	**/
 	public function threewp_broadcast_wp_insert_term( $action )
 	{
+		if ( $action->is_finished() )
+			return;
+
 		if ( ! isset( $action->term->parent ) )
 			$action->term->parent = 0;
 
@@ -255,15 +339,18 @@ trait terms_and_taxonomies
 			}
 			else
 			{
-				throw new Exception( 'Unable to create a new term.' );
+				throw new \Exception( 'Unable to create a new term.' );
 			}
 		}
 
-		$term_taxonomy_id = $term[ 'term_taxonomy_id' ];
+		$term = (object)$term;
+		$term_taxonomy_id = $term->term_taxonomy_id;
 
 		$this->debug( 'Created the new term %s with the term taxonomy ID of %s.', $action->term->name, $term_taxonomy_id );
 
-		$action->new_term = get_term_by( 'term_taxonomy_id', $term_taxonomy_id, $action->taxonomy, ARRAY_A );
+		$action->new_term = get_term_by( 'term_taxonomy_id', $term_taxonomy_id, $action->taxonomy );
+
+		$action->finish();
 	}
 
 	/**
