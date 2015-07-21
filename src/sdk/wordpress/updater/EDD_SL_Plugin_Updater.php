@@ -1,5 +1,7 @@
 <?php
 
+namespace plainview\sdk_broadcast\wordpress\updater;
+
 // uncomment this line for testing
 //set_site_transient( 'update_plugins', null );
 
@@ -71,7 +73,7 @@ class EDD_SL_Plugin_Updater {
 		global $pagenow;
 
 		if( ! is_object( $_transient_data ) ) {
-			$_transient_data = new stdClass;
+			$_transient_data = new \stdClass;
 		}
 
 		if( 'plugins.php' == $pagenow && is_multisite() ) {
@@ -129,6 +131,7 @@ class EDD_SL_Plugin_Updater {
 		if ( ! is_object( $update_cache ) || empty( $update_cache->response ) || empty( $update_cache->response[ $this->name ] ) ) {
 
 			$cache_key    = md5( 'edd_plugin_' .sanitize_key( $this->name ) . '_version_info' );
+			$update_cache = (object)array();
 			$version_info = get_transient( $cache_key );
 
 			if( false === $version_info ) {

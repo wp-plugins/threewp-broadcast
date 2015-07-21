@@ -25,9 +25,8 @@ class blog
 
 	public function __toString()
 	{
-		switch_to_blog( $this->id );
-		$r = get_bloginfo( 'blogname' );
-		restore_current_blog();
+		$info = get_blog_details( $this->id );
+		$r = $info->blogname ? $info->blogname : $info->domain . $info->path;
 		return $r . '';
 	}
 

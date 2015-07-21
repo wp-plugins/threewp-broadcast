@@ -2,9 +2,6 @@
 
 namespace plainview\sdk_broadcast\wordpress\updater;
 
-if( ! class_exists( 'EDD_SL_Plugin_Updater' ) )
-	require_once( dirname( __FILE__ ) . '/EDD_SL_Plugin_Updater.php' );
-
 use \Exception;
 
 /**
@@ -255,7 +252,7 @@ trait edd
 		if ( $status->license != 'valid' )
 			return;
 
-		$edd_updater = new \EDD_SL_Plugin_Updater
+		$edd_updater = new EDD_SL_Plugin_Updater
 		(
 			$this->edd_get_url(),
 			$this->paths[ '__FILE__' ],

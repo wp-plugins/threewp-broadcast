@@ -30,16 +30,6 @@ trait post_actions
 				$this->add_action( 'manage_pages_custom_column', 'manage_posts_custom_column', 10, 2 );
 			}
 
-			// Hook into the actions so that we can keep track of the broadcast data.
-			$this->add_action( 'wp_trash_post', 'trash_post' );
-			$this->add_action( 'trash_post' );
-			$this->add_action( 'trash_page', 'trash_post' );
-
-			$this->add_action( 'untrash_post' );
-			$this->add_action( 'untrash_page', 'untrash_post' );
-
-			$this->add_action( 'delete_post' );
-			$this->add_action( 'delete_page', 'delete_post' );
 		}
 	}
 
@@ -62,10 +52,6 @@ trait post_actions
 				};
 			</script>
 		' );
-
-		// Enqueue the popup js.
-		wp_enqueue_script( 'magnific-popup', $this->paths[ 'url' ] . '/js/jquery.magnific-popup.min.js', '', $this->plugin_version );
-		wp_enqueue_style( 'magnific-popup', $this->paths[ 'url' ] . '/css/magnific-popup.css', '', $this->plugin_version  );
 
 		$defaults[ '3wp_broadcast' ] = '<span title="'.$this->_( 'Shows which blogs have posts linked to this one' ).'">'.$this->_( 'Broadcasted' ).'</span>';
 		return $defaults;
@@ -182,7 +168,8 @@ trait post_actions
 					foreach( $children as $child_blog_id => $child_post_id )
 					{
 						switch_to_blog( $child_blog_id );
-						$blogname = get_bloginfo( 'blogname' );
+						$info = get_blog_details();
+						$blogname = $info->blogname ? $info->blogname : $info->domain . $info->path;
 						$links[ $blogname ] = sprintf( '&#x21e8; %s', $blogname );
 						restore_current_blog();
 					}
@@ -482,8 +469,10 @@ trait post_actions
 			foreach( $children as $child_blog_id => $child_post_id )
 			{
 				switch_to_blog( $child_blog_id );
+				$info = get_blog_details();
+				$blogname = $info->blogname ? $info->blogname : $info->domain . $info->path;
 				$select = $form->select( $child_blog_id )
-					->label( get_bloginfo( 'blogname' ) )
+					->label( $blogname )
 					->prefix( 'blogs' )
 					->options( $options )
 					;

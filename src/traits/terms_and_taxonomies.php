@@ -285,6 +285,25 @@ trait terms_and_taxonomies
 	}
 
 	/**
+		@brief		Convert all terms of a taxonomy into a tree.
+		@since		2015-07-11 22:22:04
+	**/
+	public function taxonomy_terms_to_tree( $taxonomy )
+	{
+		$terms = get_terms( $taxonomy, [
+			'hide_empty' => false,
+		] );
+		$tree = new \plainview\sdk_broadcast\tree\tree();
+		// Add root node 0, so that the terms can attach themselves to it.
+		foreach( $terms as $term )
+		{
+			$parent = ( $term->parent > 0 ? absint( $term->parent ) : null );
+			$tree->add( intval( $term->term_id ), $term, $parent );
+		}
+		return $tree;
+	}
+
+	/**
 		@brief		Allows Broadcast plugins to update the term with their own info.
 		@since		2014-04-08 15:12:05
 	**/

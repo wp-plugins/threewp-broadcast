@@ -3,8 +3,8 @@
 namespace threewp_broadcast;
 
 use \Exception;
-use \threewp_broadcast\broadcast_data\blog;
 use \threewp_broadcast\actions;
+use \threewp_broadcast\broadcast_data\blog;
 
 /**
 	@brief		This is general purpose container for storing and working with all the data necessary to broadcast posts.
@@ -277,6 +277,24 @@ class broadcasting_data
 	}
 
 	/**
+		@brief		Convenience method to add an attachment from the current blog our array.
+		@details	The attachments will be copied over to the child blog.
+		@return		bool True if the attachment was added. False if the attachment already exists.
+		@since		2015-07-11 09:00:14
+	**/
+	public function add_attachment( $id )
+	{
+		if ( $id < 1 )
+			return false;
+
+		if ( isset( $this->attachment_data[ $id ] ) )
+			return false;
+
+		$ad = attachment_data::from_attachment_id( $id, $this->upload_dir );
+		$this->attachment_data[ $id ] = $ad;
+	}
+
+	/**
 		@brief		Add a blog or blogs to which to broadcast.
 		@param		mixed		$blog			A broadcast_data\blog object, an array of such objects, or an int.
 		@return		this						Method chaining.
@@ -334,6 +352,23 @@ class broadcasting_data
 	public function equivalent_posts()
 	{
 		return $this->equivalent_posts;
+	}
+
+	/**
+		@brief		Find the equivalent taxonomy term ID on this blog.
+		@since		2015-07-10 13:59:17
+	**/
+	public function equivalent_taxonomy_term_id( $source_term_id )
+	{
+		$blog_id = get_current_blog_id();
+
+		foreach( $this->parent_blog_taxonomies as $taxonomy_name => $data )
+		{
+			if ( ! isset( $data[ 'equivalent_terms' ][ $blog_id ][ $source_term_id ] ) )
+				continue;
+			return $data[ 'equivalent_terms' ][ $blog_id ][ $source_term_id ];
+		}
+		return false;
 	}
 
 	/**

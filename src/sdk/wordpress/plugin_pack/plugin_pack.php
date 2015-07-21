@@ -154,10 +154,17 @@ abstract class plugin_pack
 				}
 
 				$row = $table->body()->row();
-				$table->bulk_actions()->cb( $row, $plugin->get_id() );
+				$cb = $table->bulk_actions()->cb( $row, $plugin->get_id() );
 
 				$td = $row->td();
-				$td->text( $plugin->get_name() );
+
+				// Assemble a label.
+				$label = new \plainview\sdk_broadcast\html\div();
+				$label->tag = 'label';
+				$label->set_attribute( 'for', $cb->get_id() );
+				$label->content = $plugin->get_name();
+
+				$td->text( $label );
 				$td->css_class( 'plugin-title' );
 
 				if ( $this->plugins()->has( $plugin->get_classname() ) )

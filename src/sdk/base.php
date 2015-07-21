@@ -13,6 +13,9 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20150711		Wordpress plugin pack table allows selecting of checkboxes via plugin name.
+	- 20150708		Wordpress updater has its own namespace.
+	- 20150707		Wordpress tabs are now elements also.
 	- 20150624		Update Wordpress updater to 1.6
 	- 20150608		Wordpress plugin pack: allow plugin grouping by specifying @group in comment.
 	- 20150604		Wordpress debug trait now escapes the variables.
@@ -160,7 +163,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20150624;
+	protected $sdk_version = 20150711;
 
 	/**
 		@brief		Constructor.

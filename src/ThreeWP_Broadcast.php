@@ -126,6 +126,17 @@ class ThreeWP_Broadcast
 		$this->add_action( 'wp_ajax_broadcast_post_action_form' );
 		$this->add_action( 'wp_ajax_broadcast_post_bulk_action' );
 
+		// Hook into the actions so that we can keep track of the broadcast data.
+		$this->add_action( 'wp_trash_post', 'trash_post' );
+		$this->add_action( 'trash_post' );
+		$this->add_action( 'trash_page', 'trash_post' );
+
+		$this->add_action( 'untrash_post' );
+		$this->add_action( 'untrash_page', 'untrash_post' );
+
+		$this->add_action( 'delete_post' );
+		$this->add_action( 'delete_page', 'delete_post' );
+
 		if ( $this->get_site_option( 'canonical_url' ) )
 			$this->add_action( 'wp_head', 1 );
 

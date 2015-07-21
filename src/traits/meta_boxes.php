@@ -142,14 +142,9 @@ trait meta_boxes
 
 		if ( is_super_admin() OR static::user_has_roles( $this->get_site_option( 'role_link' ) ) )
 		{
-			// Check the link box if the post has been published and has children OR it isn't published yet.
-			$linked = (
-				( $published AND $meta_box_data->broadcast_data->has_linked_children() )
-				OR
-				! $published
-			);
+			// Link checkbox should always be on.
 			$link_input = $form->checkbox( 'link' )
-				->checked( $linked )
+				->checked( true )
 				->label_( 'Link this post to its children' )
 				->title( $this->_( 'Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc.' ) );
 			$meta_box_data->html->put( 'link', '' );
@@ -204,7 +199,7 @@ trait meta_boxes
 
 		foreach( $blogs as $blog )
 		{
-			$label = $form::unfilter_text( $blog->blogname );
+			$label = $form::unfilter_text( $blog->get_name() );
 			if ( $label == '' )
 				$label = $blog->domain;
 

@@ -36,41 +36,58 @@ Requires PHP version 5.4 or higher.
 
 The <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
 
-For a complete list of features and more information, see <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em>'s page on the web</a>. Currently the Premium Pack offers:
+3rd party plugin compatability
+------------------------------
 
-* <strong>Advanced Custom Fields</strong> adds support for correctly broadcasting attachment field types using the ACF plugin.
-* <strong>All Blogs</strong> allows admins or users to broadcast to all blogs in the network without having to be a user of the blog.
-* <strong>All In One Calendar</strong> adds support for <a href="http://www.wordpress.org/plugins/all-in-one-event-calendar/">Timely's All In One Calendar</a> plugin.
-* <strong>Attachment Shortcodes</strong> copies attachments specified in custom shortcodes.
-* <strong>Back To Parent</strong> updates the parent post with the new child content.
-* <strong>Blog Groups 2</strong> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
-* <strong>Comments</strong> broadcasts and sync comments between linked posts.
-* <strong>Custom Field Attachments</strong> allows post custom field containing attachment IDs to be broadcasted correctly.
-* <strong>Delete Before Broadcast</strong> deletes duplicate and similar child posts on each blog before broadcasting.
-* <strong>Duplicate Attachments</strong> duplicates the attachments from the parent post tp the child posts, instead of regenerating them. Speeds up broadcasting and keeps any manual thumbnail modifications.
-* <strong>Event Organiser</strong> adds support for Stephen Harris&#8217; <a href="http://wordpress.org/plugins/event-organiser/">Event Organiser plugin</a>, with events and venues.
-* <strong>Find Some Unlinked Children</strong> can selectively link orphans / unlinked posts to parents, instead of automatically linking all found children.
-* <strong>Keep Child Status</strong> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
-* <strong>Local Links</strong> automatically updates links to local posts on each child blog.
-* <strong>Lock Post</strong> allows users to lock editing of posts / pages to only themselves and super admins.
-* <strong>Menus</strong> can copy menus between blogs (overwrite / update), with support for equivalent child posts on the child blogs and equivalent taxonomies.
-* <strong>No New Terms</strong> prevents taxonomy terms from being created on child blogs.
-* <strong>Per Blog Taxonomies</strong> allows individual setting of child post taxonomies.
-* <strong>Permalinks</strong> enables more precise permalink control.
-* <strong>Polylang</strong> adds support for Broadcasting posts in different languages using Frédéric Demarle&#8217;s <a href="https://wordpress.org/plugins/polylang/">Polylang</a> translation plugin.
-* <strong>Protect Child Properties</strong> prevent various properties of child posts from being overwritten.
-* <strong>Purge Children</strong> removes children and their attached files from child blogs.
-* <strong>Redirect All Children</strong> redirects single post views from visitors of child posts to the parent post.
-* <strong>Queue</strong> adds a broadcast queue which helps to broadcast posts to tens / hundreds / more blogs.
-* <strong>Send To Many</strong> broadcasts many posts to several blogs at once, instead of individually editing and broadcasting each post.
-* <strong>Social Networks Auto Poster</strong> tells NextScripts’ Social Networks Auto Poster (SNAP) to use the different social settings on each blog.
-* <strong>Sync Taxomnomies</strong> synchronize the taxonomies of target blogs with those from a source blog.
-* <strong>The Events Calendar</strong> adds support for Modern Tribe's <a href="https://wordpress.org/plugins/the-events-calendar/">The Events Calendar </a> plugin with venues and organisers.
-* <strong>User & Blog Settings</strong> (UBS) can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
-* <strong>User & Blog Settings Post</strong> uses the modifications from the UBS plugin to broadcast posts with one click.
-* <strong>Views</strong> adds support for WP Types and Views content templates.
-* <strong>WooCommerce</strong> allows attribute taxonomies and product variations to be broadcasted.
-* <strong>WPML</strong> adds support for ICanLocalize’s WPML translation plugin. Please see the FAQ.
+* <a title="Activity Monitor Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/activity-monitor-broadcast-plugin/">Activity Monitor</a> adds a Broadcast hook to the <a href="http://wordpress.org/plugins/plainview-activity-monitor/">Plainview Activity Monitor</a>, at the same time disabling post related hooks during broadcasting to prevent unnecessary logging.
+* <a title="Advanced Custom Fields Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/advanced-custom-fields-broadcast-plugin/">Advanced Custom Fields</a> adds support for correctly broadcasting various field types using Elliot Condon’s <a href="http://www.advancedcustomfields.com/">Advanced Custom Fields plugin</a>.
+* <a title="All In One Calendar Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/all-in-one-calendar-broadcast-plugin/">All In One Calendar</a> adds support for <a href="http://www.wordpress.org/plugins/all-in-one-event-calendar/">Timely’s All In One Calendar</a> plugin.
+* <a title="Event Organiser Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/event-organiser-broadcast-plugin/">Event Organiser</a> adds support for Stephen Harris’ <a href="http://wordpress.org/plugins/event-organiser/">Event Organiser plugin</a>, with events and venues.
+* <a title="Polylang Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/polylang-broadcast-plugin/">Polylang</a> adds support for Broadcasting posts in different languages using Frédéric Demarle’s <a href="https://wordpress.org/plugins/polylang/">Polylang</a> translation plugin.
+* <a title="Social Networks Auto Poster Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/social-networks-auto-poster-broadcast-plugin/">Social Networks Auto Poster</a> tells <a href="https://wordpress.org/plugins/social-networks-auto-poster-facebook-twitter-g/">NextScripts’ Social Networks Auto Poster</a> (SNAP) to use the different social settings on each blog.
+* <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/tablepress-broadcast-plugin/">TablePress</a> adds support for broadcasting <a href="https://wordpress.org/plugins/tablepress/">TablePress</a> shortcodes.
+* <a title="The Events Calendar Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/the-events-calendar-broadcast-plugin/">The Events Calendar</a> adds venue and organiser support for Modern Tribe’s <a href="https://wordpress.org/plugins/the-events-calendar/">The Events Calendar </a> plugin.
+* <a title="Views Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/views-broadcast-plugin/">Views</a> adds support for <a title="Types and Views site" href="http://wp-types.com/">WP Types and Views</a> content templates.
+* <a title="WooCommerce Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/woocommerce-broadcast-plugin/">WooCommerce</a> allows attribute taxonomies and product variations to be broadcasted.
+* <a title="WPML broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/wpml-broadcast-plugin/">WPML</a> adds support for <a href="http://wpml.org/">ICanLocalize’s WPML</a> translation plugin.
+
+Control
+-------
+
+* <a title="Activity Monitor Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/all-blogs-broadcast-plugin/">All Blogs</a> gives all users access to all of the blogs in the network.
+* <a title="All Blogs Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/all-blogs-broadcast-plugin/">All Blogs Superadmin</a> allows only superadmins to broadcast to all blogs in the network without having to be a user of the blog.
+* <a title="Attachment Shortcodes Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/attachment-shortcodes-broadcast-plugin/">Attachment Shortcodes</a> copies attachments specified in custom shortcodes.
+* <a title="Back To Parent Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/back-to-parent-broadcast-plugin/">Back To Parent</a> updates the parent post with the new child content.
+* <a title="Comments Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/comments-broadcast-plugin/">Comments</a> adds support for broadcasting of comments.
+* <a title="Custom Field Attachments Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/custom-field-attachments-broadcast-plugin/">Custom Field Attachments</a> allows post custom field containing attachment IDs to be broadcasted correctly.
+* <a title="Delete Before Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/delete-before-broadcast-bc-plugin/">Delete Before Broadcast</a> deletes duplicate and similar child posts on each blog before broadcasting.
+* <a title="Keep Child Status Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/keep-child-status-broadcast-plugin/">Keep Child Status</a> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
+* <a title="Local Links Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/local-links-broadcast-plugin/">Local Links</a> automatically updates links to local posts on each child blog.
+* <a title="Lock Post Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/no-new-terms-broadcast-plugin/">No New Terms</a> prevents taxonomy terms from being created on child blogs.
+* <a title="Per Blog Taxonomies Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/per-blog-taxonomies-broadcast-plugin/">Per Blog Taxonomies</a> allows individual control of specific taxonomies for each child post.
+* <a title="Permalinks Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/permalinks-broadcast-plugin/">Permalinks</a> provides more precise control of permalinks for both parents and children.
+* <a title="Protect Child Properties Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/protect-child-properties-broadcast-plugin/">Protect Child Properties</a> prevent various properties of child posts from being overwritten.
+* <a title="Purge Children Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/purge-children-broadcast-plugin/">Purge Children</a> removes children and their attached files from child blogs.
+* <a title="Redirect All Children Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/redirect-all-children-broadcast-plugin/">Redirect All Children</a> redirects single post views from visitors of child posts to the parent post.
+* <a title="Sync Taxonomies Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/user-blog-settings-broadcast-plugin/">User &amp; Blog Settings</a> (UBS) can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
+* <a title="User &amp; Blog Settings Post Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/user-blog-settings-post-broadcast-plugin/">User &amp; Blog Settings Post</a> uses the modifications from the UBS plugin to broadcast posts with one click.
+
+Efficiency
+----------
+
+* <a title="Activity Monitor Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/blog-groups-2-broadcast-plugin/">Blog Groups 2</a> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
+* <a title="Comments Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/duplicate-attachments-broadcast-plugin/">Duplicate Attachments</a> will duplicate the attachment and thumbnails, instead of letting WordPress regenerate them.
+* <a title="Find Some Unlinked Children Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/find-some-unlinked-children-broadcast-plugin/">Find Some Unlinked Children</a> can selectively link orphans / unlinked posts to parents, instead of automatically linking all found children.
+* <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/new-blog-broadcast-plugin/">New Blog Broadcast</a> automatically broadcasts posts when creating a new blog.
+* <a title="Keep Child Status Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/queue-broadcast-plugin/">Queue</a> adds a broadcast queue which helps to broadcast posts to tens / hundreds / thousands of blogs.
+* <a title="Send To Many Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/send-to-many-broadcast-plugin/">Send To Many</a> allows mass broadcast of several posts to blogs at once.
+
+Utilities
+---------
+
+* <a title="Lock Post Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/lock-post-broadcast-plugin/">Lock Post</a> allows users to lock editing of posts / pages to only themselves and super admins.
+* <a title="Menus Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/menus-broadcast-plugin/">Menus</a> copies menus between blogs (overwrite / update), with support for equivalent child posts on the child blogs and equivalent taxonomies.
+* <a title="Sync Taxonomies Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/sync-taxonomies-broadcast-plugin/">Sync Taxonomies</a> synchronize the taxonomies of target blogs with those from a source blog.
 
 = Documentation =
 
@@ -121,9 +138,8 @@ The git repository can be found at: https://github.com/the-plainview/threewp_bro
 6. Post actions for child posts
 7. The Broadcast menu
 8. Admin settings tab
-9. Custom post types tab
-10. Maintenance tab
-11. Uninstall tab
+9. Maintenance tab
+10. Uninstall tab
 
 == Frequently Asked Questions ==
 
@@ -223,6 +239,18 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 22 20150721 =
+* New: post delete, trash and restore hooks are now always monitored, instead of just during the display of the posts table. This should allow other plugins to modify posts (perhaps expiring posts?) without unsynchronizing the link info.
+* UI: Admin settings are now the Broadcast menu item itself.
+* UI: Settings are now displayed in different tabs. Custom post settings are now part of normal settings.
+* UI: Broadcast menu item is not shown at all to users who may not use broadcast.
+* UI: Link checkbox is now always checked per default. If checked, it only has an effect if blogs are selected, else it just remains checked without interfering with anything.
+* Code: Merge magnific popup js and css into main files.
+* Code: Popup uses jQuery objects for the title and the content ($popup.$title and $popup.$content). set_html is renamed to set_content. You can now append jQuery objects directly to the content. Premium pack javascript updated to use same.
+* Code: broadcasting_data->add_attachment() method added to conveniently add attachments.
+* New Plugin Pack Plugin: New Blog Broadcast - Automatically broadcast posts when creating a new blog.
+* New Plugin Pack Plugin: TablePress - Adds support for broadcasting TablePress shortcodes.
 
 = 21 20150705 =
 * New: Broadcast now hooks into the network admin menu.
