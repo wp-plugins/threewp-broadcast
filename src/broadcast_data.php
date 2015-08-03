@@ -83,7 +83,7 @@ class broadcast_data
 	}
 
 	/**
-	 * Does this post have children on the current blog(
+	 * Does this post have children on the current blog?
 	 *
 	 * Used after switch_to_blog has been called.
 	 */

@@ -89,7 +89,7 @@
 					{
 						broadcast_popup()
 							.set_title( 'No posts selected' )
-							.set_html( 'Please select at least one post to use the Broadcast bulk actions.' )
+							.set_content( 'Please select at least one post to use the Broadcast bulk actions.' )
 							.open();
 						return false;
 					}
