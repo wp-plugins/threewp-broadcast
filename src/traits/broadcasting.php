@@ -116,31 +116,32 @@ trait broadcasting
 				$GLOBALS[ 'wpseo_metabox' ]->save_postdata( $bcd->post->ID );
 			}
 
-			$bcd->post_custom_fields = get_post_custom( $bcd->post->ID );
-
-			$this->debug( 'The custom fields are <pre>%s</pre>', $bcd->post_custom_fields );
 
 			// Save the original custom fields for future use.
-			$bcd->custom_fields->original = $bcd->post_custom_fields;
+			$bcd->custom_fields->original = get_post_custom( $bcd->post->ID );
+			// Obsolete!
+			$bcd->post_custom_fields = $bcd->custom_fields->original;
+
+			$this->debug( 'The custom fields are <pre>%s</pre>', $bcd->custom_fields()->to_array() );
 
 			// Start handling the thumbnail
 			unset( $bcd->thumbnail );
-			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
+			$bcd->has_thumbnail = $bcd->custom_fields()->has( '_thumbnail_id' );
 
 			// Check that the thumbnail ID is > 0
 			if ( $bcd->has_thumbnail )
 			{
-				$thumbnail_id = reset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
+				$thumbnail_id = $bcd->custom_fields()->get_single( '_thumbnail_id' );
 				$thumbnail_post = get_post( $thumbnail_id );
 				$bcd->has_thumbnail = ( $thumbnail_id > 0 ) && ( $thumbnail_post !== null );
 			}
 
 			if ( $bcd->has_thumbnail )
 			{
-				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
+				$bcd->thumbnail_id = $thumbnail_id;
 				$this->debug( 'Custom fields: Post has a thumbnail (featured image): %s', $bcd->thumbnail_id );
-				$bcd->thumbnail = get_post( $bcd->thumbnail_id );
-				unset( $bcd->post_custom_fields[ '_thumbnail_id' ] ); // There is a new thumbnail id for each blog.
+				$bcd->thumbnail = $thumbnail_post;
+				$bcd->custom_fields()->forget( '_thumbnail_id' );	// There is a new thumbnail id for each blog.
 				try
 				{
 					$data = attachment_data::from_attachment_id( $bcd->thumbnail, $bcd->upload_dir);
@@ -164,7 +165,7 @@ trait broadcasting
 			$bcd->custom_fields->whitelist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_whitelist' ) ) );
 			$this->debug( 'The custom field whitelist is: %s', $bcd->custom_fields->whitelist );
 
-			foreach( $bcd->post_custom_fields as $custom_field => $ignore )
+			foreach( $bcd->custom_fields() as $custom_field => $ignore )
 			{
 				$keep = true;
 
@@ -179,7 +180,7 @@ trait broadcasting
 				if ( ! $keep )
 				{
 					$this->debug( 'Custom fields: Deleting custom field %s', $custom_field );
-					unset( $bcd->post_custom_fields[ $custom_field ] );
+					$bcd->custom_fields()->forget( $custom_field );
 				}
 				else
 					$this->debug( 'Custom fields: Keeping custom field %s', $custom_field );
@@ -277,7 +278,7 @@ trait broadcasting
 				continue;
 			}
 
-			// Force a reload the broadcast data.
+			// Force a reload the broadcast data?
 			$bcd->broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID );
 
 			// Post parent
@@ -315,8 +316,8 @@ trait broadcasting
 
 			if ( $need_to_insert_post )
 			{
-				$this->debug( 'Creating a new post.' );
 				$temp_post_data = clone( $bcd->new_post );
+				$this->debug( 'Creating a new post: %s', $temp_post_data );
 				unset( $temp_post_data->ID );
 
 				$result = wp_insert_post( $temp_post_data, true );
@@ -467,12 +468,8 @@ trait broadcasting
 					$o->attachment_data->post->post_parent = 0;
 				}
 				$this->maybe_copy_attachment( $o );
-				$a = (object)[];
-				$a->old = $attachment;
-				$a->new = get_post( $o->attachment_id );
-				$a->new->id = $a->new->ID;		// Lowercase is expected.
-				$bcd->copied_attachments[] = $a;
-				$this->debug( 'Copied attachment %s to %s', $a->old->id, $a->new->id );
+				$bcd->copied_attachments()->add( $attachment->post, get_post( $o->attachment_id ) );
+				$this->debug( 'Copied attachment %s to %s', $attachment->post->ID, $o->attachment_id );
 			}
 
 			// Maybe modify the post content with new URLs to attachments and what not.
@@ -480,12 +477,12 @@ trait broadcasting
 			$modified_post = clone( $unmodified_post );
 
 			// If there were any image attachments copied...
-			if ( count( $bcd->copied_attachments ) > 0 )
+			if ( count( $bcd->copied_attachments() ) > 0 )
 			{
-				$this->debug( '%s attachments were copied.', count( $bcd->copied_attachments ) );
+				$this->debug( '%s attachments were copied.', count( $bcd->copied_attachments() ) );
 				// Update the URLs in the post to point to the new images.
 				$new_upload_dir = wp_upload_dir();
-				foreach( $bcd->copied_attachments as $a )
+				foreach( $bcd->copied_attachments() as $a )
 				{
 					$count = 0;
 					// Replace the GUID with the new one.
@@ -512,13 +509,9 @@ trait broadcasting
 				// Go through all the attachment IDs
 				foreach( $gallery->ids_array as $id )
 				{
-					// Find the new ID.
-					foreach( $bcd->copied_attachments as $ca )
-					{
-						if ( $ca->old->id != $id )
-							continue;
-						$new_ids[] = $ca->new->id;
-					}
+					$new_id = $bcd->copied_attachments()->get( $id );
+					if ( $new_id )
+						$new_ids[] = $new_id;
 				}
 				$new_ids_string = implode( ',', $new_ids );
 				$new_shortcode = $gallery->old_shortcode;
@@ -553,12 +546,18 @@ trait broadcasting
 			if ( $bcd->custom_fields )
 			{
 				$this->debug( 'Custom fields: Started.' );
-				// Remove all old custom fields.
-				$bcd->new_post_old_custom_fields = get_post_custom( $bcd->new_post( 'ID' ) );
+
+				$child_fields = $bcd->custom_fields()->child_fields();
+				$child_fields->load();
+
+				// new_post_old_custom_fields is obsolete. Remove the first part in a few versions.
+				$bcd->new_post_old_custom_fields = $child_fields;
+
+				$this->debug( 'Custom fields of the child post: %s', $child_fields->to_array() );
 
 				$protected_field = [];
 
-				foreach( $bcd->new_post_old_custom_fields as $key => $value )
+				foreach( $child_fields as $key => $value )
 				{
 					// Do we delete this custom field?
 					$delete = true;
@@ -566,9 +565,9 @@ trait broadcasting
 					// For the protectlist to work the custom field has to already exist on the child.
 					if ( $bcd->custom_fields()->protectlist_has( $key ) )
 					{
-						if ( ! isset( $bcd->new_post_old_custom_fields[ $key ] ) )
+						if ( ! $child_fields->has( $key ) )
 							continue;
-						if ( ! isset( $bcd->post_custom_fields[ $key ] ) )
+						if ( ! $bcd->custom_fields()->has( $key ) )
 							continue;
 						$protected_field[ $key ] = true;
 						$delete = false;
@@ -577,13 +576,13 @@ trait broadcasting
 					if ( $delete )
 					{
 						$this->debug( 'Custom fields: Deleting custom field %s.', $key );
-						delete_post_meta( $bcd->new_post( 'ID' ), $key );
+						$child_fields->delete_meta( $key );
 					}
 					else
 						$this->debug( 'Custom fields: Keeping custom field %s.', $key );
 				}
 
-				foreach( $bcd->post_custom_fields as $meta_key => $meta_value )
+				foreach( $bcd->custom_fields() as $meta_key => $meta_value )
 				{
 					// Protected = ignore.
 					if ( isset( $protected_field[ $meta_key ] ) )
@@ -595,14 +594,14 @@ trait broadcasting
 						{
 							$single_meta_value = maybe_unserialize( $single_meta_value );
 							$this->debug( 'Custom fields: Adding array value %s', $meta_key );
-							add_post_meta( $bcd->new_post( 'ID' ), $meta_key, $single_meta_value );
+							$child_fields->add_meta( $meta_key, $single_meta_value );
 						}
 					}
 					else
 					{
 						$meta_value = maybe_unserialize( $meta_value );
 						$this->debug( 'Custom fields: Adding value %s', $meta_key );
-						add_post_meta( $bcd->new_post( 'ID' ), $meta_key, $meta_value );
+						$child_fields->add_meta( $meta_key, $meta_value );
 					}
 				}
 
@@ -634,6 +633,8 @@ trait broadcasting
 						$this->debug( 'Custom fields: Maybe copying attachment.' );
 						$this->maybe_copy_attachment( $o );
 						$this->debug( 'Custom fields: Maybe copied attachment.' );
+
+						$bcd->copied_attachments()->add( $o->attachment_data->post, get_post( $o->attachment_id ) );
 					}
 
 					if ( $o->attachment_id !== false )

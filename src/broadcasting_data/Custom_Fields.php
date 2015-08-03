@@ -4,9 +4,11 @@ namespace threewp_broadcast\broadcasting_data;
 
 /**
 	@brief		A collection of custom field helper methods.
+	@details	Created mainly as a convenience class for get and has lookups.
 	@since		2015-06-06 09:01:46
 **/
 class Custom_Fields
+	extends \threewp_broadcast\collection
 {
 	/**
 		@brief		The broadcasting data object.
@@ -21,6 +23,7 @@ class Custom_Fields
 	public function __construct( $broadcasting_data )
 	{
 		$this->broadcasting_data = $broadcasting_data;
+		$this->items = & $this->broadcasting_data->custom_fields->original;
 	}
 
 	/**
@@ -30,6 +33,26 @@ class Custom_Fields
 	public function blacklist_has( $field_name )
 	{
 		return $this->list_has( 'blacklist', $field_name );
+	}
+
+	/**
+		@brief		Return the child fields object.
+		@since		2015-08-02 14:56:14
+	**/
+	public function child_fields()
+	{
+		return new custom_fields\Child_Fields( $this->broadcasting_data );
+	}
+
+	/**
+		@brief		Return the first value of a custom field.
+		@since		2015-08-02 09:35:14
+	**/
+	public function get_single( $key )
+	{
+		if ( ! $this->has( $key ) )
+			return null;
+		return reset( $this->broadcasting_data->custom_fields->original[ $key ] );
 	}
 
 	/**

@@ -361,6 +361,22 @@ class base
 	// -------------------------------------------------------------------------------------------------
 
 	/**
+		@brief		Return the user's capabilities on this blog as an array.
+		@since		2015-03-17 18:56:30
+	**/
+	public static function get_user_capabilities()
+	{
+		global $wpdb;
+		$key = sprintf( '%scapabilities', $wpdb->prefix );
+		$r = get_user_meta( get_current_user_id(), $key, true );
+
+		if ( is_super_admin() )
+			$r[ 'super_admin' ] = true;
+
+		return $r;
+	}
+
+	/**
 		@brief		Returns the user's role as a string.
 		@return					User's role as a string.
 		@since		20130416
@@ -388,7 +404,6 @@ class base
 		$roles = array_flip( $roles );
 		return $roles[ $max ];
 	}
-
 	/**
 		@brief		Return an array containing role => value.
 		@since		2014-04-13 13:08:29
@@ -448,6 +463,23 @@ class base
 		$user_role_value = $roles[ $user_role ];
 
 		return $user_role_value >= $role_value;
+	}
+
+	/**
+		@brief		Does the user have any of these roles?
+		@since		2015-03-17 18:57:33
+	**/
+	public static function user_has_roles( $roles )
+	{
+		if ( is_super_admin() )
+			return true;
+
+		if ( ! is_array( $roles ) )
+			$roles = [ $roles ];
+		$user_roles = static::get_user_capabilities();
+		$user_roles = array_keys ( $user_roles );
+		$intersect = array_intersect( $user_roles, $roles );
+		return count( $intersect ) > 0;
 	}
 
 	/**

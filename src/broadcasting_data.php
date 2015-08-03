@@ -69,6 +69,12 @@ class broadcasting_data
 	/**
 		@brief		[IN]: True if custom fields are to be broadcasted.
 		@details	If true then the broadcasting trait will convert it to an object that contains info about the various custom field options.
+
+		custom_fields->blacklist contains the list from the settings.
+		custom_fields->original contains the array of custom fields of the original post.
+		custom_fields->protectlist contains the list from the settings.
+		custom_fields->whitelist contains the list from the settings.
+
 		@var		$custom_fields
 		@since		20130603
 	**/
@@ -356,19 +362,13 @@ class broadcasting_data
 
 	/**
 		@brief		Find the equivalent taxonomy term ID on this blog.
+		@details	We'll remove this in v25 or something.
 		@since		2015-07-10 13:59:17
 	**/
 	public function equivalent_taxonomy_term_id( $source_term_id )
 	{
-		$blog_id = get_current_blog_id();
-
-		foreach( $this->parent_blog_taxonomies as $taxonomy_name => $data )
-		{
-			if ( ! isset( $data[ 'equivalent_terms' ][ $blog_id ][ $source_term_id ] ) )
-				continue;
-			return $data[ 'equivalent_terms' ][ $blog_id ][ $source_term_id ];
-		}
-		return false;
+		_deprecated_function( __FUNCTION__, '23', 'Use ->equivalent_terms()->get( old_term_id ) instead.' );
+		return $this->terms()->get( $source_term_id );
 	}
 
 	/**
@@ -412,8 +412,15 @@ class broadcasting_data
 	{
 		if ( $key === null )
 			return $this->new_post;
-		else
-			return $this->new_post->$key;
+		return $this->new_post->$key;
 	}
 
+	/**
+		@brief		Return the equivalent terms helper.
+		@since		2015-07-29 15:20:01
+	**/
+	public function terms()
+	{
+		return new \threewp_broadcast\broadcasting_data\Terms( $this );
+	}
 }

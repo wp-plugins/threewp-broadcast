@@ -36,8 +36,8 @@ Requires PHP version 5.4 or higher.
 
 The <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
 
-3rd party plugin compatability
-------------------------------
+3rd party compatability
+-----------------------
 
 * <a title="Activity Monitor Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/activity-monitor-broadcast-plugin/">Activity Monitor</a> adds a Broadcast hook to the <a href="http://wordpress.org/plugins/plainview-activity-monitor/">Plainview Activity Monitor</a>, at the same time disabling post related hooks during broadcasting to prevent unnecessary logging.
 * <a title="Advanced Custom Fields Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/advanced-custom-fields-broadcast-plugin/">Advanced Custom Fields</a> adds support for correctly broadcasting various field types using Elliot Condon’s <a href="http://www.advancedcustomfields.com/">Advanced Custom Fields plugin</a>.
@@ -171,6 +171,8 @@ If you have a gallery shortcode in the post ( [gallery columns="2" ids="427,433,
 
 If you have manually modified the thumbnails on the parent blog, you might want to use the <em>Duplicate Attachments</em> plugin in the plugin pack, otherwise Wordpress will generate new thumbnails on each child blog.
 
+Do you have a lot of attachments that you don't want duplicated to hundreds of child blogs, in order to save space? You'll have to find a way to refer to the images statically instead of using their media IDs. The reason for this is that when Wordpress is referred to an attachment, it can only read the media IDs from the current blog. It cannot switch blogs in order to load the image.
+
 = Hide broadcast from the users =
 
 The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
@@ -239,6 +241,15 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 23 20150803 =
+* Code: New actions for delete_post_broadcast_data, get_post_broadcast_data and set_post_broadcast_date. Fix for "Back to Parent" plugin.
+* Code: broadcasting_data->equivalent_taxonomy_term_id() is obsolete. Use broadcasting_data->terms()->get() instead.
+* Code: broadcasting_data->post_custom_fields is obsolete. Use iterable broadcasting_data->custom_fields() instead. Or custom_fields->original if you must.
+* Code: broadcasting_data->copied_attachments() has new add() method.
+* Code: broadcasting_data->new_post_old_custom_fields is obsolete. Use ->custom_fields->child_fields().
+* New Plugin Pack Plugin: Global Content Blocks - Adds support for shortcodes from <a href="https://wordpress.org/plugins/global-content-blocks/">WP Xpert's Global Content Blocks</a> plugin.
+* New Plugin Pack Plugin: Metaslider - Adds support for <a href="https://www.metaslider.com/">Metaslider</a> shortcodes.
 
 = 22 20150721 =
 * New: post delete, trash and restore hooks are now always monitored, instead of just during the display of the posts table. This should allow other plugins to modify posts (perhaps expiring posts?) without unsynchronizing the link info.

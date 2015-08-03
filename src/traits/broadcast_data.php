@@ -2,6 +2,7 @@
 
 namespace threewp_broadcast\traits;
 
+use threewp_broadcast\actions;
 use threewp_broadcast\broadcast_data as data;			// Else if conflicts with the trait name. *sigh*
 
 /**
@@ -37,6 +38,14 @@ trait broadcast_data
 	*/
 	public function delete_post_broadcast_data( $blog_id, $post_id)
 	{
+		$action = new actions\delete_post_broadcast_data();
+		$action->blog_id = $blog_id;
+		$action->post_id = $post_id;
+		$action->execute();
+
+		if ( $action->is_finished() )
+			return;
+
 		$this->broadcast_data_cache()->set_for( $blog_id, $post_id, new data );
 		$this->sql_delete_broadcast_data( $blog_id, $post_id );
 	}
@@ -51,6 +60,14 @@ trait broadcast_data
 	 */
 	public function get_post_broadcast_data( $blog_id, $post_id )
 	{
+		$action = new actions\get_post_broadcast_data();
+		$action->blog_id = $blog_id;
+		$action->post_id = $post_id;
+		$action->execute();
+
+		if ( $action->is_finished() )
+			return $action->broadcast_data;
+
 		return $this->broadcast_data_cache()->get_for( $blog_id, $post_id );
 	}
 
@@ -67,6 +84,15 @@ trait broadcast_data
 	{
 		// Update the cache.
 		$this->broadcast_data_cache()->set_for( $blog_id, $post_id, $broadcast_data );
+
+		$action = new actions\set_post_broadcast_data();
+		$action->blog_id = $blog_id;
+		$action->post_id = $post_id;
+		$action->broadcast_data = $broadcast_data;
+		$action->execute();
+
+		if ( $action->is_finished() )
+			return;
 
 		if ( $broadcast_data->is_modified() )
 			if ( $broadcast_data->is_empty() )

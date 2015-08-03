@@ -250,16 +250,6 @@ class ThreeWP_Broadcast
 		{
 			// Make the table a longtext for those posts with many links.
 			$this->query("ALTER TABLE `". $this->broadcast_data_table() . "` CHANGE `data` `data` LONGTEXT");
-
-			// We have deleted the extra internal custom field setting. If the user does NOT want the fields broadcasted, add them to the blacklist.
-			$internal_fields = $this->get_site_option( 'broadcast_internal_custom_fields', true );
-			if ( $internal_fields == false )
-			{
-				$blacklist = $this->get_site_option( 'custom_field_blacklist' );
-				$blacklist .= ' _*';
-				$blacklist = trim( $blacklist );
-				$this->update_site_option( 'custom_field_blacklist', $blacklist );
-			}
 			$db_ver = 8;
 		}
 
@@ -630,22 +620,6 @@ class ThreeWP_Broadcast
 	}
 
 	/**
-		@brief		Return the user's capabilities on this blog as an array.
-		@since		2015-03-17 18:56:30
-	**/
-	public static function get_user_capabilities()
-	{
-		global $wpdb;
-		$key = sprintf( '%scapabilities', $wpdb->prefix );
-		$r = get_user_meta( get_current_user_id(), $key, true );
-
-		if ( is_super_admin() )
-			$r[ 'super_admin' ] = true;
-
-		return $r;
-	}
-
-	/**
 		@brief		Insert hook into save post action.
 		@since		2015-02-10 20:38:22
 	**/
@@ -745,23 +719,6 @@ class ThreeWP_Broadcast
 			'role_taxonomies' => [ 'super_admin' ],					// Role required to broadcast the taxonomies
 			'role_custom_fields' => [ 'super_admin' ],				// Role required to broadcast the custom fields
 		], parent::site_options() );
-	}
-
-	/**
-		@brief		Does the user have any of these roles?
-		@since		2015-03-17 18:57:33
-	**/
-	public static function user_has_roles( $roles )
-	{
-		if ( is_super_admin() )
-			return true;
-
-		if ( ! is_array( $roles ) )
-			$roles = [ $roles ];
-		$user_roles = static::get_user_capabilities();
-		$user_roles = array_keys ( $user_roles );
-		$intersect = array_intersect( $user_roles, $roles );
-		return count( $intersect ) > 0;
 	}
 
 	/**

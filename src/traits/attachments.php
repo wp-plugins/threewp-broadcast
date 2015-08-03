@@ -55,7 +55,7 @@ trait attachments
 			'post_content' => '',
 			'post_status' => 'inherit',
 		];
-		$this->debug( 'Copy attachment: Inserting attachment.' );
+		$this->debug( 'Copy attachment: Inserting attachment: %s', $attachment );
 		$action->set_attachment_id( wp_insert_attachment( $attachment, $target, $attachment_data->post->post_parent ) );
 
 		// Now to maybe handle the metadata.
