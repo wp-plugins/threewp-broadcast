@@ -143,5 +143,13 @@ trait table_element
 		$title = call_user_func_array( array( $this, '_' ), func_get_args() );
 		return $this->title( $title );
 	}
-}
 
+	/**
+		@brief		Set the title of this object using sprintf.
+		@since		2015-05-18 21:41:50
+	**/
+	public function titlef( $text )
+	{
+		return $this->title( call_user_func_array( 'sprintf', func_get_args() ) );
+	}
+}

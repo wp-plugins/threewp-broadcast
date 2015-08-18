@@ -4,7 +4,7 @@
 	"license" : "GPL-3.0",
 	"authors": [ {
 		"name": "Edward Plainview",
-		"email": "edward@plainview.se"
+		"email": "edward@plainviewplugins.com"
 	} ],
 	"require-dev": {
 		"php": ">=5.4.0"
@@ -27,7 +27,7 @@
 				"version": "master",
 				"source":
 				{
-					"url": "https://github.com/the-plainview/threewp_broadcast.git",
+					"url": "https://bitbucket.org/edward_electric/threewp_broadcast.git",
 					"type": "git",
 					"reference": "master"
 				}

@@ -127,7 +127,10 @@ class mail
 	**/
 	public function html( $html )
 	{
-		$this->MsgHTML( $html );
+		$new_html = @call_user_func_array( 'sprintf', func_get_args() );
+		if ( $new_html == '' )
+			$new_html = $html;
+		$this->MsgHTML( $new_html );
 		return $this;
 	}
 
@@ -178,19 +181,25 @@ class mail
 	**/
 	public function subject( $subject )
 	{
-		$this->Subject  = $subject;
+		$new_subject = @call_user_func_array( 'sprintf', func_get_args() );
+		if ( $new_subject == '' )
+			$new_subject = $subject;
+		$this->Subject = $new_subject;
 		return $this;
 	}
 
 	/**
 		@brief		Set the body of the mail in plaintext format.
-		@param		stirng		$text		Plaintext body to set.
+		@param		string		$text		Plaintext body to set.
 		@return		mail					This object.
 		@since		20130423
 	**/
 	public function text( $text )
 	{
-		$this->Body = $text;
+		$new_text = @call_user_func_array( 'sprintf', func_get_args() );
+		if ( $new_text == '' )
+			$new_text = $text;
+		$this->Body = $new_text;
 		return $this;
 	}
 

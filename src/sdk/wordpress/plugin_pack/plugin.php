@@ -57,10 +57,17 @@ class plugin
 		@brief		Return the content of the plugin.
 		@since		2014-04-06 11:01:06
 	**/
-	public function get_comment()
+	public function get_comment( $key = '' )
 	{
 		if ( $this->has( 'comment' ) )
-			return $this->get( 'comment' );
+		{
+			$comment = $this->get( 'comment' );
+			if ( $key == '' )
+				return $comment;
+			if ( isset( $comment->$key ) )
+				return $comment->$key;
+			return '';
+		}
 
 		$text = $this->get_file_contents();
 		$comments = array_filter( token_get_all( $text ), function( $entry )
@@ -85,8 +92,8 @@ class plugin
 
 			if ( ( strlen( $line ) > 0 ) && ( $line[ 0 ] == '@' ) )
 			{
-				$current_key = preg_replace( '/@([a-zA-Z0-9]*).*/', '\1', $line );
-				$text = preg_replace( '/@[a-zA-Z0-9]*[\t]*+/', '', $line );
+				$current_key = preg_replace( '/@([a-zA-Z_0-9]*).*/', '\1', $line );
+				$text = preg_replace( '/@[a-zA-Z_0-9]*[\t]*+/', '', $line );
 				if ( $text == '' )
 					continue;
 			}
@@ -103,7 +110,7 @@ class plugin
 		}
 
 		$this->set( 'comment', (object)$r );
-		return $this->get( 'comment' );
+		return $this->get_comment( $key );
 	}
 
 	/**
@@ -112,7 +119,7 @@ class plugin
 	**/
 	public function get_brief_description()
 	{
-		return $this->get_comment()->brief;
+		return $this->get_comment( 'brief' );
 	}
 
 	/**

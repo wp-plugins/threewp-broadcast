@@ -41,8 +41,11 @@ trait debug
 		$fs = $form->fieldset( 'fs_debug' );
 		$fs->legend->label_( 'Debugging' );
 
+		// You are currently NOT in debug mode.
+		$not = $this->_( 'not' );
+
 		$fs->markup( 'debug_info' )
-			->p_( "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings.", $this->debugging() ? '' : ' <strong>not</strong>' );
+			->p_( "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings.", $this->debugging() ? '' : " <strong>$not</strong>" );
 
 		$debug = $fs->checkbox( 'debug' )
 			->description_( 'Show debugging information in various places.' )
@@ -74,7 +77,7 @@ trait debug
 			$export |= is_array( $arg );
 			$export |= is_object( $arg );
 			if ( $export )
-				$args[ $index ] = sprintf( '<pre><code>%s</code></pre>', var_export( $arg, true ) );
+				$args[ $index ] = sprintf( '<pre><code>%s</code></pre>', htmlspecialchars( var_export( $arg, true ) ) );
 		}
 
 		// Put all of the arguments into one string.
@@ -90,7 +93,8 @@ trait debug
 		// Date class: string
 		$text = sprintf( '%s <em>%s</em>: %s<br/>', $this->now(), $class_name, $text, "\n" );
 		echo $text;
-		ob_flush();
+		if ( ob_get_contents() )
+			ob_flush();
 	}
 
 	/**
@@ -100,14 +104,14 @@ trait debug
 	public function debugging()
 	{
 		// We need this so that the options use the correct namespace.
-		$bc = self::instance();
+		$plugin = self::instance();
 
-		$debugging = $bc->get_site_option( 'debug', false );
+		$debugging = $plugin->get_site_option( 'debug', false );
 		if ( ! $debugging )
 			return false;
 
 		// Debugging is enabled. Now check if we should show it to this user.
-		$ips = $bc->get_site_option( 'debug_ips', '' );
+		$ips = $plugin->get_site_option( 'debug_ips', '' );
 		// Empty = no limits.
 		if ( $ips == '' )
 			return true;
