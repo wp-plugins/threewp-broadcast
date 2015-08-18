@@ -27,7 +27,7 @@
 				"version": "master",
 				"source":
 				{
-					"url": "https://github.com/the-plainview/threewp_broadcast.git",
+					"url": "https://bitbucket.org/edward_electric/threewp_broadcast.git",
 					"type": "git",
 					"reference": "master"
 				}

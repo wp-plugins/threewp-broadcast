@@ -66,15 +66,20 @@ class wp_update_term
 		@brief		Switch the data between the terms.
 		@since		2014-04-10 15:27:47
 	**/
-	public function switch_data()
+	public function switch_data( $key = '' )
 	{
-		foreach( [
-			'term_id',
-			'term_group',
-			'term_taxonomy_id',
-			'parent',
-			'count',
-			] as $key )
+		if ( $key !== '' )
+			$keys = [ $key ];
+		else
+			$keys = [
+				'count',
+				'parent',
+				'term_group',
+				'term_id',
+				'term_taxonomy_id',
+			];
+
+		foreach( $keys as $key )
 		{
 			$temp = $this->old_term->$key;
 			$this->old_term->$key = $this->new_term->$key;

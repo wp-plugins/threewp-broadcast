@@ -123,7 +123,7 @@ Available in the following languages:
 * Spanish
 * Swedish
 
-The git repository can be found at: https://github.com/the-plainview/threewp_broadcast
+The git repository can be found at: https://bitbucket.org/edward_electric/broadcast
 
 == Installation ==
 
@@ -243,6 +243,12 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 23.1 20150818 =
+* Fix: Correctly sync taxonomies when the term IDs are identical on both blogs.
+* Fix: API should honor the broadcast_post filter.
+* Code: Moved from github to bitbucket: https://bitbucket.org/edward_electric/broadcast
+* Code: broadcasting_data()->custom_fields()->update_meta() method added.
 
 = 23 20150803 =
 * Code: New actions for delete_post_broadcast_data, get_post_broadcast_data and set_post_broadcast_date. Fix for "Back to Parent" plugin.

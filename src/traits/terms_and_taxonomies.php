@@ -216,9 +216,31 @@ trait terms_and_taxonomies
 			$this->debug( '%s taxonomies are missing on this blog.', count( $unfound_sources ) );
 			foreach( $unfound_sources as $unfound_source_id => $unfound_source )
 			{
-				// We need to clone to unset the parent.
+				// We need to clone because we will be modifying the source.
 				$unfound_source = clone( $unfound_source );
-				unset( $unfound_source->parent );
+
+				if ( $unfound_source->parent > 0 )
+				{
+					$this->debug( 'The unfound source needs a parent.' );
+					$parent_of_equivalent_source_term = $unfound_source->parent;
+					$unfound_source->parent = 0;
+					// Does the parent of the source have an equivalent target?
+					if ( isset( $found_sources[ $parent_of_equivalent_source_term ] ) )
+						$unfound_source->parent = $found_sources[ $parent_of_equivalent_source_term ];
+
+					// Recursively insert ancestors if needed, and get the target term's parent's ID
+					if ( $unfound_source->parent == 0 )
+					{
+						$this->debug( 'Inserting parent term for %s', $unfound_source->slug );
+						$unfound_source->parent = $this->insert_term_ancestors(
+							$unfound_source,
+							$taxonomy,
+							$found_targets,
+							$bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ]
+						);
+					}
+				}
+
 				$action = new actions\wp_insert_term;
 				$action->taxonomy = $taxonomy;
 				$action->term = $unfound_source;
@@ -261,6 +283,7 @@ trait terms_and_taxonomies
 			if ( $source_term->parent > 0 )
 			{
 				$parent_of_equivalent_source_term = $source_term->parent;
+				$this->debug( 'Parent of equivalent source term: %s', $parent_of_equivalent_source_term );
 				// Does the parent of the source have an equivalent target?
 				if ( isset( $found_sources[ $parent_of_equivalent_source_term ] ) )
 					$new_parent = $found_sources[ $parent_of_equivalent_source_term ];
@@ -268,6 +291,7 @@ trait terms_and_taxonomies
 			else
 				$new_parent = 0;
 
+			$action->switch_data( 'parent' );
 			$action->new_term->parent = $new_parent;
 
 			$action->execute();

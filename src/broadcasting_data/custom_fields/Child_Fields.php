@@ -62,4 +62,14 @@ class Child_Fields
 		$this->items = get_post_meta( $this->broadcasting_data->new_post( 'ID' ) );
 		return $this;
 	}
+
+	/**
+		@brief		Update the meta key and value pair for this current child.
+		@details	Note that is a convenience method that does not keep the collection in sync with the database.
+		@since		2015-08-05 14:42:20
+	**/
+	public function update_meta( $key, $value )
+	{
+		update_post_meta( $this->broadcasting_data->new_post( 'ID' ), $key, $value );
+	}
 }
