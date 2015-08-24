@@ -4,7 +4,7 @@ License: GPLv3
 Requires at least: 3.9
 Stable tag: trunk
 Tags: broadcast, multipost, sharing, share content, duplicate, posts, syndicate, syndication, marketing, threewp, linking, woocommerce, acf, syndicator, aggregator, aggregation, autoblogging, news, content hub, push, pull, publishing
-Tested up to: 4.2.2
+Tested up to: 4.3
 
 Network Content Syndication Made Easy! Automatically share content by multiposting between multisite blogs.
 
@@ -243,6 +243,10 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 23.2 20150824 =
+* New: Show blog and post names (and link to them) in the broadcast data maintenance results.
+* Version bump for WP 4.3
 
 = 23.1 20150818 =
 * Fix: Correctly sync taxonomies when the term IDs are identical on both blogs.

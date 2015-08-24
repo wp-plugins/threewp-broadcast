@@ -36,7 +36,10 @@ trait step_results_fail_missing_post
 		{
 			$row = $table->body()->row();
 			$row->td()->text_( $id );
-			$row->td()->text_( 'Post %s on blog %s', $bcd->post_id, $bcd->blog_id );
+			$row->td()->text_( 'Post %s on %s',
+				$bcd->post_id,
+				$this->blogname( $bcd->blog_id )
+			);
 		}
 
 		$o->r .= $table;
