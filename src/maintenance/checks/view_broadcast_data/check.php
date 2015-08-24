@@ -26,14 +26,27 @@ extends \threewp_broadcast\maintenance\checks\check
 		$o = new \stdClass;
 		$o->inputs = new \stdClass;
 		$o->form = $this->broadcast()->form2();
-		$o->r = '';
+		$o->r = ThreeWP_Broadcast()->p( 'Use the form below to look up the broadcast data (linking) either by specifying the ID of the row in the database or the combination of blog ID and post ID. Leave the row input empty to look up using blog and post IDs.' );
 
-		$fs = $o->form->fieldset( 'fs_by_id' )
-			->label( 'Find broadcast data by ID' );
+		$fs = $o->form->fieldset( 'fs_by_id' );
+		$fs->legend->label( 'Find broadcast data by ID' );
 
 		$o->inputs->row_id = $fs->number( 'id' )
 			->description( 'The ID of the row in the database table.' )
 			->label( 'ID' );
+
+		$fs = $o->form->fieldset( 'fs_by_blog_and_post' );
+		$fs->legend->label( 'Find broadcast data by blog and post ID' );
+
+		$o->inputs->blog_id = $fs->number( 'blog_id' )
+			->description( 'The ID of the blog. The current blog is the default.' )
+			->label( 'Blog ID' )
+			->value( get_current_blog_id() );
+
+		$o->inputs->post_id = $fs->number( 'post_id' )
+			->description( 'The ID of the post.' )
+			->label( 'Post ID' )
+			->value( '' );
 
 		$button = $o->form->primary_button( 'dump' )
 			->value( 'Find and display the broadcast data' );
@@ -42,8 +55,10 @@ extends \threewp_broadcast\maintenance\checks\check
 		{
 			$o->form->post()->use_post_value();
 
-			$this->handle_row_id( $o );
-
+			if ( $o->inputs->row_id->get_post_value() != '' )
+				$this->handle_row_id( $o );
+			else
+				$this->handle_blog_and_post_id( $o );
 		}
 
 		$o->r .= $o->form->open_tag();
@@ -71,6 +86,19 @@ extends \threewp_broadcast\maintenance\checks\check
 		$result = reset( $o->results );
 		$bcd = BroadcastData::sql( $result );
 
+		$text = sprintf( '<pre>%s</pre>', var_export( $bcd, true ) );
+		$o->r .= $this->broadcast()->message( $text );
+	}
+
+	public function handle_blog_and_post_id( $o )
+	{
+		$blog_id = intval( $o->inputs->blog_id->get_value() );
+		$post_id = intval( $o->inputs->post_id->get_value() );
+
+		if ( $blog_id < 1 )
+			$blog_id = get_current_blog_id();
+
+		$bcd = ThreeWP_Broadcast()->get_post_broadcast_data( $blog_id, $post_id );
 		$text = sprintf( '<pre>%s</pre>', var_export( $bcd, true ) );
 		$o->r .= $this->broadcast()->message( $text );
 	}

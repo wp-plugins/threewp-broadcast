@@ -68,7 +68,7 @@ extends \threewp_broadcast\maintenance\checks\check
 							$blogs_ul = [];
 							foreach( $blogs as $blog )
 							{
-								$blogs_ul []= sprintf( '<a href="%s/wp-admin">%s</a>', $blog->siteurl, $blog->blogname );
+								$blogs_ul []= sprintf( '<a href="%s/wp-admin">%s</a>', $blog->siteurl, $blog->get_name() );
 							}
 							$r .= $this->broadcast()->p_( '%s has access to the following blogs: %s%s%s',
 								$user->data->user_login,
