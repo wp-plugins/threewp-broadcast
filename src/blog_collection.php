@@ -14,7 +14,7 @@ class blog_collection
 		{
 			if ( $item->id == 1 )
 				return 'AAA';
-			return $item->blogname;
+			return $item->get_name();
 		} );
 		return $this;
 	}

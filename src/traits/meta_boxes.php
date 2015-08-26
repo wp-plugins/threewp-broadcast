@@ -32,7 +32,7 @@ trait meta_boxes
 
 		// No decision yet. Decide.
 		$this->display_broadcast_meta_box |= is_super_admin();
-		$this->display_broadcast_meta_box |= $this->role_at_least( $this->get_site_option( 'role_broadcast' ) );
+		$this->display_broadcast_meta_box |= static::user_has_roles( $this->get_site_option( 'role_broadcast' ) );
 
 		// No access to any other blogs = no point in displaying it.
 		$filter = new actions\get_user_writable_blogs( $this->user_id() );
@@ -95,6 +95,18 @@ trait meta_boxes
 	{
 		$meta_box_data = $action->meta_box_data;	// Convenience.
 
+		// Add translation strings
+		$meta_box_data->html->put( 'broadcast_strings', '
+			<script type="text/javascript">
+				var broadcast_strings = {
+					hide_all : "' . $this->_( 'hide all' ) . '",
+					invert_selection : "' . $this->_( 'Invert selection' ) . '",
+					select_deselect_all : "' . $this->_( 'Select / deselect all' ) . '",
+					show_all : "' . $this->_( 'show all' ) . '"
+				};
+			</script>
+		' );
+
 		if ( $this->debugging() )
 			$meta_box_data->html->put( 'debug', $this->p_( 'Broadcast is in debug mode. More information than usual will be shown.' ) );
 
@@ -128,30 +140,25 @@ trait meta_boxes
 		$post_type_supports_thumbnails = post_type_supports( $post_type, 'thumbnail' );
 		$post_type_is_hierarchical = $post_type_object->hierarchical;
 
-		// 20140327 Because so many plugins create broken post types, assume that all post types support custom fields.
-		// $post_type_supports_custom_fields = post_type_supports( $post_type, 'custom-fields' );
-		$post_type_supports_custom_fields = true;
-
-		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
+		if ( is_super_admin() OR static::user_has_roles( $this->get_site_option( 'role_link' ) ) )
 		{
-			// Check the link box is the post has been published and has children OR it isn't published yet.
-			$linked = (
-				( $published && $meta_box_data->broadcast_data->has_linked_children() )
-				||
-				! $published
-			);
+			// Link checkbox should always be on.
 			$link_input = $form->checkbox( 'link' )
-				->checked( $linked )
+				->checked( true )
 				->label_( 'Link this post to its children' )
 				->title( $this->_( 'Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc.' ) );
 			$meta_box_data->html->put( 'link', '' );
 			$meta_box_data->convert_form_input_later( 'link' );
 		}
 
+		// 20140327 Because so many plugins create broken post types, assume that all post types support custom fields.
+		// $post_type_supports_custom_fields = post_type_supports( $post_type, 'custom-fields' );
+		$post_type_supports_custom_fields = true;
+
 		if (
-			( $post_type_supports_custom_fields || $post_type_supports_thumbnails )
-			&&
-			( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) )
+			( $post_type_supports_custom_fields OR $post_type_supports_thumbnails )
+			AND
+			( is_super_admin() OR static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) )
 		)
 		{
 			$custom_fields_input = $form->checkbox( 'custom_fields' )
@@ -162,7 +169,7 @@ trait meta_boxes
 			$meta_box_data->convert_form_input_later( 'custom_fields' );
 		}
 
-		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) )
+		if ( is_super_admin() OR static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) )
 		{
 			$taxonomies_input = $form->checkbox( 'taxonomies' )
 				->checked( isset( $meta_box_data->last_used_settings[ 'taxonomies' ] ) )
@@ -171,17 +178,6 @@ trait meta_boxes
 			$meta_box_data->html->put( 'taxonomies', '' );
 			$meta_box_data->convert_form_input_later( 'taxonomies' );
 		}
-
-		$meta_box_data->html->put( 'broadcast_strings', '
-			<script type="text/javascript">
-				var broadcast_strings = {
-					hide_all : "' . $this->_( 'hide all' ) . '",
-					invert_selection : "' . $this->_( 'Invert selection' ) . '",
-					select_deselect_all : "' . $this->_( 'Select / deselect all' ) . '",
-					show_all : "' . $this->_( 'show all' ) . '"
-				};
-			</script>
-		' );
 
 		$filter = new actions\get_user_writable_blogs( $this->user_id() );
 		$blogs = $filter->execute()->blogs;
@@ -203,10 +199,14 @@ trait meta_boxes
 
 		foreach( $blogs as $blog )
 		{
-			$blogs_input->option( $blog->blogname, $blog->id );
+			$label = $form::unfilter_text( $blog->get_name() );
+			if ( $label == '' )
+				$label = $blog->domain;
+
+			$blogs_input->option( $label, $blog->id );
 			$input_name = 'blogs_' . $blog->id;
 			$option = $blogs_input->input( $input_name );
-			$option->get_label()->content = $form::unfilter_text( $blog->blogname );
+			$option->get_label()->content = $label;
 			$option->css_class( 'blog ' . $blog->id );
 			if ( $blog->is_disabled() )
 				$option->disabled()->css_class( 'disabled' );
@@ -244,11 +244,11 @@ trait meta_boxes
 				<li>High enough role to broadcast taxonomies: %s</li>
 				<li>Blogs available to user: %s</li>
 				</ul>',
-					( $this->role_at_least( $this->get_site_option( 'role_link' ) ) ? 'yes' : 'no' ),
+					( static::user_has_roles( $this->get_site_option( 'role_link' ) ) ? 'yes' : 'no' ),
 					( $post_type_supports_custom_fields ? 'yes' : 'no' ),
 					( $post_type_supports_thumbnails ? 'yes' : 'no' ),
-					( $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) ? 'yes' : 'no' ),
-					( $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) ? 'yes' : 'no' ),
+					( static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) ? 'yes' : 'no' ),
+					( static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) ? 'yes' : 'no' ),
 					count( $blogs )
 				)
 			);

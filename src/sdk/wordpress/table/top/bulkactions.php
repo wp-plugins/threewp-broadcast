@@ -58,10 +58,13 @@ class bulkactions
 		@details	If the $row is in the body section, the $id parameter must also be given.
 		@param		row			$row		Row in the table. Automatically detects if the row is in the head or the body.
 		@param		mixed		$id			The ID of this row. String or int.
+		@return		mixed		Null if creating a checkbox in the header, else the checkbox input.
 		@since		20131015
 	**/
 	public function cb( $row, $id = null )
 	{
+		$r = null;
+
 		$section = get_class( $row->section );
 		if ( $section == 'plainview\\sdk_broadcast\\table\\head' )
 		{
@@ -84,7 +87,10 @@ class bulkactions
 
 			// Add the checkbox to a quick lookup table
 			$this->checkboxes->append( $cb );
+			$r = $cb;
 		}
+
+		return $r;
 	}
 
 	/**

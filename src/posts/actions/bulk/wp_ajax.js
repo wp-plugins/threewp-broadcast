@@ -17,7 +17,7 @@ $.ajax( {
 .fail( function( jqXHR )
 {
 	broadcast_popup()
-		.set_html( jqXHR.responseText )
+		.set_content( jqXHR.responseText )
 		.set_title( 'Ajax error' )
 		.open();
 	broadcast_post_bulk_actions.busy( false );

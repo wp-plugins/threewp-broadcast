@@ -11,6 +11,25 @@ use \threewp_broadcast\broadcast_data\blog;
 
 /**
 	@brief		Methods related to actual broadcasting of a post.
+	@details
+
+	Before you try to broadcast anything, check if Broadcast is installed.
+
+	<code>
+	if ( ! function_exists( 'ThreeWP_Broadcast' ) )
+		return false;
+	</code>
+
+	Now you are sure that the broadcasting_data object exists.
+
+	<code>
+	// Broadcast the post 12345, from this blog, to blogs 123, 456 and 789.
+	$bcd = \threewp_broadcast\broadcasting_data::make( 12345, [ 123, 456, 789 ] );
+
+	// Call on Broadcast to send it all away.
+	do_action( 'threewp_broadcast_broadcast_post', $bcd );
+	</code>
+
 	@since		2014-10-19 15:44:39
 **/
 trait broadcasting
@@ -90,28 +109,39 @@ trait broadcasting
 				$bcd->custom_fields = (object)[];
 
 			$this->debug( 'Custom fields: Will broadcast custom fields.' );
-			$bcd->post_custom_fields = get_post_custom( $bcd->post->ID );
 
-			$this->debug( 'The custom fields are <pre>%s</pre>', $bcd->post_custom_fields );
+			if ( isset( $GLOBALS[ 'wpseo_metabox' ] ) )
+			{
+				$this->debug( 'Yoast SEO detected. Activating workaround. Asking metabox to save its settings.' );
+				$GLOBALS[ 'wpseo_metabox' ]->save_postdata( $bcd->post->ID );
+			}
+
 
 			// Save the original custom fields for future use.
-			$bcd->custom_fields->original = $bcd->post_custom_fields;
-			$bcd->has_thumbnail = isset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
+			$bcd->custom_fields->original = get_post_custom( $bcd->post->ID );
+			// Obsolete!
+			$bcd->post_custom_fields = $bcd->custom_fields->original;
+
+			$this->debug( 'The custom fields are <pre>%s</pre>', $bcd->custom_fields()->to_array() );
+
+			// Start handling the thumbnail
+			unset( $bcd->thumbnail );
+			$bcd->has_thumbnail = $bcd->custom_fields()->has( '_thumbnail_id' );
 
 			// Check that the thumbnail ID is > 0
 			if ( $bcd->has_thumbnail )
 			{
-				$thumbnail_id = reset( $bcd->post_custom_fields[ '_thumbnail_id' ] );
+				$thumbnail_id = $bcd->custom_fields()->get_single( '_thumbnail_id' );
 				$thumbnail_post = get_post( $thumbnail_id );
-				$bcd->has_thumbnail = $bcd->has_thumbnail && ( $thumbnail_post !== null );
+				$bcd->has_thumbnail = ( $thumbnail_id > 0 ) && ( $thumbnail_post !== null );
 			}
 
 			if ( $bcd->has_thumbnail )
 			{
-				$bcd->thumbnail_id = $bcd->post_custom_fields[ '_thumbnail_id' ][0];
+				$bcd->thumbnail_id = $thumbnail_id;
 				$this->debug( 'Custom fields: Post has a thumbnail (featured image): %s', $bcd->thumbnail_id );
-				$bcd->thumbnail = get_post( $bcd->thumbnail_id );
-				unset( $bcd->post_custom_fields[ '_thumbnail_id' ] ); // There is a new thumbnail id for each blog.
+				$bcd->thumbnail = $thumbnail_post;
+				$bcd->custom_fields()->forget( '_thumbnail_id' );	// There is a new thumbnail id for each blog.
 				try
 				{
 					$data = attachment_data::from_attachment_id( $bcd->thumbnail, $bcd->upload_dir);
@@ -129,44 +159,28 @@ trait broadcasting
 				$this->debug( 'Custom fields: Post does not have a thumbnail (featured image).' );
 
 			$bcd->custom_fields->blacklist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_blacklist' ) ) );
+			$this->debug( 'The custom field blacklist is: %s', $bcd->custom_fields->blacklist );
 			$bcd->custom_fields->protectlist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_protectlist' ) ) );
+			$this->debug( 'The custom field protectlist is: %s', $bcd->custom_fields->protectlist );
 			$bcd->custom_fields->whitelist = array_filter( explode( ' ', $this->get_site_option( 'custom_field_whitelist' ) ) );
+			$this->debug( 'The custom field whitelist is: %s', $bcd->custom_fields->whitelist );
 
-			foreach( $bcd->post_custom_fields as $custom_field => $ignore )
+			foreach( $bcd->custom_fields() as $custom_field => $ignore )
 			{
-				// If the field does not start with an underscore, it is automatically valid.
-				if ( strpos( $custom_field, '_' ) !== 0 )
-					continue;
-
 				$keep = true;
 
-				// Has the user requested that all internal fields be broadcasted?
-				$broadcast_internal_custom_fields = $this->get_site_option( 'broadcast_internal_custom_fields' );
-				if ( $broadcast_internal_custom_fields )
-				{
-					foreach( $bcd->custom_fields->blacklist as $exception)
-						if ( strpos( $custom_field, $exception) !== false )
-						{
-							$keep = false;
-							break;
-						}
-				}
-				else
-				{
+				// Skip the exceptions.
+				if ( $bcd->custom_fields()->blacklist_has( $custom_field ) )
 					$keep = false;
-					foreach( $bcd->custom_fields->whitelist as $exception)
-						if ( strpos( $custom_field, $exception) !== false )
-						{
-							$keep = true;
-							break;
-						}
 
-				}
+				// If we do not broadcast them, then check the whitelist.
+				if ( ! $keep AND $bcd->custom_fields()->whitelist_has( $custom_field ) )
+					$keep = true;
 
 				if ( ! $keep )
 				{
 					$this->debug( 'Custom fields: Deleting custom field %s', $custom_field );
-					unset( $bcd->post_custom_fields[ $custom_field ] );
+					$bcd->custom_fields()->forget( $custom_field );
 				}
 				else
 					$this->debug( 'Custom fields: Keeping custom field %s', $custom_field );
@@ -214,11 +228,23 @@ trait broadcasting
 		// To prevent recursion
 		array_push( $this->broadcasting, $bcd );
 
+		// Handle sticky.
+		$bcd->post_is_sticky = isset( $_POST[ 'sticky' ]  );
+		$this->debug( 'Post sticky status: %s', intval( $bcd->post_is_sticky ) );
+
 		// POST is no longer needed. Empty it so that other plugins don't use it.
 		$action = new actions\maybe_clear_post;
 		$action->post = $_POST;
 		$action->execute();
 		$_POST = $action->post;
+
+		// This is a stupid exception: edit_post() checks the _POST for the sticky checkbox.
+		// And edit_post() is run after save_post()... :(
+		// So if the post is sticky, we have to put the checkbox back in the post.
+		// This can be avoided by either not clearing the post or forcing the user to update twice.
+		// Neither solution is any good: not clearing the post makes _some_ plugins go crazy, updating twice is not expected behavior.
+		if ( $bcd->post_is_sticky )
+			$_POST[ 'sticky'] = 'sticky';
 
 		$action = new actions\broadcasting_started;
 		$action->broadcasting_data = $bcd;
@@ -235,10 +261,11 @@ trait broadcasting
 			$this->debug( 'Switched to blog %s (%s)', get_bloginfo( 'name' ), $bcd->current_child_blog_id );
 
 			// Create new post data from the original stuff.
-			$bcd->new_post = (array) $bcd->post;
+			$bcd->new_post = clone( $bcd->post );
+			$bcd->new_child_created = false;
 
 			foreach( [ 'comment_count', 'guid', 'ID', 'post_parent' ] as $key )
-				unset( $bcd->new_post[ $key ] );
+				unset( $bcd->new_post->$key );
 
 			$action = new actions\broadcasting_after_switch_to_blog;
 			$action->broadcasting_data = $bcd;
@@ -251,12 +278,15 @@ trait broadcasting
 				continue;
 			}
 
+			// Force a reload the broadcast data?
+			$bcd->broadcast_data = $this->get_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID );
+
 			// Post parent
 			if ( $bcd->link && isset( $parent_broadcast_data) )
 				if ( $parent_broadcast_data->has_linked_child_on_this_blog() )
 				{
 					$linked_parent = $parent_broadcast_data->get_linked_child_on_this_blog();
-					$bcd->new_post[ 'post_parent' ] = $linked_parent;
+					$bcd->new_post->post_parent = $linked_parent;
 				}
 
 			// Insert new? Or update? Depends on whether the parent post was linked before or is newly linked?
@@ -272,18 +302,23 @@ trait broadcasting
 					if ( $child_post !== null )
 					{
 						$temp_post_data = $bcd->new_post;
-						$temp_post_data[ 'ID' ] = $child_post_id;
+						$temp_post_data->ID = $child_post_id;
 						wp_update_post( $temp_post_data );
-						$bcd->new_post[ 'ID' ] = $child_post_id;
+						$bcd->new_post->ID = $child_post_id;
 						$need_to_insert_post = false;
+					}
+					else
+					{
+						$this->debug( 'Warning: The child post has disappeared. Recreating.' );
+						$need_to_insert_post = true;
 					}
 				}
 
 			if ( $need_to_insert_post )
 			{
-				$this->debug( 'Creating a new post.' );
-				$temp_post_data = $bcd->new_post;
-				unset( $temp_post_data[ 'ID' ] );
+				$temp_post_data = clone( $bcd->new_post );
+				$this->debug( 'Creating a new post: %s', $temp_post_data );
+				unset( $temp_post_data->ID );
 
 				$result = wp_insert_post( $temp_post_data, true );
 
@@ -294,19 +329,21 @@ trait broadcasting
 					continue;
 				}
 				// Yes we did.
-				$bcd->new_post[ 'ID' ] = $result;
+				$bcd->new_post->ID = $result;
+
+				$bcd->new_child_created = true;
 
 				$this->debug( 'New child created: %s', $result );
 
 				if ( $bcd->link )
 				{
 					$this->debug( 'Adding link to child.' );
-					$bcd->broadcast_data->add_linked_child( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ] );
+					$bcd->broadcast_data->add_linked_child( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
 				}
 			}
 
-			$bcd->equivalent_posts()->set( $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post()->ID );
-			$this->debug( 'Equivalent of %s/%s is %s/%s', $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post()->ID  );
+			$bcd->equivalent_posts()->set( $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
+			$this->debug( 'Equivalent of %s/%s is %s/%s', $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post( 'ID' )  );
 
 			if ( $bcd->taxonomies )
 			{
@@ -317,7 +354,7 @@ trait broadcasting
 					// If we're updating a linked post, remove all the taxonomies and start from the top.
 					if ( $bcd->link )
 						if ( $bcd->broadcast_data->has_linked_child_on_this_blog() )
-							wp_set_object_terms( $bcd->new_post[ 'ID' ], [], $parent_post_taxonomy );
+							wp_set_object_terms( $bcd->new_post( 'ID' ), [], $parent_post_taxonomy );
 
 					// Skip this iteration if there are no terms
 					if ( ! is_array( $parent_post_terms ) )
@@ -337,16 +374,16 @@ trait broadcasting
 						$parent_slug = $parent_post_term->slug;
 						foreach( $target_blog_terms as $target_blog_term )
 						{
-							if ( $target_blog_term[ 'slug' ] == $parent_slug )
+							if ( $target_blog_term->slug == $parent_slug )
 							{
 								$this->debug( 'Taxonomies: Found existing taxonomy %s.', $parent_slug );
 								$found = true;
-								$taxonomies_to_add_to[] = intval( $target_blog_term[ 'term_id' ] );
+								$taxonomies_to_add_to[] = intval( $target_blog_term->term_id );
 								break;
 							}
 						}
 
-						// Should we create the taxonomy if it doesn't exist?
+						// Should we create the taxonomy term if it doesn't exist?
 						if ( ! $found )
 						{
 							// Does the term have a parent?
@@ -355,7 +392,7 @@ trait broadcasting
 							{
 								// Recursively insert ancestors if needed, and get the target term's parent's ID
 								$target_parent_id = $this->insert_term_ancestors(
-									(array) $parent_post_term,
+									$parent_post_term,
 									$parent_post_taxonomy,
 									$target_blog_terms,
 									$bcd->parent_blog_taxonomies[ $parent_post_taxonomy ][ 'terms' ]
@@ -368,11 +405,14 @@ trait broadcasting
 							$action->taxonomy = $parent_post_taxonomy;
 							$action->term = $new_term;
 							$action->execute();
-							$new_taxonomy = $action->new_term;
-							$term_id = $new_taxonomy[ 'term_id' ];
-							$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_id );
-
-							$taxonomies_to_add_to []= intval( $term_id );
+							if ( $action->new_term )
+							{
+								$term_id = intval( $action->new_term->term_id );
+								$taxonomies_to_add_to []= $term_id;
+								$this->debug( 'Taxonomies: Created taxonomy %s (%s).', $parent_post_term->name, $term_id );
+							}
+							else
+								$this->debug( 'Taxonomies: Taxonomy %s was not created.', $parent_post_term->name );
 						}
 					}
 
@@ -386,7 +426,7 @@ trait broadcasting
 						delete_option( $parent_post_taxonomy . '_children' );
 						clean_term_cache( '', $parent_post_taxonomy );
 						$this->debug( 'Setting taxonomies for %s: %s', $parent_post_taxonomy, $taxonomies_to_add_to );
-						wp_set_object_terms( $bcd->new_post[ 'ID' ], $taxonomies_to_add_to, $parent_post_taxonomy );
+						wp_set_object_terms( $bcd->new_post( 'ID' ), $taxonomies_to_add_to, $parent_post_taxonomy );
 					}
 				}
 				$this->debug( 'Taxonomies: Finished.' );
@@ -395,7 +435,7 @@ trait broadcasting
 			// Maybe remove the current attachments.
 			if ( $bcd->delete_attachments )
 			{
-				$attachments_to_remove = get_children( 'post_parent='.$bcd->new_post[ 'ID' ] . '&post_type=attachment' );
+				$attachments_to_remove = get_children( 'post_parent='.$bcd->new_post( 'ID' ) . '&post_type=attachment' );
 				$this->debug( '%s attachments to remove.', count( $attachments_to_remove ) );
 				foreach ( $attachments_to_remove as $attachment_to_remove )
 				{
@@ -419,8 +459,8 @@ trait broadcasting
 				$this->debug( "The attachment's post parent is %s.", $o->attachment_data->post->post_parent );
 				if ( $o->attachment_data->is_attached_to_parent() )
 				{
-					$this->debug( 'Assigning new post parent ID (%s) to attachment %s.', $bcd->new_post()->ID, $o->attachment_data->post->ID );
-					$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
+					$this->debug( 'Assigning new post parent ID (%s) to attachment %s.', $bcd->new_post( 'ID' ), $o->attachment_data->post->ID );
+					$o->attachment_data->post->post_parent = $bcd->new_post( 'ID' );
 				}
 				else
 				{
@@ -428,12 +468,8 @@ trait broadcasting
 					$o->attachment_data->post->post_parent = 0;
 				}
 				$this->maybe_copy_attachment( $o );
-				$a = (object)[];
-				$a->old = $attachment;
-				$a->new = get_post( $o->attachment_id );
-				$a->new->id = $a->new->ID;		// Lowercase is expected.
-				$bcd->copied_attachments[] = $a;
-				$this->debug( 'Copied attachment %s to %s', $a->old->id, $a->new->id );
+				$bcd->copied_attachments()->add( $attachment->post, get_post( $o->attachment_id ) );
+				$this->debug( 'Copied attachment %s to %s', $attachment->post->ID, $o->attachment_id );
 			}
 
 			// Maybe modify the post content with new URLs to attachments and what not.
@@ -441,18 +477,22 @@ trait broadcasting
 			$modified_post = clone( $unmodified_post );
 
 			// If there were any image attachments copied...
-			if ( count( $bcd->copied_attachments ) > 0 )
+			if ( count( $bcd->copied_attachments() ) > 0 )
 			{
-				$this->debug( '%s attachments were copied.', count( $bcd->copied_attachments ) );
+				$this->debug( '%s attachments were copied.', count( $bcd->copied_attachments() ) );
 				// Update the URLs in the post to point to the new images.
 				$new_upload_dir = wp_upload_dir();
-				foreach( $bcd->copied_attachments as $a )
+				foreach( $bcd->copied_attachments() as $a )
 				{
+					$count = 0;
 					// Replace the GUID with the new one.
-					$modified_post->post_content = str_replace( $a->old->guid, $a->new->guid, $modified_post->post_content );
+					$modified_post->post_content = str_replace( $a->old->guid, $a->new->guid, $modified_post->post_content, $count );
+					if ( $count > 0 )
+						$this->debug( 'Modified attachment guid from %s to %s: %s times', $a->old->guid, $a->new->guid, $count );
 					// And replace the IDs present in any image captions.
-					$modified_post->post_content = str_replace( 'id="attachment_' . $a->old->id . '"', 'id="attachment_' . $a->new->id . '"', $modified_post->post_content );
-					$this->debug( 'Modifying attachment link from %s to %s', $a->old->id, $a->new->id );
+					$modified_post->post_content = str_replace( 'id="attachment_' . $a->old->id . '"', 'id="attachment_' . $a->new->id . '"', $modified_post->post_content, $count );
+					if ( $count > 0 )
+						$this->debug( 'Modified attachment link from %s to %s: %s times', $a->old->id, $a->new->id, $count );
 				}
 			}
 			else
@@ -469,13 +509,9 @@ trait broadcasting
 				// Go through all the attachment IDs
 				foreach( $gallery->ids_array as $id )
 				{
-					// Find the new ID.
-					foreach( $bcd->copied_attachments as $ca )
-					{
-						if ( $ca->old->id != $id )
-							continue;
-						$new_ids[] = $ca->new->id;
-					}
+					$new_id = $bcd->copied_attachments()->get( $id );
+					if ( $new_id )
+						$new_ids[] = $new_id;
 				}
 				$new_ids_string = implode( ',', $new_ids );
 				$new_shortcode = $gallery->old_shortcode;
@@ -510,22 +546,28 @@ trait broadcasting
 			if ( $bcd->custom_fields )
 			{
 				$this->debug( 'Custom fields: Started.' );
-				// Remove all old custom fields.
-				$old_custom_fields = get_post_custom( $bcd->new_post[ 'ID' ] );
+
+				$child_fields = $bcd->custom_fields()->child_fields();
+				$child_fields->load();
+
+				// new_post_old_custom_fields is obsolete. Remove the first part in a few versions.
+				$bcd->new_post_old_custom_fields = $child_fields;
+
+				$this->debug( 'Custom fields of the child post: %s', $child_fields->to_array() );
 
 				$protected_field = [];
 
-				foreach( $old_custom_fields as $key => $value )
+				foreach( $child_fields as $key => $value )
 				{
 					// Do we delete this custom field?
 					$delete = true;
 
 					// For the protectlist to work the custom field has to already exist on the child.
-					if ( in_array( $key, $bcd->custom_fields->protectlist ) )
+					if ( $bcd->custom_fields()->protectlist_has( $key ) )
 					{
-						if ( ! isset( $old_custom_fields[ $key ] ) )
+						if ( ! $child_fields->has( $key ) )
 							continue;
-						if ( ! isset( $bcd->post_custom_fields[ $key ] ) )
+						if ( ! $bcd->custom_fields()->has( $key ) )
 							continue;
 						$protected_field[ $key ] = true;
 						$delete = false;
@@ -534,13 +576,13 @@ trait broadcasting
 					if ( $delete )
 					{
 						$this->debug( 'Custom fields: Deleting custom field %s.', $key );
-						delete_post_meta( $bcd->new_post[ 'ID' ], $key );
+						$child_fields->delete_meta( $key );
 					}
 					else
 						$this->debug( 'Custom fields: Keeping custom field %s.', $key );
 				}
 
-				foreach( $bcd->post_custom_fields as $meta_key => $meta_value )
+				foreach( $bcd->custom_fields() as $meta_key => $meta_value )
 				{
 					// Protected = ignore.
 					if ( isset( $protected_field[ $meta_key ] ) )
@@ -552,60 +594,82 @@ trait broadcasting
 						{
 							$single_meta_value = maybe_unserialize( $single_meta_value );
 							$this->debug( 'Custom fields: Adding array value %s', $meta_key );
-							add_post_meta( $bcd->new_post[ 'ID' ], $meta_key, $single_meta_value );
+							$child_fields->add_meta( $meta_key, $single_meta_value );
 						}
 					}
 					else
 					{
 						$meta_value = maybe_unserialize( $meta_value );
 						$this->debug( 'Custom fields: Adding value %s', $meta_key );
-						add_post_meta( $bcd->new_post[ 'ID' ], $meta_key, $meta_value );
+						$child_fields->add_meta( $meta_key, $meta_value );
 					}
 				}
 
 				// Attached files are custom fields... but special custom fields.
 				if ( $bcd->has_thumbnail )
 				{
-					$this->debug( 'Custom fields: Re-adding thumbnail.' );
 					$o = clone( $bcd );
 					$o->attachment_data = $bcd->attachment_data[ 'thumbnail' ];
+					$o->attachment_id = $bcd->copied_attachments()->get( $o->attachment_data->post->ID );
 
-					if ( $o->attachment_data->is_attached_to_parent() )
+					if ( $o->attachment_id > 0 )
 					{
-						$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post()->ID, $o->attachment_data->post->ID );
-						$o->attachment_data->post->post_parent = $bcd->new_post[ 'ID' ];
+						$this->debug( 'Custom fields: Thumbnail already exists as another attachment. Using that.' );
 					}
 					else
 					{
-						$this->debug( 'Resetting post parent for attachment %s.', $o->attachment_data->post->ID );
-						$o->attachment_data->post->post_parent = 0;
+						$this->debug( 'Custom fields: Re-adding thumbnail.' );
+						if ( $o->attachment_data->is_attached_to_parent() )
+						{
+							$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post( 'ID' ), $o->attachment_data->post->ID );
+							$o->attachment_data->post->post_parent = $bcd->new_post( 'ID' );
+						}
+						else
+						{
+							$this->debug( 'Resetting post parent for attachment %s.', $o->attachment_data->post->ID );
+							$o->attachment_data->post->post_parent = 0;
+						}
+
+						$this->debug( 'Custom fields: Maybe copying attachment.' );
+						$this->maybe_copy_attachment( $o );
+						$this->debug( 'Custom fields: Maybe copied attachment.' );
+
+						$bcd->copied_attachments()->add( $o->attachment_data->post, get_post( $o->attachment_id ) );
 					}
 
-					$this->debug( 'Custom fields: Maybe copying attachment.' );
-					$this->maybe_copy_attachment( $o );
-					$this->debug( 'Custom fields: Maybe copied attachment.' );
 					if ( $o->attachment_id !== false )
 					{
-						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
-						update_post_meta( $bcd->new_post[ 'ID' ], '_thumbnail_id', $o->attachment_id );
+						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post( 'ID' ), $o->attachment_id );
+						update_post_meta( $bcd->new_post( 'ID' ), '_thumbnail_id', $o->attachment_id );
 					}
 				}
 				$this->debug( 'Custom fields: Finished.' );
 			}
 
 			// Sticky behaviour
-			$child_post_is_sticky = is_sticky( $bcd->new_post[ 'ID' ] );
+			$child_post_is_sticky = is_sticky( $bcd->new_post( 'ID' ) );
+			$this->debug( 'Sticky status: %s', intval( $child_post_is_sticky ) );
 			if ( $bcd->post_is_sticky && ! $child_post_is_sticky )
-				stick_post( $bcd->new_post[ 'ID' ] );
+			{
+				$this->debug( 'Sticking post.' );
+				stick_post( $bcd->new_post( 'ID' ) );
+			}
 			if ( ! $bcd->post_is_sticky && $child_post_is_sticky )
-				unstick_post( $bcd->new_post[ 'ID' ] );
+			{
+				$this->debug( 'Unsticking post.' );
+				unstick_post( $bcd->new_post( 'ID' ) );
+			}
 
 			if ( $bcd->link )
 			{
-				$this->debug( 'Saving broadcast data of child.' );
-				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ] );
+				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
 				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
-				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post[ 'ID' ], $new_post_broadcast_data );
+				$this->debug( 'Saving broadcast data of child: %s', $new_post_broadcast_data );
+				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ), $new_post_broadcast_data );
+
+				// Save the parent also.
+				$this->debug( 'Saving parent broadcast data: %s', $bcd->broadcast_data );
+				$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $bcd->broadcast_data );
 			}
 
 			$action = new actions\broadcasting_before_restore_current_blog;
@@ -617,13 +681,6 @@ trait broadcasting
 
 		// For nested broadcasts. Just in case.
 		restore_current_blog();
-
-		// Save the post broadcast data.
-		if ( $bcd->link )
-		{
-			$this->debug( 'Saving broadcast data.' );
-			$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $bcd->broadcast_data );
-		}
 
 		$action = new actions\broadcasting_finished;
 		$action->broadcasting_data = $bcd;
@@ -671,7 +728,10 @@ trait broadcasting
 	{
 		// We must be on the source blog.
 		if ( ms_is_switched() )
+		{
+			$this->debug( 'Blog is switched. Not broadcasting.' );
 			return;
+		}
 
 		// Loop check.
 		if ( $this->is_broadcasting() )
@@ -700,7 +760,7 @@ trait broadcasting
 			return;
 
 		// No permission.
-		if ( ! $this->role_at_least( $this->get_site_option( 'role_broadcast' ) ) )
+		if ( ! static::user_has_roles( $this->get_site_option( 'role_broadcast' ) ) )
 		{
 			$this->debug( 'User does not have permission to use Broadcast.' );
 			return;
@@ -712,35 +772,13 @@ trait broadcasting
 
 		$this->debug( 'We are currently on blog %s (%s).', get_bloginfo( 'blogname' ), get_current_blog_id() );
 
-		$meta_box_data = $this->create_meta_box( $post );
-
-		$this->debug( 'Preparing the meta box.' );
-
-		// Allow plugins to modify the meta box with their own info.
-		$action = new actions\prepare_meta_box;
-		$action->meta_box_data = $meta_box_data;
-		$action->execute();
-
-		$this->debug( 'Prepared.' );
-
-		// Post the form.
-		if ( ! $meta_box_data->form->has_posted )
-		{
-			$meta_box_data->form->post();
-			$meta_box_data->form->use_post_values();
-		}
-
 		$broadcasting_data = new broadcasting_data( [
-			'_POST' => $_POST,
-			'meta_box_data' => $meta_box_data,
-			'parent_blog_id' => get_current_blog_id(),
 			'parent_post_id' => $post_id,
-			'post' => $post,
-			'upload_dir' => wp_upload_dir(),
 		] );
 
 		$this->debug( 'Preparing the broadcasting data.' );
 
+		// This is to fetch the selected blogs from the meta box.
 		$action = new actions\prepare_broadcasting_data;
 		$action->broadcasting_data = $broadcasting_data;
 		$action->execute();
@@ -762,21 +800,14 @@ trait broadcasting
 	**/
 	public function threewp_broadcast_broadcast_post( $broadcasting_data )
 	{
-		if ( ! is_a( $broadcasting_data, get_class( new broadcasting_data ) ) )
+		if ( ! is_a( $broadcasting_data, '\\threewp_broadcast\\broadcasting_data' ) )
 			return $broadcasting_data;
 		return $this->broadcast_post( $broadcasting_data );
 	}
 
 	/**
-		@brief		Fill the broadcasting_data object with information.
-
-		@details
-
-		The difference between the calculations in this filter and the actual broadcast_post method is that this filter
-
-		1) does access checks
-		2) tells broadcast_post() WHAT to broadcast, not how.
-
+		@brief		Modifies the broadcasting_data according to the users's input in the meta box (blogs) and the user's roles.
+		@details	Only does any real good when parsing user input from a meta box, for example during normal editing or using Send To Many or UBS Post.
 		@since		20131004
 	**/
 	public function threewp_broadcast_prepare_broadcasting_data( $action )
@@ -784,18 +815,16 @@ trait broadcasting
 		$bcd = $action->broadcasting_data;
 		$allowed_post_status = [ 'pending', 'private', 'publish' ];
 
-		if ( $bcd->post->post_status == 'draft' && $this->role_at_least( $this->get_site_option( 'role_broadcast_as_draft' ) ) )
+		if ( $bcd->post->post_status == 'draft' && static::user_has_roles( $this->get_site_option( 'role_broadcast_as_draft' ) ) )
 			$allowed_post_status[] = 'draft';
 
-		if ( $bcd->post->post_status == 'future' && $this->role_at_least( $this->get_site_option( 'role_broadcast_scheduled_posts' ) ) )
+		if ( $bcd->post->post_status == 'future' && static::user_has_roles( $this->get_site_option( 'role_broadcast_scheduled_posts' ) ) )
 			$allowed_post_status[] = 'future';
 
 		if ( ! in_array( $bcd->post->post_status, $allowed_post_status ) )
 			return;
 
 		$form = $bcd->meta_box_data->form;
-		if ( $form->is_posting() && ! $form->has_posted )
-				$form->post();
 
 		// Collect the list of blogs from the meta box.
 		$blogs_input = $form->input( 'blogs' );
@@ -804,34 +833,22 @@ trait broadcasting
 			{
 				$blog_id = $blog_input->get_name();
 				$blog_id = str_replace( 'blogs_', '', $blog_id );
-				$blog = new blog;
-				$blog->id = $blog_id;
-				$bcd->broadcast_to( $blog );
+				$bcd->broadcast_to( $blog_id );
 			}
 
-		// Remove the current blog
+		// Remove the parent blog
 		$bcd->blogs->forget( $bcd->parent_blog_id );
 
-		$bcd->post_type_object = get_post_type_object( $bcd->post->post_type );
-		$bcd->post_type_supports_thumbnails = post_type_supports( $bcd->post->post_type, 'thumbnail' );
-		//$bcd->post_type_supports_custom_fields = post_type_supports( $bcd->post->post_type, 'custom-fields' );
-		$bcd->post_type_supports_custom_fields = true;
-		$bcd->post_type_is_hierarchical = $bcd->post_type_object->hierarchical;
-
 		$bcd->custom_fields = $form->checkbox( 'custom_fields' )->get_post_value()
-			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_custom_fields' ) ) );
+			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) );
 		if ( $bcd->custom_fields )
 			$bcd->custom_fields = (object)[];
 
 		$bcd->link = $form->checkbox( 'link' )->get_post_value()
-			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) );
+			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_link' ) ) );
 
 		$bcd->taxonomies = $form->checkbox( 'taxonomies' )->get_post_value()
-			&& ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_taxonomies' ) ) );
-
-		// Is this post sticky? This info is hidden in a blog option.
-		$stickies = get_option( 'sticky_posts' );
-		$bcd->post_is_sticky = in_array( $bcd->post->ID, $stickies );
+			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) );
 	}
 
 }
