@@ -158,6 +158,14 @@ trait admin_menu
 			->label_( 'Clear POST' )
 			->checked( $this->get_site_option( 'clear_post' ) );
 
+		$save_post_decoys = $fs->number( 'save_post_decoys' )
+			->description_( "How many save_post hook decoys to insert before the real Broadcast save_post hook. This value should be raised if you notice that Broadcast isn't doing anything. This is due to a bug in Wordpress when other plugins call remove_action on the save_post hook." )
+			->label_( 'save_post decoys' )
+			->min( 0 )
+			->required()
+			->size( 2, 2 )
+			->value( $this->get_site_option( 'save_post_decoys' ) );
+
 		$save_post_priority = $fs->number( 'save_post_priority' )
 			->description_( 'The priority for the save_post hook. Should be after all other plugins have finished modifying the post. Default is 640.' )
 			->label_( 'save_post priority' )
@@ -295,6 +303,7 @@ trait admin_menu
 
 			$this->update_site_option( 'clear_post', $clear_post->is_checked() );
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
+			$this->update_site_option( 'save_post_decoys', $save_post_decoys->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
 			$this->update_site_option( 'blogs_hide_overview', $blogs_hide_overview->get_post_value() );
 			$this->update_site_option( 'existing_attachments', $existing_attachments->get_post_value() );

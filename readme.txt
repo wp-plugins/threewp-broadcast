@@ -244,6 +244,10 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 
 == Changelog ==
 
+= 23.3 20150826 =
+* Fix: save_post workaround for Wordpress bug https://core.trac.wordpress.org/ticket/17817#comment:132 See nop(). See "save_post decoys" setting in the misc Broadcast settings.
+This should fix The Events Calendar not broadcasting non-events as it should.
+
 = 23.2 20150824 =
 * New: Show blog and post names (and link to them) in the broadcast data maintenance results.
 * Version bump for WP 4.3

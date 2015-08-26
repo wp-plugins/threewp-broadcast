@@ -625,7 +625,12 @@ class ThreeWP_Broadcast
 	**/
 	public function hook_save_post()
 	{
-		$this->add_action( 'save_post', intval( $this->get_site_option( 'save_post_priority' ) ) );
+		$priority = intval( $this->get_site_option( 'save_post_priority' ) );
+		$decoys = intval( $this->get_site_option( 'save_post_decoys' ) );
+		// See nop() for why this even exists.
+		for ( $counter = 0; $counter < $decoys; $counter++ )
+			$this->add_action( 'save_post', 'nop', $priority - 1 - $counter );
+		$this->add_action( 'save_post', $priority );
 	}
 
 	/**
@@ -686,6 +691,16 @@ class ThreeWP_Broadcast
 	}
 
 	/**
+		@brief		Do nothing.
+		@details	Used as a workaround for plugins that might remove_action in the save_post before us.
+					This is a bug in how Wordpress handles filters and actions: https://core.trac.wordpress.org/ticket/17817
+		@since		2015-08-26 21:09:28
+	**/
+	public function nop()
+	{
+	}
+
+	/**
 		@brief		Save the user's last used settings.
 		@details	Since v8 the data is stored in the user's meta.
 		@since		2014-10-09 06:19:53
@@ -708,6 +723,7 @@ class ThreeWP_Broadcast
 			'database_version' => 0,							// Version of database and settings
 			'debug' => false,									// Display debug information?
 			'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.
+			'save_post_decoys' => 1,							// How many nop() hooks to insert into the save_post action before Broadcast itself.
 			'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 			'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?
 			'post_types' => 'post page',						// Custom post types which use broadcasting
