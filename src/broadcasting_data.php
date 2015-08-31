@@ -227,10 +227,15 @@ class broadcasting_data
 	**/
 	public function __construct( $options = [] )
 	{
+		$options = (array)$options;
 		// Import any known values from the options object.
-		foreach( (array)$options as $key => $value )
+		foreach( $options as $key => $value )
 			if ( property_exists( $this, $key ) )
 				$this->$key = $value;
+
+		// The custom fields object should be cloned.
+		if ( isset( $options[ 'custom_fields' ] ) )
+			$this->custom_fields = clone( $options[ 'custom_fields' ] );
 
 		if ( ! $this->parent_post_id )
 			throw new Exception( 'Specify the parent post ID property when creating the broadcasting_data object.' );
