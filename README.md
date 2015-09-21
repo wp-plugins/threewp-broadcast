@@ -1,6 +1,6 @@
 threewp_broadcast
 =================
 
-ThreeWP Broadcast plugin for Wordpress.
+Network Content Syndication Made Easy! Automatically share content by multiposting between multisite blogs.
 
-Use `composer dump` to create the autoloader.
+The plugin is available at the [Wordpress plugin repo](https://wordpress.org/plugins/threewp-broadcast/), and on its own page at [plainviewplugins.com](https://plainviewplugins.com/threewp-broadcast/).

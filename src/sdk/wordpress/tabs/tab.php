@@ -17,6 +17,7 @@ namespace plainview\sdk_broadcast\wordpress\tabs;
 class tab
 {
 	use \plainview\sdk_broadcast\traits\method_chaining;
+	use \plainview\sdk_broadcast\html\element;
 
 	/**
 		@brief		Tab callback function.
@@ -92,7 +93,13 @@ class tab
 	public $parameters = array();
 
 	/**
-		@brief		The \\plainview\\sdk_broadcast\\wordpress\\tabs\\tabs object this tab belongs to.
+		@brief		The HTML element tag.
+		@since		2015-07-07 19:33:38
+	**/
+	public $tag = 'li';
+
+	/**
+		@brief		The \\plainview\\sdk_broadcast_pvam\\wordpress\\tabs\\tabs object this tab belongs to.
 		@since		20130503
 		@var		$tabs
 	**/

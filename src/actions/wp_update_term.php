@@ -11,12 +11,14 @@ class wp_update_term
 {
 	/**
 		@brief		IN: The new term object with new values.
+		@see		set_new_term()
 		@since		2014-04-08 15:32:24
 	**/
 	public $new_term;
 
 	/**
 		@brief		[IN]: The old term as an object, if available.
+		@see		set_old_term()
 		@since		2014-04-10 14:24:13
 	**/
 	public $old_term;
@@ -43,18 +45,41 @@ class wp_update_term
 	}
 
 	/**
+		@brief		Sets the new term.
+		@since		2015-01-15 23:16:39
+	**/
+	public function set_new_term( $term )
+	{
+		$this->new_term = clone( $term );
+	}
+
+	/**
+		@brief		Sets the old term.
+		@since		2015-01-15 23:16:39
+	**/
+	public function set_old_term( $term )
+	{
+		$this->old_term = clone( $term );
+	}
+
+	/**
 		@brief		Switch the data between the terms.
 		@since		2014-04-10 15:27:47
 	**/
-	public function switch_data()
+	public function switch_data( $key = '' )
 	{
-		foreach( [
-			'term_id',
-			'term_group',
-			'term_taxonomy_id',
-			'parent',
-			'count',
-			] as $key )
+		if ( $key !== '' )
+			$keys = [ $key ];
+		else
+			$keys = [
+				'count',
+				'parent',
+				'term_group',
+				'term_id',
+				'term_taxonomy_id',
+			];
+
+		foreach( $keys as $key )
 		{
 			$temp = $this->old_term->$key;
 			$this->old_term->$key = $this->new_term->$key;

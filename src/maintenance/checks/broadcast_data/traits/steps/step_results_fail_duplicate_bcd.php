@@ -36,7 +36,7 @@ trait step_results_fail_duplicate_bcd
 		{
 			$row = $table->body()->row();
 			$row->td()->text_( $id );
-			$row->td()->text_( 'Post %s on blog %s', $bcd->post_id, $bcd->blog_id );
+			$row->td()->text_( $this->blogpost( $bcd->blog_id, $bcd->post_id ) );
 		}
 
 		$o->r .= $table;

@@ -1,4 +1,4 @@
-a<?php
+<?php
 
 class TreeTest extends \plainview\sdk_broadcast\tests\TestCase
 {

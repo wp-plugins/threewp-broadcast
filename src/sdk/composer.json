@@ -31,7 +31,7 @@
 				"version": "master",
 				"source":
 				{
-					"url": "https://github.com/the-plainview/sdk.git",
+					"url": "https://bitbucket.org/edward_electric/plainview-sdk.git",
 					"type": "git",
 					"reference": "master"
 				}

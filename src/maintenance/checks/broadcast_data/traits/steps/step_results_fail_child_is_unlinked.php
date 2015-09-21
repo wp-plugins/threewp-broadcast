@@ -45,8 +45,8 @@ trait step_results_fail_child_is_unlinked
 			$child_post_id = reset( $blog_post );
 			$row = $table->body()->row();
 			$row->td()->text_( $id );
-			$row->td()->text_( 'Post %s on blog %s', $bcd->post_id, $bcd->blog_id );
-			$row->td()->text_( 'Post %s on blog %s', $child_post_id, $child_blog_id );
+			$row->td()->text_( $this->blogpost( $bcd->blog_id, $bcd->post_id ) );
+			$row->td()->text_( $this->blogpost( $child_blog_id, $child_post_id ) );
 		}
 
 		$o->r .= $table;
