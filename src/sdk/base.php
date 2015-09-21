@@ -13,6 +13,8 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20150804		Moved to bitbucket.
+	- 20150725		Wordpress: Allow saving debug info to file.
 	- 20150721		Wordpress: get_user_capabilities and user_has_roles.
 	- 20150711		Wordpress plugin pack table allows selecting of checkboxes via plugin name.
 	- 20150708		Wordpress updater has its own namespace.
@@ -164,7 +166,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20150721;
+	protected $sdk_version = 20150804;
 
 	/**
 		@brief		Constructor.

@@ -31,6 +31,7 @@ class base
 
 		The keys in the array are:
 
+		__FILE__</br>
 		name<br />
 		filename<br />
 		filename_from_plugin_directory<br />
@@ -300,7 +301,14 @@ class base
 
 		if ( $this->language_domain == '' )
 			$this->language_domain = str_replace( '.php', '', $this->paths( 'filename' ) );
-		load_plugin_textdomain( $this->language_domain, false, $this->paths ( 'path_from_plugin_directory' ) . '/lang' );
+
+		// This will allow other plugins to load a custom language file.
+		// The filter name will be similar to: ThreeWP_Broadcast_language_directory
+		$filter_name = $this->language_domain . '_language_directory';
+		$language_directory = $this->paths ( 'path_from_plugin_directory' ) . '/lang';
+		$language_directory = $this->filters( $filter_name, $language_directory );
+
+		 load_plugin_textdomain( $this->language_domain, false, $language_directory );
 	}
 
 	/**

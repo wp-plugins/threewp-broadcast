@@ -4,7 +4,7 @@ License: GPLv3
 Requires at least: 3.9
 Stable tag: trunk
 Tags: broadcast, multipost, sharing, share content, duplicate, posts, syndicate, syndication, marketing, threewp, linking, woocommerce, acf, syndicator, aggregator, aggregation, autoblogging, news, content hub, push, pull, publishing
-Tested up to: 4.3
+Tested up to: 4.3.1
 
 Network Content Syndication Made Easy! Automatically share content by multiposting between multisite blogs.
 
@@ -25,6 +25,7 @@ Requires PHP version 5.4 or higher.
 * Galleries
 * Custom field blacklist, whitelist, and protect list.
 * User role access granularity
+* CDN support (tested Amazon S3)
 * Many extra features in the premium pack
 
 = SEO support =
@@ -43,6 +44,7 @@ The <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title
 * <a title="Advanced Custom Fields Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/advanced-custom-fields-broadcast-plugin/">Advanced Custom Fields</a> adds support for correctly broadcasting various field types using Elliot Condon’s <a href="http://www.advancedcustomfields.com/">Advanced Custom Fields plugin</a>.
 * <a title="All In One Calendar Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/all-in-one-calendar-broadcast-plugin/">All In One Calendar</a> adds support for <a href="http://www.wordpress.org/plugins/all-in-one-event-calendar/">Timely’s All In One Calendar</a> plugin.
 * <a title="Event Organiser Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/event-organiser-broadcast-plugin/">Event Organiser</a> adds support for Stephen Harris’ <a href="http://wordpress.org/plugins/event-organiser/">Event Organiser plugin</a>, with events and venues.
+* <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/geo-my-wp-broadcast-plugin/">GEO my WordPress</a> adds support for Eyal Fitoussi&#8217;s <a href="https://wordpress.org/plugins/geo-my-wp/">GEO my WordPress</a> geolocation plugin.
 * <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/global-content-blocks-broadcast-plugin/">Global Content Blocks</a> adds support for shortcodes from <a href="https://wordpress.org/plugins/global-content-blocks/">WP Xpert&#8217;s Global Content Blocks</a> plugin.
 * <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/metaslider-broadcast-plugin/">Metaslider</a> adds support for <a href="https://www.metaslider.com/">Metaslider</a> shortcodes.
 * <a title="Polylang Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/polylang-broadcast-plugin/">Polylang</a> adds support for Broadcasting posts in different languages using Frédéric Demarle’s <a href="https://wordpress.org/plugins/polylang/">Polylang</a> translation plugin.
@@ -243,6 +245,12 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 23.5 20150921 =
+* New: Attachment (image) descriptions are now copied to children.
+* New: CDN support. Preliminarily tested with Amazon S3. If you have other CDNs, please test and e-mail.
+* New Plugin Pack Plugin: GEO my WordPress - Adds support for Eyal Fitoussi's <a href="https://wordpress.org/plugins/geo-my-wp/">GEO my WordPress</a> geolocation plugin.
+* Version bump for WP 4.3.1
 
 = 23.4 20150901 =
 * Fix: Clone the custom fields object when copying broadcasting_data. This fixes a problem with WooCommerce variations not being correctly updated.

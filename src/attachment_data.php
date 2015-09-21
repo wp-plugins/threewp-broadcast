@@ -97,6 +97,15 @@ class attachment_data
 	}
 
 	/**
+		@brief		Is this attachment a URL?
+		@since		2015-06-04 18:38:31
+	**/
+	public function is_url()
+	{
+		return ( filter_var( $this->filename_path, FILTER_VALIDATE_URL) !== FALSE );
+	}
+
+	/**
 		@brief		Set the "attached to parent" status.
 		@since		2014-08-01 13:09:09
 	**/

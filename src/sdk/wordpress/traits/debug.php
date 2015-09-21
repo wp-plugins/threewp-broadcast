@@ -36,7 +36,7 @@ trait debug
 	public function add_debug_settings_to_form( $form )
 	{
 		// We need this so that the options use the correct namespace.
-		$bc = self::instance();
+		$instance = self::instance();
 
 		$fs = $form->fieldset( 'fs_debug' );
 		$fs->legend->label_( 'Debugging' );
@@ -50,14 +50,19 @@ trait debug
 		$debug = $fs->checkbox( 'debug' )
 			->description_( 'Show debugging information in various places.' )
 			->label_( 'Enable debugging' )
-			->checked( $bc->get_site_option( 'debug', false ) );
+			->checked( $instance->get_site_option( 'debug', false ) );
 
-		$debug_ips = $fs->textarea( 'debug_ips' )
+		$fs->checkbox( 'debug_to_file' )
+			->description_( 'The debug data will be saved to the file %s.', $this->get_debug_filename() )
+			->label_( 'Save debug to file' )
+			->checked( $instance->get_site_option( 'debug_to_file', false ) );
+
+		$fs->textarea( 'debug_ips' )
 			->description_( 'Only show debugging info to specific IP addresses. Use spaces between IPs. You can also specify part of an IP address. Your address is %s', $_SERVER[ 'REMOTE_ADDR' ] )
 			->label_( 'Debug IPs' )
 			->rows( 5, 16 )
 			->trim()
-			->value( $bc->get_site_option( 'debug_ips', '' ) );
+			->value( $instance->get_site_option( 'debug_ips', '' ) );
 	}
 
 	/**
@@ -95,6 +100,16 @@ trait debug
 		echo $text;
 		if ( ob_get_contents() )
 			ob_flush();
+
+		$plugin = self::instance();
+		if ( $plugin->get_site_option( 'debug_to_file', false ) )
+		{
+			$filename = $this->get_debug_filename();
+			// The debug file should prevent unauthorized access.
+			if ( ! file_exists( $filename ) )
+				file_put_contents( $filename, "<php; exit; ?>\n" );
+			file_put_contents( $filename, $text, FILE_APPEND );
+		}
 	}
 
 	/**
@@ -126,15 +141,25 @@ trait debug
 	}
 
 	/**
+		@brief		Return the filename of the debug file.
+		@since		2015-07-25 13:45:32
+	**/
+	public function get_debug_filename()
+	{
+		return $this->paths( '__FILE__' ) . '.debug.php';
+	}
+
+	/**
 		@brief		Saves the debug settings from the form.
 		@since		2014-05-01 08:58:22
 	**/
 	public function save_debug_settings_from_form( $form )
 	{
 		// We need this so that the options use the correct namespace.
-		$bc = self::instance();
+		$instance = self::instance();
 
-		$bc->update_site_option( 'debug', $form->input( 'debug' )->is_checked() );
-		$bc->update_site_option( 'debug_ips', $form->input( 'debug_ips' )->get_filtered_post_value() );
+		$instance->update_site_option( 'debug', $form->input( 'debug' )->is_checked() );
+		$instance->update_site_option( 'debug_to_file', $form->input( 'debug_to_file' )->is_checked() );
+		$instance->update_site_option( 'debug_ips', $form->input( 'debug_ips' )->get_filtered_post_value() );
 	}
 }
