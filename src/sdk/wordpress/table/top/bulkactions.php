@@ -71,9 +71,17 @@ class bulkactions
 			// Create a temporary form in order to create a checkbox that is only used by javascript.
 			$temp_form = clone( $this->form );
 			// Create the temporary checkbox.
-			$select = $temp_form->checkbox( 'check' );
-			$text = $select->display_input() . '<span class="screen-reader-text">Selected</span>';
-			$row->th( 'check_column_' . $row->id )->css_class( 'check-column' )->text( $text );
+			$sa_text = __( 'Select All' );
+			$checkbox = $temp_form->checkbox( 'cb_select_all_1' );
+			$checkbox->label( $sa_text );
+			$checkbox->title( $sa_text );
+			// Hide the label
+			$checkbox->label->css_class( 'screen-reader-text' );
+
+			$text = sprintf( '%s%s', $checkbox->display_label(), $checkbox->display_input() );
+			$row->td()
+				->css_class( 'manage-column check-column' )
+				->text( $text );
 		}
 
 		if ( $section == 'plainview\\sdk_broadcast\\table\\body' )

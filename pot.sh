@@ -18,5 +18,5 @@ done
 POT="ThreeWP_Broadcast.pot"
 
 xgettext -s -c --no-wrap -d threewp_broadcast\ThreeWP_Broadcast -p lang -o "$POT" \
-	--omit-header -k_ -kerror_ -kdescription_ -kmessage_ -kheading_ -klabel_ -kname_ -koption_ -kp_ -ktext_ -kvalue_ \
+	--omit-header -k_ -kerror_ -kdescription_ -kmessage_ -kheading_ -klabel_ -kname_ -koption_ -kp_ -ktext_ -kvalue_ -ktitle_ \
 	$PHPFILES

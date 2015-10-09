@@ -13,6 +13,10 @@ namespace plainview\sdk_broadcast;
 
 	This list only shows which classes were modified. For a detailed list, see the class' changelog.
 
+	- 20151009		Wordpress: Update plugin pack table.
+	- 20151003		Wordpress: More detailed debug trait.
+	- 20151003		Wordpress: Allow custom directory for language file.
+	- 20151002		Wordpress: use get_current_user_id() to return the current user's ID.
 	- 20150804		Moved to bitbucket.
 	- 20150725		Wordpress: Allow saving debug info to file.
 	- 20150721		Wordpress: get_user_capabilities and user_has_roles.
@@ -166,7 +170,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20150804;
+	protected $sdk_version = 20151009;
 
 	/**
 		@brief		Constructor.

@@ -101,8 +101,8 @@ abstract class plugin_pack
 			->add( $this->_( 'Deactivate plugin' ), 'deactivate_plugin' )
 			->add( $this->_( 'Uninstall plugin' ), 'uninstall_plugin' )
 			->cb( $row );
-		$row->th()->text_( 'Plugin' );
-		$row->th()->text_( 'Description' );
+		$row->th()->text( __( 'Plugin' ) );
+		$row->th()->text( __( 'Description' ) );
 
 		if ( $form->is_posting() )
 		{

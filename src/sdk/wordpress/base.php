@@ -308,7 +308,7 @@ class base
 		$language_directory = $this->paths ( 'path_from_plugin_directory' ) . '/lang';
 		$language_directory = $this->filters( $filter_name, $language_directory );
 
-		 load_plugin_textdomain( $this->language_domain, false, $language_directory );
+		load_plugin_textdomain( $this->language_domain, false, $language_directory );
 	}
 
 	/**
@@ -497,9 +497,7 @@ class base
 	**/
 	public function user_id()
 	{
-		global $current_user;
-		get_current_user();
-		return $current_user->ID;
+		return get_current_user_id();
 	}
 
 	// -------------------------------------------------------------------------------------------------

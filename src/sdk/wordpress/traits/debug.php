@@ -52,10 +52,31 @@ trait debug
 			->label_( 'Enable debugging' )
 			->checked( $instance->get_site_option( 'debug', false ) );
 
-		$fs->checkbox( 'debug_to_file' )
-			->description_( 'The debug data will be saved to the file %s.', $this->get_debug_filename() )
+		$fs->checkbox( 'debug_to_browser' )
+			->description_( 'Show the debugging information in the browser.' )
+			->label_( 'Show debug in the browser' )
+			->checked( $instance->get_site_option( 'debug_to_browser', false ) );
+
+		$debug_to_file = $fs->checkbox( 'debug_to_file' )
 			->label_( 'Save debug to file' )
 			->checked( $instance->get_site_option( 'debug_to_file', false ) );
+
+		// We need to set the description unescaped due to the link.
+		$filename = $this->get_debug_filename();
+		$basename = basename( $filename );
+		$filename = sprintf( '<a href="%s">%s</a>',
+			$this->paths( 'path_from_base_directory' ) . '/' . $basename,
+			$basename
+		);
+		$description = $this->_( 'The debug data will be saved to the file %s. This link is distributable.', $filename );
+		$debug_to_file->description
+			->get_label()
+			->content = $description;
+
+		$fs->checkbox( 'delete_debug_file' )
+			->description_( 'Delete the contents of the debug file now after saving the settings.' )
+			->label_( 'Delete debug file' )
+			->checked( false );
 
 		$fs->textarea( 'debug_ips' )
 			->description_( 'Only show debugging info to specific IP addresses. Use spaces between IPs. You can also specify part of an IP address. Your address is %s', $_SERVER[ 'REMOTE_ADDR' ] )
@@ -97,17 +118,19 @@ trait debug
 
 		// Date class: string
 		$text = sprintf( '%s <em>%s</em>: %s<br/>', $this->now(), $class_name, $text, "\n" );
-		echo $text;
-		if ( ob_get_contents() )
-			ob_flush();
 
 		$plugin = self::instance();
+
+		if ( $plugin->get_site_option( 'debug_to_browser', false ) )
+		{
+			echo $text;
+			if ( ob_get_contents() )
+				ob_flush();
+		}
+
 		if ( $plugin->get_site_option( 'debug_to_file', false ) )
 		{
 			$filename = $this->get_debug_filename();
-			// The debug file should prevent unauthorized access.
-			if ( ! file_exists( $filename ) )
-				file_put_contents( $filename, "<php; exit; ?>\n" );
 			file_put_contents( $filename, $text, FILE_APPEND );
 		}
 	}
@@ -141,12 +164,40 @@ trait debug
 	}
 
 	/**
+		@brief		Are we debugging to the browser?
+		@since		2015-10-03 16:56:50
+	**/
+	public function debugging_to_browser()
+	{
+		if ( ! $this->debugging() )
+			return false;
+
+		$plugin = self::instance();
+		return $plugin->get_site_option( 'debug_to_browser', false );
+	}
+
+	/**
+		@brief		Are we debugging to a file?
+		@since		2015-10-03 16:57:42
+	**/
+	public function debugging_to_file()
+	{
+		if ( ! $this->debugging() )
+			return false;
+
+		$plugin = self::instance();
+		return $plugin->get_site_option( 'debug_to_file', false );
+	}
+
+	/**
 		@brief		Return the filename of the debug file.
 		@since		2015-07-25 13:45:32
 	**/
 	public function get_debug_filename()
 	{
-		return $this->paths( '__FILE__' ) . '.debug.php';
+		$hash = md5( $this->paths( '__FILE__' ) . AUTH_KEY );
+		$hash = substr( $hash, 0, 8 );
+		return $this->paths( '__FILE__' ) . ".$hash.debug.php";
 	}
 
 	/**
@@ -159,7 +210,15 @@ trait debug
 		$instance = self::instance();
 
 		$instance->update_site_option( 'debug', $form->input( 'debug' )->is_checked() );
+		$instance->update_site_option( 'debug_to_browser', $form->input( 'debug_to_browser' )->is_checked() );
 		$instance->update_site_option( 'debug_to_file', $form->input( 'debug_to_file' )->is_checked() );
 		$instance->update_site_option( 'debug_ips', $form->input( 'debug_ips' )->get_filtered_post_value() );
+
+		if ( $form->input( 'delete_debug_file' )->is_checked() )
+		{
+			$filename = $this->get_debug_filename();
+			if ( is_writeable( $filename ) )
+				unlink( $filename );
+		}
 	}
 }

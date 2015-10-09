@@ -246,6 +246,12 @@ Xcache v3, which does support namespaces, has not yet been tested. Anyone with X
 
 == Changelog ==
 
+= 24 20151009 =
+* New: Allow children to be unlinked / trashed / deleted from the meta box.
+* New Plugin Pack Plugin: FooGallery - Adds support for <a href="https://wordpress.org/plugins/foogallery/">FooPlugins&#8217; FooGallery</a> plugin.
+* New Plugin Pack Plugin: Geodirectory - Adds support for <a href="https://wordpress.org/plugins/geodirectory/">Geodirectory</a> places.
+* Code: broadcasting_data fatal error - now checks to see it custom_fields is an object before cloning it.
+
 = 23.5 20150921 =
 * New: Attachment (image) descriptions are now copied to children.
 * New: CDN support. Preliminarily tested with Amazon S3. If you have other CDNs, please test and e-mail.

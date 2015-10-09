@@ -224,6 +224,23 @@ trait meta_boxes
 		$meta_box_data->html->put( 'blogs', '' );
 		$meta_box_data->convert_form_input_later( 'blogs' );
 
+		$unchecked_child_blogs = $form->select( 'unchecked_child_blogs' )
+			->css_class( 'blogs checkboxes' )
+			// Input title
+			->title_( 'What to do with unchecked, linked child blogs' )
+			// Input label
+			->label_( 'With the unchecked child blogs' )
+			// With the unchecked child blogs:
+			->option_( 'Do not update', '' )
+			// With the unchecked child blogs:
+			->option_( 'Delete the child post', 'delete' )
+			// With the unchecked child blogs:
+			->option_( 'Trash the child post', 'trash' )
+			// With the unchecked child blogs:
+			->option_( 'Unlink the child post', 'unlink' );
+		$meta_box_data->html->put( 'unchecked_child_blogs', '' );
+		$meta_box_data->convert_form_input_later( 'unchecked_child_blogs' );
+
 		$js = sprintf( '<script type="text/javascript">var broadcast_blogs_to_hide = %s;</script>', $this->get_site_option( 'blogs_to_hide', 5 ) );
 		$meta_box_data->html->put( 'blogs_js', $js );
 

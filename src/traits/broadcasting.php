@@ -689,7 +689,7 @@ trait broadcasting
 		// Finished broadcasting.
 		array_pop( $this->broadcasting );
 
-		if ( $this->debugging() )
+		if ( $this->debugging_to_browser() )
 		{
 			if ( ! $this->is_broadcasting() )
 			{
@@ -849,6 +849,70 @@ trait broadcasting
 
 		$bcd->taxonomies = $form->checkbox( 'taxonomies' )->get_post_value()
 			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) );
+
+		// Handle the unchecking of the linked children.
+		// We could do this earlier, when foreaching the blogs_input, but it makes the code look uglier. Therefore we keep it separate.
+		$unchecked_child_blogs_action = $form->checkbox( 'unchecked_child_blogs' )->get_post_value();
+		// The user wanted something done.
+		if ( $unchecked_child_blogs_action != '' )
+		{
+			// The interesting blogs are those that are LINKED and NOT CHECKED.
+
+			$linked_blogs = [];
+			$linked_children = $bcd->meta_box_data->broadcast_data->get_linked_children();
+			foreach( $linked_children as $blog_id => $ignore )
+				$linked_blogs []= $blog_id;
+
+			$unchecked_blogs = [];
+			foreach( $blogs_input->inputs() as $blog_input )
+				if ( ! $blog_input->is_checked() )
+				{
+					$blog_id = $blog_input->get_name();
+					$blog_id = str_replace( 'blogs_', '', $blog_id );
+					$unchecked_blogs []= $blog_id;
+				}
+
+			$blogs_to_modify = array_intersect( $linked_blogs, $unchecked_blogs );
+
+			foreach( $blogs_to_modify as $blog_id )
+			{
+				switch_to_blog( $blog_id );
+
+				$post_id = $bcd->meta_box_data->broadcast_data->get_linked_child_on_this_blog();
+				$unlink = false;
+
+				switch( $unchecked_child_blogs_action )
+				{
+					case 'delete':
+						$this->debug( 'Deleting child post %s', $post_id );
+						wp_delete_post( $post_id, true );
+						$unlink = true;
+						break;
+
+					case 'trash':
+						$this->debug( 'Trashing child post %s', $post_id );
+						wp_delete_post( $post_id );
+						break;
+
+					case 'unlink':
+						$unlink = true;
+						break;
+					break;
+				}
+
+				if ( $unlink )
+				{
+					$this->debug( 'Unlinking child post %s', $post_id );
+					$bcd->meta_box_data->broadcast_data->remove_linked_child( $blog_id );
+					$this->delete_post_broadcast_data( get_current_blog_id(), $post_id );
+				}
+
+				restore_current_blog();
+
+				$this->debug( 'Resaving braodcast data.' );
+				$this->set_post_broadcast_data( get_current_blog_id(), $bcd->post->ID, $bcd->meta_box_data->broadcast_data );
+			}
+		}
 	}
 
 }
