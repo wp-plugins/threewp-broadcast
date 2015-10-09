@@ -13,11 +13,20 @@ class blog
 	public $required = false;
 	public $selected = false;
 
+	/**
+		@brief		Allow construction of blog with ID.
+		@since		2015-06-15 10:43:57
+	**/
+	public function __construct( $id = null )
+	{
+		if ( absint( $id ) > 0 )
+			$this->id = absint( $id );
+	}
+
 	public function __toString()
 	{
-		switch_to_blog( $this->id );
-		$r = get_bloginfo( 'blogname' );
-		restore_current_blog();
+		$info = get_blog_details( $this->id );
+		$r = $info->blogname ? $info->blogname : $info->domain . $info->path;
 		return $r . '';
 	}
 

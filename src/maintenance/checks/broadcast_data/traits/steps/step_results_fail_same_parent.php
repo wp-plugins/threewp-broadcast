@@ -86,11 +86,11 @@ trait step_results_fail_same_parent
 			foreach( $blog as $post_id => $posts )
 			{
 				$row = $table->body()->row();
-				$row->td()->textf( 'Blog %s, post %s', $blog_id, $post_id );
+				$row->td()->textf( $this->blogpost( $blog_id, $post_id ) );
 				$text = [];
 				foreach( $posts as $id => $post )
 				{
-					$t = sprintf( 'Blog %s, post %s, ID %s', $post->blog_id, $post->post_id, $id );
+					$t = $this->blogpost( $post->blog_id, $post->post_id ) . ' - ' . $id;
 
 					// Is this child the linked child?
 					foreach( $post->parent_bcd->get_linked_children() as $child_blog_id => $child_post_id )
