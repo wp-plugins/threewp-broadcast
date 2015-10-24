@@ -16,6 +16,8 @@ namespace plainview\sdk_broadcast\wordpress\traits;
 
 		'debug' => false,									// Display debug information?
 		'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.
+		'debug_to_browser' => false,						// Display debug info in the browser?
+		'debug_to_file' => false,							// Save debug info to a file.
 
 	3.1	In the settings form, display the inputs:
 

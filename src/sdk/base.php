@@ -11,8 +11,7 @@ namespace plainview\sdk_broadcast;
 
 	@par			Changelog
 
-	This list only shows which classes were modified. For a detailed list, see the class' changelog.
-
+	- 20151024		Wordpress: Add Options_Object class.
 	- 20151009		Wordpress: Update plugin pack table.
 	- 20151003		Wordpress: More detailed debug trait.
 	- 20151003		Wordpress: Allow custom directory for language file.
@@ -170,7 +169,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20151009;
+	protected $sdk_version = 20151024;
 
 	/**
 		@brief		Constructor.

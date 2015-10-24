@@ -246,6 +246,11 @@ trait broadcasting
 		if ( $bcd->post_is_sticky )
 			$_POST[ 'sticky'] = 'sticky';
 
+		// wp_upload_dir is incorrect on child sites, so we override it during broadcasting.
+		// See the broadcasting_upload_dir method.
+		$this->__siteurl = get_option( 'siteurl' );
+		$this->add_action( 'upload_dir', 'broadcasting_upload_dir' );
+
 		$action = new actions\broadcasting_started;
 		$action->broadcasting_data = $bcd;
 		$action->execute();
@@ -264,8 +269,10 @@ trait broadcasting
 			$bcd->new_post = clone( $bcd->post );
 			$bcd->new_child_created = false;
 
-			foreach( [ 'comment_count', 'guid', 'ID', 'post_parent' ] as $key )
+			foreach( [ 'guid', 'ID' ] as $key )
 				unset( $bcd->new_post->$key );
+			foreach( [ 'comment_count', 'post_parent' ] as $key )
+				$bcd->new_post->$key = 0;
 
 			$action = new actions\broadcasting_after_switch_to_blog;
 			$action->broadcasting_data = $bcd;
@@ -686,6 +693,10 @@ trait broadcasting
 		$action->broadcasting_data = $bcd;
 		$action->execute();
 
+		// We are done with the upload dir override.
+		unset( $this->__siteurl );
+		remove_action( 'upload_dir', [ $this, 'broadcasting_upload_dir' ] );
+
 		// Finished broadcasting.
 		array_pop( $this->broadcasting );
 
@@ -712,6 +723,24 @@ trait broadcasting
 		$this->load_language();
 
 		return $bcd;
+	}
+
+	/**
+		@brief		Filter the upload dir so that it works when switched.
+		@details	Requires that the __siteurl property is set.
+		@see		https://core.trac.wordpress.org/ticket/25650
+		@since		2015-10-23 09:36:49
+	**/
+	public function broadcasting_upload_dir( $upload_dir )
+	{
+		if ( ! isset( $this->__siteurl ) )
+			return $upload_dir;
+
+		$current_url = get_option( 'siteurl' );
+		foreach( [ 'url', 'baseurl' ] as $key )
+			$upload_dir[ $key ] = str_replace( $this->__siteurl, $current_url, $upload_dir[ $key ] );
+
+		return $upload_dir;
 	}
 
 	/**

@@ -14,6 +14,29 @@ use \threewp_broadcast\posts\actions\bulk\wp_ajax;
 trait post_actions
 {
 	/**
+		@brief		Add the post actions.
+		@since		2015-10-13 15:20:16
+	**/
+	public function post_actions_init()
+	{
+		$this->add_action( 'threewp_broadcast_get_post_actions' );
+		$this->add_action( 'threewp_broadcast_get_post_bulk_actions' );
+		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 5 );
+		$this->add_action( 'threewp_broadcast_post_action' );
+		$this->add_action( 'wp_ajax_broadcast_post_action_form' );
+		$this->add_action( 'wp_ajax_broadcast_post_bulk_action' );
+
+		// We need to keep track of linking.
+		$this->add_action( 'wp_trash_post', 'trash_post' );
+		$this->add_action( 'trash_post' );
+		$this->add_action( 'trash_page', 'trash_post' );
+		$this->add_action( 'untrash_post' );
+		$this->add_action( 'untrash_page', 'untrash_post' );
+		$this->add_action( 'delete_post' );
+		$this->add_action( 'delete_page', 'delete_post' );
+	}
+
+	/**
 		@brief		Adds post row actions
 		@since		20131015
 	**/

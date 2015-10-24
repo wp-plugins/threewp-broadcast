@@ -183,9 +183,11 @@ Do you have a lot of attachments that you don't want duplicated to hundreds of c
 
 The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
 
-= Is php v5.4 really necessary? =
+= Is PHP v5.4 really necessary? =
 
-Yes. PHP v5.3 has been officially unsupported since the 14th of August, 2014. If your web host refuses to upgrade to a supported version, go find a new host.
+Yes. PHP v5.3 has been officially unsupported since the 14th of August, 2014. In fact, even 5.4 is no longer officially supported since September 2015.
+
+If your web host refuses to upgrade to a supported version, go find a new host.
 
 = Orphans? =
 
@@ -247,6 +249,14 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 25 20151024 =
+* Blog Groups: This is the last time this obsolete plugin will be released. If you wish to use it in the future, copy it to another plugin directory and activate it from there. The replacement is the Blog Groups 2 plugin in the plugin pack.
+* Fix: Prevent duplicates when referring to parent posts on the child blog. See https://wordpress.org/support/topic/acf-clone-post-issue?replies=3
+* Fix: Attachments in child posts were getting the wrong guid. See 2 year old bug https://core.trac.wordpress.org/ticket/25650 that is still open.
+* Code: custom_fields()->child_fields() now method chain.
+* Code: get_post_types action has two new conveience methods: add_type and add_types.
+* New Plugin Pack Plugin: <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/sync-taxonomies-broadcast-plugin/">Sync Taxonomies</a> now allows for recording taxonomy changes and then replaying them on other blogs, simplifying mass-editing of terms.
 
 = 24 20151009 =
 * New: Allow children to be unlinked / trashed / deleted from the meta box.

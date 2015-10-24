@@ -8,51 +8,51 @@ msgstr ""
 msgid "%s has access to the following blogs: %s%s%s"
 msgstr ""
 
-#: src/maintenance/checks/broadcast_data/check.php:225
+#: src/maintenance/checks/broadcast_data/check.php:264
 #, php-format
 msgid "%s rows left to check..."
 msgstr ""
 
-#: src/traits/admin_menu.php:73
+#: src/traits/admin_menu.php:362
 #, php-format
 msgid "%s seconds"
 msgstr ""
 
-#: src/traits/admin_menu.php:126
+#: src/traits/admin_menu.php:137
 #, php-format
 msgid "A list of custom post types that have broadcasting enabled. The default value is %s."
 msgstr ""
 
-#: src/sdk/wordpress/traits/debug.php:48
+#: src/sdk/wordpress/traits/debug.php:50
 #, php-format
 msgid "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings."
 msgstr ""
 
-#: src/traits/admin_menu.php:300
+#: src/traits/admin_menu.php:194
 msgid "Action to take when attachments with the same filename already exist on the child blog."
 msgstr ""
 
-#: src/sdk/wordpress/updater/edd.php:59 src/sdk/wordpress/updater/edd.php:85
+#: src/sdk/wordpress/updater/edd.php:56 src/sdk/wordpress/updater/edd.php:82
 msgid "Activate license"
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:94
+#: src/sdk/wordpress/plugin_pack/plugin_pack.php:100
 msgid "Activate plugin"
 msgstr ""
 
-#: src/traits/admin_menu.php:98
+#: src/traits/admin_menu.php:387
 msgid "Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:"
 msgstr ""
 
-#: src/traits/admin_menu.php:235
+#: src/traits/admin_menu.php:93
 msgid "All custom fields are passed through the blacklist and then the whitelist. If the field exists in the blacklist, it will not be broadcast - unless it is specified in the whitelist."
 msgstr ""
 
-#: src/sdk/wordpress/table/top/bulkactions.php:100
+#: src/sdk/wordpress/table/top/bulkactions.php:114
 msgid "Apply"
 msgstr ""
 
-#: src/maintenance/checks/broadcast_data/check.php:313
+#: src/maintenance/checks/broadcast_data/check.php:352
 #, php-format
 msgid "Beginning to check broadcast data. %s rows to check."
 msgstr ""
@@ -76,24 +76,24 @@ msgstr ""
 msgid "Blogs"
 msgstr ""
 
-#: src/traits/admin_menu.php:285
+#: src/traits/admin_menu.php:179
 msgid "Blogs to hide"
 msgstr ""
 
-#: src/traits/meta_boxes.php:29 src/traits/admin_menu.php:179
-#: src/traits/admin_menu.php:489 src/traits/post_actions.php:60
+#: src/traits/meta_boxes.php:29 src/traits/admin_menu.php:213
+#: src/traits/admin_menu.php:518 src/traits/post_actions.php:73
 msgid "Broadcast"
 msgstr ""
 
-#: src/traits/admin_menu.php:207
+#: src/traits/admin_menu.php:241
 msgid "Broadcast as draft"
 msgstr ""
 
-#: src/traits/admin_menu.php:193
+#: src/traits/admin_menu.php:227
 msgid "Broadcast custom fields"
 msgstr ""
 
-#: src/traits/admin_menu.php:440
+#: src/traits/admin_menu.php:471
 msgid "Broadcast information"
 msgstr ""
 
@@ -109,43 +109,43 @@ msgstr ""
 msgid "Broadcast requires a Wordpress network to function."
 msgstr ""
 
-#: src/traits/admin_menu.php:214
+#: src/traits/admin_menu.php:248
 msgid "Broadcast scheduled posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:200
+#: src/traits/admin_menu.php:234
 msgid "Broadcast taxonomies"
 msgstr ""
 
-#: src/traits/meta_boxes.php:192
+#: src/traits/meta_boxes.php:187
 msgid "Broadcast to"
 msgstr ""
 
-#: src/traits/admin_menu.php:60
+#: src/traits/admin_menu.php:349
 msgid "Broadcast version"
 msgstr ""
 
-#: src/traits/post_actions.php:70
+#: src/traits/post_actions.php:79
 msgid "Broadcasted"
 msgstr ""
 
-#: src/sdk/wordpress/table/top/bulkactions.php:103
+#: src/sdk/wordpress/table/top/bulkactions.php:117
 msgid "Bulk Actions"
 msgstr ""
 
-#: src/sdk/wordpress/table/top/bulkactions.php:102
+#: src/sdk/wordpress/table/top/bulkactions.php:116
 msgid "Bulk actions"
 msgstr ""
 
-#: src/traits/admin_menu.php:229
+#: src/traits/admin_menu.php:265
 msgid "Canonical URL"
 msgstr ""
 
-#: src/traits/admin_menu.php:228
+#: src/traits/admin_menu.php:264
 msgid "Child posts have their canonical URLs pointed to the URL of the parent post. This automatically disables the canonical URL from Yoast's Wordpress SEO plugin."
 msgstr ""
 
-#: src/traits/admin_menu.php:272
+#: src/traits/admin_menu.php:158
 msgid "Clear POST"
 msgstr ""
 
@@ -153,15 +153,15 @@ msgstr ""
 msgid "Click on the group name to edit or delete it."
 msgstr ""
 
-#: src/traits/post_actions.php:151
+#: src/traits/post_actions.php:160
 msgid "Click to modify the post's linkage"
 msgstr ""
 
-#: src/traits/meta_boxes.php:158
+#: src/traits/meta_boxes.php:149
 msgid "Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc."
 msgstr ""
 
-#: src/traits/admin_menu.php:304
+#: src/traits/admin_menu.php:198
 msgid "Create a new attachment with a randomized suffix"
 msgstr ""
 
@@ -174,84 +174,93 @@ msgstr ""
 msgid "Create the blog group"
 msgstr ""
 
-#: src/traits/admin_menu.php:245
+#: src/traits/admin_menu.php:103
 msgid "Custom field blacklist"
 msgstr ""
 
-#: src/traits/admin_menu.php:232
+#: src/traits/admin_menu.php:90
 msgid "Custom field handling"
 msgstr ""
 
-#: src/traits/admin_menu.php:263
+#: src/traits/admin_menu.php:121
 msgid "Custom field protectlist"
 msgstr ""
 
-#: src/traits/admin_menu.php:254
+#: src/traits/admin_menu.php:112
 msgid "Custom field whitelist"
 msgstr ""
 
-#: src/traits/meta_boxes.php:171
+#: src/traits/meta_boxes.php:166
 msgid "Custom fields"
 msgstr ""
 
-#: src/traits/admin_menu.php:368
+#: src/traits/admin_menu.php:128
 msgid "Custom post types"
 msgstr ""
 
-#: src/traits/admin_menu.php:141
+#: src/traits/admin_menu.php:143
 msgid "Custom post types must be specified using their internal Wordpress names on a new line each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types)."
 msgstr ""
 
-#: src/traits/admin_menu.php:138
+#: src/traits/admin_menu.php:59
 msgid "Custom post types saved!"
 msgstr ""
 
-#: src/traits/admin_menu.php:124
+#: src/traits/admin_menu.php:135
 msgid "Custom post types to broadcast"
 msgstr ""
 
-#: src/sdk/wordpress/updater/edd.php:66
+#: src/sdk/wordpress/updater/edd.php:63
 msgid "Deactivate license for this site"
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:95
+#: src/sdk/wordpress/plugin_pack/plugin_pack.php:101
 msgid "Deactivate plugin"
 msgstr ""
 
-#: src/sdk/wordpress/traits/debug.php:57
+#: src/sdk/wordpress/traits/debug.php:85
 msgid "Debug IPs"
 msgstr ""
 
-#: src/traits/admin_menu.php:92
+#: src/traits/admin_menu.php:381
 msgid "Debug code"
 msgstr ""
 
-#: src/sdk/wordpress/traits/debug.php:42 src/traits/admin_menu.php:55
+#: src/sdk/wordpress/traits/debug.php:44 src/traits/admin_menu.php:344
 msgid "Debugging"
 msgstr ""
 
-#: src/traits/admin_menu.php:398
+#: src/traits/admin_menu.php:429
 msgid "Delete all child posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:399
+#: src/traits/admin_menu.php:430
 msgid "Delete all children"
 msgstr ""
 
-#: src/traits/admin_menu.php:394
+#: src/traits/admin_menu.php:425
 msgid "Delete child"
 msgstr ""
 
-#: src/traits/post_actions.php:128
+#: src/traits/post_actions.php:137
 msgid "Delete children"
 msgstr ""
 
-#: src/sdk/wordpress/updater/edd.php:61
+#: src/sdk/wordpress/traits/debug.php:80
+msgid "Delete debug file"
+msgstr ""
+
+#: src/sdk/wordpress/updater/edd.php:58
 msgid "Delete license data"
 msgstr ""
 
-#: src/traits/admin_menu.php:393
+#. With the unchecked child blogs:
+#: src/traits/meta_boxes.php:236 src/traits/admin_menu.php:424
 msgid "Delete the child post"
+msgstr ""
+
+#: src/sdk/wordpress/traits/debug.php:79
+msgid "Delete the contents of the debug file now after saving the settings."
 msgstr ""
 
 #: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:402
@@ -262,20 +271,21 @@ msgstr ""
 msgid "Delete this blog group"
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:99
-msgid "Description"
-msgstr ""
-
-#: src/traits/admin_menu.php:293
+#: src/traits/admin_menu.php:187
 msgid "Display in overview"
 msgstr ""
 
-#: src/traits/admin_menu.php:244
+#: src/traits/admin_menu.php:102
 msgid "Do not broadcast these custom fields."
 msgstr ""
 
-#: src/traits/admin_menu.php:262
+#: src/traits/admin_menu.php:120
 msgid "Do not overwrite the following fields on the child blogs if they exist."
+msgstr ""
+
+#. With the unchecked child blogs:
+#: src/traits/meta_boxes.php:234
+msgid "Do not update"
 msgstr ""
 
 #: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:221
@@ -286,31 +296,31 @@ msgstr ""
 msgid "Edit or delete this blog group"
 msgstr ""
 
-#: src/sdk/wordpress/traits/debug.php:52
+#: src/sdk/wordpress/traits/debug.php:54
 msgid "Enable debugging"
 msgstr ""
 
-#: src/traits/admin_menu.php:56
+#: src/traits/admin_menu.php:345
 msgid "Enabled"
 msgstr ""
 
-#: src/traits/admin_menu.php:253
+#: src/traits/admin_menu.php:111
 msgid "Exceptions to the blacklist."
 msgstr ""
 
-#: src/traits/admin_menu.php:301
+#: src/traits/admin_menu.php:195
 msgid "Existing attachments"
 msgstr ""
 
-#: src/traits/admin_menu.php:403 src/traits/admin_menu.php:404
+#: src/traits/admin_menu.php:434 src/traits/admin_menu.php:435
 msgid "Find orphans"
 msgstr ""
 
-#: src/traits/post_actions.php:129
+#: src/traits/post_actions.php:138
 msgid "Find unlinked children"
 msgstr ""
 
-#: src/sdk/wordpress/updater/edd.php:96
+#: src/sdk/wordpress/updater/edd.php:93
 msgid "Force new version check"
 msgstr ""
 
@@ -318,7 +328,7 @@ msgstr ""
 msgid "General settings"
 msgstr ""
 
-#: src/sdk/wordpress/updater/edd.php:69
+#: src/sdk/wordpress/updater/edd.php:66
 msgid "Get link to latest version as zip"
 msgstr ""
 
@@ -327,20 +337,24 @@ msgstr ""
 msgid "Group name"
 msgstr ""
 
-#: src/traits/admin_menu.php:292
+#: src/traits/admin_menu.php:186
 msgid "How many children to display in the overview before making the list into a summary."
+msgstr ""
+
+#: src/traits/admin_menu.php:162
+msgid "How many save_post hook decoys to insert before the real Broadcast save_post hook. This value should be raised if you notice that Broadcast isn't doing anything. This is due to a bug in Wordpress when other plugins call remove_action on the save_post hook."
 msgstr ""
 
 #: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:398
 msgid "I want to delete this blog group"
 msgstr ""
 
-#: src/traits/admin_menu.php:284
+#: src/traits/admin_menu.php:178
 msgid "In the broadcast meta box, after how many blogs the list should be auto-hidden."
 msgstr ""
 
 #. Caption for the blog / PHP information table
-#: src/traits/admin_menu.php:46
+#: src/traits/admin_menu.php:335
 msgid "Information"
 msgstr ""
 
@@ -348,31 +362,31 @@ msgstr ""
 msgid "Invert selection"
 msgstr ""
 
-#: src/traits/admin_menu.php:49
+#: src/traits/admin_menu.php:338
 msgid "Key"
 msgstr ""
 
-#: src/sdk/wordpress/updater/edd.php:77
+#: src/sdk/wordpress/updater/edd.php:74
 msgid "License key"
 msgstr ""
 
-#: src/traits/meta_boxes.php:157
+#: src/traits/meta_boxes.php:148
 msgid "Link this post to its children"
 msgstr ""
 
-#: src/traits/admin_menu.php:186
+#: src/traits/admin_menu.php:220
 msgid "Link to child posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:369
+#: src/traits/admin_menu.php:399
 msgid "Maintenance"
 msgstr ""
 
-#: src/traits/admin_menu.php:268
+#: src/traits/admin_menu.php:154
 msgid "Miscellaneous"
 msgstr ""
 
-#: src/traits/admin_menu.php:174
+#: src/traits/admin_menu.php:208
 msgid "Multiple roles may be selected. Each role must be individually selected, since there is no automatic hierarchy where, for example, authors automatically include the editor role. Note that only the roles on this blog can be shown."
 msgstr ""
 
@@ -380,11 +394,11 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:107
+#: src/sdk/wordpress/plugin_pack/plugin_pack.php:113
 msgid "No action selected."
 msgstr ""
 
-#: src/traits/post_actions.php:473
+#: src/traits/post_actions.php:483
 msgid "No change"
 msgstr ""
 
@@ -392,12 +406,7 @@ msgstr ""
 msgid "No group selected"
 msgstr ""
 
-#. Not displaying the blog / PHP information table since the user is not a super admin.
-#: src/traits/admin_menu.php:40
-msgid "No information available."
-msgstr ""
-
-#: src/sdk/wordpress/traits/debug.php:56
+#: src/sdk/wordpress/traits/debug.php:84
 #, php-format
 msgid "Only show debugging info to specific IP addresses. Use spaces between IPs. You can also specify part of an IP address. Your address is %s"
 msgstr ""
@@ -406,19 +415,19 @@ msgstr ""
 msgid "Overview"
 msgstr ""
 
-#: src/traits/admin_menu.php:303
+#: src/traits/admin_menu.php:197
 msgid "Overwrite the attachment"
 msgstr ""
 
-#: src/traits/admin_menu.php:72
+#: src/traits/admin_menu.php:361
 msgid "PHP maximum execution time"
 msgstr ""
 
-#: src/traits/admin_menu.php:77
+#: src/traits/admin_menu.php:366
 msgid "PHP memory limit"
 msgstr ""
 
-#: src/traits/admin_menu.php:64
+#: src/traits/admin_menu.php:353
 msgid "PHP version"
 msgstr ""
 
@@ -428,62 +437,50 @@ msgstr ""
 msgid "Please fill in %s."
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:98
-msgid "Plugin"
-msgstr ""
-
-#: src/traits/meta_boxes.php:260
+#: src/traits/meta_boxes.php:276
 msgid "Plugins that have hooked into save_post:"
 msgstr ""
 
 #: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_missing_post.php:39
-#: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_duplicate_bcd.php:39
-#: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_broken_bcd.php:39
-#: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_missing_children.php:46
 #: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_missing_children.php:47
-#: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_child_is_unlinked.php:48
-#: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_child_is_unlinked.php:49
-#: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_missing_parents.php:45
 #: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_missing_parents.php:46
-#: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_parent_is_unlinked.php:47
-#: src/maintenance/checks/broadcast_data/traits/steps/step_results_fail_parent_is_unlinked.php:48
 #, php-format
-msgid "Post %s on blog %s"
+msgid "Post %s on %s"
 msgstr ""
 
-#: src/traits/post_actions.php:61
+#: src/traits/post_actions.php:74
 msgid "Post actions"
 msgstr ""
 
-#: src/traits/admin_menu.php:460
+#: src/traits/admin_menu.php:491
 msgid "Premium Pack"
 msgstr ""
 
-#: src/traits/admin_menu.php:459
+#: src/traits/admin_menu.php:490
 msgid "Premium Pack info"
 msgstr ""
 
-#: src/sdk/wordpress/updater/edd.php:90
+#: src/sdk/wordpress/updater/edd.php:87
 msgid "Refresh license status"
 msgstr ""
 
-#: src/traits/admin_menu.php:414
+#: src/traits/admin_menu.php:445
 msgid "Restore all"
 msgstr ""
 
-#: src/traits/admin_menu.php:413
+#: src/traits/admin_menu.php:444
 msgid "Restore all of the child posts from the trash"
 msgstr ""
 
-#: src/traits/admin_menu.php:409
+#: src/traits/admin_menu.php:440
 msgid "Restore child"
 msgstr ""
 
-#: src/traits/post_actions.php:130
+#: src/traits/post_actions.php:139
 msgid "Restore children"
 msgstr ""
 
-#: src/traits/admin_menu.php:408
+#: src/traits/admin_menu.php:439
 msgid "Restore the child post from the trash"
 msgstr ""
 
@@ -491,7 +488,7 @@ msgstr ""
 msgid "Role needed to use the group function."
 msgstr ""
 
-#: src/traits/admin_menu.php:171
+#: src/traits/admin_menu.php:205
 #: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:177
 msgid "Roles"
 msgstr ""
@@ -501,49 +498,61 @@ msgstr ""
 msgid "Row %s in the broadcast data table was not found!"
 msgstr ""
 
-#: src/traits/admin_menu.php:219
+#: src/traits/admin_menu.php:255
 msgid "SEO"
 msgstr ""
 
-#: src/traits/admin_menu.php:311
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:188
-msgid "Save settings"
+#: src/sdk/wordpress/traits/debug.php:63
+msgid "Save debug to file"
 msgstr ""
 
-#: src/traits/admin_menu.php:130
-msgid "Save the broadcastable custom post types"
+#: src/traits/admin_menu.php:270
+#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:188
+msgid "Save settings"
 msgstr ""
 
 #: src/traits/meta_boxes.php:104
 msgid "Select / deselect all"
 msgstr ""
 
-#: src/traits/admin_menu.php:367
+#: src/traits/admin_menu.php:398
 #: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:226
 msgid "Settings"
 msgstr ""
 
-#: src/sdk/wordpress/traits/debug.php:51
+#: src/sdk/wordpress/traits/debug.php:59
+msgid "Show debug in the browser"
+msgstr ""
+
+#: src/sdk/wordpress/traits/debug.php:53
 msgid "Show debugging information in various places."
 msgstr ""
 
-#: src/traits/post_actions.php:70
+#: src/sdk/wordpress/traits/debug.php:58
+msgid "Show the debugging information in the browser."
+msgstr ""
+
+#: src/traits/post_actions.php:79
 msgid "Shows which blogs have posts linked to this one"
 msgstr ""
 
-#: src/sdk/wordpress/base.php:417
+#: src/sdk/wordpress/base.php:440
 msgid "Super admin"
 msgstr ""
 
-#: src/traits/meta_boxes.php:181
+#: src/traits/admin_menu.php:400
+msgid "System info"
+msgstr ""
+
+#: src/traits/meta_boxes.php:176
 msgid "Taxonomies"
 msgstr ""
 
-#: src/maintenance/checks/broadcast_data/check.php:298
+#: src/maintenance/checks/broadcast_data/check.php:337
 msgid "The Broadcast Data table is missing the ID column."
 msgstr ""
 
-#: src/traits/admin_menu.php:271
+#: src/traits/admin_menu.php:157
 msgid "The POST PHP variable is data sent when updating posts. Most plugins are fine if the POST is cleared before broadcasting, while others require that the data remains intact. Uncheck this setting if you notice that child posts are not being treated the same on the child blogs as they are on the parent blog."
 msgstr ""
 
@@ -556,13 +565,18 @@ msgstr ""
 msgid "The blog group has been deleted. Please return to the overview."
 msgstr ""
 
-#: src/traits/admin_menu.php:178
+#: src/traits/admin_menu.php:212
 msgid "The broadcast access role is the user role required to use the broadcast function at all."
 msgstr ""
 
-#: src/traits/admin_menu.php:144
+#: src/traits/admin_menu.php:145
 #, php-format
 msgid "The custom post types registered on <em>this</em> blog are: <code>%s</code>"
+msgstr ""
+
+#: src/sdk/wordpress/traits/debug.php:73
+#, php-format
+msgid "The debug data will be saved to the file %s. This link is distributable."
 msgstr ""
 
 #: src/sdk/form2/inputs/email.php:29
@@ -574,29 +588,29 @@ msgstr ""
 msgid "The group has no blogs assigned."
 msgstr ""
 
-#: src/sdk/wordpress/updater/edd.php:152
+#: src/sdk/wordpress/updater/edd.php:149
 #, php-format
 msgid "The latest version of the plugin can be downloaded from <a href=\"%s\">here</a>."
 msgstr ""
 
-#: src/sdk/wordpress/base.php:244
+#: src/sdk/wordpress/base.php:245
 #, php-format
 msgid "The plugin and all associated settings and database tables have been removed. Please %sfollow this link to complete the uninstallation procedure%s."
 msgstr ""
 
-#: src/traits/admin_menu.php:276
+#: src/traits/admin_menu.php:170
 msgid "The priority for the save_post hook. Should be after all other plugins have finished modifying the post. Default is 640."
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:117
+#: src/sdk/wordpress/plugin_pack/plugin_pack.php:123
 msgid "The selected plugin(s) have been activated."
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:122
+#: src/sdk/wordpress/plugin_pack/plugin_pack.php:128
 msgid "The selected plugin(s) have been deactivated."
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:128
+#: src/sdk/wordpress/plugin_pack/plugin_pack.php:134
 msgid "The selected plugin(s) have been uninstalled."
 msgstr ""
 
@@ -620,7 +634,11 @@ msgstr ""
 msgid "The value in %s (%s) is smaller than the allowed minimum of %s."
 msgstr ""
 
-#: src/traits/admin_menu.php:88
+#: src/traits/meta_boxes.php:216
+msgid "This blog is required"
+msgstr ""
+
+#: src/traits/admin_menu.php:377
 msgid "This can be increased by adding the following to your wp-config.php:"
 msgstr ""
 
@@ -628,15 +646,15 @@ msgstr ""
 msgid "This input is required."
 msgstr ""
 
-#: src/sdk/wordpress/base.php:245
+#: src/sdk/wordpress/base.php:246
 msgid "This link will take you to the index page"
 msgstr ""
 
-#: src/sdk/wordpress/base.php:220
+#: src/sdk/wordpress/base.php:221
 msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
 msgstr ""
 
-#: src/traits/post_actions.php:499
+#: src/traits/post_actions.php:511
 msgid "This post has no broadcast links."
 msgstr ""
 
@@ -644,65 +662,67 @@ msgstr ""
 msgid "This post is a broadcasted child post. It cannot be broadcasted further."
 msgstr ""
 
-#: src/traits/admin_menu.php:488
+#: src/traits/admin_menu.php:517
 msgid "ThreeWP Broadcast"
 msgstr ""
 
-#: src/traits/admin_menu.php:157
+#: src/traits/admin_menu.php:73
 msgid "ThreeWP Broadcast Premium Pack info"
 msgstr ""
 
-#: src/traits/admin_menu.php:423
+#: src/traits/admin_menu.php:454
 msgid "Trash all child posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:424
+#: src/traits/admin_menu.php:455
 msgid "Trash all children"
 msgstr ""
 
-#: src/traits/admin_menu.php:419
+#: src/traits/admin_menu.php:450
 msgid "Trash child"
 msgstr ""
 
-#: src/traits/post_actions.php:131
+#: src/traits/post_actions.php:140
 msgid "Trash children"
 msgstr ""
 
-#: src/traits/admin_menu.php:418
+#. With the unchecked child blogs:
+#: src/traits/meta_boxes.php:238 src/traits/admin_menu.php:449
 msgid "Trash the child post"
 msgstr ""
 
-#: src/traits/admin_menu.php:370
+#: src/traits/admin_menu.php:401
 #: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:227
 msgid "Uninstall"
 msgstr ""
 
-#: src/sdk/wordpress/plugin_pack/plugin_pack.php:96
-#: src/sdk/wordpress/base.php:227
+#: src/sdk/wordpress/plugin_pack/plugin_pack.php:102
+#: src/sdk/wordpress/base.php:228
 msgid "Uninstall plugin"
 msgstr ""
 
-#: src/traits/post_actions.php:132
+#: src/traits/post_actions.php:141
 msgid "Unlink"
 msgstr ""
 
-#: src/traits/admin_menu.php:434
+#: src/traits/admin_menu.php:465
 msgid "Unlink all child posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:435
+#: src/traits/admin_menu.php:466
 msgid "Unlink all children"
 msgstr ""
 
-#: src/traits/admin_menu.php:429
+#: src/traits/admin_menu.php:460
 msgid "Unlink child"
 msgstr ""
 
-#: src/traits/admin_menu.php:428
+#. With the unchecked child blogs:
+#: src/traits/meta_boxes.php:240 src/traits/admin_menu.php:459
 msgid "Unlink the child post"
 msgstr ""
 
-#: src/traits/post_actions.php:461
+#: src/traits/post_actions.php:471
 msgid "Unlink this post from its parent."
 msgstr ""
 
@@ -714,55 +734,65 @@ msgstr ""
 msgid "Use groups"
 msgstr ""
 
-#: src/traits/admin_menu.php:224
+#: src/traits/admin_menu.php:260
 msgid "Use parent permalink"
 msgstr ""
 
-#: src/traits/admin_menu.php:302
+#: src/traits/admin_menu.php:196
 msgid "Use the existing attachment on the child blog"
 msgstr ""
 
-#: src/traits/admin_menu.php:223
+#: src/traits/admin_menu.php:259
 msgid "Use the parent post's permalink for the children. If checked, child posts will link back to the parent post."
 msgstr ""
 
-#: src/traits/admin_menu.php:50
+#: src/traits/admin_menu.php:339
 msgid "Value"
 msgstr ""
 
-#: src/traits/admin_menu.php:185
+#. Input title
+#: src/traits/meta_boxes.php:230
+msgid "What to do with unchecked, linked child blogs"
+msgstr ""
+
+#: src/traits/admin_menu.php:219
 msgid "When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated."
 msgstr ""
 
-#: src/traits/admin_menu.php:192
+#: src/traits/admin_menu.php:226
 msgid "Which role is needed to allow custom field broadcasting?"
 msgstr ""
 
-#: src/traits/admin_menu.php:199
+#: src/traits/admin_menu.php:233
 msgid "Which role is needed to allow taxonomy broadcasting? The taxonomies must have the same slug on all blogs."
 msgstr ""
 
-#: src/traits/admin_menu.php:206
+#: src/traits/admin_menu.php:240
 msgid "Which role is needed to broadcast drafts?"
 msgstr ""
 
-#: src/traits/admin_menu.php:213
+#: src/traits/admin_menu.php:247
 msgid "Which role is needed to broadcast scheduled (future) posts?"
 msgstr ""
 
-#: src/traits/admin_menu.php:82
+#. Input label
+#: src/traits/meta_boxes.php:232
+msgid "With the unchecked child blogs"
+msgstr ""
+
+#: src/traits/admin_menu.php:371
 msgid "Wordpress memory limit"
 msgstr ""
 
-#: src/traits/admin_menu.php:68
+#: src/traits/admin_menu.php:357
 msgid "Wordpress upload directory array"
 msgstr ""
 
-#: src/sdk/wordpress/base.php:223
+#: src/sdk/wordpress/base.php:224
 msgid "Yes, I'm sure I want to remove all the plugin tables and settings."
 msgstr ""
 
-#: src/traits/admin_menu.php:238
+#: src/traits/admin_menu.php:96
 msgid "You can use wildcards: <code>field_*123</code> will match all fields that start with <code>field_</code> and end with <code>123</code>. If you wish to match all fields except a few, use <code>*</code> in the blacklist and then the exceptions in the whitelist."
 msgstr ""
 
@@ -770,7 +800,7 @@ msgstr ""
 msgid "You have not created any blog groups yet."
 msgstr ""
 
-#: src/sdk/wordpress/base.php:235
+#: src/sdk/wordpress/base.php:236
 msgid "You have to check the checkbox in order to uninstall the plugin."
 msgstr ""
 
@@ -780,16 +810,20 @@ msgstr ""
 msgid "hide all"
 msgstr ""
 
-#: src/sdk/wordpress/base.php:1842
+#: src/sdk/wordpress/base.php:1880
 msgid "no"
 msgstr ""
 
 #. You are currently NOT in debug mode.
-#: src/sdk/wordpress/traits/debug.php:45
+#: src/sdk/wordpress/traits/debug.php:47
 msgid "not"
 msgstr ""
 
-#: src/traits/admin_menu.php:277
+#: src/traits/admin_menu.php:163
+msgid "save_post decoys"
+msgstr ""
+
+#: src/traits/admin_menu.php:171
 msgid "save_post priority"
 msgstr ""
 
@@ -797,6 +831,6 @@ msgstr ""
 msgid "show all"
 msgstr ""
 
-#: src/sdk/wordpress/base.php:1842
+#: src/sdk/wordpress/base.php:1880
 msgid "yes"
 msgstr ""

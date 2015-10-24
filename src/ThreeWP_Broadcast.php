@@ -98,6 +98,8 @@ class ThreeWP_Broadcast
 			$this->add_filter( 'post_type_link', 'post_link', 10, 3 );
 		}
 
+		$this->post_actions_init();
+
 		$this->add_action( 'network_admin_menu', 'admin_menu' );
 
 		$this->add_filter( 'threewp_broadcast_add_meta_box' );
@@ -109,33 +111,16 @@ class ThreeWP_Broadcast
 
 		$this->add_action( 'threewp_broadcast_copy_attachment', 100 );
 		$this->add_action( 'threewp_broadcast_each_linked_post' );
-		$this->add_action( 'threewp_broadcast_get_post_actions' );
-		$this->add_action( 'threewp_broadcast_get_post_bulk_actions' );
 		$this->add_action( 'threewp_broadcast_get_user_writable_blogs', 100 );		// Allow other plugins to do this first.
 		$this->add_filter( 'threewp_broadcast_get_post_types', 5 );					// Add our custom post types to the array of broadcastable post types.
-		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 5 );
 		$this->add_action( 'threewp_broadcast_maybe_clear_post', 100 );
 		$this->add_action( 'threewp_broadcast_menu', 5 );
 		$this->add_action( 'threewp_broadcast_menu', 'threewp_broadcast_menu_final', 100 );
-		$this->add_action( 'threewp_broadcast_post_action' );
 		$this->add_action( 'threewp_broadcast_prepare_broadcasting_data' );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 5 );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
 		$this->add_action( 'threewp_broadcast_wp_insert_term', 5 );
 		$this->add_action( 'threewp_broadcast_wp_update_term', 5 );
-		$this->add_action( 'wp_ajax_broadcast_post_action_form' );
-		$this->add_action( 'wp_ajax_broadcast_post_bulk_action' );
-
-		// Hook into the actions so that we can keep track of the broadcast data.
-		$this->add_action( 'wp_trash_post', 'trash_post' );
-		$this->add_action( 'trash_post' );
-		$this->add_action( 'trash_page', 'trash_post' );
-
-		$this->add_action( 'untrash_post' );
-		$this->add_action( 'untrash_page', 'untrash_post' );
-
-		$this->add_action( 'delete_post' );
-		$this->add_action( 'delete_page', 'delete_post' );
 
 		if ( $this->get_site_option( 'canonical_url' ) )
 			$this->add_action( 'wp_head', 1 );
@@ -723,6 +708,8 @@ class ThreeWP_Broadcast
 			'database_version' => 0,							// Version of database and settings
 			'debug' => false,									// Display debug information?
 			'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.
+			'debug_to_browser' => false,						// Display debug info in the browser?
+			'debug_to_file' => false,							// Save debug info to a file.
 			'save_post_decoys' => 1,							// How many nop() hooks to insert into the save_post action before Broadcast itself.
 			'save_post_priority' => 640,						// Priority of save_post action. Higher = lets other plugins do their stuff first
 			'override_child_permalinks' => false,				// Make the child's permalinks link back to the parent item?

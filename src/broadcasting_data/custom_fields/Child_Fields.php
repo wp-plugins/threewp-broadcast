@@ -41,6 +41,7 @@ class Child_Fields
 	public function add_meta( $key, $value )
 	{
 		add_post_meta( $this->broadcasting_data->new_post( 'ID' ), $key, $value );
+		return $this;
 	}
 
 	/**
@@ -51,6 +52,7 @@ class Child_Fields
 	public function delete_meta( $key )
 	{
 		delete_post_meta( $this->broadcasting_data->new_post( 'ID' ), $key );
+		return $this;
 	}
 
 	/**
@@ -71,5 +73,6 @@ class Child_Fields
 	public function update_meta( $key, $value )
 	{
 		update_post_meta( $this->broadcasting_data->new_post( 'ID' ), $key, $value );
+		return $this;
 	}
 }
