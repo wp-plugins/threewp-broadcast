@@ -1,15 +1,15 @@
 <?php
 /*
 Author:			edward_plainview
-Author Email:	edward@plainview.se
-Author URI:		http://www.plainview.se
-Description:	Allows users to create blog groups to ease blog selection when broadcasting.
+Author Email:	edward@plainviewplugins.com
+Author URI:		https://plainviewplugins.com
+Description:	Obsolete. Use Blog Groups 2 in the pack. Allows users to create blog groups to ease blog selection when broadcasting.
 Plugin Name:	ThreeWP Broadcast Blog Groups
-Plugin URI:		http://plainview.se/wordpress/threewp-broadcast/
-Version:		13
+Plugin URI:		https://plainviewplugins.com/threewp-broadcast/
+Version:		25
 */
 
-require_once( 'vendor/autoload.php' );
+require_once( __DIR__ . '/vendor/autoload.php' );
 
 /**
 	@brief		Return the current instance of the Blog Groups plugin.

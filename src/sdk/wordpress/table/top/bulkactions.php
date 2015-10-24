@@ -58,19 +58,30 @@ class bulkactions
 		@details	If the $row is in the body section, the $id parameter must also be given.
 		@param		row			$row		Row in the table. Automatically detects if the row is in the head or the body.
 		@param		mixed		$id			The ID of this row. String or int.
+		@return		mixed		Null if creating a checkbox in the header, else the checkbox input.
 		@since		20131015
 	**/
 	public function cb( $row, $id = null )
 	{
+		$r = null;
+
 		$section = get_class( $row->section );
 		if ( $section == 'plainview\\sdk_broadcast\\table\\head' )
 		{
 			// Create a temporary form in order to create a checkbox that is only used by javascript.
 			$temp_form = clone( $this->form );
 			// Create the temporary checkbox.
-			$select = $temp_form->checkbox( 'check' );
-			$text = $select->display_input() . '<span class="screen-reader-text">Selected</span>';
-			$row->th( 'check_column_' . $row->id )->css_class( 'check-column' )->text( $text );
+			$sa_text = __( 'Select All' );
+			$checkbox = $temp_form->checkbox( 'cb_select_all_1' );
+			$checkbox->label( $sa_text );
+			$checkbox->title( $sa_text );
+			// Hide the label
+			$checkbox->label->css_class( 'screen-reader-text' );
+
+			$text = sprintf( '%s%s', $checkbox->display_label(), $checkbox->display_input() );
+			$row->td()
+				->css_class( 'manage-column check-column' )
+				->text( $text );
 		}
 
 		if ( $section == 'plainview\\sdk_broadcast\\table\\body' )
@@ -84,7 +95,10 @@ class bulkactions
 
 			// Add the checkbox to a quick lookup table
 			$this->checkboxes->append( $cb );
+			$r = $cb;
 		}
+
+		return $r;
 	}
 
 	/**

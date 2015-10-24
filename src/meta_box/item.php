@@ -16,10 +16,17 @@ class item
 	**/
 	public $data;
 
-	public function __construct( $meta_box_data )
+	/**
+		@brief		The parent calss that created this item.
+		@since		2015-10-08 16:15:10
+	**/
+	public $__parent;
+
+	public function __construct( $meta_box_data, $parent = null )
 	{
 		$this->data = $meta_box_data;
 		$this->inputs = new collection;
+		$this->__parent = $parent;
 		$this->_construct();
 	}
 
@@ -46,6 +53,15 @@ class item
 	**/
 	public function meta_box_data_prepared()
 	{
+	}
+
+	/**
+		@brief		Return the parent class.
+		@since		2015-10-08 16:15:38
+	**/
+	public function parent()
+	{
+		return $this->__parent;
 	}
 
 	public static function is_a( $object )

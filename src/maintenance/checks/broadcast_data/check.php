@@ -28,6 +28,45 @@ extends \threewp_broadcast\maintenance\checks\check
 	//		MISC					 //
 	// ----------------------------- //
 
+	/**
+		@brief		Return the blogname.
+		@details	I wish switch_to_blog could tell me that the blog doesn't exist.
+		@since		2015-08-19 21:47:53
+	**/
+	public function blogname( $blog_id )
+	{
+		if ( switch_to_blog( $blog_id ) === true )
+		{
+			$r = sprintf( '%s %s', get_bloginfo( 'name' ), $blog_id );
+			restore_current_blog();
+		}
+		else
+			$r = 'Unknown ' . $blog_id;
+		return $r;
+	}
+
+	/**
+		@brief		Return a string with the blog and post linked.
+		@details	I wish switch_to_blog could tell me that the blog doesn't exist.
+		@since		2015-08-19 21:47:53
+	**/
+	public function blogpost( $blog_id, $post_id )
+	{
+		if ( switch_to_blog( $blog_id ) === true )
+		{
+			$post = get_post( $post_id );
+			$r = sprintf( '<a href="%s">%s</a> on %s (%s)',
+				get_permalink( $post_id ),
+				$post->post_title,
+				get_bloginfo( 'name' ),
+				$blog_id
+			);
+			restore_current_blog();
+		}
+		else
+			$r = 'Unknown ' . $blog_id;
+		return $r;
+	}
 
 	public static function data()
 	{

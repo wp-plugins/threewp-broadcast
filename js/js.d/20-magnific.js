@@ -1,0 +1,1 @@
+../jquery.magnific-popup.min.js

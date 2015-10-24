@@ -24,6 +24,7 @@ class tabs
 	implements \Countable
 {
 	use \plainview\sdk_broadcast\traits\method_chaining;
+	use \plainview\sdk_broadcast\html\element;
 
 	/**
 		@brief		\\plainview\\sdk_broadcast\\wordpress\\base object that created these tabs.
@@ -109,6 +110,12 @@ class tabs
 		@var		$tabs
 	**/
 	public $tabs = array();
+
+	/**
+		@brief		The HTML element tag.
+		@since		2015-07-07 19:29:43
+	**/
+	public $tag = 'ul';
 
 	/**
 		@brief		Array of _GET keys to preserve when creating tab links.
@@ -222,7 +229,9 @@ class tabs
 		if ( count( $this->tabs ) > 1 )
 		{
 			// Step 1: display all the tabs
-			$r .= '<ul class="subsubsub">';
+			$this->css_class( 'subsubsub' );
+			$this->css_class( 'plainview_sdk_tabs' );
+			$r .= $this->open_tag();
 			$original_link = $_SERVER['REQUEST_URI'];
 
 			foreach( $get as $key => $value )
@@ -256,13 +265,16 @@ class tabs
 				if ( $tab->title != '' )
 					$title = sprintf( ' title="%s"', $tab->title );
 
-				$r .= sprintf( '<li><a%s%s href="%s">%s</a>%s</li>',
+				$tab->css_class( 'tab_' . $tab_id );
+				$r .= $tab->open_tag();
+				$r .= sprintf( '<a%s%s href="%s">%s</a>%s',
 					$current,
 					$title,
 					$link,
 					$text,
 					$separator
 				);
+				$r .= $tab->close_tag();
 				$counter++;
 			}
 			$r .= '</ul>';

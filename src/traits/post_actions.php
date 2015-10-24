@@ -14,12 +14,35 @@ use \threewp_broadcast\posts\actions\bulk\wp_ajax;
 trait post_actions
 {
 	/**
+		@brief		Add the post actions.
+		@since		2015-10-13 15:20:16
+	**/
+	public function post_actions_init()
+	{
+		$this->add_action( 'threewp_broadcast_get_post_actions' );
+		$this->add_action( 'threewp_broadcast_get_post_bulk_actions' );
+		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 5 );
+		$this->add_action( 'threewp_broadcast_post_action' );
+		$this->add_action( 'wp_ajax_broadcast_post_action_form' );
+		$this->add_action( 'wp_ajax_broadcast_post_bulk_action' );
+
+		// We need to keep track of linking.
+		$this->add_action( 'wp_trash_post', 'trash_post' );
+		$this->add_action( 'trash_post' );
+		$this->add_action( 'trash_page', 'trash_post' );
+		$this->add_action( 'untrash_post' );
+		$this->add_action( 'untrash_page', 'untrash_post' );
+		$this->add_action( 'delete_post' );
+		$this->add_action( 'delete_page', 'delete_post' );
+	}
+
+	/**
 		@brief		Adds post row actions
 		@since		20131015
 	**/
 	public function add_post_row_actions_and_hooks()
 	{
-		if ( is_super_admin() || $this->role_at_least( $this->get_site_option( 'role_link' ) ) )
+		if ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_link' ) ) )
 		{
 			if (  $this->display_broadcast_columns )
 			{
@@ -30,16 +53,6 @@ trait post_actions
 				$this->add_action( 'manage_pages_custom_column', 'manage_posts_custom_column', 10, 2 );
 			}
 
-			// Hook into the actions so that we can keep track of the broadcast data.
-			$this->add_action( 'wp_trash_post', 'trash_post' );
-			$this->add_action( 'trash_post' );
-			$this->add_action( 'trash_page', 'trash_post' );
-
-			$this->add_action( 'untrash_post' );
-			$this->add_action( 'untrash_page', 'untrash_post' );
-
-			$this->add_action( 'delete_post' );
-			$this->add_action( 'delete_page', 'delete_post' );
 		}
 	}
 
@@ -52,20 +65,16 @@ trait post_actions
 	{
 		$action = new actions\get_post_bulk_actions();
 		$action->execute();
-		echo $action->get_js();
+		$this->add_admin_script( 'post_bulk_actions', $action->get_js() );
 
-		echo '
+		$this->add_admin_script( 'post_bulk_actions_broadcast_strings', '
 			<script type="text/javascript">
 				var broadcast_strings = {
 					broadcast : "' . $this->_( 'Broadcast' ) . '",
 					post_actions : "' . $this->_( 'Post actions' ) . '"
 				};
 			</script>
-		';
-
-		// Enqueue the popup js.
-		wp_enqueue_script( 'magnific-popup', $this->paths[ 'url' ] . '/js/jquery.magnific-popup.min.js', '', $this->plugin_version );
-		wp_enqueue_style( 'magnific-popup', $this->paths[ 'url' ] . '/css/magnific-popup.css', '', $this->plugin_version  );
+		' );
 
 		$defaults[ '3wp_broadcast' ] = '<span title="'.$this->_( 'Shows which blogs have posts linked to this one' ).'">'.$this->_( 'Broadcasted' ).'</span>';
 		return $defaults;
@@ -110,6 +119,7 @@ trait post_actions
 		{
 			$a = new post_action;
 			$a->set_action( $slug );
+			$a->set_id( $slug );
 			$a->set_name( $name );
 			$action->add( $a );
 		}
@@ -134,6 +144,7 @@ trait post_actions
 			$a = new wp_ajax;
 			$a->set_ajax_action( $ajax_action );
 			$a->set_data( 'subaction', $subaction );
+			$a->set_id( 'bulk_' . $subaction );
 			$a->set_name( $name );
 			$a->set_nonce( $ajax_action . $subaction );
 			$action->add( $a );
@@ -180,7 +191,8 @@ trait post_actions
 					foreach( $children as $child_blog_id => $child_post_id )
 					{
 						switch_to_blog( $child_blog_id );
-						$blogname = get_bloginfo( 'blogname' );
+						$info = get_blog_details();
+						$blogname = $info->blogname ? $info->blogname : $info->domain . $info->path;
 						$links[ $blogname ] = sprintf( '&#x21e8; %s', $blogname );
 						restore_current_blog();
 					}
@@ -257,12 +269,17 @@ trait post_actions
 					if ( count( $posts ) == 1 )
 					{
 						$unlinked = reset( $posts );
-						$broadcast_data->add_linked_child( $blog->id, $unlinked->ID );
 
-						// Add link info for the new child.
 						$child_broadcast_data = $this->get_post_broadcast_data( $blog->id, $unlinked->ID );
-						$child_broadcast_data->set_linked_parent( $blog_id, $post_id );
-						$this->set_post_broadcast_data( $blog->id, $unlinked->ID, $child_broadcast_data );
+						if ( $child_broadcast_data->get_linked_parent() === false )
+							if ( ! $child_broadcast_data->has_linked_children() )
+							{
+								$broadcast_data->add_linked_child( $blog->id, $unlinked->ID );
+
+								// Add link info for the new child.
+								$child_broadcast_data->set_linked_parent( $blog_id, $post_id );
+								$this->set_post_broadcast_data( $blog->id, $unlinked->ID, $child_broadcast_data );
+							}
 					}
 
 					$blog->switch_from();
@@ -475,8 +492,10 @@ trait post_actions
 			foreach( $children as $child_blog_id => $child_post_id )
 			{
 				switch_to_blog( $child_blog_id );
+				$info = get_blog_details();
+				$blogname = $info->blogname ? $info->blogname : $info->domain . $info->path;
 				$select = $form->select( $child_blog_id )
-					->label( get_bloginfo( 'blogname' ) )
+					->label( $blogname )
 					->prefix( 'blogs' )
 					->options( $options )
 					;

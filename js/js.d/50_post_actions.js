@@ -24,7 +24,7 @@
                 $this.click( function()
                 {
                 	// Get the post ID.
-                	$tr = $this.parentsUntil( 'tr.level-0' ).parent();
+                	$tr = $this.parentsUntil( 'tbody#the-list' ).last();
                 	var id = $tr.prop( 'id' ).replace( 'post-', '' );
 
                 	$this.$popup = broadcast_popup({
@@ -50,7 +50,7 @@
 
                 $this.display_form = function( json )
                 {
-					$this.$popup.set_html( json.html );
+					$this.$popup.set_content( json.html );
 
 					// Take over the submit button.
 					var $form = $( '#broadcast_post_action_form' );
@@ -69,7 +69,7 @@
                 **/
                 $this.fetch_form = function( data )
                 {
-					$this.$popup.set_html( 'Loading...' );
+					$this.$popup.set_content( 'Loading...' );
 
                 	// Fetch the post link editor.
                 	$.ajax( {
@@ -85,7 +85,7 @@
 					.fail( function( jqXHR )
 					{
 						$this.$popup
-							.set_html( jqXHR.responseText )
+							.set_content( jqXHR.responseText )
 							.set_title( 'Ajax error' );
 					} );
                 }
