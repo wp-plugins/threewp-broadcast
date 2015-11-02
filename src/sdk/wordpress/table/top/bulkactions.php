@@ -79,7 +79,7 @@ class bulkactions
 			$checkbox->label->css_class( 'screen-reader-text' );
 
 			$text = sprintf( '%s%s', $checkbox->display_label(), $checkbox->display_input() );
-			$row->td()
+			$row->td( 'check_column' )
 				->css_class( 'manage-column check-column' )
 				->text( $text );
 		}

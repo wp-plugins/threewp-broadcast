@@ -11,6 +11,9 @@ namespace plainview\sdk_broadcast;
 
 	@par			Changelog
 
+	- 20151028		Wordpress: do not activate pack plugins if no action is selected.
+	- 20151028		Wordpress: prevent array_intersect warning if the user does not have capabilities on this blog.
+	- 20151025		Wordpress: Bulk action column has a unique ID.
 	- 20151024		Wordpress: Add Options_Object class.
 	- 20151009		Wordpress: Update plugin pack table.
 	- 20151003		Wordpress: More detailed debug trait.
@@ -169,7 +172,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20151024;
+	protected $sdk_version = 20151028;
 
 	/**
 		@brief		Constructor.

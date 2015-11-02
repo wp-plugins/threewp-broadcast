@@ -228,8 +228,19 @@ trait broadcasting
 		// To prevent recursion
 		array_push( $this->broadcasting, $bcd );
 
-		// Handle sticky.
-		$bcd->post_is_sticky = isset( $_POST[ 'sticky' ]  );
+		// Handle sticky status. This can be done in two ways: by _POST and by the options.
+		// If the user is using the nromal editor, look in the post.
+		if ( isset( $_POST[ '_wp_http_referer' ] ) )
+		{
+			$this->debug( 'Sticky data found in POST.' );
+			$bcd->post_is_sticky = isset( $_POST[ 'sticky' ] );
+		}
+		else
+		{
+			// Look in the options table.
+			$this->debug( 'Looking for sticky data via a function.' );
+			$bcd->post_is_sticky = is_sticky( $bcd->post->ID );
+		}
 		$this->debug( 'Post sticky status: %s', intval( $bcd->post_is_sticky ) );
 
 		// POST is no longer needed. Empty it so that other plugins don't use it.

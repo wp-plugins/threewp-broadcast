@@ -133,6 +133,8 @@ abstract class plugin_pack
 							$this->plugins()->forget( $classname );
 							$message = $this->_( 'The selected plugin(s) have been uninstalled.' );
 							break;
+						default:
+							$this->plugins()->forget( $classname );
 					}
 					$this->plugins()->save();
 				}

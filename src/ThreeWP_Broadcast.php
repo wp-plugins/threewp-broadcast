@@ -17,6 +17,7 @@ class ThreeWP_Broadcast
 	use traits\meta_boxes;
 	use traits\post_actions;
 	use traits\terms_and_taxonomies;
+	use traits\savings_calculator;
 
 	/**
 		@brief		Broadcasting stack.
@@ -99,8 +100,10 @@ class ThreeWP_Broadcast
 		}
 
 		$this->post_actions_init();
+		$this->savings_calculator_init();
 
 		$this->add_action( 'network_admin_menu', 'admin_menu' );
+		$this->add_action( 'plugins_loaded' );
 
 		$this->add_filter( 'threewp_broadcast_add_meta_box' );
 		$this->add_filter( 'threewp_broadcast_admin_menu', 'add_post_row_actions_and_hooks', 100 );
@@ -251,6 +254,17 @@ class ThreeWP_Broadcast
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Callbacks
 	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Broadcast is ready for broadcasting.
+		@since		2015-10-29 12:22:53
+	**/
+	public function plugins_loaded()
+	{
+		$this->__loaded = true;
+		$action = new actions\loaded();
+		$action->execute();
+	}
 
 	public function post_link( $link, $post )
 	{
@@ -686,6 +700,21 @@ class ThreeWP_Broadcast
 	}
 
 	/**
+		@brief		Return the plugin pack instance.
+		@since		2015-10-28 14:42:18
+	**/
+	public function plugin_pack()
+	{
+		if ( ! isset( $this->__plugin_pack ) )
+		{
+			$this->__plugin_pack = new premium_pack\ThreeWP_Broadcast_Plugin_Pack();
+			if ( $this->__loaded )
+				$this->__plugin_pack->plugins_ready = true;
+		}
+		return $this->__plugin_pack;
+	}
+
+	/**
 		@brief		Save the user's last used settings.
 		@details	Since v8 the data is stored in the user's meta.
 		@since		2014-10-09 06:19:53
@@ -721,6 +750,7 @@ class ThreeWP_Broadcast
 			'role_broadcast_scheduled_posts' => [ 'super_admin' ],	// Role required to broadcast scheduled, future posts
 			'role_taxonomies' => [ 'super_admin' ],					// Role required to broadcast the taxonomies
 			'role_custom_fields' => [ 'super_admin' ],				// Role required to broadcast the custom fields
+			'savings_calculator_data' => '',						// Data for the savings calculator.
 		], parent::site_options() );
 	}
 

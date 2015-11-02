@@ -70,7 +70,7 @@ trait admin_menu
 		$r = '';
 		$r .= $this->html_css();
 		$contents = file_get_contents( __DIR__ . '/../../html/premium_pack_info.html' );
-		$r .= $this->wrap( $contents, $this->_( 'ThreeWP Broadcast Premium Pack info' ) );
+		$r .= $this->wrap( $contents, $this->_( 'Broadcast plugin packs info' ) );
 		echo $r;
 	}
 
@@ -398,6 +398,9 @@ trait admin_menu
 		$tabs->tab( 'settings' )		->callback_this( 'admin_menu_settings' )		->name_( 'Settings' );
 		$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );
 		$tabs->tab( 'system_info' )		->callback_this( 'admin_menu_system_info' )		->name_( 'System info' );
+
+		$this->savings_calculator_tabs( $tabs );
+
 		$tabs->tab( 'uninstall' )		->callback_this( 'admin_uninstall' )			->name_( 'Uninstall' );
 
 		echo $tabs;
@@ -487,8 +490,8 @@ trait admin_menu
 		if ( $this->display_premium_pack_info && is_super_admin() )
 			$this->add_submenu_page(
 				'threewp_broadcast',
-				$this->_( 'Premium Pack info' ),
-				$this->_( 'Premium Pack' ),
+				$this->_( 'Plugin packs info' ),
+				$this->_( 'Plugin packs' ),
 				'edit_posts',
 				'threewp_broadcast_premium_pack_info',
 				[ &$this, 'admin_menu_premium_pack_info' ]
@@ -519,7 +522,7 @@ trait admin_menu
 			'edit_posts',
 			'threewp_broadcast',
 			[ &$this, $target ],
-			'none'
+			'dashicons-rss'
 		);
 
 		$this->add_submenu_pages();

@@ -378,6 +378,9 @@ class base
 		$key = sprintf( '%scapabilities', $wpdb->prefix );
 		$r = get_user_meta( get_current_user_id(), $key, true );
 
+		if ( ! is_array( $r ) )
+			$r = [];
+
 		if ( is_super_admin() )
 			$r[ 'super_admin' ] = true;
 

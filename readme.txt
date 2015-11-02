@@ -26,23 +26,24 @@ Requires PHP version 5.4 or higher.
 * Custom field blacklist, whitelist, and protect list.
 * User role access granularity
 * CDN support (tested Amazon S3)
-* Many extra features in the premium pack
+* Many extra features in the plugin packs
 
 = SEO support =
 * Canonical URLs of child posts.
-* Permalinks of child posts (also see Permalinks plugin in the Premium Pack)
+* Permalinks of child posts (also see Permalinks plugin in the plugin packs)
 * Yoast's Wordpress SEO plugin integration and support
 
-= Premium Pack =
+= Plugin Packs =
 
-The <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a> is an actively maintained collection of plugins that expand the functionality of Broadcast.
+There are several <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Broadcast plugin packs"><em>Broadcast plugin packs</em></a> that expand the capabilities of Broadcast.
 
-3rd party compatability
------------------------
+3rd party pack
+--------------
 
 * <a title="Activity Monitor Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/activity-monitor-broadcast-plugin/">Activity Monitor</a> adds a Broadcast hook to the <a href="http://wordpress.org/plugins/plainview-activity-monitor/">Plainview Activity Monitor</a>, at the same time disabling post related hooks during broadcasting to prevent unnecessary logging.
 * <a title="Advanced Custom Fields Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/advanced-custom-fields-broadcast-plugin/">Advanced Custom Fields</a> adds support for correctly broadcasting various field types using Elliot Condon’s <a href="http://www.advancedcustomfields.com/">Advanced Custom Fields plugin</a>.
 * <a title="All In One Calendar Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/all-in-one-calendar-broadcast-plugin/">All In One Calendar</a> adds support for <a href="http://www.wordpress.org/plugins/all-in-one-event-calendar/">Timely’s All In One Calendar</a> plugin.
+* <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/bbpress-broadcast-plugin/">bbPress</a> adds support for <a href="https://wordpress.org/plugins/bbpress/">BBPress</a> forums, topics and replies.
 * <a title="Event Organiser Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/event-organiser-broadcast-plugin/">Event Organiser</a> adds support for Stephen Harris’ <a href="http://wordpress.org/plugins/event-organiser/">Event Organiser plugin</a>, with events and venues.
 * <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/foogallery-broadcast-plugin/">FooGallery</a> adds support for <a href="https://wordpress.org/plugins/foogallery/">FooPlugins&#8217; FooGallery</a> plugin.
 * <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/geo-my-wp-broadcast-plugin/">GEO my WordPress</a> adds support for Eyal Fitoussi&#8217;s <a href="https://wordpress.org/plugins/geo-my-wp/">GEO my WordPress</a> geolocation plugin.
@@ -57,8 +58,8 @@ The <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title
 * <a title="WooCommerce Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/woocommerce-broadcast-plugin/">WooCommerce</a> allows attribute taxonomies and product variations to be broadcasted.
 * <a title="WPML broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/wpml-broadcast-plugin/">WPML</a> adds support for <a href="http://wpml.org/">ICanLocalize’s WPML</a> translation plugin.
 
-Control
--------
+Control pack
+------------
 
 * <a title="Activity Monitor Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/all-blogs-broadcast-plugin/">All Blogs</a> gives all users access to all of the blogs in the network.
 * <a title="All Blogs Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/all-blogs-broadcast-plugin/">All Blogs Superadmin</a> allows only superadmins to broadcast to all blogs in the network without having to be a user of the blog.
@@ -73,23 +74,23 @@ Control
 * <a title="Per Blog Taxonomies Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/per-blog-taxonomies-broadcast-plugin/">Per Blog Taxonomies</a> allows individual control of specific taxonomies for each child post.
 * <a title="Permalinks Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/permalinks-broadcast-plugin/">Permalinks</a> provides more precise control of permalinks for both parents and children.
 * <a title="Protect Child Properties Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/protect-child-properties-broadcast-plugin/">Protect Child Properties</a> prevent various properties of child posts from being overwritten.
-* <a title="Purge Children Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/purge-children-broadcast-plugin/">Purge Children</a> removes children and their attached files from child blogs.
 * <a title="Redirect All Children Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/redirect-all-children-broadcast-plugin/">Redirect All Children</a> redirects single post views from visitors of child posts to the parent post.
-* <a title="Sync Taxonomies Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/user-blog-settings-broadcast-plugin/">User &amp; Blog Settings</a> (UBS) can hide the broadcast meta box and/or menu, modify the meta box to force/prevent broadcast to blogs, with separate settings for users / blogs / roles.
+* <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/thumbnail-sizes-broadcast-plugin/">Thumbnail Sizes</a> allows for different additional thumbnail sizes on a per-blog basis.
 * <a title="User &amp; Blog Settings Post Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/user-blog-settings-post-broadcast-plugin/">User &amp; Blog Settings Post</a> uses the modifications from the UBS plugin to broadcast posts with one click.
 
-Efficiency
-----------
+Efficiency pack
+---------------
 
 * <a title="Activity Monitor Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/blog-groups-2-broadcast-plugin/">Blog Groups 2</a> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
 * <a title="Comments Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/duplicate-attachments-broadcast-plugin/">Duplicate Attachments</a> will duplicate the attachment and thumbnails, instead of letting WordPress regenerate them.
 * <a title="Find Some Unlinked Children Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/find-some-unlinked-children-broadcast-plugin/">Find Some Unlinked Children</a> can selectively link orphans / unlinked posts to parents, instead of automatically linking all found children.
 * <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/new-blog-broadcast-plugin/">New Blog Broadcast</a> automatically broadcasts posts when creating a new blog.
+* <a title="Purge Children Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/purge-children-broadcast-plugin/">Purge Children</a> removes children and their attached files from child blogs.
 * <a title="Keep Child Status Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/queue-broadcast-plugin/">Queue</a> adds a broadcast queue which helps to broadcast posts to tens / hundreds / thousands of blogs.
 * <a title="Send To Many Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/send-to-many-broadcast-plugin/">Send To Many</a> allows mass broadcast of several posts to blogs at once.
 
-Utilities
----------
+Utilities pack
+--------------
 
 * <a title="Lock Post Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/lock-post-broadcast-plugin/">Lock Post</a> allows users to lock editing of posts / pages to only themselves and super admins.
 * <a title="Menus Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/menus-broadcast-plugin/">Menus</a> copies menus between blogs (overwrite / update), with support for equivalent child posts on the child blogs and equivalent taxonomies.
@@ -132,7 +133,7 @@ The git repository can be found at: https://bitbucket.org/edward_electric/broadc
 == Installation ==
 
 1. Check that your web host has PHP v5.4.
-1. Activate the plugin locally or sitewide. The latter option is more common (and useful).
+1. Activate the plugin sitewide. The latter option is more common (and useful).
 
 == Screenshots ==
 
@@ -146,6 +147,7 @@ The git repository can be found at: https://bitbucket.org/edward_electric/broadc
 8. Admin settings tab
 9. Maintenance tab
 10. Uninstall tab
+11. Time savings tab showing how much time Broadcast has saved you
 
 == Frequently Asked Questions ==
 
@@ -163,11 +165,11 @@ To switch on debug mode, see the admin settings. If your site is live it would b
 
 = Blacklist, whitelisting, force broadcast =
 
-Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+Broadcasting to specific blogs, hiding blogs and forcing blogs can be acheived with the <em>User & Blog Settings</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Broadcast plugin packs"><em>control plugin pack</em></a>.
 
 = Bulk broadcast existing pages =
 
-To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+To broadcast many posts at once, see the <em>Send To Many</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Broadcast plugin packs"><em>efficiency plugin pack</em></a>.
 
 = Galleries and attachments =
 
@@ -181,7 +183,7 @@ Do you have a lot of attachments that you don't want duplicated to hundreds of c
 
 = Hide broadcast from the users =
 
-The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Premium Pack's page on the web"><em>Broadcast Premium Pack</em></a>.
+The broadcast meta box, menu and columns in the post view can be hidden from users / roles / blogs using <em>User & Blog Settings</em> plugin in the <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/" title="Broadcast plugin packs"><em>control plugin pack</em></a>.
 
 = Is PHP v5.4 really necessary? =
 
@@ -215,7 +217,7 @@ Make sure that:
 
 1. The plugin is network enabled
 2. Your user level has broadcast access (Broadcast access role)
-3. Your user has write access to more than this blog (see Admin settings > Maintenenace > View blog access). Or use the All Blogs premium plugin to access all blogs.
+3. Your user has write access to more than this blog (see Admin settings > Maintenenace > View blog access). Or use the All Blogs control plugin to access all blogs.
 4. The correct post type(s) have been selected
 5. <em>User & Blog Settings</em> is not set to hide the meta box from the user / role / blog
 
@@ -228,15 +230,15 @@ Broadcast is capable of handling WooCommerce products.
 
 This will broadcast all normal product settings: SKU, price, etc.
 
-If your products have variations, or you want the attribute taxonomies to be synced, you'll be wanting the WooCommerce plugin from the premium pack.
+If your products have variations, or you want the attribute taxonomies to be synced, you'll be wanting the WooCommerce plugin from the plugin packs.
 
-If you have a product gallery, use the "Custom Field Attachments" premium plugin to broadcast the "_product_image_gallery" custom field.
+If you have a product gallery, use the "Custom Field Attachments" plugin to broadcast the "_product_image_gallery" custom field.
 
 Need your stock or PDF vouchers synced upon each purchase? See the WooCommerce extras in the Plugin Pack.
 
 = WPML Sitepress =
 
-WPML is semi-supported via a plugin in the premium pack. For more information, see WPML discussion here: http://wordpress.org/support/topic/wmpl-integration-not-working
+WPML is semi-supported via a plugin in the 3rd party pack. For more information, see WPML discussion here: http://wordpress.org/support/topic/wmpl-integration-not-working
 
 The author suggests using PolyLang instead due to far superior support.
 
@@ -249,6 +251,13 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 26 20151102 =
+* Fix: Try to get post sticky status via _POST variables and via function, in case one is broadcasting via API and the POST sticky status isn't available.
+* New: Time savings tab. Keep track of how much time and money you've saved by using Broadcast.
+* New Plugin Pack Plugin: <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/thumbnail-sizes-broadcast-plugin/">Thumbnail Sizes</a> allows for different additional thumbnail sizes on a per-blog basis.
+* New Plugin Pack Plugin: <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/bbpress-broadcast-plugin/">bbPress</a> adds support for <a href="https://wordpress.org/plugins/bbpress/">BBPress</a> forums, topics and replies.
+* Premium pack has been split up. Each plugin pack can be purchased individually (and cheaper, of course).
 
 = 25 20151024 =
 * Blog Groups: This is the last time this obsolete plugin will be released. If you wish to use it in the future, copy it to another plugin directory and activate it from there. The replacement is the Blog Groups 2 plugin in the plugin pack.
