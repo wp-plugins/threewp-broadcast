@@ -196,7 +196,6 @@ abstract class plugin_pack
 		$this->__plugins = new plugins( $this );
 		$this->__plugins->populate( $this->get_enabled_plugins() );
 		$this->__plugins->load();
-		$this->__plugins->maybe_save();
 		return $this->plugins();
 	}
 
