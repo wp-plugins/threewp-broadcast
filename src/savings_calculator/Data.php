@@ -81,6 +81,7 @@ class Data
 		$row->th()->text( 'Money saved' );
 		$wage = $this->get( 'hourly_wage', 100 );
 		$cost = $time_saved / 60 / 60 * $wage;
+		$cost = floor( $cost );
 		$row->td()->textf( '&sect; %s', $cost );
 
 		return $table;
