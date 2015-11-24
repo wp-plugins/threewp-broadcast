@@ -21,7 +21,6 @@ class attachment_data
 	public $filename_base;					// img.jpg
 	public $filename_path;					// /var/www/wordpress/image.jpg
 	public $file_metadata;					// Wordpress' metadata for the attached image.
-	public $filename_upload_dir;			// Wordpress' upload directory for this blog / file
 	public $id;								// ID of attachment.
 	public $guid;							// Old guid of image.
 	public $post_custom;					// Array of post meta keys and values.
@@ -30,10 +29,14 @@ class attachment_data
 	public function __construct( $options = array() )
 	{
 		foreach($options as $key => $value)
-			$this->getset($key, $value);
+			$this->$key = $value;
 	}
 
-	public static function from_attachment_id( $attachment, $upload_dir )
+	/**
+		@brief		Create an attachment_data object from a post or ID.
+		@since		2015-11-16 15:39:18
+	**/
+	public static function from_attachment_id( $attachment )
 	{
 		$r = new attachment_data;
 
@@ -60,30 +63,6 @@ class attachment_data
 
 		return $r;
 	}
-
-	/**
-		Remove this in about a years time, when nobody uses it anymore.
-
-		2013-02-21.
-	**/
-	private function getset( $variable, $variable_new = null )
-	{
-		if ($variable_new == null )
-			return $this->$variable;
-		else
-			$this->$variable = $variable_new;
-	}
-
-	// Sometime in the future: remove all of these functions.
-
-	public function filename_base( $filename_base = null )							{	return $this->getset( 'filename_base', $filename_base );					}
-	public function filename_path( $filename_path = null )							{	return $this->getset( 'filename_path', $filename_path );					}
-	public function file_metadata( $file_metadata = null )							{	return $this->getset( 'file_metadata', $file_metadata );					}
-	public function filename_upload_dir( $filename_upload_dir = null )				{	return $this->getset( 'file_metadata', $filename_upload_dir );				}
-	public function guid( $guid = null )											{	return $this->getset( 'guid', $guid );										}
-	public function menu_order( $menu_order = null )								{	return $this->getset( 'menu_order', $menu_order );							}
-	public function post_excerpt( $post_excerpt = null )							{	return $this->getset( 'post_excerpt', $post_excerpt );						}
-	public function post_title( $post_title = null )								{	return $this->getset( 'post_title', $post_title );							}
 
 	/**
 		@brief		Is this attachment attached to a parent post?
@@ -117,4 +96,3 @@ class attachment_data
 		$this->attached_to_parent = $attached;
 	}
 }
-

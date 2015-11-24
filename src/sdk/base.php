@@ -11,6 +11,8 @@ namespace plainview\sdk_broadcast;
 
 	@par			Changelog
 
+	- 20151106		Collections/html: Redone handling, with test.
+	- 20151105		Wordpress: add wp_editor form2 input type.
 	- 20151028		Wordpress: do not activate pack plugins if no action is selected.
 	- 20151028		Wordpress: prevent array_intersect warning if the user does not have capabilities on this blog.
 	- 20151025		Wordpress: Bulk action column has a unique ID.
@@ -172,7 +174,7 @@ class base
 		@since		20130416
 		@var		$sdk_version
 	**/
-	protected $sdk_version = 20151028;
+	protected $sdk_version = 20151106;
 
 	/**
 		@brief		Constructor.

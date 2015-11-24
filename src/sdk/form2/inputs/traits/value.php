@@ -152,6 +152,17 @@ trait value
 	}
 
 	/**
+		@brief		Set the value but do not filter it.
+		@details	Use if you want to put in actual HTML into the textarea.
+		@since		2015-11-05 14:35:52
+	**/
+	public function set_unfiltered_value( $value )
+	{
+		$this->set_attribute( 'value', $value );
+		return $this;
+	}
+
+	/**
 		@brief		Filters and sets the new value.
 		@param		string		$value		Value to filter and set.
 		@return		this		Object chaining.
@@ -163,8 +174,7 @@ trait value
 	{
 		$value = $this->apply_value_filters( $value );
 		$value = \plainview\sdk_broadcast\form2\form::filter_text( $value );
-		$this->set_attribute( 'value', $value );
-		return $this;
+		return $this->set_unfiltered_value( $value );
 	}
 
 	/**

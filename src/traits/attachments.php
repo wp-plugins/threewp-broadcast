@@ -7,6 +7,47 @@ use threewp_broadcast\actions;
 trait attachments
 {
 	/**
+		@brief		Init the attachments trait.
+		@since		2015-11-16 13:45:48
+	**/
+	public function attachments_init()
+	{
+		$this->add_action( 'threewp_broadcast_apply_existing_attachment_action', 100 );
+		$this->add_action( 'threewp_broadcast_get_existing_attachment_actions', 5 );
+	}
+
+	/**
+		@brief		threewp_broadcast_apply_existing_attachment_action
+		@since		2015-11-16 14:10:32
+	**/
+	public function threewp_broadcast_apply_existing_attachment_action( $action )
+	{
+		if ( $action->is_finished() )
+			return;
+
+		$bcd = $action->broadcasting_data;
+
+		switch( $action->action )
+		{
+			case 'overwrite':
+				// Delete the existing attachment
+				$this->debug( 'Maybe copy attachment: Deleting current attachment %s', $action->target_attachment->ID );
+				wp_delete_attachment( $action->target_attachment->ID, true );		// true = Don't go to trash
+				// Tell BC to copy the attachment.
+				$action->use = false;
+				break;
+			case 'randomize':
+				$filename = $bcd->attachment_data->filename_base;
+				$filename = preg_replace( '/(.*)\./', '\1_' . rand( 1000000, 9999999 ) .'.', $filename );
+				$bcd->attachment_data->filename_base = $filename;
+				$this->debug( 'Maybe copy attachment: Randomizing new attachment filename to %s.', $bcd->attachment_data->filename_base );
+				// Tell BC to copy the attachment.
+				$action->use = false;
+				break;
+		}
+	}
+
+	/**
 		@brief		Creates a new attachment.
 		@details
 
@@ -136,6 +177,25 @@ trait attachments
 	}
 
 	/**
+		@brief		threewp_broadcast_get_attachment_actions
+		@since		2015-11-16 13:46:23
+	**/
+	public function threewp_broadcast_get_existing_attachment_actions( $action )
+	{
+		// Existing attachment action.
+		$s = $this->_( 'Use the existing attachment on the child blog' );
+		$action->add( 'use', $s );
+
+		// Existing attachment action.
+		$s = $this->_( 'Delete and then recopy the attachment' );
+		$action->add( 'overwrite', $s );
+
+		// Existing attachment action.
+		$s = $this->_( 'Create a new attachment with a randomized suffix' );
+		$action->add( 'randomize', $s );
+	}
+
+	/**
 		@brief		Will only copy the attachment if it doesn't already exist on the target blog.
 		@details	The return value is an object, with the most important property being ->attachment_id.
 
@@ -178,26 +238,20 @@ trait attachments
 			// We've found an existing attachment. What to do with it...
 			$existing_action = $this->get_site_option( 'existing_attachments', 'use' );
 			$this->debug( 'Maybe copy attachment: The action for existing attachments is to %s.', $existing_action );
-			switch( $existing_action )
-			{
-				case 'overwrite':
-					// Delete the existing attachment
-					$this->debug( 'Maybe copy attachment: Deleting current attachment %s', $attachment_post->ID );
-					wp_delete_attachment( $attachment_post->ID, true );		// true = Don't go to trash
-					break;
-				case 'randomize':
-					$filename = $options->attachment_data->filename_base;
-					$filename = preg_replace( '/(.*)\./', '\1_' . rand( 1000000, 9999999 ) .'.', $filename );
-					$options->attachment_data->filename_base = $filename;
-					$this->debug( 'Maybe copy attachment: Randomizing new attachment filename to %s.', $options->attachment_data->filename_base );
-					break;
-				case 'use':
-				default:
-					// The ID is the important part.
-					$options->attachment_id = $attachment_post->ID;
-					$this->debug( 'Maybe copy attachment: Using existing attachment %s.', $attachment_post->ID );
-					return $options;
 
+			$apply_existing_attachment_action = new actions\apply_existing_attachment_action();
+			$apply_existing_attachment_action->action = $existing_action;
+			$apply_existing_attachment_action->broadcasting_data = $options;
+			$apply_existing_attachment_action->source_attachment = $attachment_data;
+			$apply_existing_attachment_action->target_attachment = $attachment_post;
+			$apply_existing_attachment_action->execute();
+
+			if ( $apply_existing_attachment_action->use )
+			{
+				// The ID is the important part.
+				$options->attachment_id = $attachment_post->ID;
+				$this->debug( 'Maybe copy attachment: Using existing attachment %s.', $attachment_post->ID );
+				return $options;
 			}
 		}
 

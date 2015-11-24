@@ -10,14 +10,17 @@ namespace plainview\sdk_broadcast\wordpress;
 
 	@since		2015-10-24 08:10:05
 **/
-abstract class Options_Object
+class Options_Object
 	extends \plainview\sdk_broadcast\collections\collection
 {
 	/**
 		@brief		Return the Wordpress SDK base container class.
 		@since		2015-10-22 23:00:14
 	**/
-	abstract public static function container();
+	public static function container()
+	{
+		throw new Exception( 'Plase override the container method.' );
+	}
 
 	/**
 		@brief		Delete the object completely.
@@ -32,7 +35,10 @@ abstract class Options_Object
 		@brief		Return the name of the option in which we are stored.
 		@since		2015-10-22 23:02:42
 	**/
-	abstract public static function get_option_name();
+	public static function get_option_name()
+	{
+		throw new Exception( 'Plase override the get_option_name method.' );
+	}
 
 	/**
 		@brief		Load the object from the options table.

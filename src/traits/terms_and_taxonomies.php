@@ -180,6 +180,8 @@ trait terms_and_taxonomies
 		] );
 		$target_terms = $this->array_rekey( $target_terms, 'term_id' );
 
+		$this->debug( 'Target terms: %s', $target_terms );
+
 		$refresh_cache = false;
 
 		// Keep track of which terms we've found.
@@ -383,6 +385,7 @@ trait terms_and_taxonomies
 	**/
 	public function threewp_broadcast_wp_update_term( $action )
 	{
+		$this->debug( 'wp_update_term: %s', $action );
 		$update = true;
 
 		// If we are given an old term, then we have a chance of checking to see if there should be an update called at all.
@@ -392,7 +395,10 @@ trait terms_and_taxonomies
 			$update = false;
 			foreach( [ 'name', 'description', 'parent' ] as $key )
 				if ( $action->old_term->$key != $action->new_term->$key )
+				{
+					$this->debug( 'Will update the term because of %s', $key );
 					$update = true;
+				}
 		}
 
 		if ( $update )

@@ -23,6 +23,7 @@ class ThreeWP_Broadcast_Plugin_Pack
 	{
 		$this->add_action( 'threewp_broadcast_loaded', 100 );
 		$this->add_action( 'threewp_broadcast_menu' );
+		$this->add_action( 'threewp_broadcast_broadcasting_started', 'dump_pack_info' );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -154,6 +155,30 @@ class ThreeWP_Broadcast_Plugin_Pack
 	// ----------------------------------------- Misc functions
 	// --------------------------------------------------------------------------------------------
 
+	/**
+		@brief		Tell the dump about ourself.
+		@since		2015-11-20 14:09:13
+	**/
+	public function dump_pack_info( $action )
+	{
+		$constants = get_defined_constants();
+
+		foreach( [
+			'BROADCAST_3RD_PARTY_PACK_VERSION',
+			'BROADCAST_CONTROL_PACK_VERSION',
+			'BROADCAST_EFFICIENCY_PACK_VERSION',
+			'BROADCAST_PREMIUM_PACK_VERSION',
+			'BROADCAST_UTILITIES_PACK_VERSION',
+		] as $define )
+			if ( isset( $constants[ $define ] ) )
+				ThreeWP_Broadcast()->debug( '%s version: %s', $define, $constants[ $define ] );
+
+		$enabled_plugins = [];
+		foreach( $this->get_site_option( 'enabled_plugins', [] ) as $plugin )
+			$enabled_plugins[] = preg_replace( '/.*\\\\/', '', $plugin );
+		ThreeWP_Broadcast()->debug( 'Active pack plugins: %s', implode( ', ', $enabled_plugins ) );
+	}
+
 	public function edd_get_url()
 	{
 		return 'https://plainviewplugins.com/';
@@ -190,14 +215,6 @@ class ThreeWP_Broadcast_Plugin_Pack
 		return array_merge( [
 			'enabled_plugins' => [],
 		], parent::site_options() );
-	}
-
-	public function threewp_broadcast_broadcasting_started()
-	{
-		$enabled_plugins = [];
-		foreach( $this->get_site_option( 'enabled_plugins', [] ) as $plugin )
-			$enabled_plugins[] = preg_replace( '/.*\\\\/', '', $plugin );
-		ThreeWP_Broadcast()->debug( 'Active pack plugins: %s', implode( ', ', $enabled_plugins ) );
 	}
 
 	/**

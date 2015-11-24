@@ -293,7 +293,14 @@ class tabs
 			echo '<div style="clear: both"></div>';
 			echo '<div class="tab_contents">';
 
-			call_user_func_array( $tab->callback, $tab->parameters );
+			try
+			{
+				call_user_func_array( $tab->callback, $tab->parameters );
+			}
+			catch ( \Exception $e )
+			{
+				echo $e->getMessage();
+			}
 
 			echo '</div><!-- tab_contents -->';
 			echo '</div>';

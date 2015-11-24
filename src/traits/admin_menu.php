@@ -190,12 +190,17 @@ trait admin_menu
 			->size( 3, 3 )
 			->value( $this->get_site_option( 'blogs_hide_overview' ) );
 
+		$get_existing_attachment_actions = new actions\get_existing_attachment_actions();
+		$get_existing_attachment_actions->execute();
+		$actions = $get_existing_attachment_actions->get_actions();
+		$actions = array_flip( $actions );
+		ksort( $actions );
+
 		$existing_attachments = $fs->select( 'existing_attachments' )
 			->description_( 'Action to take when attachments with the same filename already exist on the child blog.' )
 			->label_( 'Existing attachments' )
-			->option_( 'Use the existing attachment on the child blog', 'use' )
-			->option_( 'Overwrite the attachment', 'overwrite' )
-			->option_( 'Create a new attachment with a randomized suffix', 'randomize' )
+			// Array flip because we till be getting [ key => description ]
+			->options( $actions )
 			->required()
 			->value( $this->get_site_option( 'existing_attachments', 'use' ) );
 

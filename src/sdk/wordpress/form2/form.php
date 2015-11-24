@@ -34,7 +34,8 @@ class form
 
 		foreach( array(
 			'primary_button',
-			'secondary_button'
+			'secondary_button',
+			'wp_editor',
 		) as $input )
 		{
 			$o = new \stdClass();

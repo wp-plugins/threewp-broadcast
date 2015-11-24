@@ -14,6 +14,14 @@ Network Content Syndication Made Easy! Automatically share content by multiposti
 
 Automatically share content by multiposting between multisite blogs. Syndicate posts to other blogs, update posts between blogs, share content templates, etc. Broadcasted posts can be linked to their parents, which updates child posts when the parent post is updated. This includes all data: title, slug, content, custom fields, attachments, etc.
 
+Broadcast is great for:
+
+* Chain stores
+* Franchises
+* News sites
+* Schools
+* Anything else with distributed content!
+
 Requires PHP version 5.4 or higher.
 
 = Broadcast =
@@ -25,7 +33,7 @@ Requires PHP version 5.4 or higher.
 * Galleries
 * Custom field blacklist, whitelist, and protect list.
 * User role access granularity
-* CDN support (tested Amazon S3)
+* CDN support (nominally tested Amazon S3)
 * Many extra features in the plugin packs
 
 = SEO support =
@@ -75,6 +83,7 @@ Control pack
 * <a title="Permalinks Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/permalinks-broadcast-plugin/">Permalinks</a> provides more precise control of permalinks for both parents and children.
 * <a title="Protect Child Properties Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/protect-child-properties-broadcast-plugin/">Protect Child Properties</a> prevent various properties of child posts from being overwritten.
 * <a title="Redirect All Children Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/redirect-all-children-broadcast-plugin/">Redirect All Children</a> redirects single post views from visitors of child posts to the parent post.
+* <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/update-attachments-broadcast-plugin/">Update Attachments</a> updates existing attachments by copying over the files to the child blogs.
 * <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/thumbnail-sizes-broadcast-plugin/">Thumbnail Sizes</a> allows for different additional thumbnail sizes on a per-blog basis.
 * <a title="User &amp; Blog Settings Post Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/user-blog-settings-post-broadcast-plugin/">User &amp; Blog Settings Post</a> uses the modifications from the UBS plugin to broadcast posts with one click.
 
@@ -92,8 +101,10 @@ Efficiency pack
 Utilities pack
 --------------
 
+* <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/cdn-workaround-broadcast-plugin/">CDN Workaround</a> works around faulty CDNs that do not report the correct URL for attachments.
 * <a title="Lock Post Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/lock-post-broadcast-plugin/">Lock Post</a> allows users to lock editing of posts / pages to only themselves and super admins.
 * <a title="Menus Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/menus-broadcast-plugin/">Menus</a> copies menus between blogs (overwrite / update), with support for equivalent child posts on the child blogs and equivalent taxonomies.
+* <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/php-code-broadcast-plugin/">PHP Code</a> - Run custom PHP code on selected blogs. Easily switch themes for all blogs, for example.
 * <a title="Sync Taxonomies Broadcast plugin" href="https://plainviewplugins.com/threewp-broadcast-premium-pack/sync-taxonomies-broadcast-plugin/">Sync Taxonomies</a> synchronize the taxonomies of target blogs with those from a source blog.
 
 = Documentation =
@@ -251,6 +262,20 @@ Xcache v2 does not support PHP namespaces, which is a PHP 5.3 feature. Trying to
 Xcache v3, which does support namespaces, has not yet been tested. Anyone with Xcache v3 experience is welcome to contact me with info.
 
 == Changelog ==
+
+= 27 20151124 =
+
+* Fix: Simplified thumbnail copying code, for those with thumbnails on CDNs.
+* Fix: Savings calculator was calculating wage per minute, not per hour.
+* The overwrite existing attachment is now described as "Delete and then recopy the attachment" instead of "Overwrite the attachment".
+* New Plugin Pack Plugin: <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/avia-layout-builder-broadcast-plugin/">Avia Layout Builder</a> - Run the hidden Avia Layout Builder content through the Attachment Shortcode Broadcast plugin.
+* New Plugin Pack Plugin: <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/update-attachments-broadcast-plugin/">Update Attachments</a> - Update existing attachments by copying over the files to the child blogs.
+* New Plugin Pack Plugin: <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/cdn-workaround-broadcast-plugin/">CDN Workaround</a> - Work around faulty CDNs that do not report the correct URL for attachments.
+* New Plugin Pack Plugin: <a href="https://plainviewplugins.com/threewp-broadcast-premium-pack/php-code-broadcast-plugin/">PHP Code</a> - Run custom PHP code on selected blogs. Easily switch themes for all blogs, for example.
+* Code: Removed "find unlinked child" post action since it makes no sense.
+* Code: Added get_existing_attachment_actions and apply_existing_attachment_action actions.
+* Code: Removed unused upload_dir from attachment_data::from_attachment_id().
+* Code: Taxonomies are dumped upon debug.
 
 = 26 20151102 =
 * Fix: Try to get post sticky status via _POST variables and via function, in case one is broadcasting via API and the POST sticky status isn't available.

@@ -99,6 +99,7 @@ class ThreeWP_Broadcast
 			$this->add_filter( 'post_type_link', 'post_link', 10, 3 );
 		}
 
+		$this->attachments_init();
 		$this->post_actions_init();
 		$this->savings_calculator_init();
 

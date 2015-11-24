@@ -13,7 +13,7 @@ msgstr ""
 msgid "%s rows left to check..."
 msgstr ""
 
-#: src/traits/admin_menu.php:362
+#: src/traits/admin_menu.php:367
 #, php-format
 msgid "%s seconds"
 msgstr ""
@@ -28,7 +28,7 @@ msgstr ""
 msgid "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings."
 msgstr ""
 
-#: src/traits/admin_menu.php:194
+#: src/traits/admin_menu.php:200
 msgid "Action to take when attachments with the same filename already exist on the child blog."
 msgstr ""
 
@@ -40,7 +40,7 @@ msgstr ""
 msgid "Activate plugin"
 msgstr ""
 
-#: src/traits/admin_menu.php:387
+#: src/traits/admin_menu.php:392
 msgid "Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:"
 msgstr ""
 
@@ -52,48 +52,33 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:62
+msgid "Available plugins"
+msgstr ""
+
 #: src/maintenance/checks/broadcast_data/check.php:352
 #, php-format
 msgid "Beginning to check broadcast data. %s rows to check."
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:383
-msgid "Blog group saved!"
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:249
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:275
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:276
-msgid "Blog groups"
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:105
-msgid "Blog groups help you to quickly add blogs to the broadcast. First create a blog group and select the blogs you want. When broadcasting the list of blog groups will appear above the blog list."
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:122
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:347
-msgid "Blogs"
 msgstr ""
 
 #: src/traits/admin_menu.php:179
 msgid "Blogs to hide"
 msgstr ""
 
-#: src/traits/meta_boxes.php:29 src/traits/admin_menu.php:213
-#: src/traits/admin_menu.php:518 src/traits/post_actions.php:73
+#: src/traits/meta_boxes.php:29 src/traits/admin_menu.php:218
+#: src/traits/admin_menu.php:526 src/traits/post_actions.php:73
 msgid "Broadcast"
 msgstr ""
 
-#: src/traits/admin_menu.php:241
+#: src/traits/admin_menu.php:246
 msgid "Broadcast as draft"
 msgstr ""
 
-#: src/traits/admin_menu.php:227
+#: src/traits/admin_menu.php:232
 msgid "Broadcast custom fields"
 msgstr ""
 
-#: src/traits/admin_menu.php:471
+#: src/traits/admin_menu.php:479
 msgid "Broadcast information"
 msgstr ""
 
@@ -105,15 +90,19 @@ msgstr ""
 msgid "Broadcast is not preparing the meta box because it has already been applied."
 msgstr ""
 
-#: src/ThreeWP_Broadcast.php:89
+#: src/traits/admin_menu.php:73
+msgid "Broadcast plugin packs info"
+msgstr ""
+
+#: src/ThreeWP_Broadcast.php:90
 msgid "Broadcast requires a Wordpress network to function."
 msgstr ""
 
-#: src/traits/admin_menu.php:248
+#: src/traits/admin_menu.php:253
 msgid "Broadcast scheduled posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:234
+#: src/traits/admin_menu.php:239
 msgid "Broadcast taxonomies"
 msgstr ""
 
@@ -121,7 +110,7 @@ msgstr ""
 msgid "Broadcast to"
 msgstr ""
 
-#: src/traits/admin_menu.php:349
+#: src/traits/admin_menu.php:354
 msgid "Broadcast version"
 msgstr ""
 
@@ -137,11 +126,11 @@ msgstr ""
 msgid "Bulk actions"
 msgstr ""
 
-#: src/traits/admin_menu.php:265
+#: src/traits/admin_menu.php:270
 msgid "Canonical URL"
 msgstr ""
 
-#: src/traits/admin_menu.php:264
+#: src/traits/admin_menu.php:269
 msgid "Child posts have their canonical URLs pointed to the URL of the parent post. This automatically disables the canonical URL from Yoast's Wordpress SEO plugin."
 msgstr ""
 
@@ -149,11 +138,7 @@ msgstr ""
 msgid "Clear POST"
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:113
-msgid "Click on the group name to edit or delete it."
-msgstr ""
-
-#: src/traits/post_actions.php:160
+#: src/traits/post_actions.php:168
 msgid "Click to modify the post's linkage"
 msgstr ""
 
@@ -161,17 +146,9 @@ msgstr ""
 msgid "Create a link to the children, which will be updated when this post is updated, trashed when this post is trashed, etc."
 msgstr ""
 
-#: src/traits/admin_menu.php:198
+#. Existing attachment action.
+#: src/traits/attachments.php:194
 msgid "Create a new attachment with a randomized suffix"
-msgstr ""
-
-#. Form to add a new blog group.
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:161
-msgid "Create a new blog group"
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:82
-msgid "Create the blog group"
 msgstr ""
 
 #: src/traits/admin_menu.php:103
@@ -222,27 +199,34 @@ msgstr ""
 msgid "Debug IPs"
 msgstr ""
 
-#: src/traits/admin_menu.php:381
+#: src/traits/admin_menu.php:386
 msgid "Debug code"
 msgstr ""
 
-#: src/sdk/wordpress/traits/debug.php:44 src/traits/admin_menu.php:344
+#: src/sdk/wordpress/traits/debug.php:44 src/traits/admin_menu.php:349
 msgid "Debugging"
 msgstr ""
 
-#: src/traits/admin_menu.php:429
+#: src/traits/admin_menu.php:437
 msgid "Delete all child posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:430
+#: src/traits/admin_menu.php:438
 msgid "Delete all children"
 msgstr ""
 
-#: src/traits/admin_menu.php:425
+#. Existing attachment action.
+#: src/traits/attachments.php:190
+msgid "Delete and then recopy the attachment"
+msgstr ""
+
+#. Single post action in the popup
+#: src/traits/admin_menu.php:433 src/traits/post_actions.php:114
 msgid "Delete child"
 msgstr ""
 
-#: src/traits/post_actions.php:137
+#. Bulk post action in the dropdown
+#: src/traits/post_actions.php:141
 msgid "Delete children"
 msgstr ""
 
@@ -255,20 +239,12 @@ msgid "Delete license data"
 msgstr ""
 
 #. With the unchecked child blogs:
-#: src/traits/meta_boxes.php:236 src/traits/admin_menu.php:424
+#: src/traits/meta_boxes.php:236 src/traits/admin_menu.php:432
 msgid "Delete the child post"
 msgstr ""
 
 #: src/sdk/wordpress/traits/debug.php:79
 msgid "Delete the contents of the debug file now after saving the settings."
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:402
-msgid "Delete the group"
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:395
-msgid "Delete this blog group"
 msgstr ""
 
 #: src/traits/admin_menu.php:187
@@ -288,19 +264,11 @@ msgstr ""
 msgid "Do not update"
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:221
-msgid "Edit blog group"
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:132
-msgid "Edit or delete this blog group"
-msgstr ""
-
 #: src/sdk/wordpress/traits/debug.php:54
 msgid "Enable debugging"
 msgstr ""
 
-#: src/traits/admin_menu.php:345
+#: src/traits/admin_menu.php:350
 msgid "Enabled"
 msgstr ""
 
@@ -308,15 +276,16 @@ msgstr ""
 msgid "Exceptions to the blacklist."
 msgstr ""
 
-#: src/traits/admin_menu.php:195
+#: src/traits/admin_menu.php:201
 msgid "Existing attachments"
 msgstr ""
 
-#: src/traits/admin_menu.php:434 src/traits/admin_menu.php:435
+#: src/traits/admin_menu.php:442 src/traits/admin_menu.php:443
 msgid "Find orphans"
 msgstr ""
 
-#: src/traits/post_actions.php:138
+#. Bulk post action in the dropdown
+#: src/traits/post_actions.php:143
 msgid "Find unlinked children"
 msgstr ""
 
@@ -324,17 +293,13 @@ msgstr ""
 msgid "Force new version check"
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:332
-msgid "General settings"
-msgstr ""
-
 #: src/sdk/wordpress/updater/edd.php:66
 msgid "Get link to latest version as zip"
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:76
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:335
-msgid "Group name"
+#: src/traits/savings_calculator.php:51
+#, php-format
+msgid "How long, in percent, it takes to update a post, compared to created a brand new post. %s%% is a nice, round, number."
 msgstr ""
 
 #: src/traits/admin_menu.php:186
@@ -345,8 +310,14 @@ msgstr ""
 msgid "How many save_post hook decoys to insert before the real Broadcast save_post hook. This value should be raised if you notice that Broadcast isn't doing anything. This is due to a bug in Wordpress when other plugins call remove_action on the save_post hook."
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:398
-msgid "I want to delete this blog group"
+#: src/traits/savings_calculator.php:32
+#, php-format
+msgid "How many seconds it takes to switch blogs, start a new post and paste text into the title and content boxes. This varies depending on how efficient you are and how fast your webhost is. %s seconds is the default value."
+msgstr ""
+
+#: src/traits/savings_calculator.php:40
+#, php-format
+msgid "How many seconds to add for each image that is attached to the post. %s seconds is the default value to upload the image, caption it and then insert it into the post."
 msgstr ""
 
 #: src/traits/admin_menu.php:178
@@ -354,7 +325,7 @@ msgid "In the broadcast meta box, after how many blogs the list should be auto-h
 msgstr ""
 
 #. Caption for the blog / PHP information table
-#: src/traits/admin_menu.php:335
+#: src/traits/admin_menu.php:340
 msgid "Information"
 msgstr ""
 
@@ -362,7 +333,7 @@ msgstr ""
 msgid "Invert selection"
 msgstr ""
 
-#: src/traits/admin_menu.php:338
+#: src/traits/admin_menu.php:343
 msgid "Key"
 msgstr ""
 
@@ -374,11 +345,11 @@ msgstr ""
 msgid "Link this post to its children"
 msgstr ""
 
-#: src/traits/admin_menu.php:220
+#: src/traits/admin_menu.php:225
 msgid "Link to child posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:399
+#: src/traits/admin_menu.php:404
 msgid "Maintenance"
 msgstr ""
 
@@ -386,24 +357,16 @@ msgstr ""
 msgid "Miscellaneous"
 msgstr ""
 
-#: src/traits/admin_menu.php:208
+#: src/traits/admin_menu.php:213
 msgid "Multiple roles may be selected. Each role must be individually selected, since there is no automatic hierarchy where, for example, authors automatically include the editor role. Note that only the roles on this blog can be shown."
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:121
-msgid "Name"
 msgstr ""
 
 #: src/sdk/wordpress/plugin_pack/plugin_pack.php:113
 msgid "No action selected."
 msgstr ""
 
-#: src/traits/post_actions.php:483
+#: src/traits/post_actions.php:493
 msgid "No change"
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:250
-msgid "No group selected"
 msgstr ""
 
 #: src/sdk/wordpress/traits/debug.php:84
@@ -411,23 +374,15 @@ msgstr ""
 msgid "Only show debugging info to specific IP addresses. Use spaces between IPs. You can also specify part of an IP address. Your address is %s"
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:216
-msgid "Overview"
-msgstr ""
-
-#: src/traits/admin_menu.php:197
-msgid "Overwrite the attachment"
-msgstr ""
-
-#: src/traits/admin_menu.php:361
+#: src/traits/admin_menu.php:366
 msgid "PHP maximum execution time"
 msgstr ""
 
-#: src/traits/admin_menu.php:366
+#: src/traits/admin_menu.php:371
 msgid "PHP memory limit"
 msgstr ""
 
-#: src/traits/admin_menu.php:353
+#: src/traits/admin_menu.php:358
 msgid "PHP version"
 msgstr ""
 
@@ -435,6 +390,16 @@ msgstr ""
 #: src/sdk/form2/inputs/traits/validation.php:182
 #, php-format
 msgid "Please fill in %s."
+msgstr ""
+
+#: src/traits/admin_menu.php:499
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:146
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:147
+msgid "Plugin packs"
+msgstr ""
+
+#: src/traits/admin_menu.php:498
+msgid "Plugin packs info"
 msgstr ""
 
 #: src/traits/meta_boxes.php:276
@@ -452,44 +417,33 @@ msgstr ""
 msgid "Post actions"
 msgstr ""
 
-#: src/traits/admin_menu.php:491
-msgid "Premium Pack"
-msgstr ""
-
-#: src/traits/admin_menu.php:490
-msgid "Premium Pack info"
-msgstr ""
-
 #: src/sdk/wordpress/updater/edd.php:87
 msgid "Refresh license status"
 msgstr ""
 
-#: src/traits/admin_menu.php:445
+#: src/traits/admin_menu.php:453
 msgid "Restore all"
 msgstr ""
 
-#: src/traits/admin_menu.php:444
+#: src/traits/admin_menu.php:452
 msgid "Restore all of the child posts from the trash"
 msgstr ""
 
-#: src/traits/admin_menu.php:440
+#. Single post action in the popup
+#: src/traits/admin_menu.php:448 src/traits/post_actions.php:116
 msgid "Restore child"
 msgstr ""
 
-#: src/traits/post_actions.php:139
+#. Bulk post action in the dropdown
+#: src/traits/post_actions.php:145
 msgid "Restore children"
 msgstr ""
 
-#: src/traits/admin_menu.php:439
+#: src/traits/admin_menu.php:447
 msgid "Restore the child post from the trash"
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:181
-msgid "Role needed to use the group function."
-msgstr ""
-
-#: src/traits/admin_menu.php:205
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:177
+#: src/traits/admin_menu.php:210
 msgid "Roles"
 msgstr ""
 
@@ -498,7 +452,7 @@ msgstr ""
 msgid "Row %s in the broadcast data table was not found!"
 msgstr ""
 
-#: src/traits/admin_menu.php:255
+#: src/traits/admin_menu.php:260
 msgid "SEO"
 msgstr ""
 
@@ -506,8 +460,7 @@ msgstr ""
 msgid "Save debug to file"
 msgstr ""
 
-#: src/traits/admin_menu.php:270
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:188
+#: src/traits/admin_menu.php:275 src/traits/savings_calculator.php:77
 msgid "Save settings"
 msgstr ""
 
@@ -515,8 +468,7 @@ msgstr ""
 msgid "Select / deselect all"
 msgstr ""
 
-#: src/traits/admin_menu.php:398
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:226
+#: src/traits/admin_menu.php:403
 msgid "Settings"
 msgstr ""
 
@@ -536,11 +488,16 @@ msgstr ""
 msgid "Shows which blogs have posts linked to this one"
 msgstr ""
 
-#: src/sdk/wordpress/base.php:440
+#. Submit button for post actions
+#: src/traits/post_actions.php:525
+msgid "Submit"
+msgstr ""
+
+#: src/sdk/wordpress/base.php:443
 msgid "Super admin"
 msgstr ""
 
-#: src/traits/admin_menu.php:400
+#: src/traits/admin_menu.php:405
 msgid "System info"
 msgstr ""
 
@@ -556,16 +513,11 @@ msgstr ""
 msgid "The POST PHP variable is data sent when updating posts. Most plugins are fine if the POST is cleared before broadcasting, while others require that the data remains intact. Uncheck this setting if you notice that child posts are not being treated the same on the child blogs as they are on the parent blog."
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:94
-#, php-format
-msgid "The blog group %s has been created!"
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:45
+msgid "The author can be contacted at: <a href=\"mailto:edward@plainviewplugins.com\">edward@plainviewplugins.com</a>"
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:414
-msgid "The blog group has been deleted. Please return to the overview."
-msgstr ""
-
-#: src/traits/admin_menu.php:212
+#: src/traits/admin_menu.php:217
 msgid "The broadcast access role is the user role required to use the broadcast function at all."
 msgstr ""
 
@@ -584,16 +536,13 @@ msgstr ""
 msgid "The e-mail address in %s is not valid!"
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:139
-msgid "The group has no blogs assigned."
-msgstr ""
-
 #: src/sdk/wordpress/updater/edd.php:149
 #, php-format
 msgid "The latest version of the plugin can be downloaded from <a href=\"%s\">here</a>."
 msgstr ""
 
 #: src/sdk/wordpress/base.php:245
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:105
 #, php-format
 msgid "The plugin and all associated settings and database tables have been removed. Please %sfollow this link to complete the uninstallation procedure%s."
 msgstr ""
@@ -638,15 +587,20 @@ msgstr ""
 msgid "This blog is required"
 msgstr ""
 
-#: src/traits/admin_menu.php:377
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:86
+msgid "This button will remove the database settings for the plugin packs themselves: list of activated plugins, license keys."
+msgstr ""
+
+#: src/traits/admin_menu.php:382
 msgid "This can be increased by adding the following to your wp-config.php:"
 msgstr ""
 
-#: src/sdk/wordpress/form2/form.php:141
+#: src/sdk/wordpress/form2/form.php:142
 msgid "This input is required."
 msgstr ""
 
 #: src/sdk/wordpress/base.php:246
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:106
 msgid "This link will take you to the index page"
 msgstr ""
 
@@ -654,7 +608,7 @@ msgstr ""
 msgid "This page will remove all the plugin tables and settings from the database and then deactivate the plugin."
 msgstr ""
 
-#: src/traits/post_actions.php:511
+#: src/traits/post_actions.php:521
 msgid "This post has no broadcast links."
 msgstr ""
 
@@ -662,37 +616,47 @@ msgstr ""
 msgid "This post is a broadcasted child post. It cannot be broadcasted further."
 msgstr ""
 
-#: src/traits/admin_menu.php:517
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:41
+msgid "This table shows all Broadcast plugins that are available via the activated Broadcast plugin packs."
+msgstr ""
+
+#: src/traits/admin_menu.php:525
 msgid "ThreeWP Broadcast"
 msgstr ""
 
-#: src/traits/admin_menu.php:73
-msgid "ThreeWP Broadcast Premium Pack info"
+#: src/traits/savings_calculator.php:176
+msgid "Time savings"
 msgstr ""
 
-#: src/traits/admin_menu.php:454
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:89
+msgid "To uninstall the settings for each pack plugin, use the plugin list bulk action."
+msgstr ""
+
+#: src/traits/admin_menu.php:462
 msgid "Trash all child posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:455
+#: src/traits/admin_menu.php:463
 msgid "Trash all children"
 msgstr ""
 
-#: src/traits/admin_menu.php:450
+#. Single post action in the popup
+#: src/traits/admin_menu.php:458 src/traits/post_actions.php:118
 msgid "Trash child"
 msgstr ""
 
-#: src/traits/post_actions.php:140
+#. Bulk post action in the dropdown
+#: src/traits/post_actions.php:147
 msgid "Trash children"
 msgstr ""
 
 #. With the unchecked child blogs:
-#: src/traits/meta_boxes.php:238 src/traits/admin_menu.php:449
+#: src/traits/meta_boxes.php:238 src/traits/admin_menu.php:457
 msgid "Trash the child post"
 msgstr ""
 
-#: src/traits/admin_menu.php:401
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:227
+#: src/traits/admin_menu.php:409
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:70
 msgid "Uninstall"
 msgstr ""
 
@@ -701,52 +665,53 @@ msgstr ""
 msgid "Uninstall plugin"
 msgstr ""
 
-#: src/traits/post_actions.php:141
+#: src/premium_pack/ThreeWP_Broadcast_Plugin_Pack.php:92
+msgid "Uninstall the pack settings"
+msgstr ""
+
+#. Bulk post action in the dropdown
+#. Label of unlink checkbox
+#: src/traits/post_actions.php:149 src/traits/post_actions.php:482
 msgid "Unlink"
 msgstr ""
 
-#: src/traits/admin_menu.php:465
+#: src/traits/admin_menu.php:473
 msgid "Unlink all child posts"
 msgstr ""
 
-#: src/traits/admin_menu.php:466
+#: src/traits/admin_menu.php:474
 msgid "Unlink all children"
 msgstr ""
 
-#: src/traits/admin_menu.php:460
+#. Single post action in the popup
+#: src/traits/admin_menu.php:468 src/traits/post_actions.php:120
 msgid "Unlink child"
 msgstr ""
 
 #. With the unchecked child blogs:
-#: src/traits/meta_boxes.php:240 src/traits/admin_menu.php:459
+#: src/traits/meta_boxes.php:240 src/traits/admin_menu.php:467
 msgid "Unlink the child post"
 msgstr ""
 
-#: src/traits/post_actions.php:471
+#. Description of unlink checkbox
+#: src/traits/post_actions.php:480
 msgid "Unlink this post from its parent."
 msgstr ""
 
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:369
-msgid "Update the blog group"
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:182
-msgid "Use groups"
-msgstr ""
-
-#: src/traits/admin_menu.php:260
+#: src/traits/admin_menu.php:265
 msgid "Use parent permalink"
 msgstr ""
 
-#: src/traits/admin_menu.php:196
+#. Existing attachment action.
+#: src/traits/attachments.php:186
 msgid "Use the existing attachment on the child blog"
 msgstr ""
 
-#: src/traits/admin_menu.php:259
+#: src/traits/admin_menu.php:264
 msgid "Use the parent post's permalink for the children. If checked, child posts will link back to the parent post."
 msgstr ""
 
-#: src/traits/admin_menu.php:339
+#: src/traits/admin_menu.php:344
 msgid "Value"
 msgstr ""
 
@@ -755,23 +720,23 @@ msgstr ""
 msgid "What to do with unchecked, linked child blogs"
 msgstr ""
 
-#: src/traits/admin_menu.php:219
+#: src/traits/admin_menu.php:224
 msgid "When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated."
 msgstr ""
 
-#: src/traits/admin_menu.php:226
+#: src/traits/admin_menu.php:231
 msgid "Which role is needed to allow custom field broadcasting?"
 msgstr ""
 
-#: src/traits/admin_menu.php:233
+#: src/traits/admin_menu.php:238
 msgid "Which role is needed to allow taxonomy broadcasting? The taxonomies must have the same slug on all blogs."
 msgstr ""
 
-#: src/traits/admin_menu.php:240
+#: src/traits/admin_menu.php:245
 msgid "Which role is needed to broadcast drafts?"
 msgstr ""
 
-#: src/traits/admin_menu.php:247
+#: src/traits/admin_menu.php:252
 msgid "Which role is needed to broadcast scheduled (future) posts?"
 msgstr ""
 
@@ -780,11 +745,11 @@ msgstr ""
 msgid "With the unchecked child blogs"
 msgstr ""
 
-#: src/traits/admin_menu.php:371
+#: src/traits/admin_menu.php:376
 msgid "Wordpress memory limit"
 msgstr ""
 
-#: src/traits/admin_menu.php:357
+#: src/traits/admin_menu.php:362
 msgid "Wordpress upload directory array"
 msgstr ""
 
@@ -794,10 +759,6 @@ msgstr ""
 
 #: src/traits/admin_menu.php:96
 msgid "You can use wildcards: <code>field_*123</code> will match all fields that start with <code>field_</code> and end with <code>123</code>. If you wish to match all fields except a few, use <code>*</code> in the blacklist and then the exceptions in the whitelist."
-msgstr ""
-
-#: src/blog_groups/ThreeWP_Broadcast_Blog_Groups.php:109
-msgid "You have not created any blog groups yet."
 msgstr ""
 
 #: src/sdk/wordpress/base.php:236
@@ -810,7 +771,7 @@ msgstr ""
 msgid "hide all"
 msgstr ""
 
-#: src/sdk/wordpress/base.php:1880
+#: src/sdk/wordpress/base.php:1883
 msgid "no"
 msgstr ""
 
@@ -831,6 +792,6 @@ msgstr ""
 msgid "show all"
 msgstr ""
 
-#: src/sdk/wordpress/base.php:1880
+#: src/sdk/wordpress/base.php:1883
 msgid "yes"
 msgstr ""

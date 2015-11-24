@@ -302,7 +302,7 @@ class broadcasting_data
 		if ( isset( $this->attachment_data[ $id ] ) )
 			return false;
 
-		$ad = attachment_data::from_attachment_id( $id, $this->upload_dir );
+		$ad = attachment_data::from_attachment_id( $id );
 		$this->attachment_data[ $id ] = $ad;
 		return true;
 	}

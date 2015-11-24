@@ -11,6 +11,12 @@
             return this.each( function()
             {
                 var $this = $(this);
+
+                if ( $this.hasClass( 'auto_tabbed' ) )
+                	return;
+                
+                $this.addClass( 'auto_tabbed' );
+                
 				var $fieldsets = $( 'div.fieldset', $this );
 				if ( $fieldsets.length < 1 )
 					return;

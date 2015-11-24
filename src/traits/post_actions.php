@@ -110,11 +110,14 @@ trait post_actions
 	public function threewp_broadcast_get_post_actions( $action )
 	{
 		foreach( [
-			'delete' => 'Delete child',
-			'find_unlinked' => 'Find unlinked child',
-			'restore' => 'Restore child',
-			'trash' => 'Trash child',
-			'unlink' => 'Unlink child',
+			// Single post action in the popup
+			'delete' => $this->_( 'Delete child' ),
+			// Single post action in the popup
+			'restore' => $this->_( 'Restore child' ),
+			// Single post action in the popup
+			'trash' => $this->_( 'Trash child' ),
+			// Single post action in the popup
+			'unlink' => $this->_( 'Unlink child' ),
 		] as $slug => $name )
 		{
 			$a = new post_action;
@@ -134,10 +137,15 @@ trait post_actions
 		$ajax_action = 'broadcast_post_bulk_action';
 
 		foreach( [
+			// Bulk post action in the dropdown
 			'delete' => $this->_( 'Delete children' ),
+			// Bulk post action in the dropdown
 			'find_unlinked' => $this->_( 'Find unlinked children' ),
+			// Bulk post action in the dropdown
 			'restore' => $this->_( 'Restore children' ),
+			// Bulk post action in the dropdown
 			'trash' => $this->_( 'Trash children' ),
+			// Bulk post action in the dropdown
 			'unlink' => $this->_( 'Unlink' ),
 		] as $subaction => $name )
 		{
@@ -468,8 +476,10 @@ trait post_actions
 		if ( $broadcast_data->get_linked_parent() !== false )
 		{
 			$unlink = $form->checkbox( 'unlink' )
+				// Description of unlink checkbox
 				->description_( 'Unlink this post from its parent.' )
-				->label( 'Unlink' );
+				// Label of unlink checkbox
+				->label_( 'Unlink' );
 			$has_links = true;
 		}
 
@@ -511,7 +521,8 @@ trait post_actions
 			$json->html .= $this->p_( 'This post has no broadcast links.' );
 
 		$submit = $form->primary_button( 'submit' )
-			->value( 'Submit' );
+			// Submit button for post actions
+			->value_( 'Submit' );
 
 		if ( $form->is_posting() )
 		{

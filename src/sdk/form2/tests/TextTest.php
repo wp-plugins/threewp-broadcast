@@ -135,4 +135,11 @@ class TextTest extends TestCase
 		$text = $this->form()->text( 'plaintext' )->plaintext()->value( '<h1>Gr&eat</h1>' );
 		$this->assertEquals( 'Gr&amp;eat', $text->get_value() );
 	}
+
+	public function test_unfiltered_value()
+	{
+		$string = '<h1>Great</h1>';
+		$text = $this->form()->text( 'unfiltered' )->set_unfiltered_value( $string  );
+		$this->assertEquals( $string, $text->get_value() );
+	}
 }

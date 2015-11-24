@@ -44,6 +44,9 @@ trait broadcasting
 	{
 		$bcd = $broadcasting_data;
 
+		// To prevent recursion
+		array_push( $this->broadcasting, $bcd );
+
 		$this->debug( 'Broadcast version %s.', THREEWP_BROADCAST_VERSION );
 
 		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, $bcd->post );
@@ -77,6 +80,7 @@ trait broadcasting
 		{
 			$this->debug( 'Will broadcast taxonomies.' );
 			$this->collect_post_type_taxonomies( $bcd );
+			$this->debug( 'Parent taxonomies dump: %s', $bcd->parent_post_taxonomies );
 		}
 		else
 			$this->debug( 'Will not broadcast taxonomies.' );
@@ -91,7 +95,7 @@ trait broadcasting
 			{
 				try
 				{
-					$data = attachment_data::from_attachment_id( $attached_file, $bcd->upload_dir );
+					$data = attachment_data::from_attachment_id( $attached_file );
 					$data->set_attached_to_parent( $bcd->post );
 					$bcd->attachment_data[ $attached_file->ID ] = $data;
 					$this->debug( 'Attachment %s found.', $attached_file->ID );
@@ -144,11 +148,9 @@ trait broadcasting
 				$bcd->custom_fields()->forget( '_thumbnail_id' );	// There is a new thumbnail id for each blog.
 				try
 				{
-					$data = attachment_data::from_attachment_id( $bcd->thumbnail, $bcd->upload_dir);
+					$data = attachment_data::from_attachment_id( $thumbnail_id );
 					$data->set_attached_to_parent( $bcd->post );
-					$bcd->attachment_data[ 'thumbnail' ] = $data;
-					// Now that we know what the attachment id the thumbnail has, we must remove it from the attached files to avoid duplicates.
-					unset( $bcd->attachment_data[ $bcd->thumbnail_id ] );
+					$bcd->attachment_data[ $thumbnail_id ] = $data;
 				}
 				catch( Exception $e )
 				{
@@ -214,7 +216,7 @@ trait broadcasting
 				$this->debug( 'Gallery has attachment %s.', $id );
 				try
 				{
-					$data = attachment_data::from_attachment_id( $id, $bcd->upload_dir );
+					$data = attachment_data::from_attachment_id( $id );
 					$data->set_attached_to_parent( $bcd->post );
 					$bcd->attachment_data[ $id ] = $data;
 				}
@@ -224,9 +226,6 @@ trait broadcasting
 				}
 			}
 		}
-
-		// To prevent recursion
-		array_push( $this->broadcasting, $bcd );
 
 		// Handle sticky status. This can be done in two ways: by _POST and by the options.
 		// If the user is using the nromal editor, look in the post.
@@ -369,6 +368,7 @@ trait broadcasting
 				foreach( $bcd->parent_post_taxonomies as $parent_post_taxonomy => $parent_post_terms )
 				{
 					$this->debug( 'Taxonomies: %s', $parent_post_taxonomy );
+
 					// If we're updating a linked post, remove all the taxonomies and start from the top.
 					if ( $bcd->link )
 						if ( $bcd->broadcast_data->has_linked_child_on_this_blog() )
@@ -469,8 +469,6 @@ trait broadcasting
 			$this->debug( 'Looking through %s attachments.', count( $bcd->attachment_data ) );
 			foreach( $bcd->attachment_data as $key => $attachment )
 			{
-				if ( $key == 'thumbnail' )
-					continue;
 				$o = clone( $bcd );
 				$o->attachment_data = clone( $attachment );
 				$o->attachment_data->post = clone( $attachment->post );
@@ -626,40 +624,9 @@ trait broadcasting
 				// Attached files are custom fields... but special custom fields.
 				if ( $bcd->has_thumbnail )
 				{
-					$o = clone( $bcd );
-					$o->attachment_data = $bcd->attachment_data[ 'thumbnail' ];
-					$o->attachment_id = $bcd->copied_attachments()->get( $o->attachment_data->post->ID );
-
-					if ( $o->attachment_id > 0 )
-					{
-						$this->debug( 'Custom fields: Thumbnail already exists as another attachment. Using that.' );
-					}
-					else
-					{
-						$this->debug( 'Custom fields: Re-adding thumbnail.' );
-						if ( $o->attachment_data->is_attached_to_parent() )
-						{
-							$this->debug( 'Assigning new parent ID (%s) to attachment %s.', $bcd->new_post( 'ID' ), $o->attachment_data->post->ID );
-							$o->attachment_data->post->post_parent = $bcd->new_post( 'ID' );
-						}
-						else
-						{
-							$this->debug( 'Resetting post parent for attachment %s.', $o->attachment_data->post->ID );
-							$o->attachment_data->post->post_parent = 0;
-						}
-
-						$this->debug( 'Custom fields: Maybe copying attachment.' );
-						$this->maybe_copy_attachment( $o );
-						$this->debug( 'Custom fields: Maybe copied attachment.' );
-
-						$bcd->copied_attachments()->add( $o->attachment_data->post, get_post( $o->attachment_id ) );
-					}
-
-					if ( $o->attachment_id !== false )
-					{
-						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post( 'ID' ), $o->attachment_id );
-						update_post_meta( $bcd->new_post( 'ID' ), '_thumbnail_id', $o->attachment_id );
-					}
+					$new_thumbnail_id = $bcd->copied_attachments()->get( $bcd->thumbnail_id );
+					$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post( 'ID' ), $new_thumbnail_id );
+					update_post_meta( $bcd->new_post( 'ID' ), '_thumbnail_id', $new_thumbnail_id );
 				}
 				$this->debug( 'Custom fields: Finished.' );
 			}

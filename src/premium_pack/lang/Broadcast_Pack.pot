@@ -112,12 +112,17 @@ msgid "Add new criterion"
 msgstr ""
 
 #. Label for taxonomies selection.
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:209
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:212
 msgid "Add taxonomies wizard"
 msgstr ""
 
+#. Button text
+#: src/php_code/PHP_Code.php:177
+msgid "Add the selected example"
+msgstr ""
+
 #. Add some broadcast information.
-#: src/send_to_many/Send_To_Many.php:152
+#: src/send_to_many/Send_To_Many.php:159
 #, php-format
 msgid "After selecting the blogs to which you want to broadcast the selected %s posts, press the Send To Many button."
 msgstr ""
@@ -132,11 +137,11 @@ msgstr ""
 
 #. Parent permalink: Always use own permalink
 #. Child permalink: xxx
-#: src/permalinks/Permalinks.php:194 src/permalinks/Permalinks.php:234
+#: src/permalinks/Permalinks.php:196 src/permalinks/Permalinks.php:236
 msgid "Always use own permalink"
 msgstr ""
 
-#: src/send_to_many/Send_To_Many.php:130
+#: src/send_to_many/Send_To_Many.php:137
 #: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:56
 #, php-format
 msgid "An error occured: Could not retrieve the first selected post: %s"
@@ -178,16 +183,19 @@ msgstr ""
 msgid "Blog %s does no longer exist."
 msgstr ""
 
-#: src/blog_groups/Blog_Groups_2.php:116
+#: src/blog_groups/Blog_Groups_2.php:104 src/blog_groups/Blog_Groups_2.php:625
 msgid "Blog groups"
 msgstr ""
 
-#: src/blog_groups/Blog_Groups_2.php:79 src/blog_groups/Blog_Groups_2.php:80
+#: src/blog_groups/Blog_Groups_2.php:80 src/blog_groups/Blog_Groups_2.php:81
 msgid "Blog groups 2"
 msgstr ""
 
+#. Blogs selector fieldset label.
+#. Input label
 #: src/sync_taxonomies/Sync_Taxonomies.php:65 src/menus/Menus.php:83
-#: src/blog_groups/Blog_Groups_2.php:218
+#: src/php_code/PHP_Code.php:123 src/php_code/PHP_Code.php:132
+#: src/blog_groups/Blog_Groups_2.php:206
 msgid "Blogs"
 msgstr ""
 
@@ -223,11 +231,16 @@ msgstr ""
 msgid "Broadcast Keep Child Status"
 msgstr ""
 
+#: src/php_code/PHP_Code.php:39
+msgid "Broadcast PHP Code"
+msgstr ""
+
 #: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:159
 msgid "Broadcast Per Blog Taxonomies"
 msgstr ""
 
-#: src/permalinks/Permalinks.php:135
+#. Admin menu page title
+#: src/permalinks/Permalinks.php:136
 msgid "Broadcast Permalinks"
 msgstr ""
 
@@ -235,11 +248,12 @@ msgstr ""
 msgid "Broadcast Queue"
 msgstr ""
 
-#: src/send_to_many/Send_To_Many.php:182
+#. Title for admin page
+#: src/send_to_many/Send_To_Many.php:192
 msgid "Broadcast Send To Many"
 msgstr ""
 
-#: src/sync_taxonomies/Sync_Taxonomies.php:166
+#: src/sync_taxonomies/Sync_Taxonomies.php:169
 msgid "Broadcast Sync Taxonomies"
 msgstr ""
 
@@ -252,7 +266,7 @@ msgid "Broadcast User & Blog Settings"
 msgstr ""
 
 #. Button to start the manual broadcast
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:328
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:331
 msgid "Broadcast now"
 msgstr ""
 
@@ -260,12 +274,12 @@ msgstr ""
 msgid "Broadcasting..."
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:306
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:309
 msgid "Broadcasts"
 msgstr ""
 
 #. Input label
-#: src/permalinks/Permalinks.php:230
+#: src/permalinks/Permalinks.php:232
 msgid "Child permalink"
 msgstr ""
 
@@ -275,8 +289,13 @@ msgstr ""
 
 #. Bulk action
 #: src/sync_taxonomies/recordings_trait.php:153
-#: src/blog_groups/Blog_Groups_2.php:289
+#: src/blog_groups/Blog_Groups_2.php:277
 msgid "Clone"
+msgstr ""
+
+#. PHP Code fieldset label.
+#: src/php_code/PHP_Code.php:88
+msgid "Code editor"
 msgstr ""
 
 #. Input label
@@ -330,7 +349,7 @@ msgid "Criterion %s: %s"
 msgstr ""
 
 #. Label for taxonomies selection.
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:202
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:205
 msgid "Current taxonomies"
 msgstr ""
 
@@ -344,7 +363,7 @@ msgstr ""
 #: src/sync_taxonomies/recordings_trait.php:155
 #: src/attachment_shortcodes/Attachment_Shortcodes.php:135
 #: src/new_blog_broadcast/New_Blog_Broadcast.php:44
-#: src/blog_groups/Blog_Groups_2.php:290
+#: src/blog_groups/Blog_Groups_2.php:278
 msgid "Delete"
 msgstr ""
 
@@ -427,15 +446,15 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:378
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:381
 msgid "Edit broadcast"
 msgstr ""
 
-#: src/blog_groups/Blog_Groups_2.php:510
+#: src/blog_groups/Blog_Groups_2.php:498
 msgid "Edit global group"
 msgstr ""
 
-#: src/blog_groups/Blog_Groups_2.php:502
+#: src/blog_groups/Blog_Groups_2.php:490
 msgid "Edit group"
 msgstr ""
 
@@ -499,7 +518,7 @@ msgstr ""
 msgid "Empty recording"
 msgstr ""
 
-#: src/sync_taxonomies/Sync_Taxonomies.php:129
+#: src/sync_taxonomies/Sync_Taxonomies.php:132
 msgid "Enable Broadcast debug mode to see tons of debug information."
 msgstr ""
 
@@ -534,7 +553,7 @@ msgstr ""
 msgid "Finished copying menus."
 msgstr ""
 
-#: src/sync_taxonomies/Sync_Taxonomies.php:118
+#: src/sync_taxonomies/Sync_Taxonomies.php:121
 msgid "Finished synchronizing."
 msgstr ""
 
@@ -558,14 +577,15 @@ msgstr ""
 msgid "Format: size_name blog_id crop."
 msgstr ""
 
+#. General options fieldset label
 #: src/user_blog_settings/User_Blog_Settings.php:444
 #: src/user_blog_settings/User_Blog_Settings.php:645 src/queue/Queue.php:335
-#: src/send_to_many/Send_To_Many.php:51
+#: src/send_to_many/Send_To_Many.php:52
 #: src/new_blog_broadcast/New_Blog_Broadcast.php:134
 msgid "General"
 msgstr ""
 
-#: src/blog_groups/Blog_Groups_2.php:495
+#: src/blog_groups/Blog_Groups_2.php:483
 msgid "Global groups"
 msgstr ""
 
@@ -586,19 +606,24 @@ msgstr ""
 msgid "How to keep the comments synced between parent and children"
 msgstr ""
 
+#. PHP generator howto fieldset label.
+#: src/php_code/PHP_Code.php:147
+msgid "Howto"
+msgstr ""
+
 #: src/custom_field_attachments/Custom_Field_Attachments.php:35
 msgid "ID fields"
 msgstr ""
 
-#: src/blog_groups/Blog_Groups_2.php:513
+#: src/blog_groups/Blog_Groups_2.php:501
 msgid "Import"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:173
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:176
 msgid "Input the post IDs, if any, you wish to broadcast. One ID per line."
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:184
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:187
 msgid "Input the post types, if any, you wish to broadcast. One post type per line."
 msgstr ""
 
@@ -661,7 +686,12 @@ msgstr ""
 msgid "Lock the post"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:370
+#. Input label
+#: src/php_code/PHP_Code.php:103
+msgid "Loop code"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:373
 msgid "Manual new blog broadcast"
 msgstr ""
 
@@ -718,8 +748,8 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:395
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:396
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:398
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:399
 msgid "New Blog Broadcast"
 msgstr ""
 
@@ -728,7 +758,7 @@ msgstr ""
 msgid "New Blog Broadcast created %s"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:366
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:369
 msgid "New Blog Broadcasts"
 msgstr ""
 
@@ -746,7 +776,7 @@ msgstr ""
 msgid "No action for visible posts"
 msgstr ""
 
-#: src/blog_groups/Blog_Groups_2.php:117
+#: src/blog_groups/Blog_Groups_2.php:105 src/blog_groups/Blog_Groups_2.php:626
 msgid "No group selected"
 msgstr ""
 
@@ -791,12 +821,20 @@ msgstr ""
 msgid "Options saved!"
 msgstr ""
 
-#: src/send_to_many/Send_To_Many.php:89
+#: src/send_to_many/Send_To_Many.php:93
 msgid "Overview"
 msgstr ""
 
+#: src/php_code/PHP_Code.php:227
+msgid "PHP Code"
+msgstr ""
+
+#: src/php_code/PHP_Code.php:40
+msgid "PHP code"
+msgstr ""
+
 #. Input label
-#: src/permalinks/Permalinks.php:190
+#: src/permalinks/Permalinks.php:192
 msgid "Parent permalink"
 msgstr ""
 
@@ -819,7 +857,8 @@ msgstr ""
 msgid "Per Blog Taxonomies"
 msgstr ""
 
-#: src/permalinks/Permalinks.php:136
+#. Menu item
+#: src/permalinks/Permalinks.php:138
 msgid "Permalinks"
 msgstr ""
 
@@ -829,8 +868,8 @@ msgstr ""
 
 #. Fieldset label
 #. Label for post IDs textarea.
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:170
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:175
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:173
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:178
 msgid "Post IDs"
 msgstr ""
 
@@ -850,8 +889,8 @@ msgstr ""
 
 #. Fieldset label
 #. Label for post types textarea.
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:181
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:186
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:184
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:189
 msgid "Post types"
 msgstr ""
 
@@ -946,10 +985,6 @@ msgstr ""
 msgid "Processing queue..."
 msgstr ""
 
-#: src/protect_child_attachments/item.php:16
-msgid "Protect child attachments"
-msgstr ""
-
 #. Fieldset legend
 #: src/protect_child_properties/item.php:16
 msgid "Protect child properties"
@@ -957,7 +992,6 @@ msgstr ""
 
 #. Title of checkbox
 #: src/protect_child_properties/item.php:28
-#: src/protect_child_attachments/item.php:17
 msgid "Protect the attachments of each linked child post instead of deleting them as per default."
 msgstr ""
 
@@ -1066,7 +1100,8 @@ msgstr ""
 msgid "Retrying in <span class=\\\"seconds\\\" /> seconds."
 msgstr ""
 
-#: src/send_to_many/Send_To_Many.php:56
+#. Input label: Which role is necessary to use Send To Many?
+#: src/send_to_many/Send_To_Many.php:59
 msgid "Role to use"
 msgstr ""
 
@@ -1074,8 +1109,13 @@ msgstr ""
 msgid "Roles"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:371
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:374
 msgid "Run a new blog broadcast manually"
+msgstr ""
+
+#. Button text
+#: src/php_code/PHP_Code.php:116
+msgid "Run this code on the selected blogs"
 msgstr ""
 
 #. Keep child status: Same as parent
@@ -1083,11 +1123,12 @@ msgstr ""
 msgid "Same as parent"
 msgstr ""
 
+#. Button text
 #. Save settings button text
 #: src/user_blog_settings/User_Blog_Settings.php:452 src/queue/Queue.php:348
 #: src/permalinks/Permalinks.php:81
 #: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:53
-#: src/send_to_many/Send_To_Many.php:61
+#: src/send_to_many/Send_To_Many.php:65
 #: src/custom_field_attachments/Custom_Field_Attachments.php:41
 #: src/keep_child_status/Keep_Child_Status.php:51
 #: src/sync_taxonomies/recordings_trait.php:55
@@ -1106,8 +1147,23 @@ msgstr ""
 msgid "Save the thumbnail sizes"
 msgstr ""
 
+#. Input description
+#: src/php_code/PHP_Code.php:163
+msgid "Select a PHP code example to place in the code textareas."
+msgstr ""
+
+#. Input label
+#: src/php_code/PHP_Code.php:165 src/php_code/PHP_Code.php:166
+msgid "Select a wizard"
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:130
+msgid "Select one or more blogs on which to run the code."
+msgstr ""
+
 #: src/new_blog_broadcast/New_Blog_Broadcast.php:158
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:305
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:308
 msgid "Select one or more blogs to act as the broadcast source."
 msgstr ""
 
@@ -1132,7 +1188,7 @@ msgstr ""
 msgid "Select the target blogs that will have their taxonomies synced with this blog."
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:317
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:320
 msgid "Select the target blogs to which to broadcast."
 msgstr ""
 
@@ -1140,7 +1196,7 @@ msgstr ""
 msgid "Select the taxonomies on this blog you with to synchronize on the target blogs."
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:207
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:210
 msgid "Select the taxonomies to add to the current list of taxonomies."
 msgstr ""
 
@@ -1153,16 +1209,25 @@ msgstr ""
 msgid "Selection tools"
 msgstr ""
 
-#: src/send_to_many/Send_To_Many.php:157 src/send_to_many/Send_To_Many.php:183
+#. The name of the bulk action
+#. Send to many button in the popup
+#. Menu item
+#: src/send_to_many/Send_To_Many.php:116 src/send_to_many/Send_To_Many.php:166
+#: src/send_to_many/Send_To_Many.php:194
 msgid "Send To Many"
 msgstr ""
 
 #: src/queue/Queue.php:378 src/permalinks/Permalinks.php:115
 #: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:90
-#: src/send_to_many/Send_To_Many.php:93
+#: src/send_to_many/Send_To_Many.php:97
 #: src/custom_field_attachments/Custom_Field_Attachments.php:84
 #: src/keep_child_status/Keep_Child_Status.php:82
 msgid "Settings"
+msgstr ""
+
+#. Input label
+#: src/php_code/PHP_Code.php:95
+msgid "Setup code"
 msgstr ""
 
 #: src/attachment_shortcodes/Attachment_Shortcodes.php:164
@@ -1177,6 +1242,10 @@ msgstr ""
 #. Search input label
 #: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:80
 msgid "Show only blog names containing..."
+msgstr ""
+
+#: src/php_code/PHP_Code.php:171
+msgid "Show the current theme of the blog"
 msgstr ""
 
 #: src/custom_field_attachments/Custom_Field_Attachments.php:70
@@ -1215,11 +1284,15 @@ msgstr ""
 msgid "Switch on Broadcast debug mode for more information."
 msgstr ""
 
-#: src/sync_taxonomies/Sync_Taxonomies.php:146
+#: src/php_code/PHP_Code.php:172
+msgid "Switch the blog's theme"
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:149
 msgid "Sync"
 msgstr ""
 
-#: src/sync_taxonomies/Sync_Taxonomies.php:167
+#: src/sync_taxonomies/Sync_Taxonomies.php:170
 msgid "Sync Taxonomies"
 msgstr ""
 
@@ -1233,11 +1306,11 @@ msgstr ""
 msgid "Sync the comments to the children now"
 msgstr ""
 
-#: src/sync_taxonomies/Sync_Taxonomies.php:78
+#: src/sync_taxonomies/Sync_Taxonomies.php:81
 msgid "Synchronize selected taxonomies"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:318
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:321
 msgid "Target blogs"
 msgstr ""
 
@@ -1245,7 +1318,7 @@ msgstr ""
 #: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:43
 #: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:86
 #: src/sync_taxonomies/Sync_Taxonomies.php:35
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:196
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:199
 msgid "Taxonomies"
 msgstr ""
 
@@ -1268,6 +1341,11 @@ msgstr ""
 #: src/sync_taxonomies/recordings_trait.php:35
 #: src/sync_taxonomies/recordings_trait.php:168
 msgid "Taxonomy"
+msgstr ""
+
+#. Input label
+#: src/php_code/PHP_Code.php:111
+msgid "Teardown code"
 msgstr ""
 
 #. View recording table header
@@ -1296,11 +1374,11 @@ msgstr ""
 msgid "The blogs to which you wish to copy the selected menu(s)."
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:344
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:347
 msgid "The broadcast has been manually run!"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:273
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:276
 msgid "The broadcast has been updated!"
 msgstr ""
 
@@ -1316,7 +1394,7 @@ msgstr ""
 msgid "The custom fields in bold should specify attachment IDs:"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:192
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:195
 #, php-format
 msgid "The custom post types registered on <em>this</em> blog are: <code>%s</code>"
 msgstr ""
@@ -1348,6 +1426,10 @@ msgstr ""
 
 #: src/new_blog_broadcast/New_Blog_Broadcast.php:63
 msgid "The selected broadcasts have been deleted!"
+msgstr ""
+
+#: src/php_code/PHP_Code.php:219
+msgid "The selected code has been added to the code editor."
 msgstr ""
 
 #: src/sync_taxonomies/recordings_trait.php:187
@@ -1382,7 +1464,7 @@ msgstr ""
 msgid "The selected shortcodes have been deleted!"
 msgstr ""
 
-#: src/sync_taxonomies/Sync_Taxonomies.php:123
+#: src/sync_taxonomies/Sync_Taxonomies.php:126
 msgid "The selected taxonomies will be copied to the selected target blogs. If the taxonomies exist they will be updated if the name, description or parent differs."
 msgstr ""
 
@@ -1407,12 +1489,33 @@ msgstr ""
 msgid "The thumbnail sizes have been saved!"
 msgstr ""
 
-#: src/send_to_many/Send_To_Many.php:55
+#. Input description for S2M role.
+#: src/send_to_many/Send_To_Many.php:57
 msgid "The user role required to use the Send To Many button."
+msgstr ""
+
+#. Themes optgroup label in the wizard select
+#: src/php_code/PHP_Code.php:170
+msgid "Themes"
 msgstr ""
 
 #: src/thumbnail_sizes/Thumbnail_Sizes.php:35
 msgid "These settings specify which extra thumbnail sizes to generate on a per-blog basis. The text area below is to be filled in with a list of size names, blog IDs and their respective thumbnail sizes. Use an asterisk to mean all blogs."
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:101
+msgid "This code is run on all selected blogs."
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:109
+msgid "This code that is run after the loop."
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:93
+msgid "This code that is run prior to beginning the loop."
 msgstr ""
 
 #: src/user_blog_settings/criteria/taxonomy_terms.php:16
@@ -1431,7 +1534,7 @@ msgstr ""
 msgid "This table lists all the available modifications and a short summary of which settings are altered."
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:200
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:203
 msgid "This text area shows the taxonomies, if any, that the posts must have in order to be broadcasted. The format is: post type,taxonomy,term slug."
 msgstr ""
 
@@ -1478,7 +1581,7 @@ msgid "Unlinked posts"
 msgstr ""
 
 #. Save the broadcast settings button.
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:236
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:239
 msgid "Update broadcast"
 msgstr ""
 
@@ -1498,6 +1601,10 @@ msgstr ""
 msgid "Update parent post"
 msgstr ""
 
+#: src/update_attachments/Update_Attachments.php:74
+msgid "Update the files with the contents from the parent blog."
+msgstr ""
+
 #: src/back_to_parent/Back_To_Parent.php:168
 msgid "Update the linked parent post with this new content"
 msgstr ""
@@ -1508,22 +1615,26 @@ msgstr ""
 
 #. Parent permalink: use default
 #. Child permalink: xxx
-#: src/permalinks/Permalinks.php:192 src/permalinks/Permalinks.php:232
+#: src/permalinks/Permalinks.php:194 src/permalinks/Permalinks.php:234
 msgid "Use default"
 msgstr ""
 
 #. Parent permalink: Use first child's
-#: src/permalinks/Permalinks.php:196
+#: src/permalinks/Permalinks.php:198
 msgid "Use first child's"
 msgstr ""
 
 #. Child permalink: xxx
-#: src/permalinks/Permalinks.php:236
+#: src/permalinks/Permalinks.php:238
 msgid "Use parent's permalink"
 msgstr ""
 
-#: src/new_blog_broadcast/New_Blog_Broadcast.php:302
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:305
 msgid "Use this form to manually trigger a broadcast, which you can use to simulate a new blog being created. Select the broadcasts you want to run and then the target blogs."
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:624
+msgid "Use this input to quickly select and unselect blogs."
 msgstr ""
 
 #: src/user_blog_settings/db/criterion.php:45
@@ -1558,7 +1669,8 @@ msgstr ""
 msgid "Which taxonomies is the user allowed to select?"
 msgstr ""
 
-#: src/thumbnail_sizes/Thumbnail_Sizes.php:61
+#. PHP generator wizard fieldset label.
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:61 src/php_code/PHP_Code.php:159
 msgid "Wizard"
 msgstr ""
 
@@ -1570,7 +1682,11 @@ msgstr ""
 msgid "You need to select at least one non-child post to be sent."
 msgstr ""
 
-#: src/blog_groups/Blog_Groups_2.php:492
+#: src/php_code/PHP_Code.php:190
+msgid "Your code has been run!"
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:480
 msgid "Your groups"
 msgstr ""
 
