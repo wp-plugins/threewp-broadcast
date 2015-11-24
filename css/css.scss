@@ -1,3 +1,5 @@
+@import 'magnific-popup';
+
 #threewp_broadcast.postbox
 {
 	.blogs.html_section
@@ -69,10 +71,11 @@
 
 }
 
-#toplevel_page_threewp_broadcast .wp-menu-image
+#toplevel_page_threewp_broadcast .wp-menu-image.dashicons-before.dashicons-rss:before
 {
-	background-image: url( '../assets/icon.svg' );
-	background-size: contain;
+	position: relative;
+	top: -3px;
+	transform: rotate(-45deg);
 }
 
 .broadcast_popup
@@ -83,4 +86,11 @@
 	width: 40em;
 	max-width: 95%;
 	margin: auto;
+}
+
+/** Prevent the popup from covering the admin bar. **/
+.mfp-inline-holder .mfp-content,
+.mfp-ajax-holder .mfp-content
+{
+  margin-top: 3%;
 }

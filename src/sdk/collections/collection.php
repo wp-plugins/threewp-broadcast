@@ -83,6 +83,18 @@ implements
 	}
 
 	/**
+		@brief		Return a collection using this key.
+		@details	Think of this method as recursive collections. If the key is not set, a new collection is created and returned.
+		@since		2015-02-09 13:17:44
+	**/
+	public function collection( $key )
+	{
+		if ( ! $this->has( $key ) )
+			$this->set( $key, new static() );
+		return $this->get( $key );
+	}
+
+	/**
 	 * Count the number of items in the collection.
 	 *
 	 * @return int

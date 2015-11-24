@@ -3,7 +3,7 @@
 namespace plainview\sdk_broadcast\collections;
 
 /**
-	@brief		A collection of HTML strings.
+	@brief		A collection of strings that are outputted with wpautop.
 	@details	The main method is append(). get() and set() aren't really used.
 	@since		2014-05-04 13:10:54
 **/
@@ -16,7 +16,8 @@ class html
 	**/
 	public function __toString()
 	{
-		$r = implode( '', $this->items );
+		$r = implode( "\n", $this->items );
+		$r = \plainview\sdk_broadcast\base::wpautop( $r );
 		return $r;
 	}
 
@@ -27,10 +28,18 @@ class html
 	public function append( $item )
 	{
 		$args = func_get_args();
-		$text = call_user_func_array( 'sprintf', $args );
+		$text = @ call_user_func_array( 'sprintf', $args );
 		if ( $text == '' )
 			$text = $args[ 0 ];
-		$text = \plainview\sdk_broadcast\base::wpautop( $text );
 		return parent::append( $text );
+	}
+
+	/**
+		@brief		Convenience function to add a newline.
+		@since		2015-11-06 17:41:46
+	**/
+	public function newline()
+	{
+		$this->append( '' );
 	}
 }

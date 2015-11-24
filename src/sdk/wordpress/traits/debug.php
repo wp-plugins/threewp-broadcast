@@ -16,6 +16,8 @@ namespace plainview\sdk_broadcast\wordpress\traits;
 
 		'debug' => false,									// Display debug information?
 		'debug_ips' => '',									// List of IP addresses that can see debug information, when debug is enabled.
+		'debug_to_browser' => false,						// Display debug info in the browser?
+		'debug_to_file' => false,							// Save debug info to a file.
 
 	3.1	In the settings form, display the inputs:
 
@@ -36,25 +38,54 @@ trait debug
 	public function add_debug_settings_to_form( $form )
 	{
 		// We need this so that the options use the correct namespace.
-		$bc = self::instance();
+		$instance = self::instance();
 
 		$fs = $form->fieldset( 'fs_debug' );
 		$fs->legend->label_( 'Debugging' );
 
+		// You are currently NOT in debug mode.
+		$not = $this->_( 'not' );
+
 		$fs->markup( 'debug_info' )
-			->p_( "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings.", $this->debugging() ? '' : ' <strong>not</strong>' );
+			->p_( "According to the settings below, you are currently%s in debug mode. Don't forget to reload this page after saving the settings.", $this->debugging() ? '' : " <strong>$not</strong>" );
 
 		$debug = $fs->checkbox( 'debug' )
 			->description_( 'Show debugging information in various places.' )
 			->label_( 'Enable debugging' )
-			->checked( $bc->get_site_option( 'debug', false ) );
+			->checked( $instance->get_site_option( 'debug', false ) );
 
-		$debug_ips = $fs->textarea( 'debug_ips' )
+		$fs->checkbox( 'debug_to_browser' )
+			->description_( 'Show the debugging information in the browser.' )
+			->label_( 'Show debug in the browser' )
+			->checked( $instance->get_site_option( 'debug_to_browser', false ) );
+
+		$debug_to_file = $fs->checkbox( 'debug_to_file' )
+			->label_( 'Save debug to file' )
+			->checked( $instance->get_site_option( 'debug_to_file', false ) );
+
+		// We need to set the description unescaped due to the link.
+		$filename = $this->get_debug_filename();
+		$basename = basename( $filename );
+		$filename = sprintf( '<a href="%s">%s</a>',
+			$this->paths( 'path_from_base_directory' ) . '/' . $basename,
+			$basename
+		);
+		$description = $this->_( 'The debug data will be saved to the file %s. This link is distributable.', $filename );
+		$debug_to_file->description
+			->get_label()
+			->content = $description;
+
+		$fs->checkbox( 'delete_debug_file' )
+			->description_( 'Delete the contents of the debug file now after saving the settings.' )
+			->label_( 'Delete debug file' )
+			->checked( false );
+
+		$fs->textarea( 'debug_ips' )
 			->description_( 'Only show debugging info to specific IP addresses. Use spaces between IPs. You can also specify part of an IP address. Your address is %s', $_SERVER[ 'REMOTE_ADDR' ] )
 			->label_( 'Debug IPs' )
 			->rows( 5, 16 )
 			->trim()
-			->value( $bc->get_site_option( 'debug_ips', '' ) );
+			->value( $instance->get_site_option( 'debug_ips', '' ) );
 	}
 
 	/**
@@ -74,7 +105,7 @@ trait debug
 			$export |= is_array( $arg );
 			$export |= is_object( $arg );
 			if ( $export )
-				$args[ $index ] = sprintf( '<pre><code>%s</code></pre>', var_export( $arg, true ) );
+				$args[ $index ] = sprintf( '<pre><code>%s</code></pre>', htmlspecialchars( var_export( $arg, true ) ) );
 		}
 
 		// Put all of the arguments into one string.
@@ -89,8 +120,21 @@ trait debug
 
 		// Date class: string
 		$text = sprintf( '%s <em>%s</em>: %s<br/>', $this->now(), $class_name, $text, "\n" );
-		echo $text;
-		ob_flush();
+
+		$plugin = self::instance();
+
+		if ( $plugin->get_site_option( 'debug_to_browser', false ) )
+		{
+			echo $text;
+			if ( ob_get_contents() )
+				ob_flush();
+		}
+
+		if ( $plugin->get_site_option( 'debug_to_file', false ) )
+		{
+			$filename = $this->get_debug_filename();
+			file_put_contents( $filename, $text, FILE_APPEND );
+		}
 	}
 
 	/**
@@ -100,14 +144,14 @@ trait debug
 	public function debugging()
 	{
 		// We need this so that the options use the correct namespace.
-		$bc = self::instance();
+		$plugin = self::instance();
 
-		$debugging = $bc->get_site_option( 'debug', false );
+		$debugging = $plugin->get_site_option( 'debug', false );
 		if ( ! $debugging )
 			return false;
 
 		// Debugging is enabled. Now check if we should show it to this user.
-		$ips = $bc->get_site_option( 'debug_ips', '' );
+		$ips = $plugin->get_site_option( 'debug_ips', '' );
 		// Empty = no limits.
 		if ( $ips == '' )
 			return true;
@@ -122,15 +166,61 @@ trait debug
 	}
 
 	/**
+		@brief		Are we debugging to the browser?
+		@since		2015-10-03 16:56:50
+	**/
+	public function debugging_to_browser()
+	{
+		if ( ! $this->debugging() )
+			return false;
+
+		$plugin = self::instance();
+		return $plugin->get_site_option( 'debug_to_browser', false );
+	}
+
+	/**
+		@brief		Are we debugging to a file?
+		@since		2015-10-03 16:57:42
+	**/
+	public function debugging_to_file()
+	{
+		if ( ! $this->debugging() )
+			return false;
+
+		$plugin = self::instance();
+		return $plugin->get_site_option( 'debug_to_file', false );
+	}
+
+	/**
+		@brief		Return the filename of the debug file.
+		@since		2015-07-25 13:45:32
+	**/
+	public function get_debug_filename()
+	{
+		$hash = md5( $this->paths( '__FILE__' ) . AUTH_KEY );
+		$hash = substr( $hash, 0, 8 );
+		return $this->paths( '__FILE__' ) . ".$hash.debug.php";
+	}
+
+	/**
 		@brief		Saves the debug settings from the form.
 		@since		2014-05-01 08:58:22
 	**/
 	public function save_debug_settings_from_form( $form )
 	{
 		// We need this so that the options use the correct namespace.
-		$bc = self::instance();
+		$instance = self::instance();
 
-		$bc->update_site_option( 'debug', $form->input( 'debug' )->is_checked() );
-		$bc->update_site_option( 'debug_ips', $form->input( 'debug_ips' )->get_filtered_post_value() );
+		$instance->update_site_option( 'debug', $form->input( 'debug' )->is_checked() );
+		$instance->update_site_option( 'debug_to_browser', $form->input( 'debug_to_browser' )->is_checked() );
+		$instance->update_site_option( 'debug_to_file', $form->input( 'debug_to_file' )->is_checked() );
+		$instance->update_site_option( 'debug_ips', $form->input( 'debug_ips' )->get_filtered_post_value() );
+
+		if ( $form->input( 'delete_debug_file' )->is_checked() )
+		{
+			$filename = $this->get_debug_filename();
+			if ( is_writeable( $filename ) )
+				unlink( $filename );
+		}
 	}
 }

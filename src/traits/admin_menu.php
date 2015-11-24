@@ -23,7 +23,7 @@ trait admin_menu
 		$action->execute();
 
 		// Hook into save_post, no matter is the meta box is displayed or not.
-		$this->add_action( 'save_post', intval( $this->get_site_option( 'save_post_priority' ) ) );
+		$this->hook_save_post();
 	}
 
 	public function admin_print_styles()
@@ -34,77 +34,9 @@ trait admin_menu
 
 	public function admin_menu_broadcast_info()
 	{
-		if ( ! is_super_admin() )
-		{
-			echo $this->p( 'No information available.' );
-			return;
-		}
-
-		$table = $this->table();
-		$table->caption()->text( 'Information' );
-
-		$row = $table->head()->row();
-		$row->th()->text( 'Key' );
-		$row->th()->text( 'Value' );
-
-		if ( $this->debugging() )
-		{
-			// Debug
-			$row = $table->body()->row();
-			$row->td()->text( 'Debugging' );
-			$row->td()->text( 'Enabled' );
-		}
-
-		// Broadcast version
-		$row = $table->body()->row();
-		$row->td()->text( 'Broadcast version' );
-		$row->td()->text( $this->plugin_version );
-
-		// PHP version
-		$row = $table->body()->row();
-		$row->td()->text( 'PHP version' );
-		$row->td()->text( phpversion() );
-
-		// WP upload path
-		$row = $table->body()->row();
-		$row->td()->text( 'Wordpress upload directory array' );
-		$row->td()->text( '<pre>' . var_export( wp_upload_dir(), true ) . '</pre>' );
-
-		// PHP maximum execution time
-		$row = $table->body()->row();
-		$row->td()->text( 'PHP maximum execution time' );
-		$text = sprintf( '%s seconds', ini_get ( 'max_execution_time' ) );
-		$row->td()->text( $text );
-
-		// PHP maximum memory limit
-		$row = $table->body()->row();
-		$row->td()->text( 'PHP memory limit' );
-		$text = ini_get( 'memory_limit' );
-		$row->td()->text( $text );
-
-		// WP maximum memory limit
-		$row = $table->body()->row();
-		$row->td()->text( 'Wordpress memory limit' );
-		$text = $this->p( WP_MEMORY_LIMIT . "
-
-This can be increased by adding the following to your wp-config.php:
-
-<code>define('WP_MEMORY_LIMIT', '512M');</code>
-" );
-		$row->td()->text( $text );
-
-		// Debug info
-		$row = $table->body()->row();
-		$row->td()->text( 'Debug code' );
-		$text = WP_MEMORY_LIMIT;
-		$text = $this->p( "Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:
-
-<code>ini_set('display_errors','On');</code>
-<code>define('WP_DEBUG', true);</code>
-" );
-		$row->td()->text( $text );
-
-		echo $table;
+		$r = $this->html_css();
+		$r .= file_get_contents( __DIR__ . '/../../html/broadcast_info.html' );
+		echo $r;
 	}
 
 	/**
@@ -122,32 +54,10 @@ This can be increased by adding the following to your wp-config.php:
 		$form = $this->form2();
 		$r = '';
 
-		$post_types = $this->get_site_option( 'post_types' );
-		$post_types = str_replace( ' ', "\n", $post_types );
-
-		$post_types_input = $form->textarea( 'post_types' )
-			->cols( 20, 10 )
-			->label_( 'Custom post types to broadcast' )
-			->value( $post_types );
-		$label = $this->_( 'A list of custom post types that have broadcasting enabled. The default value is %s.', '<code>post<br/>page</code>' );
-		$post_types_input->description->set_unfiltered_label( $label );
-
-		$form->primary_button( 'save_post_types' )
-			->value( $this->_( 'Save the broadcastable custom post types' ) );
-
 		if ( $form->is_posting() )
 		{
-			$form->post()->use_post_values();
-			$post_types = $form->input( 'post_types' )->get_value();
-			$post_types = $this->lines_to_string( $post_types );
-			$this->update_site_option( 'post_types', $post_types);
 			$this->message_( 'Custom post types saved!' );
 		}
-
-		$r .= $this->p_( 'Custom post types must be specified using their internal Wordpress names on a new line each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).' );
-
-		$blog_post_types = $this->get_blog_post_types();
-		$r .= $this->p_( 'The custom post types registered on <em>this</em> blog are: <code>%s</code>', implode( ', ', $blog_post_types ) );
 
 		$r .= $form->open_tag();
 		$r .= $form->display_form_table();
@@ -160,7 +70,7 @@ This can be increased by adding the following to your wp-config.php:
 		$r = '';
 		$r .= $this->html_css();
 		$contents = file_get_contents( __DIR__ . '/../../html/premium_pack_info.html' );
-		$r .= $this->wrap( $contents, $this->_( 'ThreeWP Broadcast Premium Pack info' ) );
+		$r .= $this->wrap( $contents, $this->_( 'Broadcast plugin packs info' ) );
 		echo $r;
 	}
 
@@ -169,102 +79,76 @@ This can be increased by adding the following to your wp-config.php:
 		$this->enqueue_js();
 		$form = $this->form2();
 		$form->id( 'broadcast_settings' );
+		$form->css_class( 'plainview_form_auto_tabs' );
 		$r = '';
 		$roles = $this->roles_as_options();
 		$roles = array_flip( $roles );
 
-		$fs = $form->fieldset( 'roles' );
-		$fs->legend->label_( 'Roles' );
-
-		$role_broadcast = $fs->select( 'role_broadcast' )
-			->value( $this->get_site_option( 'role_broadcast' ) )
-			->description_( 'The broadcast access role is the user role required to use the broadcast function at all.' )
-			->label_( 'Broadcast' )
-			->options( $roles );
-
-		$role_link = $fs->select( 'role_link' )
-			->value( $this->get_site_option( 'role_link' ) )
-			->description_( 'When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated.' )
-			->label_( 'Link to child posts' )
-			->options( $roles );
-
-		$role_custom_fields = $fs->select( 'role_custom_fields' )
-			->value( $this->get_site_option( 'role_custom_fields' ) )
-			->description_( 'Which role is needed to allow custom field broadcasting?' )
-			->label_( 'Broadcast custom fields' )
-			->options( $roles );
-
-		$role_taxonomies = $fs->select( 'role_taxonomies' )
-			->value( $this->get_site_option( 'role_taxonomies' ) )
-			->description_( 'Which role is needed to allow taxonomy broadcasting? The taxonomies must have the same slug on all blogs.' )
-			->label_( 'Broadcast taxonomies' )
-			->options( $roles );
-
-		$role_broadcast_as_draft = $fs->select( 'role_broadcast_as_draft' )
-			->value( $this->get_site_option( 'role_broadcast_as_draft' ) )
-			->description_( 'Which role is needed to broadcast drafts?' )
-			->label_( 'Broadcast as draft' )
-			->options( $roles );
-
-		$role_broadcast_scheduled_posts = $fs->select( 'role_broadcast_scheduled_posts' )
-			->value( $this->get_site_option( 'role_broadcast_scheduled_posts' ) )
-			->description_( 'Which role is needed to broadcast scheduled (future) posts?' )
-			->label_( 'Broadcast scheduled posts' )
-			->options( $roles );
-
-		$fs = $form->fieldset( 'seo' );
-		$fs->legend->label_( 'SEO' );
-
-		$override_child_permalinks = $fs->checkbox( 'override_child_permalinks' )
-			->checked( $this->get_site_option( 'override_child_permalinks' ) )
-			->description_( "Use the parent post's permalink for the children. If checked, child posts will link back to the parent post." )
-			->label_( "Use parent permalink" );
-
-		$canonical_url = $fs->checkbox( 'canonical_url' )
-			->checked( $this->get_site_option( 'canonical_url' ) )
-			->description_( "Child posts have their canonical URLs pointed to the URL of the parent post. This automatically disables the canonical URL from Yoast's Wordpress SEO plugin." )
-			->label_( 'Canonical URL' );
+		// --CUSTOM FIELDS------------------------------------------------------------------------------------------
 
 		$fs = $form->fieldset( 'custom_field_handling' );
 		$fs->legend->label_( 'Custom field handling' );
 
-		$fs->markup( 'internal_field_info' )
-			->p_( 'Some custom fields start with underscores. They are generally Wordpress internal fields and therefore not broadcasted. Some plugins store their information as underscored custom fields. If you wish them, or some of them, to be broadcasted, use either of the options below.' );
+		$fs->markup( 'custom_field_listing' )
+			->p_( 'All custom fields are passed through the blacklist and then the whitelist. If the field exists in the blacklist, it will not be broadcast - unless it is specified in the whitelist.' );
 
-		$broadcast_internal_custom_fields = $fs->checkbox( 'broadcast_internal_custom_fields' )
-			->checked( $this->get_site_option( 'broadcast_internal_custom_fields' ) )
-			->description_( 'Broadcast all fields, including those beginning with underscores.' )
-			->label_( 'Broadcast internal custom fields' );
+		$fs->markup( 'custom_field_wildcards' )
+			->p_( 'You can use wildcards: <code>field_*123</code> will match all fields that start with <code>field_</code> and end with <code>123</code>. If you wish to match all fields except a few, use <code>*</code> in the blacklist and then the exceptions in the whitelist.' );
 
 		$blacklist = $this->get_site_option( 'custom_field_blacklist' );
 		$blacklist = str_replace( ' ', "\n", $blacklist );
 		$custom_field_blacklist = $fs->textarea( 'custom_field_blacklist' )
 			->cols( 40, 10 )
-			->description_( 'When broadcasting internal custom fields, override and do not broadcast these fields.' )
-			->label_( 'Internal field blacklist' )
+			->description_( 'Do not broadcast these custom fields.' )
+			->label_( 'Custom field blacklist' )
 			->trim()
 			->value( $blacklist );
-
-		$protectlist = $this->get_site_option( 'custom_field_protectlist' );
-		$protectlist = str_replace( ' ', "\n", $protectlist );
-		$custom_field_protectlist = $fs->textarea( 'custom_field_protectlist' )
-			->cols( 40, 10 )
-			->description_( 'When broadcasting internal custom fields, do not overwrite the following fields on the child blogs.' )
-			->label_( 'Internal field protectlist' )
-			->trim()
-			->value( $protectlist );
 
 		$whitelist = $this->get_site_option( 'custom_field_whitelist' );
 		$whitelist = str_replace( ' ', "\n", $whitelist );
 		$custom_field_whitelist = $fs->textarea( 'custom_field_whitelist' )
 			->cols( 40, 10 )
-			->description_( 'When not broadcasting internal custom fields, override and broadcast these fields.' )
-			->label_( 'Internal field whitelist' )
+			->description_( 'Exceptions to the blacklist.' )
+			->label_( 'Custom field whitelist' )
 			->trim()
 			->value( $whitelist );
 
-		$fs->markup( 'whitelist_defaults' )
-			->p_( 'The default whitelist is: %s', "<code>\n_wp_page_template\n_wplp_\n_aioseop_</code>" );
+		$protectlist = $this->get_site_option( 'custom_field_protectlist' );
+		$protectlist = str_replace( ' ', "\n", $protectlist );
+		$custom_field_protectlist = $fs->textarea( 'custom_field_protectlist' )
+			->cols( 40, 10 )
+			->description_( 'Do not overwrite the following fields on the child blogs if they exist.' )
+			->label_( 'Custom field protectlist' )
+			->trim()
+			->value( $protectlist );
+
+		// --CUSTOM POST TYPES--------------------------------------------------------------------------------------
+
+		$fs = $form->fieldset( 'fs_post_types' );
+		$fs->legend->label_( 'Custom post types' );
+
+		$post_types = $this->get_site_option( 'post_types' );
+		$post_types = str_replace( ' ', "\n", $post_types );
+
+		$post_types_input = $fs->textarea( 'post_types' )
+			->cols( 20, 10 )
+			->label_( 'Custom post types to broadcast' )
+			->value( $post_types );
+		$label = $this->_( 'A list of custom post types that have broadcasting enabled. The default value is %s.', '<code>post<br/>page</code>' );
+		$post_types_input->description->set_unfiltered_label( $label );
+
+		$blog_post_types = $this->get_blog_post_types();
+
+		$fs->markup( 'cpt_m1' )
+			->p_( 'Custom post types must be specified using their internal Wordpress names on a new line each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).' );
+		$fs->markup( 'cpt_m1' )
+			->p_( 'The custom post types registered on <em>this</em> blog are: <code>%s</code>', implode( ', ', $blog_post_types ) );
+
+		// --DEBUG--------------------------------------------------------------------------------------------------
+
+		$this->add_debug_settings_to_form( $form );
+
+		// --MISC---------------------------------------------------------------------------------------------------
 
 		$fs = $form->fieldset( 'misc' );
 		$fs->legend->label_( 'Miscellaneous' );
@@ -273,6 +157,14 @@ This can be increased by adding the following to your wp-config.php:
 			->description_( 'The POST PHP variable is data sent when updating posts. Most plugins are fine if the POST is cleared before broadcasting, while others require that the data remains intact. Uncheck this setting if you notice that child posts are not being treated the same on the child blogs as they are on the parent blog.' )
 			->label_( 'Clear POST' )
 			->checked( $this->get_site_option( 'clear_post' ) );
+
+		$save_post_decoys = $fs->number( 'save_post_decoys' )
+			->description_( "How many save_post hook decoys to insert before the real Broadcast save_post hook. This value should be raised if you notice that Broadcast isn't doing anything. This is due to a bug in Wordpress when other plugins call remove_action on the save_post hook." )
+			->label_( 'save_post decoys' )
+			->min( 0 )
+			->required()
+			->size( 2, 2 )
+			->value( $this->get_site_option( 'save_post_decoys' ) );
 
 		$save_post_priority = $fs->number( 'save_post_priority' )
 			->description_( 'The priority for the save_post hook. Should be after all other plugins have finished modifying the post. Default is 640.' )
@@ -298,16 +190,86 @@ This can be increased by adding the following to your wp-config.php:
 			->size( 3, 3 )
 			->value( $this->get_site_option( 'blogs_hide_overview' ) );
 
+		$get_existing_attachment_actions = new actions\get_existing_attachment_actions();
+		$get_existing_attachment_actions->execute();
+		$actions = $get_existing_attachment_actions->get_actions();
+		$actions = array_flip( $actions );
+		ksort( $actions );
+
 		$existing_attachments = $fs->select( 'existing_attachments' )
 			->description_( 'Action to take when attachments with the same filename already exist on the child blog.' )
 			->label_( 'Existing attachments' )
-			->option( 'Use the existing attachment on the child blog', 'use' )
-			->option( 'Overwrite the attachment', 'overwrite' )
-			->option( 'Create a new attachment with a randomized suffix', 'randomize' )
+			// Array flip because we till be getting [ key => description ]
+			->options( $actions )
 			->required()
 			->value( $this->get_site_option( 'existing_attachments', 'use' ) );
 
-		$this->add_debug_settings_to_form( $form );
+		// --ROLES--------------------------------------------------------------------------------------------------
+
+		$fs = $form->fieldset( 'roles' );
+		$fs->legend->label_( 'Roles' );
+
+		$fs->markup( 'm_roles' )
+			->p_( 'Multiple roles may be selected. Each role must be individually selected, since there is no automatic hierarchy where, for example, authors automatically include the editor role. Note that only the roles on this blog can be shown.' );
+
+		$role_broadcast = $fs->select( 'role_broadcast' )
+			->value( $this->get_site_option( 'role_broadcast' ) )
+			->description_( 'The broadcast access role is the user role required to use the broadcast function at all.' )
+			->label_( 'Broadcast' )
+			->multiple()
+			->options( $roles );
+
+		$role_link = $fs->select( 'role_link' )
+			->value( $this->get_site_option( 'role_link' ) )
+			->description_( 'When a post is linked with broadcasted posts, the child posts are updated / deleted when the parent is updated.' )
+			->label_( 'Link to child posts' )
+			->multiple()
+			->options( $roles );
+
+		$role_custom_fields = $fs->select( 'role_custom_fields' )
+			->value( $this->get_site_option( 'role_custom_fields' ) )
+			->description_( 'Which role is needed to allow custom field broadcasting?' )
+			->label_( 'Broadcast custom fields' )
+			->multiple()
+			->options( $roles );
+
+		$role_taxonomies = $fs->select( 'role_taxonomies' )
+			->value( $this->get_site_option( 'role_taxonomies' ) )
+			->description_( 'Which role is needed to allow taxonomy broadcasting? The taxonomies must have the same slug on all blogs.' )
+			->label_( 'Broadcast taxonomies' )
+			->multiple()
+			->options( $roles );
+
+		$role_broadcast_as_draft = $fs->select( 'role_broadcast_as_draft' )
+			->value( $this->get_site_option( 'role_broadcast_as_draft' ) )
+			->description_( 'Which role is needed to broadcast drafts?' )
+			->label_( 'Broadcast as draft' )
+			->multiple()
+			->options( $roles );
+
+		$role_broadcast_scheduled_posts = $fs->select( 'role_broadcast_scheduled_posts' )
+			->value( $this->get_site_option( 'role_broadcast_scheduled_posts' ) )
+			->description_( 'Which role is needed to broadcast scheduled (future) posts?' )
+			->label_( 'Broadcast scheduled posts' )
+			->multiple()
+			->options( $roles );
+
+		// --SEO----------------------------------------------------------------------------------------------------
+
+		$fs = $form->fieldset( 'seo' );
+		$fs->legend->label_( 'SEO' );
+
+		$override_child_permalinks = $fs->checkbox( 'override_child_permalinks' )
+			->checked( $this->get_site_option( 'override_child_permalinks' ) )
+			->description_( "Use the parent post's permalink for the children. If checked, child posts will link back to the parent post." )
+			->label_( "Use parent permalink" );
+
+		$canonical_url = $fs->checkbox( 'canonical_url' )
+			->checked( $this->get_site_option( 'canonical_url' ) )
+			->description_( "Child posts have their canonical URLs pointed to the URL of the parent post. This automatically disables the canonical URL from Yoast's Wordpress SEO plugin." )
+			->label_( 'Canonical URL' );
+
+		// ---------------------------------------------------------------------------------------------------------
 
 		$save = $form->primary_button( 'save' )
 			->value_( 'Save settings' );
@@ -324,10 +286,13 @@ This can be increased by adding the following to your wp-config.php:
 			$this->update_site_option( 'role_broadcast_as_draft', $role_broadcast_as_draft->get_post_value() );
 			$this->update_site_option( 'role_broadcast_scheduled_posts', $role_broadcast_scheduled_posts->get_post_value() );
 
+			$form->post()->use_post_values();
+			$post_types = $form->input( 'post_types' )->get_value();
+			$post_types = $this->lines_to_string( $post_types );
+			$this->update_site_option( 'post_types', $post_types);
+
 			$this->update_site_option( 'override_child_permalinks', $override_child_permalinks->is_checked() );
 			$this->update_site_option( 'canonical_url', $canonical_url->is_checked() );
-
-			$this->update_site_option( 'broadcast_internal_custom_fields', $broadcast_internal_custom_fields->is_checked() );
 
 			$blacklist = $custom_field_blacklist->get_post_value();
 			$blacklist = $this->lines_to_string( $blacklist );
@@ -343,6 +308,7 @@ This can be increased by adding the following to your wp-config.php:
 
 			$this->update_site_option( 'clear_post', $clear_post->is_checked() );
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
+			$this->update_site_option( 'save_post_decoys', $save_post_decoys->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
 			$this->update_site_option( 'blogs_hide_overview', $blogs_hide_overview->get_post_value() );
 			$this->update_site_option( 'existing_attachments', $existing_attachments->get_post_value() );
@@ -363,14 +329,83 @@ This can be increased by adding the following to your wp-config.php:
 		echo $r;
 	}
 
+	/**
+		@brief		Show system info.
+		@since		2015-07-14 21:17:39
+	**/
+	public function admin_menu_system_info()
+	{
+		$table = $this->table();
+		// Caption for the blog / PHP information table
+		$table->caption()->text_( 'Information' );
+
+		$row = $table->head()->row();
+		$row->th()->text_( 'Key' );
+		$row->th()->text_( 'Value' );
+
+		if ( $this->debugging() )
+		{
+			$row = $table->body()->row();
+			$row->td()->text_( 'Debugging' );
+			$row->td()->text_( 'Enabled' );
+		}
+
+		$row = $table->body()->row();
+		$row->td()->text_( 'Broadcast version' );
+		$row->td()->text( $this->plugin_version );
+
+		$row = $table->body()->row();
+		$row->td()->text_( 'PHP version' );
+		$row->td()->text( phpversion() );
+
+		$row = $table->body()->row();
+		$row->td()->text_( 'Wordpress upload directory array' );
+		$row->td()->text( '<pre>' . var_export( wp_upload_dir(), true ) . '</pre>' );
+
+		$row = $table->body()->row();
+		$row->td()->text_( 'PHP maximum execution time' );
+		$text = $this->p_( '%s seconds', ini_get ( 'max_execution_time' ) );
+		$row->td()->text( $text );
+
+		$row = $table->body()->row();
+		$row->td()->text_( 'PHP memory limit' );
+		$text = ini_get( 'memory_limit' );
+		$row->td()->text( $text );
+
+		$row = $table->body()->row();
+		$row->td()->text_( 'Wordpress memory limit' );
+		$text = wpautop( sprintf( WP_MEMORY_LIMIT . "
+
+%s
+
+<code>define('WP_MEMORY_LIMIT', '512M');</code>
+",		$this->_( 'This can be increased by adding the following to your wp-config.php:' ) ) );
+		$row->td()->text( $text );
+
+		$row = $table->body()->row();
+		$row->td()->text_( 'Debug code' );
+		$text = WP_MEMORY_LIMIT;
+		$text = wpautop( sprintf( "%s
+
+<code>ini_set('display_errors','On');</code>
+<code>define('WP_DEBUG', true);</code>
+",		$this->p_( 'Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:' ) ) );
+		$row->td()->text( $text );
+
+		echo $table;
+	}
+
 	public function admin_menu_tabs()
 	{
 		$this->load_language();
 
 		$tabs = $this->tabs();
 		$tabs->tab( 'settings' )		->callback_this( 'admin_menu_settings' )		->name_( 'Settings' );
-		$tabs->tab( 'post_types' )		->callback_this( 'admin_menu_post_types' )		->name_( 'Custom post types' );
 		$tabs->tab( 'maintenance' )		->callback_this( 'admin_menu_maintenance' )		->name_( 'Maintenance' );
+		$tabs->tab( 'system_info' )		->callback_this( 'admin_menu_system_info' )		->name_( 'System info' );
+
+		$this->savings_calculator_tabs( $tabs );
+
 		$tabs->tab( 'uninstall' )		->callback_this( 'admin_uninstall' )			->name_( 'Uninstall' );
 
 		echo $tabs;
@@ -460,21 +495,11 @@ This can be increased by adding the following to your wp-config.php:
 		if ( $this->display_premium_pack_info && is_super_admin() )
 			$this->add_submenu_page(
 				'threewp_broadcast',
-				$this->_( 'Premium Pack info' ),
-				$this->_( 'Premium Pack' ),
+				$this->_( 'Plugin packs info' ),
+				$this->_( 'Plugin packs' ),
 				'edit_posts',
 				'threewp_broadcast_premium_pack_info',
 				[ &$this, 'admin_menu_premium_pack_info' ]
-			);
-
-		if ( is_super_admin() )
-			$action->broadcast->add_submenu_page(
-				'threewp_broadcast',
-				'Admin settings',
-				'Admin settings',
-				'activate_plugins',
-				'threewp_broadcast_admin_menu',
-				[ &$this, 'admin_menu_tabs' ]
 			);
 	}
 
@@ -488,13 +513,21 @@ This can be increased by adding the following to your wp-config.php:
 		if ( ! $this->display_broadcast_menu )
 			return;
 
+		if ( ! static::user_has_roles( $this->get_site_option( 'role_broadcast' ) ) )
+			return;
+
+		if ( is_super_admin() )
+			$target = 'admin_menu_tabs';
+		else
+			$target = 'broadcast_menu_tabs';
+
 		add_menu_page(
 			$this->_( 'ThreeWP Broadcast' ),
 			$this->_( 'Broadcast' ),
 			'edit_posts',
 			'threewp_broadcast',
-			[ &$this, 'broadcast_menu_tabs' ],
-			'none'
+			[ &$this, $target ],
+			'dashicons-rss'
 		);
 
 		$this->add_submenu_pages();

@@ -1,0 +1,1706 @@
+#. How many actions are in the recording
+#: src/sync_taxonomies/recordings_trait.php:290
+#, php-format
+msgid "%s actions"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:810
+#, php-format
+msgid "%s display settings"
+msgstr ""
+
+#. Select label: Category is set manually
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:305
+#, php-format
+msgid "%s is"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:784
+#, php-format
+msgid "%s meta box settings"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:794
+#, php-format
+msgid "%s post bulk actions hidden"
+msgstr ""
+
+#: src/event_organiser/Event_Organiser.php:147
+#, php-format
+msgid "%s: Venues can only be broadcasted, not updated."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:807
+msgid "1 display setting"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:781
+msgid "1 meta box settings"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:791
+msgid "1 post bulk action hidden"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:45
+msgid "<code>160x100,left,top</code>"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:39
+msgid "<code>320x200</code> Width 320, height 200, soft proportional crop"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:47
+msgid "<code>400x200,right,bottom</code>"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:43
+msgid "<code>640x200,center,center</code> Same as above, with x_crop_position and then y_crop_position"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:41
+msgid "<code>640x480,c</code> Hard crop mode"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:71
+msgid "<code>article_image<br/>gallery_image_*<br/>set_*_image_*</code>"
+msgstr ""
+
+#. Recording name input description
+#: src/sync_taxonomies/recordings_trait.php:24
+msgid "A descriptive name that is only visible to the admin."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:355
+#, php-format
+msgid "A new modification, %s, has been created."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:226
+#, php-format
+msgid "A new recording, %s, has been created."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:140
+msgid "A recording keeps track of changes to a taxonomy. Use the bulk actions to manipulate the recordings and the recording links to edit, view or replay."
+msgstr ""
+
+#: src/queue/Queue.php:339
+msgid "Accept new items into the queue."
+msgstr ""
+
+#: src/queue/Queue.php:340
+msgid "Accept posts into queue"
+msgstr ""
+
+#. View recording table header, action hook name
+#: src/sync_taxonomies/recordings_trait.php:319
+msgid "Action"
+msgstr ""
+
+#. Table column heading
+#: src/sync_taxonomies/recordings_trait.php:170
+msgid "Actions"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:64
+msgid "Add all sizes found on this blog"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:198
+msgid "Add new criterion"
+msgstr ""
+
+#. Label for taxonomies selection.
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:212
+msgid "Add taxonomies wizard"
+msgstr ""
+
+#. Button text
+#: src/php_code/PHP_Code.php:177
+msgid "Add the selected example"
+msgstr ""
+
+#. Add some broadcast information.
+#: src/send_to_many/Send_To_Many.php:159
+#, php-format
+msgid "After selecting the blogs to which you want to broadcast the selected %s posts, press the Send To Many button."
+msgstr ""
+
+#: src/new_blog_broadcast/Broadcast.php:62
+msgid "All posts with children from the source blogs."
+msgstr ""
+
+#: src/user_blog_settings/db/criterion.php:49
+msgid "All users on all blogs."
+msgstr ""
+
+#. Parent permalink: Always use own permalink
+#. Child permalink: xxx
+#: src/permalinks/Permalinks.php:196 src/permalinks/Permalinks.php:236
+msgid "Always use own permalink"
+msgstr ""
+
+#: src/send_to_many/Send_To_Many.php:137
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:56
+#, php-format
+msgid "An error occured: Could not retrieve the first selected post: %s"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:370
+msgid "Applies to"
+msgstr ""
+
+#. Apply recording button text
+#: src/sync_taxonomies/recordings_trait.php:108
+msgid "Apply recording"
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:235
+msgid "Attachment Shortcodes"
+msgstr ""
+
+#. Protect child property:
+#: src/protect_child_properties/item.php:25
+msgid "Attachments"
+msgstr ""
+
+#. Protect child property:
+#: src/protect_child_properties/item.php:33
+msgid "Author"
+msgstr ""
+
+#: src/queue/Queue.php:345
+msgid "Automatic AJAX processing"
+msgstr ""
+
+#: src/queue/Queue.php:344
+msgid "Automatically process the queue items using AJAX calls in the clients."
+msgstr ""
+
+#: src/user_blog_settings/db/criterion.php:27
+#, php-format
+msgid "Blog %s does no longer exist."
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:104 src/blog_groups/Blog_Groups_2.php:625
+msgid "Blog groups"
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:80 src/blog_groups/Blog_Groups_2.php:81
+msgid "Blog groups 2"
+msgstr ""
+
+#. Blogs selector fieldset label.
+#. Input label
+#: src/sync_taxonomies/Sync_Taxonomies.php:65 src/menus/Menus.php:83
+#: src/php_code/PHP_Code.php:123 src/php_code/PHP_Code.php:132
+#: src/blog_groups/Blog_Groups_2.php:206
+msgid "Blogs"
+msgstr ""
+
+#: src/new_blog_broadcast/Broadcast.php:57
+#, php-format
+msgid "Blogs: %s"
+msgstr ""
+
+#. Sync comments in both directions
+#: src/comments/Comments.php:211
+msgid "Both directions"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:92
+#, php-format
+msgid "Broadcast %s has been created!"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:73
+#, php-format
+msgid "Broadcast <em>%s</em> says that from <em>%s</em> the following posts would be broadcasted: %s"
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:234
+msgid "Broadcast Attachment Shortcodes"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:200
+msgid "Broadcast Custom Field Attachments"
+msgstr ""
+
+#: src/keep_child_status/Keep_Child_Status.php:102
+msgid "Broadcast Keep Child Status"
+msgstr ""
+
+#: src/php_code/PHP_Code.php:39
+msgid "Broadcast PHP Code"
+msgstr ""
+
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:159
+msgid "Broadcast Per Blog Taxonomies"
+msgstr ""
+
+#. Admin menu page title
+#: src/permalinks/Permalinks.php:136
+msgid "Broadcast Permalinks"
+msgstr ""
+
+#: src/queue/Queue.php:503
+msgid "Broadcast Queue"
+msgstr ""
+
+#. Title for admin page
+#: src/send_to_many/Send_To_Many.php:192
+msgid "Broadcast Send To Many"
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:169
+msgid "Broadcast Sync Taxonomies"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:154
+msgid "Broadcast Thumbnail sizes"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:600
+msgid "Broadcast User & Blog Settings"
+msgstr ""
+
+#. Button to start the manual broadcast
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:331
+msgid "Broadcast now"
+msgstr ""
+
+#: src/user_blog_settings_post/User_Blog_Settings_Post.php:59
+msgid "Broadcasting..."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:309
+msgid "Broadcasts"
+msgstr ""
+
+#. Input label
+#: src/permalinks/Permalinks.php:232
+msgid "Child permalink"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:676
+msgid "Choose which post bulk actions are to be displayed or hidden to the user."
+msgstr ""
+
+#. Bulk action
+#: src/sync_taxonomies/recordings_trait.php:153
+#: src/blog_groups/Blog_Groups_2.php:277
+msgid "Clone"
+msgstr ""
+
+#. PHP Code fieldset label.
+#: src/php_code/PHP_Code.php:88
+msgid "Code editor"
+msgstr ""
+
+#. Input label
+#: src/comments/Comments.php:205
+msgid "Comments sync"
+msgstr ""
+
+#. Protect child property:
+#: src/protect_child_properties/item.php:41
+msgid "Content"
+msgstr ""
+
+#: src/menus/Menus.php:122
+msgid "Copy menu"
+msgstr ""
+
+#: src/menus/Menus.php:113
+msgid "Copy method"
+msgstr ""
+
+#. Button
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:37
+msgid "Create a new broadcast"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:208
+msgid "Create a new criterion"
+msgstr ""
+
+#. Create a new modification
+#: src/user_blog_settings/User_Blog_Settings.php:428
+msgid "Create a new modification"
+msgstr ""
+
+#. Create recording button
+#: src/sync_taxonomies/recordings_trait.php:148
+msgid "Create a new recording"
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:129
+msgid "Create a new shortcode"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:323
+msgid "Create modification"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:230
+#, php-format
+msgid "Criterion %s: %s"
+msgstr ""
+
+#. Label for taxonomies selection.
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:205
+msgid "Current taxonomies"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:201
+msgid "Custom Field Attachments"
+msgstr ""
+
+#. Bulk action
+#. Delete a broadcast, bulk action.
+#: src/user_blog_settings/User_Blog_Settings.php:327 src/queue/Queue.php:135
+#: src/sync_taxonomies/recordings_trait.php:155
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:135
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:44
+#: src/blog_groups/Blog_Groups_2.php:278
+msgid "Delete"
+msgstr ""
+
+#. Fieldset legend label
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:131
+msgid "Delete before broadcast"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:239
+msgid "Delete criteria"
+msgstr ""
+
+#. Input title
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:152
+msgid "Delete posts with similar slugs"
+msgstr ""
+
+#. Input title
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:145
+msgid "Delete posts with the same slug"
+msgstr ""
+
+#. Input title
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:138
+msgid "Delete posts with the same title"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:144
+msgid "Describe this broadcast so that it makes sense to you."
+msgstr ""
+
+#. The broadcast setting is disabled.
+#: src/new_blog_broadcast/Broadcast.php:89
+msgid "Disabled."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:655
+msgid "Display"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:692
+#, php-format
+msgid "Display %s"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:516
+msgid "Display a summary of all the modifications combined"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:660
+msgid "Display broadcast columns"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:665
+msgid "Display broadcast menu"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:670
+msgid "Display broadcast meta box"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:659
+msgid "Display the broadcast columns in the post overview showing link information."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:664
+msgid "Display the broadcast menu in the post overview showing link information."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:669
+msgid "Display the broadcast meta box in the post overview showing link information."
+msgstr ""
+
+#. Keep child status: As draft
+#: src/keep_child_status/Keep_Child_Status.php:130
+msgid "Draft"
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:208
+msgid "Edit"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:381
+msgid "Edit broadcast"
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:498
+msgid "Edit global group"
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:490
+msgid "Edit group"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:496
+msgid "Edit modification"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:509
+msgid "Edit modification criteria"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:452
+msgid "Edit recording"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:397
+msgid "Edit the criteria"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:396
+msgid "Edit the criteria used for this modification"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:393
+#: src/user_blog_settings/User_Blog_Settings.php:394
+msgid "Edit the modification"
+msgstr ""
+
+#. Recording edit link title
+#. Recording edit link text
+#: src/sync_taxonomies/recordings_trait.php:262
+#: src/sync_taxonomies/recordings_trait.php:264
+msgid "Edit the recording"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:105
+msgid "Edit this broadcast setting"
+msgstr ""
+
+#: src/user_blog_settings/summary_index.php:52
+msgid "Edit this modification"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:494
+#, php-format
+msgid "Editing modification %s"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:508
+#, php-format
+msgid "Editing modification criteria %s"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:451
+#, php-format
+msgid "Editing recording %s"
+msgstr ""
+
+#. Bulk action
+#: src/sync_taxonomies/recordings_trait.php:157
+msgid "Empty recording"
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:132
+msgid "Enable Broadcast debug mode to see tons of debug information."
+msgstr ""
+
+#. Is the broadcast enabled, checkbox.
+#: src/user_blog_settings/User_Blog_Settings.php:449
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:141
+msgid "Enabled"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:62
+msgid "Enter the names of the fields in the text box to tell Broadcast that the attachments need to be broadcasted and their new child-IDs set into the named custom fields. Specify wildcards with an asterisk."
+msgstr ""
+
+#: src/queue/Queue.php:699
+#, php-format
+msgid "Error broadcasting to %s."
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:37
+msgid "Example of valid sizes:"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:213
+msgid "Existing criteria"
+msgstr ""
+
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:32
+msgid "Find some unlinked children"
+msgstr ""
+
+#: src/menus/Menus.php:137
+msgid "Finished copying menus."
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:121
+msgid "Finished synchronizing."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1128
+msgid "Force off"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1129
+msgid "Force off and hide"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1125
+msgid "Force on"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1126
+msgid "Force on and hide"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:52
+msgid "Format: size_name blog_id crop."
+msgstr ""
+
+#. General options fieldset label
+#: src/user_blog_settings/User_Blog_Settings.php:444
+#: src/user_blog_settings/User_Blog_Settings.php:645 src/queue/Queue.php:335
+#: src/send_to_many/Send_To_Many.php:52
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:134
+msgid "General"
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:483
+msgid "Global groups"
+msgstr ""
+
+#: src/queue/Queue.php:379
+msgid "HTTP processing"
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:213
+msgid "Help"
+msgstr ""
+
+#: src/menus/Menus.php:112
+msgid "How the menus should be copied to the child blog(s)."
+msgstr ""
+
+#. Input title (description)
+#: src/comments/Comments.php:213
+msgid "How to keep the comments synced between parent and children"
+msgstr ""
+
+#. PHP generator howto fieldset label.
+#: src/php_code/PHP_Code.php:147
+msgid "Howto"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:35
+msgid "ID fields"
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:501
+msgid "Import"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:176
+msgid "Input the post IDs, if any, you wish to broadcast. One ID per line."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:187
+msgid "Input the post types, if any, you wish to broadcast. One post type per line."
+msgstr ""
+
+#. Checkbox description.
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:139
+msgid "Is this broadcast enabled?"
+msgstr ""
+
+#: src/queue/Queue.php:679 src/queue/Queue.php:759
+#, php-format
+msgid "Items in queue: %s"
+msgstr ""
+
+#: src/keep_child_status/Keep_Child_Status.php:103
+msgid "Keep Child Status"
+msgstr ""
+
+#. Input label
+#: src/keep_child_status/Keep_Child_Status.php:126
+msgid "Keep child status as"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1122
+msgid "Leave it alone"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1123
+msgid "Leave it alone and hide it"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:84
+#, php-format
+msgid "Line %s is incorrectly formed."
+msgstr ""
+
+#. On blog x: Link the posts together
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:142
+msgid "Link"
+msgstr ""
+
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:155
+msgid "Link selected children"
+msgstr ""
+
+#. Link the visible posts to each other
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:86
+msgid "Link visible posts"
+msgstr ""
+
+#: src/permalinks/Permalinks.php:62
+#, php-format
+msgid "Local settings for blog %s"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:105
+msgid "Local thumbnail sizes have been added. Don't forget to save the sizes."
+msgstr ""
+
+#: src/lock_post/Lock_Post.php:44
+msgid "Lock the post"
+msgstr ""
+
+#. Input label
+#: src/php_code/PHP_Code.php:103
+msgid "Loop code"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:373
+msgid "Manual new blog broadcast"
+msgstr ""
+
+#. Protect child property:
+#: src/protect_child_properties/item.php:49
+msgid "Menu order"
+msgstr ""
+
+#: src/menus/Menus.php:49 src/menus/Menus.php:50
+msgid "Menus"
+msgstr ""
+
+#: src/menus/Menus.php:72
+msgid "Menus to copy"
+msgstr ""
+
+#: src/menus/Menus.php:37
+msgid "Menus: Copy"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:698
+msgid "Meta box"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:368
+msgid "Modification"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:353
+#, php-format
+msgid "Modification created %s"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:649
+msgid "Modification name"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:343
+#, php-format
+msgid "Modification, %s, has been deleted."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:369
+#: src/user_blog_settings/User_Blog_Settings.php:483
+msgid "Modifications"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:448
+msgid "Modify the Broadcast settings for users?"
+msgstr ""
+
+#. The broadcast's name.
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:146
+msgid "Name"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:398
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:399
+msgid "New Blog Broadcast"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:88
+#, php-format
+msgid "New Blog Broadcast created %s"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:369
+msgid "New Blog Broadcasts"
+msgstr ""
+
+#: src/queue/Queue.php:401
+msgid "No JSON in reply."
+msgstr ""
+
+#. On blog x: No action
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:140
+msgid "No action"
+msgstr ""
+
+#. Button: Do nothing with the visible posts
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:90
+msgid "No action for visible posts"
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:105 src/blog_groups/Blog_Groups_2.php:626
+msgid "No group selected"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:971
+#, php-format
+msgid "No modifications available for the %s input."
+msgstr ""
+
+#. Input label
+#: src/no_new_terms/No_New_Terms.php:58
+msgid "No new terms"
+msgstr ""
+
+#. No blogs are selected in this setting, not showing the rest of the description.
+#: src/new_blog_broadcast/Broadcast.php:41
+msgid "No source blogs selected."
+msgstr ""
+
+#. Do not sync comments
+#: src/comments/Comments.php:207
+msgid "No sync"
+msgstr ""
+
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:104
+msgid "Note that different blogs might have different post types and therefore different taxonomies."
+msgstr ""
+
+#. View recording table header, action number
+#: src/sync_taxonomies/recordings_trait.php:317
+msgid "Number"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1127
+msgid "Off"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1124
+msgid "On"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:66
+msgid "Options saved!"
+msgstr ""
+
+#: src/send_to_many/Send_To_Many.php:93
+msgid "Overview"
+msgstr ""
+
+#: src/php_code/PHP_Code.php:227
+msgid "PHP Code"
+msgstr ""
+
+#: src/php_code/PHP_Code.php:40
+msgid "PHP code"
+msgstr ""
+
+#. Input label
+#: src/permalinks/Permalinks.php:192
+msgid "Parent permalink"
+msgstr ""
+
+#. Sync parent comments to children
+#: src/comments/Comments.php:209
+msgid "Parent to children"
+msgstr ""
+
+#. Protect child property:
+#: src/protect_child_properties/item.php:57
+msgid "Password"
+msgstr ""
+
+#. Keep child status: As pending
+#: src/keep_child_status/Keep_Child_Status.php:132
+msgid "Pending"
+msgstr ""
+
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:160
+msgid "Per Blog Taxonomies"
+msgstr ""
+
+#. Menu item
+#: src/permalinks/Permalinks.php:138
+msgid "Permalinks"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:1109
+msgid "Please create at least one public post to be used as a post template."
+msgstr ""
+
+#. Fieldset label
+#. Label for post IDs textarea.
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:173
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:178
+msgid "Post IDs"
+msgstr ""
+
+#: src/new_blog_broadcast/Broadcast.php:69
+#, php-format
+msgid "Post IDs: %s"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:673
+msgid "Post bulk actions"
+msgstr ""
+
+#. Protect child property:
+#: src/protect_child_properties/item.php:73
+msgid "Post title"
+msgstr ""
+
+#. Fieldset label
+#. Label for post types textarea.
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:184
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:189
+msgid "Post types"
+msgstr ""
+
+#: src/user_blog_settings/criteria/post_types.php:24
+#, php-format
+msgid "Post types available on this blog are: <code>%s</code>"
+msgstr ""
+
+#: src/new_blog_broadcast/Broadcast.php:76
+#, php-format
+msgid "Post types: %s"
+msgstr ""
+
+#: src/user_blog_settings_post/User_Blog_Settings_Post.php:44
+msgid "Post with UBS"
+msgstr ""
+
+#. Input label
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:150
+msgid "Posts with similar slugs"
+msgstr ""
+
+#. Input label
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:143
+msgid "Posts with the same slug"
+msgstr ""
+
+#. Input label
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:136
+msgid "Posts with the same title"
+msgstr ""
+
+#. this, because the tabs object comes from plugin pack, not from here.
+#: src/ThreeWP_Broadcast_Premium_Pack.php:114
+msgid "Premium pack license"
+msgstr ""
+
+#. Input title
+#: src/no_new_terms/No_New_Terms.php:60
+msgid "Prevent new taxonomy terms from being created on the child blogs."
+msgstr ""
+
+#. Title of checkbox
+#: src/protect_child_properties/item.php:36
+msgid "Prevent the author of the child posts from modification."
+msgstr ""
+
+#. Title of checkbox
+#: src/protect_child_properties/item.php:44
+msgid "Prevent the content of the child posts from modification."
+msgstr ""
+
+#. Title of checkbox
+#: src/protect_child_properties/item.php:52
+msgid "Prevent the menu order of the child posts from modification."
+msgstr ""
+
+#. Title of checkbox
+#: src/protect_child_properties/item.php:60
+msgid "Prevent the password of the child posts from modification."
+msgstr ""
+
+#: src/lock_post/Lock_Post.php:45
+msgid "Prevent the post from being edited by anyone other than yourself"
+msgstr ""
+
+#. Title of checkbox
+#: src/protect_child_properties/item.php:76
+msgid "Prevent the post title of the child posts from modification."
+msgstr ""
+
+#. Title of checkbox
+#: src/protect_child_properties/item.php:68
+msgid "Prevent the status of the child posts from modification."
+msgstr ""
+
+#. Keep child status: As private
+#: src/keep_child_status/Keep_Child_Status.php:134
+msgid "Private"
+msgstr ""
+
+#: src/queue/Queue.php:136
+msgid "Process"
+msgstr ""
+
+#: src/queue/Queue.php:208
+#, php-format
+msgid "Processing item %s: %s"
+msgstr ""
+
+#: src/queue/Queue.php:402
+msgid "Processing queue..."
+msgstr ""
+
+#. Fieldset legend
+#: src/protect_child_properties/item.php:16
+msgid "Protect child properties"
+msgstr ""
+
+#. Title of checkbox
+#: src/protect_child_properties/item.php:28
+msgid "Protect the attachments of each linked child post instead of deleting them as per default."
+msgstr ""
+
+#. Keep child status: As published
+#: src/keep_child_status/Keep_Child_Status.php:136
+msgid "Published"
+msgstr ""
+
+#. Action name
+#: src/purge_children/Purge_Children.php:69
+msgid "Purge child"
+msgstr ""
+
+#. Bulk action name
+#: src/purge_children/Purge_Children.php:83
+msgid "Purge children"
+msgstr ""
+
+#: src/queue/Queue.php:377 src/queue/Queue.php:504
+msgid "Queue"
+msgstr ""
+
+#: src/queue/Queue.php:768
+#, php-format
+msgid "Queue and processing disabled. Items in queue: %s"
+msgstr ""
+
+#: src/queue/Queue.php:745
+msgid "Queue disabled."
+msgstr ""
+
+#: src/queue/Queue.php:766
+#, php-format
+msgid "Queue enabled but processing disabled. Items in queue: %s"
+msgstr ""
+
+#: src/queue/Queue.php:316
+msgid "Queue processing has been disabled in the settings."
+msgstr ""
+
+#: src/queue/Queue.php:802
+msgid "Queue ready."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:436
+msgid "Record taxonomy changes and replay the them on other blogs"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:435
+msgid "Recorder"
+msgstr ""
+
+#. Table column heading
+#: src/sync_taxonomies/recordings_trait.php:166
+msgid "Recording"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:124
+msgid "Recording applied to the selected blogs."
+msgstr ""
+
+#: src/sync_taxonomies/Recording.php:18
+#, php-format
+msgid "Recording created %s"
+msgstr ""
+
+#. Recording name input label
+#: src/sync_taxonomies/recordings_trait.php:26
+msgid "Recording name"
+msgstr ""
+
+#. The recording is busy recording, as seen in the table.
+#: src/sync_taxonomies/recordings_trait.php:287
+msgid "Recording!"
+msgstr ""
+
+#: src/menus/Menus.php:109
+msgid "Replace domain URL"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:459
+msgid "Replay recording"
+msgstr ""
+
+#. Reply to blogs label
+#: src/sync_taxonomies/recordings_trait.php:95
+msgid "Replay to blogs"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:458
+#, php-format
+msgid "Replaying recording %s"
+msgstr ""
+
+#. Replay recording link text
+#: src/sync_taxonomies/recordings_trait.php:276
+msgid "Reply actions"
+msgstr ""
+
+#. Replay recording link title
+#: src/sync_taxonomies/recordings_trait.php:274
+msgid "Reply the actions on selected blogs"
+msgstr ""
+
+#: src/queue/Queue.php:403
+msgid "Retrying in <span class=\\\"seconds\\\" /> seconds."
+msgstr ""
+
+#. Input label: Which role is necessary to use Send To Many?
+#: src/send_to_many/Send_To_Many.php:59
+msgid "Role to use"
+msgstr ""
+
+#: src/keep_child_status/Keep_Child_Status.php:41
+msgid "Roles"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:374
+msgid "Run a new blog broadcast manually"
+msgstr ""
+
+#. Button text
+#: src/php_code/PHP_Code.php:116
+msgid "Run this code on the selected blogs"
+msgstr ""
+
+#. Keep child status: Same as parent
+#: src/keep_child_status/Keep_Child_Status.php:128
+msgid "Same as parent"
+msgstr ""
+
+#. Button text
+#. Save settings button text
+#: src/user_blog_settings/User_Blog_Settings.php:452 src/queue/Queue.php:348
+#: src/permalinks/Permalinks.php:81
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:53
+#: src/send_to_many/Send_To_Many.php:65
+#: src/custom_field_attachments/Custom_Field_Attachments.php:41
+#: src/keep_child_status/Keep_Child_Status.php:51
+#: src/sync_taxonomies/recordings_trait.php:55
+msgid "Save settings"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:136
+msgid "Save the settings"
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:78
+msgid "Save the shortcode data"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:58
+msgid "Save the thumbnail sizes"
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:163
+msgid "Select a PHP code example to place in the code textareas."
+msgstr ""
+
+#. Input label
+#: src/php_code/PHP_Code.php:165 src/php_code/PHP_Code.php:166
+msgid "Select a wizard"
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:130
+msgid "Select one or more blogs on which to run the code."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:158
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:308
+msgid "Select one or more blogs to act as the broadcast source."
+msgstr ""
+
+#: src/menus/Menus.php:141
+msgid "Select one or more menus to copy to one or more blogs, then press the copy menu button."
+msgstr ""
+
+#: src/menus/Menus.php:71
+msgid "Select one or more menus to copy to the target blog(s)."
+msgstr ""
+
+#. Reply to blogs description
+#: src/sync_taxonomies/recordings_trait.php:93
+msgid "Select the blogs on which you want to reply the term changes in this recording."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:716
+msgid "Select the modifications for each setting in the meta box."
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:64
+msgid "Select the target blogs that will have their taxonomies synced with this blog."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:320
+msgid "Select the target blogs to which to broadcast."
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:34
+msgid "Select the taxonomies on this blog you with to synchronize on the target blogs."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:210
+msgid "Select the taxonomies to add to the current list of taxonomies."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:84
+msgid "Select which blogs you wish to replay the recording on. The actions will then be executed as best possible on each selected blog. "
+msgstr ""
+
+#. Fieldset legend
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:76
+msgid "Selection tools"
+msgstr ""
+
+#. The name of the bulk action
+#. Send to many button in the popup
+#. Menu item
+#: src/send_to_many/Send_To_Many.php:116 src/send_to_many/Send_To_Many.php:166
+#: src/send_to_many/Send_To_Many.php:194
+msgid "Send To Many"
+msgstr ""
+
+#: src/queue/Queue.php:378 src/permalinks/Permalinks.php:115
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:90
+#: src/send_to_many/Send_To_Many.php:97
+#: src/custom_field_attachments/Custom_Field_Attachments.php:84
+#: src/keep_child_status/Keep_Child_Status.php:82
+msgid "Settings"
+msgstr ""
+
+#. Input label
+#: src/php_code/PHP_Code.php:95
+msgid "Setup code"
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:164
+#, php-format
+msgid "Shortcode %s has been created!"
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:201
+msgid "Shortcodes"
+msgstr ""
+
+#. Search input label
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:80
+msgid "Show only blog names containing..."
+msgstr ""
+
+#: src/php_code/PHP_Code.php:171
+msgid "Show the current theme of the blog"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:70
+msgid "Some examples:"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:60
+msgid "Some post custom fields can contain attachment IDs that normally aren't updated when broadcasting to child blogs."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:152
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:159
+msgid "Source blogs"
+msgstr ""
+
+#. Bulk action
+#: src/sync_taxonomies/recordings_trait.php:159
+msgid "Start recording"
+msgstr ""
+
+#. Protect child property:
+#: src/protect_child_properties/item.php:65
+msgid "Status"
+msgstr ""
+
+#. Bulk action
+#: src/sync_taxonomies/recordings_trait.php:161
+msgid "Stop recording"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:515
+msgid "Summary view"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:86
+msgid "Switch on Broadcast debug mode for more information."
+msgstr ""
+
+#: src/php_code/PHP_Code.php:172
+msgid "Switch the blog's theme"
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:149
+msgid "Sync"
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:170
+msgid "Sync Taxonomies"
+msgstr ""
+
+#. Input label
+#: src/comments/Comments.php:221
+msgid "Sync comments to children now"
+msgstr ""
+
+#. Input title
+#: src/comments/Comments.php:223
+msgid "Sync the comments to the children now"
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:81
+msgid "Synchronize selected taxonomies"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:321
+msgid "Target blogs"
+msgstr ""
+
+#. Fieldset label
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:43
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:86
+#: src/sync_taxonomies/Sync_Taxonomies.php:35
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:199
+msgid "Taxonomies"
+msgstr ""
+
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:127
+#, php-format
+msgid "Taxonomies available for the %s post type"
+msgstr ""
+
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:49
+msgid "Taxonomies to select"
+msgstr ""
+
+#: src/new_blog_broadcast/Broadcast.php:83
+#, php-format
+msgid "Taxonomies: &emsp; %s"
+msgstr ""
+
+#. Recording name input label
+#. Table column heading
+#: src/sync_taxonomies/recordings_trait.php:35
+#: src/sync_taxonomies/recordings_trait.php:168
+msgid "Taxonomy"
+msgstr ""
+
+#. Input label
+#: src/php_code/PHP_Code.php:111
+msgid "Teardown code"
+msgstr ""
+
+#. View recording table header
+#: src/sync_taxonomies/recordings_trait.php:321
+msgid "Term name and slug"
+msgstr ""
+
+#. Test a broadcast, bulk action.
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:46
+msgid "Test"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:81
+msgid "Test complete."
+msgstr ""
+
+#: src/queue/Queue.php:311
+msgid "The Broadcast Queue plugin put broadcasts of new and updated posts into a queue, which is processed via Javascript either in the post edit window, the post list table or this page."
+msgstr ""
+
+#: src/menus/Menus.php:142
+msgid "The author suggests using the update method if you want to keep the positioned menus in their places on the theme."
+msgstr ""
+
+#: src/menus/Menus.php:82
+msgid "The blogs to which you wish to copy the selected menu(s)."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:347
+msgid "The broadcast has been manually run!"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:276
+msgid "The broadcast has been updated!"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:749
+msgid "The broadcast meta box is not shown to the user. But if it were visible, it would look like this:"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:751
+msgid "The broadcast meta box is visible and looks like this:"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:232
+msgid "The custom fields in bold should specify attachment IDs:"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:195
+#, php-format
+msgid "The custom post types registered on <em>this</em> blog are: <code>%s</code>"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:311
+msgid "The following actions will be executed on the blogs on which you replay the recording."
+msgstr ""
+
+#. Fieldset title
+#: src/protect_child_properties/item.php:18
+msgid "The list of child properties that can be protected when broadcasting."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:158
+msgid "The modification settings have been saved."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:648
+msgid "The name of the modification that only the super admin sees."
+msgstr ""
+
+#: src/queue/Queue.php:314
+msgid "The processing is done automatically in the background as long as either of the pages are being viewed by the user or yourself."
+msgstr ""
+
+#: src/keep_child_status/Keep_Child_Status.php:45
+msgid "The role necessary to keep the child status."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:63
+msgid "The selected broadcasts have been deleted!"
+msgstr ""
+
+#: src/php_code/PHP_Code.php:219
+msgid "The selected code has been added to the code editor."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:187
+msgid "The selected recordings have been cloned."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:192
+msgid "The selected recordings have been deleted."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:200
+msgid "The selected recordings have been emptied."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:208
+msgid "The selected recordings have been started."
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:216
+msgid "The selected recordings have been stopped."
+msgstr ""
+
+#: src/queue/Queue.php:173
+msgid "The selected rows were deleted! Please reload this page to see the current queue."
+msgstr ""
+
+#: src/queue/Queue.php:211
+msgid "The selected rows were processed! Please click on the queue tab to reload this page and see the current queue."
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:154
+msgid "The selected shortcodes have been deleted!"
+msgstr ""
+
+#: src/sync_taxonomies/Sync_Taxonomies.php:126
+msgid "The selected taxonomies will be copied to the selected target blogs. If the taxonomies exist they will be updated if the name, description or parent differs."
+msgstr ""
+
+#: src/attachment_shortcodes/Attachment_Shortcodes.php:90
+msgid "The shortcode has been updated!"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:33
+msgid "The table below shows the New Blog Broadcast settings. Use the Test bulk action to view what will be copied when a new blog is created. To disable automatic broadcasting, disable all of the new blog broadcasts and use only the manual broadcast tab."
+msgstr ""
+
+#: src/user_blog_settings/trait_summarize.php:32
+msgid "The tabs below show a combined view of all of the settings modified by all of the modifications."
+msgstr ""
+
+#. Recording name input description
+#: src/sync_taxonomies/recordings_trait.php:33
+msgid "The taxonomy to record."
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:97
+msgid "The thumbnail sizes have been saved!"
+msgstr ""
+
+#. Input description for S2M role.
+#: src/send_to_many/Send_To_Many.php:57
+msgid "The user role required to use the Send To Many button."
+msgstr ""
+
+#. Themes optgroup label in the wizard select
+#: src/php_code/PHP_Code.php:170
+msgid "Themes"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:35
+msgid "These settings specify which extra thumbnail sizes to generate on a per-blog basis. The text area below is to be filled in with a list of size names, blog IDs and their respective thumbnail sizes. Use an asterisk to mean all blogs."
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:101
+msgid "This code is run on all selected blogs."
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:109
+msgid "This code that is run after the loop."
+msgstr ""
+
+#. Input description
+#: src/php_code/PHP_Code.php:93
+msgid "This code that is run prior to beginning the loop."
+msgstr ""
+
+#: src/user_blog_settings/criteria/taxonomy_terms.php:16
+msgid "This criterion applies only during broadcasting of posts."
+msgstr ""
+
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:102
+msgid "This page shows all of the post types registered on <em>this</em> blog that have taxonomies. Use the form below to add the checked taxonomies to the settings, instead of writing them manually."
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:228
+msgid "This post has no custom fields."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:361
+msgid "This table lists all the available modifications and a short summary of which settings are altered."
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:203
+msgid "This text area shows the taxonomies, if any, that the posts must have in order to be broadcasted. The format is: post type,taxonomy,term slug."
+msgstr ""
+
+#: src/wpml/WPML.php:265
+#, php-format
+msgid "This translation will be broadcast to: %s"
+msgstr ""
+
+#: src/wpml/WPML.php:268
+msgid "This translation will not be broadcasted: the original language post was not broadcasted."
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:53
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:114
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:155
+msgid "Thumbnail sizes"
+msgstr ""
+
+#: src/custom_field_attachments/Custom_Field_Attachments.php:64
+msgid "To see the names of the custom fields, enable Broadcast debug mode and look at the Broadcast meta box in the post editor of an existing post."
+msgstr ""
+
+#: src/menus/Menus.php:99
+msgid "Translate post IDs"
+msgstr ""
+
+#: src/menus/Menus.php:104
+msgid "Translate taxonomies"
+msgstr ""
+
+#. Input title
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:159
+msgid "Unlink all child posts before broadcasting"
+msgstr ""
+
+#. Input label
+#: src/delete_before_broadcast/Delete_Before_Broadcast.php:157
+msgid "Unlink child posts"
+msgstr ""
+
+#. Fieldset legend
+#: src/find_some_unlinked_children/Find_Some_Unlinked_Children.php:99
+msgid "Unlinked posts"
+msgstr ""
+
+#. Save the broadcast settings button.
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:239
+msgid "Update broadcast"
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:255
+msgid "Update criteria"
+msgstr ""
+
+#: src/local_links/meta_box_data/item.php:22
+msgid "Update each link to local, broadcasted posts in each child post."
+msgstr ""
+
+#: src/local_links/meta_box_data/item.php:21
+msgid "Update local links"
+msgstr ""
+
+#: src/back_to_parent/Back_To_Parent.php:166
+msgid "Update parent post"
+msgstr ""
+
+#: src/update_attachments/Update_Attachments.php:74
+msgid "Update the files with the contents from the parent blog."
+msgstr ""
+
+#: src/back_to_parent/Back_To_Parent.php:168
+msgid "Update the linked parent post with this new content"
+msgstr ""
+
+#: src/keep_child_status/Keep_Child_Status.php:46
+msgid "Use Keep Child Status"
+msgstr ""
+
+#. Parent permalink: use default
+#. Child permalink: xxx
+#: src/permalinks/Permalinks.php:194 src/permalinks/Permalinks.php:234
+msgid "Use default"
+msgstr ""
+
+#. Parent permalink: Use first child's
+#: src/permalinks/Permalinks.php:198
+msgid "Use first child's"
+msgstr ""
+
+#. Child permalink: xxx
+#: src/permalinks/Permalinks.php:238
+msgid "Use parent's permalink"
+msgstr ""
+
+#: src/new_blog_broadcast/New_Blog_Broadcast.php:305
+msgid "Use this form to manually trigger a broadcast, which you can use to simulate a new blog being created. Select the broadcasts you want to run and then the target blogs."
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:624
+msgid "Use this input to quickly select and unselect blogs."
+msgstr ""
+
+#: src/user_blog_settings/db/criterion.php:45
+#, php-format
+msgid "User %s does no longer exist."
+msgstr ""
+
+#: src/user_blog_settings/User_Blog_Settings.php:601
+msgid "User & Blog Settings"
+msgstr ""
+
+#. Recording view link text
+#: src/sync_taxonomies/recordings_trait.php:270
+msgid "View actions"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:466
+msgid "View recording"
+msgstr ""
+
+#. Recording view link title
+#: src/sync_taxonomies/recordings_trait.php:268
+msgid "View the recorded actions"
+msgstr ""
+
+#: src/sync_taxonomies/recordings_trait.php:465
+#, php-format
+msgid "Viewing recording %s"
+msgstr ""
+
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:48
+msgid "Which taxonomies is the user allowed to select?"
+msgstr ""
+
+#. PHP generator wizard fieldset label.
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:61 src/php_code/PHP_Code.php:159
+msgid "Wizard"
+msgstr ""
+
+#: src/thumbnail_sizes/Thumbnail_Sizes.php:49
+msgid "You can use the wizard below the form to help you fill in the textarea."
+msgstr ""
+
+#: src/user_blog_settings_post/User_Blog_Settings_Post.php:58
+msgid "You need to select at least one non-child post to be sent."
+msgstr ""
+
+#: src/php_code/PHP_Code.php:190
+msgid "Your code has been run!"
+msgstr ""
+
+#: src/blog_groups/Blog_Groups_2.php:480
+msgid "Your groups"
+msgstr ""
+
+#: src/queue/Queue.php:635
+#, php-format
+msgid "Zero of %s items are ready."
+msgstr ""
+
+#. Category is: set automatically
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:307
+msgid "set automatically"
+msgstr ""
+
+#. Category is: set manually
+#: src/per_blog_taxonomies/Per_Blog_Taxonomies.php:309
+msgid "set manually"
+msgstr ""

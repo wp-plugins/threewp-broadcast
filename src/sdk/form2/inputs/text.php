@@ -70,7 +70,7 @@ class text
 	}
 
 	/**
-		@brief		x
+		@brief		Filter the value to lowercase.
 		@param		bool		$value		True to uppercase the value.
 		@since		20130814
 	**/
@@ -82,7 +82,7 @@ class text
 	}
 
 	/**
-		@brief		x
+		@brief		Filter the value to a plain text value.
 		@param		bool		$value		True to uppercase the value.
 		@since		20130814
 	**/
@@ -94,7 +94,7 @@ class text
 	}
 
 	/**
-		@brief		x
+		@brief		Filter the value by trimming it.
 		@param		bool		$value		True to uppercase the value.
 		@since		20130814
 	**/
@@ -106,7 +106,7 @@ class text
 	}
 
 	/**
-		@brief		x
+		@brief		Filter the value to just uppercase.
 		@param		bool		$value		True to uppercase the value.
 		@since		20130814
 	**/
